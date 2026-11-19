@@ -210,6 +210,15 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .cards.mx-listview > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .gp-app .cards.mx-listview > ul > li { display: flex; min-width: 0; }
 .gp-app .cards.mx-listview > ul > li > .pcard { flex: 1; }
+/* US-034: skeleton cards while the product list loads (an empty <ul> is the loading state;
+   a loaded empty result renders li.mx-listview-empty). Shimmer stops after ~5 s (motion rule). */
+.gp-app .cards.mx-listview > ul:empty { min-height: 460px; }
+.gp-app .cards.mx-listview > ul:empty::before,
+.gp-app .cards.mx-listview > ul:empty::after { content: ''; height: 440px; border-radius: var(--r-md);
+  background: linear-gradient(90deg, var(--surface-container) 0%, var(--surface-high) 50%, var(--surface-container) 100%);
+  background-size: 200% 100%; animation: shimmer 1.4s 3; }
+@media (max-width: 767px) { .gp-app .cards.mx-listview > ul:empty::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .gp-app .cards.mx-listview > ul:empty::before, .gp-app .cards.mx-listview > ul:empty::after { animation: none; } }
 .gp-app .code { white-space: normal; }
 .gp-app .code .cl { white-space: pre-wrap; }
 .gp-app .code .code-list, .gp-app .code .code-list > ul, .gp-app .code .code-list > ul > li { display: inline; }
