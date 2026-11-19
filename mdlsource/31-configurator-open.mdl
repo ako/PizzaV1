@@ -1,0 +1,27 @@
+mdl 1;
+-- Opening the configurator (US-041, US-050): a draft line holds the build
+-- being configured; the cart is untouched until Build & Deploy / Commit.
+
+/**
+ * Opens SCR-03 for a product with its default configuration (US-041). A
+ * draft or archived product shows SCR-40 instead; a sold-out product opens
+ * in its sold-out state.
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Configure_Open ($Product: Shop.Product)
+folder 'Configurator'
+begin
+  if $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+    show page Shop.NotFound();
+    return;
+  end if;
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  retrieve $OldDrafts from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = true];
+  delete $OldDrafts;
+  $Draft = create Shop.CartLine (Quantity = 1, IsDraft = true, Shop.CartLine_Cart = $Cart);
+  call microflow Shop.SUB_Line_ApplyDefaults(Line = $Draft, Product = $Product);
+  call microflow Shop.SUB_Line_Recalculate(Line = $Draft);
+  commit $Draft without events;
+  show page Shop.Configurator(Line = $Draft);
+end;
