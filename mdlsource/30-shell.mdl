@@ -15,6 +15,7 @@ begin
   $Cart = call microflow Shop.SUB_Cart_Current();
   return $Cart;
 end;
+grant execute on microflow Shop.DS_Shell_Cart to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Opens the menu on a category tab (sidebar category files, New Branch).
@@ -29,6 +30,7 @@ begin
   commit $Cart without events refresh;
   show page Shop.Menu();
 end;
+grant execute on microflow Shop.ACT_Nav_Menu to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * ./checkout.yml: opens checkout, or explains that the manifest is empty
@@ -44,6 +46,7 @@ begin
   end if;
   show page Shop.Checkout();
 end;
+grant execute on microflow Shop.ACT_Nav_Checkout to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Header search (grep --pizza): runs the search on the menu (US-001 AC6, US-027).
@@ -61,6 +64,7 @@ begin
   commit $Cart without events refresh;
   show page Shop.Menu();
 end;
+grant execute on microflow Shop.ACT_Nav_Search to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Opens the cart drawer (desktop/tablet) or full page (phone), US-061.
@@ -72,6 +76,7 @@ begin
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   show page Shop.Cart_Drawer(Cart = $Cart);
 end;
+grant execute on microflow Shop.ACT_Nav_Cart to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * ./track.log and the phone tab Trace: the most recent order of this
@@ -89,6 +94,7 @@ begin
   retrieve $Order from $Latest/Shop.OrderAccess_Order;
   show page Shop.Tracking(TheOrder = $Order);
 end;
+grant execute on microflow Shop.ACT_Nav_Track to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Home: opens the home page.
@@ -98,6 +104,7 @@ folder 'Shell'
 begin
   show page Shop.Home();
 end;
+grant execute on microflow Shop.ACT_Nav_Home to Shop.Guest, Shop.Administrator; -- auto
 
 -- ───────────────────────── snippets ─────────────────────────
 

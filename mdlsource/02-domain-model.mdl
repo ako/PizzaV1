@@ -60,7 +60,15 @@ create or modify persistent entity Shop."Product" (
   "SearchText": String(1000),
   "ModulePath": String(80),
   "CardPriceLabel": String(40),
-  "SpiceLabel": String(30)
+  "SpiceLabel": String(30),
+  "Kcal": Integer default 0,
+  "FileLabel": String(60),
+  "CardIcon": String(30),
+  "CodeVar": String(10),
+  "CodeCrust": String(60),
+  "CodeSauce": String(60),
+  "CodeCheese": String(60),
+  "RealLine": String(120)
 ) index ("Code") index ("SortOrder");
 
 /** A price point of a product (Small/Medium/Large or Regular). */
@@ -256,7 +264,9 @@ create or modify persistent entity Shop."CartLine" (
   "IsDraft": Boolean default false,
   "Notice": String(300),
   "ReturnTo": String(20),
-  "UnavailableReason": String(200)
+  "UnavailableReason": String(200),
+  "DisplayName": String(120),
+  "SizeText": String(40)
 );
 
 create or modify association Shop."Cart_Owner" from Shop."Cart" to System."User" on delete cascade;
@@ -535,3 +545,18 @@ create or modify non-persistent entity Shop."HomeView" (
   "FeaturedCount": Integer default 0,
   "CarouselPos": String(20)
 );
+
+/** Menu page view (SCR-02): tab counts, result line and empty states. */
+create or modify non-persistent entity Shop."MenuView" (
+  "CountPizzas": Integer default 0,
+  "CountSides": Integer default 0,
+  "CountDrinks": Integer default 0,
+  "CountDesserts": Integer default 0,
+  "ResultText": String(200),
+  "NoResults": Boolean default false,
+  "EmptyByFilter": Boolean default false,
+  "IsSearch": Boolean default false,
+  "EmptyText": String(200),
+  "PublishedCount": Integer default 0
+);
+create or modify association Shop."MenuView_Cart" from Shop."MenuView" to Shop."Cart";

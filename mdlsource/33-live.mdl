@@ -69,6 +69,7 @@ begin
   $Cart = call microflow Shop.DS_Shell_Cart();
   return $Cart;
 end;
+grant execute on nanoflow Shop.DS_Shell_Live to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Shell refresh beat: keeps the header counters current and removes expired
@@ -86,3 +87,4 @@ begin
     commit $Fresh without events refresh;
   end if;
 end;
+grant execute on microflow Shop.ACT_Shell_Refresh to Shop.Guest, Shop.Administrator; -- auto

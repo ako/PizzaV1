@@ -48,3 +48,7 @@ Mendix 11.16.1 · mxcli nightly-20261118-9d764483c · MDL scripts `mdl 1`.
   licence does not allow more users to sign in"). Every Playwright context is a
   new anonymous session; scripts and tests call `mx.logout()` at the end, and
   test runs restart the runtime first.
+- `mxcli check` passes but mxbuild rejects (CE0117) a text-template parameter
+  given as an expression of a non-String type (`{1} = $Product/Kcal`) and
+  multi-hop association paths in client expressions. Use `toString(...)` or a
+  plain attribute binding, and store display strings on the object.

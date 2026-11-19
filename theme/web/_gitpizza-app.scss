@@ -199,3 +199,37 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .mx-window:has(.gp-dialog) { width: min(440px, calc(100vw - 32px)) !important; }
 .modal-dialog.mx-window { height: auto !important; max-height: calc(100vh - 64px); }
 .mx-window .modal-content { height: auto !important; }
+
+// ── SCR-02 Menu
+.gp-app .scr-02 .tabs-dv, .gp-app .scr-02 .tabs-dv > .mx-dataview-content { display: block; }
+.gp-app .file-tab .mx-text { display: inline; }
+.gp-app .file-tab.is-selected { color: var(--primary-light); border-bottom-color: var(--primary-light); background: var(--surface-low); }
+.gp-app .scr-02 .code-line .mx-text, .gp-app .code .cl .mx-text { display: inline; }
+.gp-app .scr-02 .code-line { margin-bottom: 0; }
+.gp-app .cards.mx-listview { display: block; }
+.gp-app .cards.mx-listview > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.gp-app .cards.mx-listview > ul > li { display: flex; min-width: 0; }
+.gp-app .cards.mx-listview > ul > li > .pcard { flex: 1; }
+.gp-app .code { white-space: normal; }
+.gp-app .code .cl { white-space: pre-wrap; }
+.gp-app .code .code-list, .gp-app .code .code-list > ul, .gp-app .code .code-list > ul > li { display: inline; }
+.gp-app .code .code-list > ul > li + li::before { content: ', '; color: var(--syn-punct); }
+.gp-app .code .code-list .mx-text { display: inline; }
+.gp-app .code .code-list .mx-listview-empty { display: none; }
+.gp-app .filter-chips { margin: 4px 0 0; gap: 8px; }
+.gp-app .filter-chip { cursor: pointer; }
+.gp-app .filter-chip.on { color: var(--primary-light); border-color: var(--primary); background: var(--primary-subtle); }
+.gp-app .no-results { text-align: center; margin-top: 16px; }
+.gp-app .no-results .no-res-img { margin: 0 auto; max-width: 320px; }
+.gp-app .scr-02 .debugger-dv { display: block; }
+.gp-app .scr-02 .debugger-dv > .mx-dataview-content { height: 100%; }
+@media (max-width: 1199px) { .gp-app .scr-02 .debugger-dv .debugger { display: none; } }
+.gp-app .scr-02 .dbg-head .mx-text { display: inline; }
+.gp-app .scr-02 .dbg-head .b { font-weight: 700; }
+.gp-app .scr-02 .dbg-line .mx-text, .gp-app .scr-02 .tag-success .mx-text { display: inline; }
+.gp-app .scr-02 .dbg-foot .btn-block { width: 100%; }
+.gp-app .scr-02 .dbg-build { text-align: center; }
+.gp-app .scr-02 .notice .an-b { font-weight: 700; }
+.gp-app .scr-02 .notice .mx-text { display: inline; }
+.gp-app .code .code-list .mx-dataview, .gp-app .code .code-list .mx-dataview-content { display: inline; }
+.gp-app .code .cl .mx-text { white-space: pre; }

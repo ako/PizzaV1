@@ -75,6 +75,7 @@ begin
   call microflow Shop.SUB_Home_CarouselPos(View = $View);
   return $View;
 end;
+grant execute on microflow Shop.DS_Home to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Carousel position label, e.g. 01–03 / 06 (TXT-MENU-62).
@@ -106,6 +107,7 @@ begin
   $Visible = range $Featured offset $View/CarouselStart;
   return $Visible;
 end;
+grant execute on microflow Shop.DS_Home_Featured to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Carousel arrows: moves one card left or right, never past the ends.
@@ -120,6 +122,7 @@ begin
   change $View (CarouselStart = max(0, min($Max, $View/CarouselStart + $Step)));
   call microflow Shop.SUB_Home_CarouselPos(View = $View);
 end;
+grant execute on microflow Shop.ACT_Home_Carousel to Shop.Guest, Shop.Administrator; -- auto
 
 /**
  * Live refresh of the home KPIs (US-023: within 10 s while the page is open).
@@ -131,6 +134,7 @@ folder 'Home'
 begin
   call microflow Shop.SUB_Home_Refresh(View = $View);
 end;
+grant execute on microflow Shop.ACT_Home_Refresh to Shop.Guest, Shop.Administrator; -- auto
 
 /** Card of a featured module in the home carousel (US-022). */
 create or modify snippet Shop.SNIP_FeaturedCard (Params: ($Product: Shop.Product)) {

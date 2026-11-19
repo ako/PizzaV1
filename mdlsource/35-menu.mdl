@@ -1,0 +1,482 @@
+mdl 1;
+-- SCR-02 Menu (EP-02: US-025..US-034).
+
+/**
+ * Fills the menu view: tab counts (published products per category), the
+ * result line, and the empty states for search and filters (US-025, US-027,
+ * US-033).
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.SUB_Menu_Refresh ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  retrieve $Published from Shop.Product where [ProductStatus = 'PUBLISHED'];
+  $Pizzas = filter $Published where $currentObject/Kind = Shop.ProductKind.PIZZA;
+  $Sides = filter $Published where $currentObject/Kind = Shop.ProductKind.SIDE;
+  $Drinks = filter $Published where $currentObject/Kind = Shop.ProductKind.DRINK;
+  $Desserts = filter $Published where $currentObject/Kind = Shop.ProductKind.DESSERT;
+  $NP = count $Pizzas;
+  $NS = count $Sides;
+  $ND = count $Drinks;
+  $NE = count $Desserts;
+  $All = count $Published;
+  $Shown = call microflow Shop.DS_Menu_Products(View = $View);
+  $NShown = count $Shown;
+  declare $Query String = '';
+  if $Cart/SearchQuery != empty then
+    set $Query = $Cart/SearchQuery;
+  end if;
+  retrieve $Cat from Shop.Category where [Code = $Cart/MenuCategory] first;
+  declare $File String = 'pizzas.json';
+  if $Cat != empty then
+    set $File = $Cat/FileName;
+  end if;
+  declare $IsSearch Boolean = length($Query) >= 2;
+  declare $Filtered Boolean = $Cart/FilterVegetarian or $Cart/FilterVegan or $Cart/FilterSpicy;
+  declare $Result String = toString($NShown) + ' modules in ' + $File;
+  if $IsSearch then
+    set $Result = 'grep: ' + toString($NShown) + (if $NShown = 1 then ' module matches ''' + $Query + '''' else ' modules match ''' + $Query + '''');
+  end if;
+  if length($Query) = 1 then
+    set $Result = 'Type at least 2 characters to search.';
+  end if;
+  declare $Empty String = '';
+  if $NShown = 0 then
+    if $IsSearch and not($Filtered) then
+      set $Empty = 'grep: no modules match ''' + $Query + '''';
+    else
+      set $Empty = 'No module in ' + (if $IsSearch then 'the search results' else $File) + ' matches these filters.';
+    end if;
+  end if;
+  change $View (CountPizzas = $NP, CountSides = $NS, CountDrinks = $ND, CountDesserts = $NE, PublishedCount = $All, ResultText = $Result,
+    NoResults = $NShown = 0 and $IsSearch and not($Filtered), EmptyByFilter = $NShown = 0 and $Filtered, IsSearch = $IsSearch, EmptyText = $Empty);
+end;
+
+/**
+ * Data source of the menu page.
+ *
+ * @returns A menu view bound to the guest's cart
+ */
+create or modify microflow Shop.DS_Menu ()
+returns Shop.MenuView as $View
+folder 'Menu'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  $View = create Shop.MenuView (Shop.MenuView_Cart = $Cart);
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+  return $View;
+end;
+grant execute on microflow Shop.DS_Menu to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Products shown on the menu: the active tab, or with a search of at least 2
+ * characters the matches of every category (name, real-world name, short
+ * description, default ingredients; case-insensitive; grouped by category),
+ * narrowed by the diet chips. Only PUBLISHED products (BR-MENU, US-025).
+ *
+ * @param $View The menu view
+ * @returns Products in display order
+ */
+create or modify microflow Shop.DS_Menu_Products ($View: Shop.MenuView)
+returns List of Shop.Product as $Result
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  declare $Query String = '';
+  if $Cart/SearchQuery != empty then
+    set $Query = toLowerCase(trim($Cart/SearchQuery));
+  end if;
+  declare $Cat String = $Cart/MenuCategory;
+  if $Cat = empty then
+    set $Cat = 'PIZZAS';
+  end if;
+  declare $IsSearch Boolean = length($Query) >= 2;
+  declare $SearchFor String = if $IsSearch then $Query else '';
+  retrieve $Found from Shop.Product where [ProductStatus = 'PUBLISHED' and contains(SearchText, $SearchFor)] sort by Shop.Product_Category/Shop.Category.SortOrder asc, SortOrder asc;
+  $Result = filter $Found where $IsSearch or $currentObject/Shop.Product_Category/Code = $Cat;
+  if $Cart/FilterVegetarian then
+    $Veg = filter $Result where $currentObject/IsVegetarian;
+    set $Result = $Veg;
+  end if;
+  if $Cart/FilterVegan then
+    $Vegan = filter $Result where $currentObject/IsVegan;
+    set $Result = $Vegan;
+  end if;
+  if $Cart/FilterSpicy then
+    $Spicy = filter $Result where $currentObject/Spice != Shop.SpiceLevel.NONE;
+    set $Result = $Spicy;
+  end if;
+  return $Result;
+end;
+grant execute on microflow Shop.DS_Menu_Products to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Switches the category tab and clears the search (US-025).
+ *
+ * @param $View The menu view
+ * @param $Category Category code
+ */
+create or modify microflow Shop.ACT_Menu_Tab ($View: Shop.MenuView, $Category: String)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '');
+  commit $Cart without events refresh;
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_Tab to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Runs the search while typing (US-027): from 2 characters, otherwise only the hint.
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_Search ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  declare $Typed String = '';
+  if $Cart/SearchInput != empty then
+    set $Typed = trim($Cart/SearchInput);
+  end if;
+  change $Cart (SearchQuery = $Typed);
+  commit $Cart without events refresh;
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_Search to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Clear search: back to the category tabs (US-027 AC5).
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_ClearSearch ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  change $Cart (SearchQuery = '', SearchInput = '', FilterVegetarian = false, FilterVegan = false, FilterSpicy = false);
+  commit $Cart without events refresh;
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_ClearSearch to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Toggles a diet filter chip (US-033): vegetarian, vegan or spicy.
+ *
+ * @param $View The menu view
+ * @param $Filter veg, vegan or spicy
+ */
+create or modify microflow Shop.ACT_Menu_Filter ($View: Shop.MenuView, $Filter: String)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  if $Filter = 'veg' then
+    change $Cart (FilterVegetarian = not($Cart/FilterVegetarian));
+  end if;
+  if $Filter = 'vegan' then
+    change $Cart (FilterVegan = not($Cart/FilterVegan));
+  end if;
+  if $Filter = 'spicy' then
+    change $Cart (FilterSpicy = not($Cart/FilterSpicy));
+  end if;
+  commit $Cart without events refresh;
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_Filter to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Show all: clears the diet chips (TXT-MENU-65).
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_ShowAll ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  change $Cart (FilterVegetarian = false, FilterVegan = false, FilterSpicy = false);
+  commit $Cart without events refresh;
+  call microflow Shop.SUB_Menu_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_ShowAll to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens module.info for a product (US-029, US-030).
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Product_Info ($Product: Shop.Product)
+folder 'Menu'
+begin
+  show page Shop.ItemInfo(Product = $Product);
+end;
+grant execute on microflow Shop.ACT_Product_Info to Shop.Guest, Shop.Administrator; -- auto
+
+
+/** The default build as a code snippet (US-026): generated from the data, never hard-coded. */
+create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) {
+  container code (Class: 'code') {
+    container cl1 (Class: 'cl') {
+      dynamictext c1k (Content: 'const', Class: 'k')
+      dynamictext c1v (Content: ' {1} ', ContentParams: ({1} = $Product/CodeVar))
+      dynamictext c1p (Content: '= {', Class: 'p')
+    }
+    container clPizza (Class: 'cl-group', Visible: $Product/Kind = Shop.ProductKind.PIZZA) {
+      container cl2 (Class: 'cl') {
+        dynamictext c2k (Content: '  crust: ')
+        dynamictext c2v (Content: '''{1}''', ContentParams: ({1} = $Product/CodeCrust), Class: 's')
+        dynamictext c2p (Content: ',', Class: 'p')
+      }
+      container cl3 (Class: 'cl') {
+        dynamictext c3k (Content: '  sauce: ')
+        dynamictext c3v (Content: '''{1}''', ContentParams: ({1} = $Product/CodeSauce), Class: 's', Visible: $Product/CodeSauce != 'null')
+        dynamictext c3n (Content: 'null', Class: 'k', Visible: $Product/CodeSauce = 'null')
+        dynamictext c3p (Content: ',', Class: 'p')
+      }
+      container cl4 (Class: 'cl') {
+        dynamictext c4k (Content: '  cheese: ')
+        dynamictext c4v (Content: '''{1}''', ContentParams: ({1} = $Product/CodeCheese), Class: 's', Visible: $Product/CodeCheese != 'null')
+        dynamictext c4n (Content: 'null', Class: 'k', Visible: $Product/CodeCheese = 'null')
+        dynamictext c4p (Content: ',', Class: 'p')
+      }
+      container cl5 (Class: 'cl') {
+        dynamictext c5k (Content: '  toppings: ')
+        dynamictext c5o (Content: '[', Class: 'p')
+        listview lvTop (DataSource: DATABASE Shop.RecipeItem WHERE [Shop.RecipeItem_Product = $Product] SORT BY SortOrder ASC, Class: 'code-list') {
+          dynamictext c5v (Content: '''{1}''', ContentParams: ({1} = Shop.RecipeItem_Ingredient/Name), Class: 's')
+        }
+        dynamictext c5c (Content: ']', Class: 'p')
+      }
+    }
+    container clOther (Class: 'cl-group', Visible: $Product/Kind != Shop.ProductKind.PIZZA) {
+      container cl6 (Class: 'cl') {
+        dynamictext c6k (Content: '  serving: ')
+        dynamictext c6v (Content: '''{1}''', ContentParams: ({1} = $Product/ServingLabel), Class: 's')
+        dynamictext c6p (Content: ',', Class: 'p')
+      }
+      container cl7 (Class: 'cl', Visible: $Product/CaffeineMg > 0) {
+        dynamictext c7k (Content: '  caffeine: ')
+        dynamictext c7v (Content: '''{1} mg''', ContentParams: ({1} = toString($Product/CaffeineMg)), Class: 's')
+        dynamictext c7p (Content: ',', Class: 'p')
+      }
+      container cl8 (Class: 'cl') {
+        dynamictext c8k (Content: '  allergens: ')
+        dynamictext c8o (Content: '[', Class: 'p')
+        listview lvAll (DataSource: DATABASE Shop.Allergen WHERE [Shop.Product_Allergen = $Product] SORT BY SortOrder ASC, Class: 'code-list') {
+          dynamictext c8v (Content: '''{1}''', ContentParams: ({1} = Caption), Class: 's')
+        }
+        dynamictext c8c (Content: '],', Class: 'p')
+      }
+      container cl9 (Class: 'cl') {
+        dynamictext c9k (Content: '  kcal: ')
+        dynamictext c9v (Content: '{1}', ContentParams: ({1} = toString($Product/Kcal)), Class: 'n')
+      }
+    }
+    dynamictext c10 (Content: '};', Class: 'p')
+  }
+};
+
+/** Menu card (US-025): photo, names, module path, code block, badges, + import, Configure, module.info. */
+create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Shop.Product)) {
+  container pcard (Class: 'pcard', DynamicClasses: if $Product/IsOrderable then '' else 'sold-out') {
+    container pHead (Class: 'pcard-head') {
+      dynamictext pHeadIcon (Content: '{1}', ContentParams: ({1} = $Product/CardIcon), Class: 'ms sm c-orange')
+      dynamictext pFile (Content: '{1}', ContentParams: ({1} = $Product/FileLabel), Class: 'fname')
+      dynamictext pVer (Content: '{1}', ContentParams: ({1} = $Product/VersionTag), Class: 't-micro c-green')
+    }
+    container pImgWrap (Class: 'pimg-wrap') {
+      dynamictext pSold (Content: '404: OUT_OF_STOCK', Class: 'chip tag-sold sold-ribbon', Visible: not($Product/IsOrderable))
+      container pFrame (Class: 'img-frame') {
+        image pImg (ImageType: imageUrl, ImageUrl: '/assets/products/{1}', ImageUrlParams: ({1} = $Product/ImageFile), AlternativeText: '{1}', AlternativeTextParams: ({1} = $Product/ImageAlt), Class: 'pimg')
+      }
+    }
+    container pBody (Class: 'pcard-body') {
+      container pTitle (Class: 'pcard-title') {
+        dynamictext pName (Content: '{1}', ContentParams: ({1} = $Product/Name), RenderMode: H3, Class: 't-h3')
+        dynamictext pPrice (Content: '{1}', ContentParams: ({1} = $Product/CardPriceLabel), Class: 'price')
+      }
+      dynamictext pReal (Content: '{1}', ContentParams: ({1} = $Product/RealLine), Class: 'real')
+      snippetcall pCode (Snippet: Shop.SNIP_CodeBlock, Params: (Product = $Product))
+      container pBadges (Class: 'row badges') {
+        dynamictext bVegan (Content: '<Vegan />', Class: 'chip tag-badge', Visible: $Product/IsVegan)
+        dynamictext bVeg (Content: '<Vegetarian />', Class: 'chip tag-badge', Visible: $Product/IsVegetarian and not($Product/IsVegan))
+        dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $Product/BadgeClassic)
+        dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $Product/BadgeBestSeller)
+        dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $Product/BadgeNew)
+        dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $Product/BadgeChefPick)
+        container bSpice (Class: 'chip tag-spice', Visible: $Product/SpiceLabel != '') {
+          dynamictext bSpiceIcon (Content: 'local_fire_department', Class: 'ms sm')
+          dynamictext bSpiceTxt (Content: '{1}', ContentParams: ({1} = $Product/SpiceLabel))
+        }
+      }
+    }
+    container pFoot (Class: 'pcard-foot') {
+      container pImport (Class: 'btn btn-primary', OnClick: CALL MICROFLOW Shop.ACT_Product_QuickAdd(Product = $Product), Visible: $Product/IsOrderable) {
+        dynamictext pImportIcon (Content: 'add_box', Class: 'ms md')
+        dynamictext pImportTxt (Content: '+ import')
+      }
+      actionbutton pSoldBtn (Caption: 'SOLD_OUT', Action: NOTHING, Class: 'btn btn-primary is-disabled', Visible: not($Product/IsOrderable))
+      container pConfigure (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Shop.ProductKind.PIZZA) {
+        dynamictext pTune (Content: 'tune', Class: 'ms md')
+      }
+      container pInfo (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Product_Info(Product = $Product)) {
+        dynamictext pInfoIcon (Content: 'info', Class: 'ms md')
+      }
+    }
+  }
+};
+
+/** Refresh beat of the menu: the Terminal Debugger follows the cart (US-032). */
+create or modify microflow Shop.ACT_Menu_Refresh ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  retrieve $Cart from $View/Shop.MenuView_Cart;
+  commit $Cart without events refresh;
+end;
+grant execute on microflow Shop.ACT_Menu_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/** SCR-02 Menu (module explorer). */
+create or modify page Shop.Menu (
+  Title: 'Menu — Git Pizza MxDev',
+  Layout: Shop.Layout_Guest,
+  Url: 'menu'
+) {
+  dataview dvMenu (DataSource: MICROFLOW Shop.DS_Menu, Class: 'page-dv') {
+    container scr (Class: 'scr-02') {
+      container menuWrap (Class: 'menu-wrap') {
+        container menuMain (Class: 'menu-main') {
+          dataview dvTabs (DataSource: $currentObject/Shop.MenuView_Cart, Class: 'tabs-dv') {
+            container tabs (Class: 'file-tabs') {
+              container tab1 (Class: 'file-tab', DynamicClasses: if $currentObject/MenuCategory = 'PIZZAS' and length($currentObject/SearchQuery) < 2 then 'is-selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Tab(View = $dvMenu, Category = 'PIZZAS')) {
+                dynamictext t1i (Content: 'data_object', Class: 'ms sm')
+                dynamictext t1f (Content: '{1}', ContentParams: ({1} = 'pizzas.json'))
+                dynamictext t1c (Content: '{1}', ContentParams: ({1} = toString($dvMenu/CountPizzas)), Class: 'cnt')
+              }
+              container tab2 (Class: 'file-tab', DynamicClasses: if $currentObject/MenuCategory = 'SIDES' and length($currentObject/SearchQuery) < 2 then 'is-selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Tab(View = $dvMenu, Category = 'SIDES')) {
+                dynamictext t2i (Content: 'tag', Class: 'ms sm')
+                dynamictext t2f (Content: '{1}', ContentParams: ({1} = 'sides.yml'))
+                dynamictext t2c (Content: '{1}', ContentParams: ({1} = toString($dvMenu/CountSides)), Class: 'cnt')
+              }
+              container tab3 (Class: 'file-tab', DynamicClasses: if $currentObject/MenuCategory = 'DRINKS' and length($currentObject/SearchQuery) < 2 then 'is-selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Tab(View = $dvMenu, Category = 'DRINKS')) {
+                dynamictext t3i (Content: 'settings_ethernet', Class: 'ms sm')
+                dynamictext t3f (Content: '{1}', ContentParams: ({1} = 'drinks.env'))
+                dynamictext t3c (Content: '{1}', ContentParams: ({1} = toString($dvMenu/CountDrinks)), Class: 'cnt')
+              }
+              container tab4 (Class: 'file-tab', DynamicClasses: if $currentObject/MenuCategory = 'DESSERTS' and length($currentObject/SearchQuery) < 2 then 'is-selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Tab(View = $dvMenu, Category = 'DESSERTS')) {
+                dynamictext t4i (Content: 'description', Class: 'ms sm')
+                dynamictext t4f (Content: '{1}', ContentParams: ({1} = 'desserts.md'))
+                dynamictext t4c (Content: '{1}', ContentParams: ({1} = toString($dvMenu/CountDesserts)), Class: 'cnt')
+              }
+            }
+            container inner (Class: 'inner') {
+              dynamictext h1 (Content: 'Build Your Instance', RenderMode: H1, Class: 't-display')
+              container sub (Class: 't-small mt-8 code-line') {
+                dynamictext s1 (Content: 'const', Class: 'k')
+                dynamictext s2 (Content: ' menu ')
+                dynamictext s3 (Content: '=', Class: 'p')
+                dynamictext s4 (Content: ' fetchInventory', Class: 'f')
+                dynamictext s5 (Content: '(', Class: 'p')
+                dynamictext s6 (Content: '''production''', Class: 's')
+                dynamictext s7 (Content: ');', Class: 'p')
+                dynamictext s8 (Content: ' // prices exclude 8.625 % sales tax', Class: 'cm')
+              }
+              container searchRow (Class: 'search-row') {
+                container grep (Class: 'grep') {
+                  dynamictext gIcon (Content: 'search', Class: 'ms md c-muted')
+                  textbox q (Attribute: SearchInput, Placeholder: 'grep -i --scope=menu ''...''', SubmitBehaviour: WhileEditing, SubmitOnInputDelay: 300, OnChange: CALL MICROFLOW Shop.ACT_Menu_Search(View = $dvMenu), Class: 'grep-input')
+                }
+                dynamictext count (Content: '{1}', ContentParams: ({1} = $dvMenu/ResultText), Class: 't-small c-muted')
+              }
+              container chips (Class: 'row filter-chips') {
+                container fVeg (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegetarian then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'veg')) { dynamictext fVegT (Content: '--vegetarian') }
+                container fVegan (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegan then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'vegan')) { dynamictext fVeganT (Content: '--vegan') }
+                container fSpicy (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterSpicy then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'spicy')) { dynamictext fSpicyT (Content: '--spicy') }
+              }
+              listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(View = $dvMenu), Class: 'cards mt-16') {
+                snippetcall card (Snippet: Shop.SNIP_MenuCard, Params: (Product = $currentObject))
+              }
+              container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/NoResults) {
+                image noResImg (ImageType: imageUrl, ImageUrl: '/assets/illustrations/no-results.png', AlternativeText: '', Class: 'no-res-img')
+                dynamictext noResH (Content: '{1}', ContentParams: ({1} = $dvMenu/EmptyText), RenderMode: H2, Class: 't-h3 mt-16')
+                dynamictext noResP (Content: 'Try another dish, ingredient or module name, or clear the search.', Class: 't-small c-muted')
+                actionbutton noResClear (Caption: 'Clear search', Action: CALL MICROFLOW Shop.ACT_Menu_ClearSearch(View = $dvMenu), Class: 'btn btn-secondary mt-8')
+              }
+              container noFilter (Class: 'panel panel-pad no-results', Visible: $dvMenu/EmptyByFilter) {
+                dynamictext noFilterH (Content: '{1}', ContentParams: ({1} = $dvMenu/EmptyText), Class: 't-small c-secondary')
+                actionbutton noFilterAll (Caption: 'Show all', Action: CALL MICROFLOW Shop.ACT_Menu_ShowAll(View = $dvMenu), Class: 'btn btn-secondary mt-8')
+              }
+              container allergenNote (Class: 'notice info mt-40') {
+                dynamictext anIcon (Content: 'info', Class: 'ms')
+                container anText {
+                  dynamictext anB (Content: 'Allergens.', Class: 'an-b')
+                  dynamictext anT (Content: ' All items are prepared in a kitchen that handles gluten, milk, eggs, tree nuts, mustard, fish and other allergens. Cross-contact is possible. The Gluten-Free Fork crust is made without gluten ingredients but is not certified gluten-free. Open ')
+                  dynamictext anM (Content: '{1}', ContentParams: ({1} = 'module.info'), Class: 'c-primary')
+                  dynamictext anE (Content: ' on any item for its full allergen list.')
+                }
+              }
+            }
+          }
+        }
+        dataview dvDebug (DataSource: $currentObject/Shop.MenuView_Cart, Class: 'debugger-dv') {
+          container debugger (Class: 'debugger') {
+            container dbgHead (Class: 'dbg-head') {
+              container dbgTitle {
+                dynamictext dbgT1 (Content: 'Terminal Debugger', Class: 'b')
+                dynamictext dbgT2 (Content: ' · session: ')
+                dynamictext dbgT3 (Content: 'active_order', Class: 'c-green')
+              }
+              dynamictext dbgIcon (Content: 'sensors', Class: 'ms md c-green')
+            }
+            container dbgBody (Class: 'dbg-body') {
+              container dbgEmpty (Visible: $currentObject/ItemCount = 0) {
+                dynamictext de1 (Content: '[INFO] Initializing cart module...', Class: 'tag-success')
+                container de2 (Class: 'tag-success') {
+                  dynamictext de2t (Content: '[INFO] Waiting for input...')
+                  container de2c (Class: 'cursor') { }
+                }
+                dynamictext de3 (Content: '// Memory address empty', Class: 'cm mt-16')
+              }
+              container dbgFull (Visible: $currentObject/ItemCount > 0) {
+                dynamictext df1 (Content: '[INFO] {1} {2} installed.', ContentParams: ({1} = ItemCount, {2} = if $currentObject/ItemCount = 1 then 'dependency' else 'dependencies'), Class: 'tag-success')
+                listview lvDbg (DataSource: DATABASE Shop.CartLine WHERE [Shop.CartLine_Cart = $currentObject and IsDraft = false] SORT BY CreatedAt ASC, Class: 'dbg-lines') {
+                  container dl (Class: 'mt-8 dbg-line') {
+                    dynamictext dlOk (Content: '[OK]', Class: 'c-green')
+                    dynamictext dlTxt (Content: ' {1}× {2} ', ContentParams: ({1} = Quantity, {2} = DisplayName))
+                    dynamictext dlPrice (Content: '${1}', ContentParams: ({1} = LineTotal format (decimalPrecision: 2, groupDigits: true)), Class: 'c-green')
+                  }
+                }
+              }
+            }
+            container dbgFoot (Class: 'dbg-foot') {
+              container dbgTotal (Class: 'between') {
+                dynamictext dbgTotalL (Content: 'Total Output:', Class: 'c-secondary')
+                dynamictext dbgTotalV (Content: '${1}', ContentParams: ({1} = Total format (decimalPrecision: 2, groupDigits: true)), Class: 'price')
+              }
+              container dbgExec (Class: 'btn btn-success btn-block', DynamicClasses: if $currentObject/ItemCount = 0 then 'is-disabled' else '', OnClick: CALL MICROFLOW Shop.ACT_Nav_Checkout) {
+                dynamictext dbgExecIcon (Content: 'terminal', Class: 'ms md')
+                dynamictext dbgExecTxt (Content: 'EXECUTE ORDER')
+              }
+              dynamictext dbgHint (Content: 'Your manifest is empty. Import a module first.', Class: 't-micro c-muted dbg-hint', Visible: $currentObject/ItemCount = 0)
+              container dbgCat (Class: 'btn btn-ghost btn-block mt-8', OnClick: CALL MICROFLOW Shop.ACT_Nav_Cart) {
+                dynamictext dbgCatTxt (Content: '{1}', ContentParams: ({1} = 'cat MANIFEST.LOCK'))
+              }
+              dynamictext dbgBuild (Content: 'build: mission-kitchen · {1} modules in production', ContentParams: ({1} = toString($dvMenu/PublishedCount)), Class: 't-micro c-muted dbg-build')
+            }
+          }
+          container phoneBar (Class: 'phone-cartbar', Visible: $currentObject/ItemCount > 0) {
+            dynamictext pbIcon (Content: 'inventory_2', Class: 'ms c-primary')
+            container pbText (Class: 'pb-text') {
+              dynamictext pbL (Content: 'PACKAGE_RESOLVED ({1})', ContentParams: ({1} = ItemCount), Class: 't-micro c-secondary')
+              dynamictext pbV (Content: '${1}', ContentParams: ({1} = Subtotal format (decimalPrecision: 2, groupDigits: true)), Class: 'price')
+            }
+            container pbBtn (Class: 'btn btn-primary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Cart) {
+              dynamictext pbBtnT (Content: 'deploy >')
+            }
+          }
+          container menuPoll (Class: 'gp-poll', OnClick: CALL MICROFLOW Shop.ACT_Menu_Refresh(View = $dvMenu)) { }
+        }
+      }
+    }
+  }
+};
