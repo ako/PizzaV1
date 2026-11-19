@@ -1,0 +1,19 @@
+mdl 1;
+-- US-007: allergen notice dialog (TXT-MENU-34), opened from the footer.
+
+/** allergens.md: the allergen notice of the menu catalog. */
+create or modify page Shop.AllergenNotice (
+  Title: 'allergens.md',
+  Layout: Shop.Layout_Modal
+) {
+  container dlg (Class: 'gp-dialog scr-allergens') {
+    container dlgHead (Class: 'modal-head') {
+      dynamictext dlgIcon (Content: 'health_and_safety', Class: 'ms c-primary')
+      dynamictext dlgTitle (Content: '{1}', ContentParams: ({1} = 'allergens.md'), RenderMode: H2, Class: 't-h3')
+    }
+    dynamictext dlgBody (Content: 'All items are prepared in a kitchen that handles gluten, milk, eggs, tree nuts, mustard, fish and other allergens. Cross-contact is possible. The Gluten-Free Fork crust is made without gluten ingredients but is not certified gluten-free.', Class: 'modal-body t-small c-secondary')
+    container dlgFoot (Class: 'modal-foot') {
+      actionbutton dlgClose (Caption: 'Close', Action: CLOSE PAGE, Class: 'btn btn-primary')
+    }
+  }
+};
