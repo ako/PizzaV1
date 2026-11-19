@@ -1,0 +1,261 @@
+mdl 1;
+-- Demo reset (SIM-08, US-270), startup (LITE-CFG-01/02/07) and the simulation clock (SIM-09).
+
+create module Simulation;
+
+/** Speed factor of the simulation clock: 1, 2, 5 or 10 (LITE-CFG-01). Any other value is treated as 1. */
+create or modify constant Simulation."SpeedFactor" ( Type: Integer, DefaultValue: 1 );
+
+/** When true, the demo reset runs once at every start before the simulator ticks (LITE-CFG-01). */
+create or modify constant Simulation."ResetOnStartup" ( Type: Boolean, DefaultValue: false );
+
+/** Runs the simulation clock: one beat at a time. */
+create or modify task queue Shop."SimulationClock" ( Parallelism: 1 );
+
+/**
+ * Pauses the calling task for a number of milliseconds. Used only by the
+ * simulation clock: Mendix scheduled events cannot run more often than once
+ * a minute, while SIM-09 needs a tick at least every 2 seconds.
+ */
+create or modify java action Shop."JA_Sleep" (
+  /** Milliseconds to wait (0–10000). */
+  Millis: integer not null
+) returns boolean
+as $$
+long ms = Math.max(0L, Math.min(10000L, this.Millis));
+Thread.sleep(ms);
+return true;
+$$;
+
+/**
+ * Deletes every record in the given order and restores the Lite seed
+ * (BR-DATA-09): catalog, settings, couriers, ovens, zones, coupons and the
+ * 46 seed orders with timestamps relative to now. Writes the RESET server
+ * log lines (LITE-CFG-07) and a RESET simulation event. Carts and tracking
+ * grants of every guest are removed, so old links show the invalid state.
+ *
+ * @param $Trigger startup, scheduled or initial-seed
+ */
+create or modify microflow Shop.SUB_Reset ($Trigger: String)
+folder 'Simulation'
+begin
+  declare $Start DateTime = [%CurrentDateTime%];
+  log info node 'Simulation' 'RESET start by ' + $Trigger;
+  retrieve $Orders from Shop.Order;
+  $Deleted = count $Orders;
+  retrieve $Carts from Shop.Cart;
+  delete $Carts;
+  retrieve $Forms from Shop.CheckoutForm;
+  delete $Forms;
+  retrieve $Access from Shop.OrderAccess;
+  delete $Access;
+  retrieve $Lookups from Shop.LookupAttempt;
+  delete $Lookups;
+  retrieve $Events from Shop.SimulationEvent;
+  delete $Events;
+  retrieve $Couriers from Shop.Courier;
+  delete $Couriers;
+  delete $Orders;
+  retrieve $Ovens from Shop.Oven;
+  delete $Ovens;
+  retrieve $Coupons from Shop.Coupon;
+  delete $Coupons;
+  retrieve $Zones from Shop.DeliveryZone;
+  delete $Zones;
+  retrieve $Products from Shop.Product;
+  delete $Products;
+  retrieve $Options from Shop.Option;
+  delete $Options;
+  retrieve $Ingredients from Shop.Ingredient;
+  delete $Ingredients;
+  retrieve $Categories from Shop.Category;
+  delete $Categories;
+  retrieve $Allergens from Shop.Allergen;
+  delete $Allergens;
+  retrieve $SimCustomers from Shop.SimCustomer;
+  delete $SimCustomers;
+  retrieve $Sims from Shop.SimulationSettings;
+  delete $Sims;
+  retrieve $Stores from Shop.StoreSettings;
+  delete $Stores;
+  declare $T DateTime = [%CurrentDateTime%];
+  call microflow Shop.SEED_Catalog(T = $T);
+  call microflow Shop.SEED_Orders(T = $T);
+  call microflow Shop.SUB_Catalog_RecalculateAll();
+  retrieve $Highest from Shop.Order sort by OrderNumber desc first;
+  retrieve $Store from Shop.StoreSettings first;
+  change $Store (NextOrderNumber = $Highest/OrderNumber + 1);
+  commit $Store without events;
+  declare $Speed Integer = @Simulation.SpeedFactor;
+  if $Speed != 1 and $Speed != 2 and $Speed != 5 and $Speed != 10 then
+    set $Speed = 1;
+  end if;
+  declare $By String = 'SYSTEM (' + $Trigger + ')';
+  if $Trigger = 'initial-seed' then
+    set $By = 'SYSTEM (initial seed)';
+    set $Deleted = 0;
+  end if;
+  retrieve $Sim from Shop.SimulationSettings first;
+  $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
+  change $Sim (SpeedFactor = $Speed, LastResetAt = $T, LastResetBy = $By, LastHousekeepingAt = $T, TrafficAnchorAt = $T, TrafficProgress = 0, TrafficIntervalEffective = $Eff);
+  commit $Sim without events;
+  $Event = create Shop.SimulationEvent (OccurredAt = $T, EventType = Shop.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By);
+  commit $Event without events;
+  declare $Duration Integer = round(secondsBetween($Start, [%CurrentDateTime%]));
+  log info node 'Simulation' 'RESET end orders=' + toString($Deleted) + ' duration=' + toString($Duration) + 's';
+end;
+
+/**
+ * After-startup microflow (LITE-CFG-07): logs the configuration, runs the
+ * reset when ResetOnStartup is true or the database is empty, applies the
+ * speed factor to running timers (LITE-CFG-02) and starts the simulation
+ * clock.
+ *
+ * @returns true (the runtime only starts when this returns true)
+ */
+create or modify microflow Shop.ASU_Startup ()
+returns Boolean as $Ok
+folder 'Simulation'
+begin
+  declare $Speed Integer = @Simulation.SpeedFactor;
+  declare $Reset Boolean = @Simulation.ResetOnStartup;
+  if $Speed != 1 and $Speed != 2 and $Speed != 5 and $Speed != 10 then
+    log warning node 'Simulation' 'CONFIG invalid SpeedFactor=' + toString($Speed) + ', using 1';
+    set $Speed = 1;
+  end if;
+  log info node 'Simulation' 'CONFIG SpeedFactor=' + toString($Speed) + ' ResetOnStartup=' + toString($Reset);
+  retrieve $Store from Shop.StoreSettings first;
+  if $Reset then
+    call microflow Shop.SUB_Reset(Trigger = 'startup');
+  else
+    if $Store = empty then
+      call microflow Shop.SUB_Reset(Trigger = 'initial-seed');
+    else
+      call microflow Shop.SUB_Sim_ApplySpeed(Speed = $Speed);
+    end if;
+  end if;
+  call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+  return true;
+end;
+
+/**
+ * Applies a new speed factor after a restart (LITE-CFG-02, BR-ORD-21):
+ * every running timer keeps its progress p and is re-anchored at now, so
+ * only the remaining part runs at the new rate.
+ *
+ * @param $Speed The validated speed factor
+ */
+create or modify microflow Shop.SUB_Sim_ApplySpeed ($Speed: Integer)
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Now DateTime = [%CurrentDateTime%];
+  if $Sim/SpeedFactor != $Speed then
+    -- freeze every running timer's progress at the old rate, then anchor at now
+    retrieve $Open from Shop.Order where [IsOpen = true];
+    loop $O in $Open
+    begin
+      $P = call microflow Shop.SUB_Order_Progress(TheOrder = $O);
+      change $O (TimerProgress = $P, TimerAnchorAt = $Now);
+    end loop;
+    commit $Open without events;
+    retrieve $Couriers from Shop.Courier where [CourierStatus != 'OFF_DUTY' and CourierStatus != 'AVAILABLE'];
+    loop $C in $Couriers
+    begin
+      $CP = call microflow Shop.SUB_Timer_Progress(Progress = $C/TripProgress, AnchorAt = $C/TripAnchorAt, BaseSeconds = max($C/TripSeconds, 1));
+      change $C (TripProgress = $CP, TripAnchorAt = $Now);
+    end loop;
+    commit $Couriers without events;
+    $TrafficP = call microflow Shop.SUB_Timer_Progress(Progress = $Sim/TrafficProgress, AnchorAt = $Sim/TrafficAnchorAt, BaseSeconds = $Sim/TrafficIntervalSeconds);
+    change $Sim (TrafficProgress = $TrafficP, TrafficAnchorAt = $Now);
+  end if;
+  change $Sim (SpeedFactor = $Speed);
+  commit $Sim without events;
+  $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
+  change $Sim (TrafficIntervalEffective = $Eff);
+  commit $Sim without events;
+end;
+
+/**
+ * Daily demo reset at 04:00 store time (A-42).
+ */
+create or modify microflow Shop.SE_DailyReset ()
+folder 'Simulation'
+begin
+  call microflow Shop.SUB_Reset(Trigger = 'scheduled');
+  call microflow Shop.SUB_Toast_Broadcast(Message = 'The demo data was reset by the system.');
+end;
+
+/**
+ * Watchdog, every minute: restarts the simulation clock when its chain of
+ * queued ticks stopped (for example after an error), and ticks once itself.
+ */
+create or modify microflow Shop.SE_ClockWatchdog ()
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  if $Sim != empty then
+    declare $Age Decimal = 0;
+    if $Sim/LastTickAt != empty then
+      set $Age = secondsBetween($Sim/LastTickAt, [%CurrentDateTime%]);
+    end if;
+    if $Sim/LastTickAt = empty or $Age > 15 then
+      log warning node 'Simulation' 'Simulation clock restarted by watchdog';
+      call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+    end if;
+  end if;
+end;
+
+/**
+ * One beat of the simulation clock (SIM-09): waits 1.5 s, advances every
+ * simulation to now, and queues the next beat. Runs as a chain of short
+ * background tasks so each tick is its own transaction.
+ */
+create or modify microflow Shop.SIM_ClockRun ()
+folder 'Simulation'
+begin
+  $Slept = call java action Shop.JA_Sleep(Millis = 1500);
+  call microflow Shop.SIM_Tick() on error continue;
+  call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+end;
+
+/**
+ * Tells every guest with an open session that the demo data was reset
+ * (US-270): a toast that appears on their next refresh.
+ *
+ * @param $Message Toast text
+ */
+create or modify microflow Shop.SUB_Toast_Broadcast ($Message: String)
+folder 'Simulation'
+begin
+  retrieve $Sessions from System.Session;
+  declare $Now DateTime = [%CurrentDateTime%];
+  $Toasts = create list of Shop.Toast;
+  loop $Session in $Sessions
+  begin
+    retrieve $User from $Session/System.Session_User;
+    if $User != empty then
+      $T = create Shop.Toast (Message = $Message, Level = Shop.ToastLevel.INFO, CreatedAt = $Now, ExpiresAt = addSeconds($Now, 6), ShowCartAction = false, Shop.Toast_Owner = $User);
+      add $T to $Toasts;
+    end if;
+  end loop;
+  commit $Toasts without events;
+end;
+
+create or modify scheduled event Shop."SE_DailyReset" (
+  Microflow: Shop.SE_DailyReset,
+  Repeat: Daily,
+  HourOfDay: 4,
+  MinuteOfHour: 0,
+  TimeZone: Server,
+  Enabled: true
+);
+
+create or modify scheduled event Shop."SE_ClockWatchdog" (
+  Microflow: Shop.SE_ClockWatchdog,
+  Repeat: Minutely,
+  Multiplier: 1,
+  Enabled: true
+);
+
+alter settings runtime ( AfterStartupMicroflow: 'Shop.ASU_Startup', ScheduledEventTimeZoneCode: 'America/Los_Angeles', EnableDataStorageOptimisticLocking: true );
