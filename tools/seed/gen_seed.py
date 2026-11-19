@@ -325,4 +325,11 @@ with open(os.path.join(OUT, '10-seed-catalog.mdl'), 'w', encoding='utf-8') as f:
     f.write(gen_catalog())
 with open(os.path.join(OUT, '11-seed-orders.mdl'), 'w', encoding='utf-8') as f:
     f.write(gen_orders())
+# one Change/Create activity with Commit set instead of create + commit (lint CONV021)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from fold_commits import fold
+for name in ('10-seed-catalog.mdl', '11-seed-orders.mdl'):
+    path = os.path.join(OUT, name)
+    folded, _ = fold(open(path, encoding='utf-8').read())
+    open(path, 'w', encoding='utf-8').write(folded)
 print('written')

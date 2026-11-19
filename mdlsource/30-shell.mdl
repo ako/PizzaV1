@@ -15,22 +15,33 @@ begin
   $Cart = call microflow Shop.SUB_Cart_Current();
   return $Cart;
 end;
-grant execute on microflow Shop.DS_Shell_Cart to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Shell_Cart to Shop.Guest; -- auto
 
 /**
  * Opens the menu on a category tab (sidebar category files, New Branch).
  *
  * @param $Category Category code, e.g. PIZZAS
  */
-create or modify microflow Shop.ACT_Nav_Menu ($Category: String)
+create or modify microflow Shop.SUB_Nav_Menu ($Category: String)
 folder 'Shell'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
-  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '');
-  commit $Cart without events refresh;
+  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '') commit without events refresh;
   show page Shop.Menu();
 end;
-grant execute on microflow Shop.ACT_Nav_Menu to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens the menu on a category tab (sidebar category files, New Branch).
+ * Page entry point; the logic is in SUB_Nav_Menu.
+ *
+ * @param $Category Category code, e.g. PIZZAS
+ */
+create or modify microflow Shop.ACT_Nav_Menu ($Category: String)
+folder 'Shell'
+begin
+  call microflow Shop.SUB_Nav_Menu(Category = $Category);
+end;
+grant execute on microflow Shop.ACT_Nav_Menu to Shop.Guest; -- auto
 
 /**
  * ./checkout.yml: opens checkout, or explains that the manifest is empty
@@ -46,25 +57,36 @@ begin
   end if;
   show page Shop.Checkout();
 end;
-grant execute on microflow Shop.ACT_Nav_Checkout to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Nav_Checkout to Shop.Guest; -- auto
 
 /**
  * Header search (grep --pizza): runs the search on the menu (US-001 AC6, US-027).
  *
  * @param $Cart The guest's cart holding the typed text
  */
-create or modify microflow Shop.ACT_Nav_Search ($Cart: Shop.Cart)
+create or modify microflow Shop.SUB_Nav_Search ($Cart: Shop.Cart)
 folder 'Shell'
 begin
   declare $Query String = '';
   if $Cart/SearchInput != empty then
     set $Query = trim($Cart/SearchInput);
   end if;
-  change $Cart (SearchQuery = $Query);
-  commit $Cart without events refresh;
+  change $Cart (SearchQuery = $Query) commit without events refresh;
   show page Shop.Menu();
 end;
-grant execute on microflow Shop.ACT_Nav_Search to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Header search (grep --pizza): runs the search on the menu (US-001 AC6, US-027).
+ * Page entry point; the logic is in SUB_Nav_Search.
+ *
+ * @param $Cart The guest's cart holding the typed text
+ */
+create or modify microflow Shop.ACT_Nav_Search ($Cart: Shop.Cart)
+folder 'Shell'
+begin
+  call microflow Shop.SUB_Nav_Search(Cart = $Cart);
+end;
+grant execute on microflow Shop.ACT_Nav_Search to Shop.Guest; -- auto
 
 /**
  * Opens the cart drawer (desktop/tablet) or full page (phone), US-061.
@@ -76,13 +98,13 @@ begin
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   show page Shop.Cart_Drawer(Cart = $Cart);
 end;
-grant execute on microflow Shop.ACT_Nav_Cart to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Nav_Cart to Shop.Guest; -- auto
 
 /**
  * ./track.log and the phone tab Trace: the most recent order of this
  * session in any status, otherwise the lookup (US-135, BR-NAV-06).
  */
-create or modify microflow Shop.ACT_Nav_Track ()
+create or modify microflow Shop.SUB_Nav_Track ()
 folder 'Shell'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
@@ -94,7 +116,18 @@ begin
   retrieve $Order from $Latest/Shop.OrderAccess_Order;
   show page Shop.Tracking(TheOrder = $Order);
 end;
-grant execute on microflow Shop.ACT_Nav_Track to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * ./track.log and the phone tab Trace: the most recent order of this
+ * session in any status, otherwise the lookup (US-135, BR-NAV-06).
+ * Page entry point; the logic is in SUB_Nav_Track.
+ */
+create or modify microflow Shop.ACT_Nav_Track ()
+folder 'Shell'
+begin
+  call microflow Shop.SUB_Nav_Track();
+end;
+grant execute on microflow Shop.ACT_Nav_Track to Shop.Guest; -- auto
 
 /**
  * Home: opens the home page.
@@ -104,7 +137,7 @@ folder 'Shell'
 begin
   show page Shop.Home();
 end;
-grant execute on microflow Shop.ACT_Nav_Home to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Nav_Home to Shop.Guest; -- auto
 
 -- ───────────────────────── snippets ─────────────────────────
 

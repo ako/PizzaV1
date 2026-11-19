@@ -16,8 +16,7 @@ begin
     return $Existing;
   end if;
   $Form = create Shop.CheckoutForm (OrderType = Shop.OrderType.DELIVERY, City = 'San Francisco', StateCode = 'CA', Tip = Shop.TipOption.FIFTEEN,
-    Method = Shop.PaymentMethod.CARD, Card = Shop.TestCard.VISA_4242, Shop.CheckoutForm_Owner = [%CurrentUser%]);
-  commit $Form without events;
+    Method = Shop.PaymentMethod.CARD, Card = Shop.TestCard.VISA_4242, Shop.CheckoutForm_Owner = [%CurrentUser%]) commit without events;
   return $Form;
 end;
 
@@ -128,7 +127,7 @@ begin
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
   return $Form;
 end;
-grant execute on microflow Shop.DS_Checkout to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Checkout to Shop.Guest; -- auto
 
 /**
  * Order type switch (US-081); entered address and tip are kept.
@@ -136,13 +135,26 @@ grant execute on microflow Shop.DS_Checkout to Shop.Guest, Shop.Administrator; -
  * @param $Form The checkout form
  * @param $Type DELIVERY or PICKUP
  */
-create or modify microflow Shop.ACT_Checkout_Type ($Form: Shop.CheckoutForm, $Type: String)
+create or modify microflow Shop.SUB_Checkout_Type ($Form: Shop.CheckoutForm, $Type: String)
 folder 'Checkout'
 begin
   change $Form (OrderType = if $Type = 'PICKUP' then Shop.OrderType.PICKUP else Shop.OrderType.DELIVERY);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
-grant execute on microflow Shop.ACT_Checkout_Type to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Order type switch (US-081); entered address and tip are kept.
+ * Page entry point; the logic is in SUB_Checkout_Type.
+ *
+ * @param $Form The checkout form
+ * @param $Type DELIVERY or PICKUP
+ */
+create or modify microflow Shop.ACT_Checkout_Type ($Form: Shop.CheckoutForm, $Type: String)
+folder 'Checkout'
+begin
+  call microflow Shop.SUB_Checkout_Type(Form = $Form, Type = $Type);
+end;
+grant execute on microflow Shop.ACT_Checkout_Type to Shop.Guest; -- auto
 
 /**
  * Tip selection (US-086).
@@ -150,13 +162,26 @@ grant execute on microflow Shop.ACT_Checkout_Type to Shop.Guest, Shop.Administra
  * @param $Form The checkout form
  * @param $Tip NONE, TEN, FIFTEEN or TWENTY
  */
-create or modify microflow Shop.ACT_Checkout_Tip ($Form: Shop.CheckoutForm, $Tip: String)
+create or modify microflow Shop.SUB_Checkout_Tip ($Form: Shop.CheckoutForm, $Tip: String)
 folder 'Checkout'
 begin
   change $Form (Tip = if $Tip = 'NONE' then Shop.TipOption.NONE else if $Tip = 'TEN' then Shop.TipOption.TEN else if $Tip = 'TWENTY' then Shop.TipOption.TWENTY else Shop.TipOption.FIFTEEN);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
-grant execute on microflow Shop.ACT_Checkout_Tip to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Tip selection (US-086).
+ * Page entry point; the logic is in SUB_Checkout_Tip.
+ *
+ * @param $Form The checkout form
+ * @param $Tip NONE, TEN, FIFTEEN or TWENTY
+ */
+create or modify microflow Shop.ACT_Checkout_Tip ($Form: Shop.CheckoutForm, $Tip: String)
+folder 'Checkout'
+begin
+  call microflow Shop.SUB_Checkout_Tip(Form = $Form, Tip = $Tip);
+end;
+grant execute on microflow Shop.ACT_Checkout_Tip to Shop.Guest; -- auto
 
 /**
  * Payment method and demo test card (US-101). Wallets need no card.
@@ -165,7 +190,7 @@ grant execute on microflow Shop.ACT_Checkout_Tip to Shop.Guest, Shop.Administrat
  * @param $Method CARD, APPLE_PAY or GOOGLE_PAY
  * @param $Card Test card key, or empty for wallets
  */
-create or modify microflow Shop.ACT_Checkout_Pay ($Form: Shop.CheckoutForm, $Method: String, $Card: String)
+create or modify microflow Shop.SUB_Checkout_Pay ($Form: Shop.CheckoutForm, $Method: String, $Card: String)
 folder 'Checkout'
 begin
   change $Form (Method = if $Method = 'APPLE_PAY' then Shop.PaymentMethod.APPLE_PAY else if $Method = 'GOOGLE_PAY' then Shop.PaymentMethod.GOOGLE_PAY else Shop.PaymentMethod.CARD);
@@ -174,7 +199,21 @@ begin
   end if;
   commit $Form without events refresh;
 end;
-grant execute on microflow Shop.ACT_Checkout_Pay to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Payment method and demo test card (US-101). Wallets need no card.
+ * Page entry point; the logic is in SUB_Checkout_Pay.
+ *
+ * @param $Form The checkout form
+ * @param $Method CARD, APPLE_PAY or GOOGLE_PAY
+ * @param $Card Test card key, or empty for wallets
+ */
+create or modify microflow Shop.ACT_Checkout_Pay ($Form: Shop.CheckoutForm, $Method: String, $Card: String)
+folder 'Checkout'
+begin
+  call microflow Shop.SUB_Checkout_Pay(Form = $Form, Method = $Method, Card = $Card);
+end;
+grant execute on microflow Shop.ACT_Checkout_Pay to Shop.Guest; -- auto
 
 /**
  * Field change: recalculates the summary in memory and clears a corrected field's error (US-284 AC4).
@@ -187,20 +226,32 @@ begin
   -- no commit: rapid typing fires overlapping change calls on the same version
   call microflow Shop.SUB_Checkout_Compute(Form = $Form);
 end;
-grant execute on microflow Shop.ACT_Checkout_Changed to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Checkout_Changed to Shop.Guest; -- auto
 
 /**
  * Switch to pickup from the outside-zone error (US-083 AC5).
  *
  * @param $Form The checkout form
  */
-create or modify microflow Shop.ACT_Checkout_Pickup ($Form: Shop.CheckoutForm)
+create or modify microflow Shop.SUB_Checkout_Pickup ($Form: Shop.CheckoutForm)
 folder 'Checkout'
 begin
   change $Form (OrderType = Shop.OrderType.PICKUP);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
-grant execute on microflow Shop.ACT_Checkout_Pickup to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Switch to pickup from the outside-zone error (US-083 AC5).
+ * Page entry point; the logic is in SUB_Checkout_Pickup.
+ *
+ * @param $Form The checkout form
+ */
+create or modify microflow Shop.ACT_Checkout_Pickup ($Form: Shop.CheckoutForm)
+folder 'Checkout'
+begin
+  call microflow Shop.SUB_Checkout_Pickup(Form = $Form);
+end;
+grant execute on microflow Shop.ACT_Checkout_Pickup to Shop.Guest; -- auto
 
 /**
  * Normalises a US phone number to (415) 555-0199; returns '' when invalid
@@ -237,7 +288,7 @@ end;
  *
  * @param $Form The checkout form
  */
-create or modify microflow Shop.ACT_Checkout_Place ($Form: Shop.CheckoutForm)
+create or modify microflow Shop.SUB_Checkout_Place ($Form: Shop.CheckoutForm)
 folder 'Checkout'
 begin
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
@@ -319,12 +370,10 @@ begin
     set $Summary = $Summary + 'DELIVERY_MINIMUM · ';
   end if;
   if $Errors > 0 then
-    change $Form (ErrorCount = $Errors, ErrorSummary = 'Lint failed: ' + toString($Errors) + (if $Errors = 1 then ' env variable needs' else ' env variables need') + ' attention. ' + substring($Summary, 0, length($Summary) - 3));
-    commit $Form without events refresh;
+    change $Form (ErrorCount = $Errors, ErrorSummary = 'Lint failed: ' + toString($Errors) + (if $Errors = 1 then ' env variable needs' else ' env variables need') + ' attention. ' + substring($Summary, 0, length($Summary) - 3)) commit without events refresh;
     return;
   end if;
-  change $Form (ErrorCount = 0, ErrorSummary = '', ContactPhone = $Phone, StateCode = $State);
-  commit $Form without events;
+  change $Form (ErrorCount = 0, ErrorSummary = '', ContactPhone = $Phone, StateCode = $State) commit without events;
   retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false] sort by CreatedAt asc;
   retrieve $Coupon from $Cart/Shop.Cart_Coupon;
   retrieve $Zone from $Form/Shop.CheckoutForm_Zone;
@@ -338,7 +387,22 @@ begin
   call microflow Shop.SUB_Order_Grant(TheOrder = $Order);
   show page Shop.PaymentSheet(TheOrder = $Order);
 end;
-grant execute on microflow Shop.ACT_Checkout_Place to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Execute Order --force (US-091, BR-ORD-03): validates every field on the
+ * server (messages at the field and a summary), checks the cart, the zone
+ * and the delivery minimum, then places the order (T-01), grants the guest
+ * access, and opens the payment sheet. Nothing is created when invalid.
+ * Page entry point; the logic is in SUB_Checkout_Place.
+ *
+ * @param $Form The checkout form
+ */
+create or modify microflow Shop.ACT_Checkout_Place ($Form: Shop.CheckoutForm)
+folder 'Checkout'
+begin
+  call microflow Shop.SUB_Checkout_Place(Form = $Form);
+end;
+grant execute on microflow Shop.ACT_Checkout_Place to Shop.Guest; -- auto
 
 /**
  * Grants the current guest access to an order (LITE-SES-03) and makes it the
@@ -351,14 +415,11 @@ folder 'Orders'
 begin
   retrieve $Existing from Shop.OrderAccess where [Shop.OrderAccess_Order = $TheOrder and Shop.OrderAccess_User = '[%CurrentUser%]'] first;
   if $Existing != empty then
-    change $Existing (GrantedAt = [%CurrentDateTime%]);
-    commit $Existing without events;
+    change $Existing (GrantedAt = [%CurrentDateTime%]) commit without events;
   else
-    $Access = create Shop.OrderAccess (GrantedAt = [%CurrentDateTime%], Shop.OrderAccess_Order = $TheOrder, Shop.OrderAccess_User = [%CurrentUser%]);
-    commit $Access without events;
+    $Access = create Shop.OrderAccess (GrantedAt = [%CurrentDateTime%], Shop.OrderAccess_Order = $TheOrder, Shop.OrderAccess_User = [%CurrentUser%]) commit without events;
   end if;
   $Cart = call microflow Shop.SUB_Cart_Current();
-  change $Cart (Shop.Cart_ActiveOrder = $TheOrder);
-  commit $Cart without events refresh;
+  change $Cart (Shop.Cart_ActiveOrder = $TheOrder) commit without events refresh;
 end;
-grant execute on microflow Shop.SUB_Checkout_Current to Shop.Guest, Shop.Administrator;
+grant execute on microflow Shop.SUB_Checkout_Current to Shop.Guest;

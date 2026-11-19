@@ -9,7 +9,7 @@ mdl 1;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Configure_Open ($Product: Shop.Product)
+create or modify microflow Shop.SUB_Configure_Open ($Product: Shop.Product)
 folder 'Configurator'
 begin
   if $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
@@ -24,4 +24,18 @@ begin
   call microflow Shop.SUB_Line_Recalculate(Line = $Draft);
   commit $Draft without events;
   show page Shop.Configurator(Line = $Draft);
+end;
+
+/**
+ * Opens SCR-03 for a product with its default configuration (US-041). A
+ * draft or archived product shows SCR-40 instead; a sold-out product opens
+ * in its sold-out state.
+ * Page entry point; the logic is in SUB_Configure_Open.
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Configure_Open ($Product: Shop.Product)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Configure_Open(Product = $Product);
 end;

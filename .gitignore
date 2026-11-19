@@ -34,3 +34,4 @@
 mxcli
 mxcli.exe
 .mxcli/
+__pycache__/

@@ -28,4 +28,39 @@ excludeModules:
 #   QUAL004:            # orphaned elements: name prefixes of entry points
 #     options:
 #       entry_point_prefixes: [ACT_, SCH_, WS_, REST_, OData_]
-rules: {}
+
+# GitPizza: the project's own naming conventions. Only naming conventions are
+# configured. No security, performance or quality rule is switched off, and each
+# entry says what the project does instead.
+rules:
+  # Flow prefixes used in this project, besides the standard ones:
+  #   NF_   nanoflow called from a page (client-side)
+  #   SIM_  simulation step (kitchen, ovens, couriers, payments)
+  #   SE_   scheduled event entry point
+  #   SEED_ demo-data seed (SIM-08 reset)
+  #   ASU_  after-startup microflow
+  CUSTOM002:
+    options:
+      valid_prefixes: [ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_]
+
+  # Enumerations are named as the domain types the functional design uses
+  # (OrderStatus, PaymentMethod, …). An ENUM_ prefix would differ from the
+  # information model the stories refer to.
+  CONV004:
+    enabled: false
+
+  # Snippets use the shorter SNIP_ prefix consistently (SNIP_Header, SNIP_OrderLog, …).
+  CONV005:
+    enabled: false
+
+  # Pages are named after the screens of the UI specification (SCR-01 Home,
+  # SCR-06 Checkout, …), not after CRUD roles (_Overview, _NewEdit), because the
+  # app has no CRUD pages.
+  CONV003:
+    enabled: false
+
+  # Default values on attributes are kept. They are declarative and Mendix applies
+  # them on create. The same rule set (CONV016) discourages the before-create
+  # event handlers that CONV002 would replace them with.
+  CONV002:
+    enabled: false

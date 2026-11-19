@@ -8,7 +8,6 @@ create or modify non-persistent entity Shop."ErrorView" (
   "IncidentId": String(40)
 );
 grant read * on entity Shop.ErrorView to Shop.Guest;
-grant read * on entity Shop.ErrorView to Shop.Administrator;
 
 /** When true, the page at /p/fault raises an unhandled error (acceptance test of US-282). Off in production. */
 create or modify constant Shop."FaultInjection" (Type: Boolean, DefaultValue: false);
@@ -28,7 +27,7 @@ begin
   log error node 'GitPizza' 'INCIDENT {1}: unexpected error page shown to {2}' with ({1} = $View/IncidentId, {2} = $currentUser/Name);
   return $View;
 end;
-grant execute on microflow Shop.DS_Error to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Error to Shop.Guest; -- auto
 
 /**
  * Data source of the fault probe: raises an unhandled error when
@@ -47,7 +46,7 @@ begin
   $Probe = create Shop.ErrorView (IncidentId = 'Fault injection is off.');
   return $Probe;
 end;
-grant execute on microflow Shop.DS_FaultProbe to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_FaultProbe to Shop.Guest; -- auto
 
 /** Repeats the page load that failed (RETRY_DEPLOYMENT, US-282 AC1). */
 create or modify javascript action Shop."JS_RetryLast" () returns Boolean
@@ -65,7 +64,7 @@ folder 'Errors'
 begin
   $Retried = call javascript action Shop.JS_RetryLast();
 end;
-grant execute on nanoflow Shop.NF_RetryLast to Shop.Guest, Shop.Administrator;
+grant execute on nanoflow Shop.NF_RetryLast to Shop.Guest;
 
 /** Shows the full decorative stack trace on phones ("Show more" on SCR-40/41). */
 create or modify javascript action Shop."JS_ExpandTrace" () returns Boolean
@@ -80,7 +79,7 @@ folder 'Errors'
 begin
   $Expanded = call javascript action Shop.JS_ExpandTrace();
 end;
-grant execute on nanoflow Shop.NF_ExpandTrace to Shop.Guest, Shop.Administrator;
+grant execute on nanoflow Shop.NF_ExpandTrace to Shop.Guest;
 
 /** SCR-40 ERROR 404 // CRUST_NOT_FOUND (US-281). */
 create or modify page Shop.NotFound (
@@ -173,5 +172,5 @@ create or modify page Shop.UnexpectedError (
   }
   }
 };
-grant view on page Shop.FaultProbe to Shop.Guest, Shop.Administrator;
-grant view on page Shop.UnexpectedError to Shop.Guest, Shop.Administrator;
+grant view on page Shop.FaultProbe to Shop.Guest;
+grant view on page Shop.UnexpectedError to Shop.Guest;

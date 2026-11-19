@@ -68,7 +68,7 @@ begin
   call microflow Shop.SUB_Menu_Refresh(View = $View);
   return $View;
 end;
-grant execute on microflow Shop.DS_Menu to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Menu to Shop.Guest; -- auto
 
 /**
  * Products shown on the menu: the active tab, or with a search of at least 2
@@ -109,7 +109,7 @@ begin
   end if;
   return $Result;
 end;
-grant execute on microflow Shop.DS_Menu_Products to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Menu_Products to Shop.Guest; -- auto
 
 /**
  * Switches the category tab and clears the search (US-025).
@@ -117,22 +117,34 @@ grant execute on microflow Shop.DS_Menu_Products to Shop.Guest, Shop.Administrat
  * @param $View The menu view
  * @param $Category Category code
  */
-create or modify microflow Shop.ACT_Menu_Tab ($View: Shop.MenuView, $Category: String)
+create or modify microflow Shop.SUB_Menu_Tab ($View: Shop.MenuView, $Category: String)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '');
-  commit $Cart without events refresh;
+  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '') commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
-grant execute on microflow Shop.ACT_Menu_Tab to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Switches the category tab and clears the search (US-025).
+ * Page entry point; the logic is in SUB_Menu_Tab.
+ *
+ * @param $View The menu view
+ * @param $Category Category code
+ */
+create or modify microflow Shop.ACT_Menu_Tab ($View: Shop.MenuView, $Category: String)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_Tab(View = $View, Category = $Category);
+end;
+grant execute on microflow Shop.ACT_Menu_Tab to Shop.Guest; -- auto
 
 /**
  * Runs the search while typing (US-027): from 2 characters, otherwise only the hint.
  *
  * @param $View The menu view
  */
-create or modify microflow Shop.ACT_Menu_Search ($View: Shop.MenuView)
+create or modify microflow Shop.SUB_Menu_Search ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
@@ -140,26 +152,48 @@ begin
   if $Cart/SearchInput != empty then
     set $Typed = trim($Cart/SearchInput);
   end if;
-  change $Cart (SearchQuery = $Typed);
-  commit $Cart without events refresh;
+  change $Cart (SearchQuery = $Typed) commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
-grant execute on microflow Shop.ACT_Menu_Search to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Runs the search while typing (US-027): from 2 characters, otherwise only the hint.
+ * Page entry point; the logic is in SUB_Menu_Search.
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_Search ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_Search(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_Search to Shop.Guest; -- auto
 
 /**
  * Clear search: back to the category tabs (US-027 AC5).
  *
  * @param $View The menu view
  */
-create or modify microflow Shop.ACT_Menu_ClearSearch ($View: Shop.MenuView)
+create or modify microflow Shop.SUB_Menu_ClearSearch ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  change $Cart (SearchQuery = '', SearchInput = '', FilterVegetarian = false, FilterVegan = false, FilterSpicy = false);
-  commit $Cart without events refresh;
+  change $Cart (SearchQuery = '', SearchInput = '', FilterVegetarian = false, FilterVegan = false, FilterSpicy = false) commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
-grant execute on microflow Shop.ACT_Menu_ClearSearch to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Clear search: back to the category tabs (US-027 AC5).
+ * Page entry point; the logic is in SUB_Menu_ClearSearch.
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_ClearSearch ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_ClearSearch(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_ClearSearch to Shop.Guest; -- auto
 
 /**
  * Toggles a diet filter chip (US-033): vegetarian, vegan or spicy.
@@ -167,7 +201,7 @@ grant execute on microflow Shop.ACT_Menu_ClearSearch to Shop.Guest, Shop.Adminis
  * @param $View The menu view
  * @param $Filter veg, vegan or spicy
  */
-create or modify microflow Shop.ACT_Menu_Filter ($View: Shop.MenuView, $Filter: String)
+create or modify microflow Shop.SUB_Menu_Filter ($View: Shop.MenuView, $Filter: String)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
@@ -183,22 +217,46 @@ begin
   commit $Cart without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
-grant execute on microflow Shop.ACT_Menu_Filter to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Toggles a diet filter chip (US-033): vegetarian, vegan or spicy.
+ * Page entry point; the logic is in SUB_Menu_Filter.
+ *
+ * @param $View The menu view
+ * @param $Filter veg, vegan or spicy
+ */
+create or modify microflow Shop.ACT_Menu_Filter ($View: Shop.MenuView, $Filter: String)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_Filter(View = $View, Filter = $Filter);
+end;
+grant execute on microflow Shop.ACT_Menu_Filter to Shop.Guest; -- auto
 
 /**
  * Show all: clears the diet chips (TXT-MENU-65).
  *
  * @param $View The menu view
  */
-create or modify microflow Shop.ACT_Menu_ShowAll ($View: Shop.MenuView)
+create or modify microflow Shop.SUB_Menu_ShowAll ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  change $Cart (FilterVegetarian = false, FilterVegan = false, FilterSpicy = false);
-  commit $Cart without events refresh;
+  change $Cart (FilterVegetarian = false, FilterVegan = false, FilterSpicy = false) commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
-grant execute on microflow Shop.ACT_Menu_ShowAll to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Show all: clears the diet chips (TXT-MENU-65).
+ * Page entry point; the logic is in SUB_Menu_ShowAll.
+ *
+ * @param $View The menu view
+ */
+create or modify microflow Shop.ACT_Menu_ShowAll ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_ShowAll(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_ShowAll to Shop.Guest; -- auto
 
 /**
  * Opens module.info for a product (US-029, US-030).
@@ -210,7 +268,7 @@ folder 'Menu'
 begin
   show page Shop.ItemInfo(Product = $Product);
 end;
-grant execute on microflow Shop.ACT_Product_Info to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Product_Info to Shop.Guest; -- auto
 
 
 /** The default build as a code snippet (US-026): generated from the data, never hard-coded. */
@@ -327,13 +385,23 @@ create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Shop.Product)) {
 };
 
 /** Refresh beat of the menu: the Terminal Debugger follows the cart (US-032). */
-create or modify microflow Shop.ACT_Menu_Refresh ($View: Shop.MenuView)
+create or modify microflow Shop.SUB_Menu_Refresh_Do ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
   commit $Cart without events refresh;
 end;
-grant execute on microflow Shop.ACT_Menu_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Refresh beat of the menu: the Terminal Debugger follows the cart (US-032).
+ * Page entry point; the logic is in SUB_Menu_Refresh_Do.
+ */
+create or modify microflow Shop.ACT_Menu_Refresh ($View: Shop.MenuView)
+folder 'Menu'
+begin
+  call microflow Shop.SUB_Menu_Refresh_Do(View = $View);
+end;
+grant execute on microflow Shop.ACT_Menu_Refresh to Shop.Guest; -- auto
 
 /** SCR-02 Menu (module explorer). */
 create or modify page Shop.Menu (

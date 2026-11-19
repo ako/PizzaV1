@@ -1,7 +1,8 @@
 mdl 1;
 -- Demo reset (SIM-08, US-270), startup (LITE-CFG-01/02/07) and the simulation clock (SIM-09).
 
-create module Simulation;
+/** Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08). */
+create or modify module Simulation;
 
 /** Speed factor of the simulation clock: 1, 2, 5 or 10 (LITE-CFG-01). Any other value is treated as 1. */
 create or modify constant Simulation."SpeedFactor" ( Type: Integer, DefaultValue: 1 );
@@ -84,8 +85,7 @@ begin
   call microflow Shop.SUB_Catalog_RecalculateAll();
   retrieve $Highest from Shop.Order sort by OrderNumber desc first;
   retrieve $Store from Shop.StoreSettings first;
-  change $Store (NextOrderNumber = $Highest/OrderNumber + 1);
-  commit $Store without events;
+  change $Store (NextOrderNumber = $Highest/OrderNumber + 1) commit without events;
   declare $Speed Integer = @Simulation.SpeedFactor;
   if $Speed != 1 and $Speed != 2 and $Speed != 5 and $Speed != 10 then
     set $Speed = 1;
@@ -97,10 +97,8 @@ begin
   end if;
   retrieve $Sim from Shop.SimulationSettings first;
   $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
-  change $Sim (SpeedFactor = $Speed, LastResetAt = $T, LastResetBy = $By, LastHousekeepingAt = $T, TrafficAnchorAt = $T, TrafficProgress = 0, TrafficIntervalEffective = $Eff);
-  commit $Sim without events;
-  $Event = create Shop.SimulationEvent (OccurredAt = $T, EventType = Shop.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By);
-  commit $Event without events;
+  change $Sim (SpeedFactor = $Speed, LastResetAt = $T, LastResetBy = $By, LastHousekeepingAt = $T, TrafficAnchorAt = $T, TrafficProgress = 0, TrafficIntervalEffective = $Eff) commit without events;
+  $Event = create Shop.SimulationEvent (OccurredAt = $T, EventType = Shop.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By) commit without events;
   declare $Duration Integer = round(secondsBetween($Start, [%CurrentDateTime%]));
   log info node 'Simulation' 'RESET end orders=' + toString($Deleted) + ' duration=' + toString($Duration) + 's';
 end;
@@ -169,11 +167,9 @@ begin
     $TrafficP = call microflow Shop.SUB_Timer_Progress(Progress = $Sim/TrafficProgress, AnchorAt = $Sim/TrafficAnchorAt, BaseSeconds = $Sim/TrafficIntervalSeconds);
     change $Sim (TrafficProgress = $TrafficP, TrafficAnchorAt = $Now);
   end if;
-  change $Sim (SpeedFactor = $Speed);
-  commit $Sim without events;
+  change $Sim (SpeedFactor = $Speed) commit without events;
   $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
-  change $Sim (TrafficIntervalEffective = $Eff);
-  commit $Sim without events;
+  change $Sim (TrafficIntervalEffective = $Eff) commit without events;
 end;
 
 /**

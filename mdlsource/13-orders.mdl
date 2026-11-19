@@ -113,8 +113,7 @@ folder 'Orders'
 begin
   retrieve $Store from Shop.StoreSettings first;
   declare $Number Integer = $Store/NextOrderNumber;
-  change $Store (NextOrderNumber = $Number + 1);
-  commit $Store without events;
+  change $Store (NextOrderNumber = $Number + 1) commit without events;
   $Hash = call microflow Shop.SUB_RandomHex(Length = 7);
   $Token = call microflow Shop.SUB_RandomHex(Length = 32);
   declare $Now DateTime = [%CurrentDateTime%];
@@ -137,8 +136,7 @@ begin
     $OLine = create Shop.OrderLine (ProductCode = $Product/Code, ProductName = $Product/Name, RealWorldName = $Product/RealWorldName, ModuleKey = $Product/ModuleKey,
       Kind = $Product/Kind, Size = $Size/Size, SizeLabel = $SizeLabel, Quantity = $Line/Quantity, UnitPrice = $Line/UnitPrice, LineTotal = $Line/LineTotal,
       AllergenText = $AllergenText, IsVegetarian = $Line/IsVegetarian, IsVegan = $Line/IsVegan, ConfigText = $Line/ConfigText, SortOrder = $Sort,
-      Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $Product);
-    commit $OLine without events;
+      Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $Product) commit without events;
     set $Subtotal = $Subtotal + $Line/LineTotal;
     set $Items = $Items + $Line/Quantity;
     if $Product/Kind = Shop.ProductKind.PIZZA then
@@ -160,8 +158,7 @@ begin
     change $TheOrder (Shop.Order_Coupon = $Coupon, CouponCode = $Coupon/Code);
   end if;
   commit $TheOrder without events;
-  $Attempt = create Shop.PaymentAttempt (AttemptNumber = 1, Method = $Method, Card = $Card, Amount = $Price/Total, AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = $Now, Shop.PaymentAttempt_Order = $TheOrder);
-  commit $Attempt without events;
+  $Attempt = create Shop.PaymentAttempt (AttemptNumber = 1, Method = $Method, Card = $Card, Amount = $Price/Total, AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = $Now, Shop.PaymentAttempt_Order = $TheOrder) commit without events;
   call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.PAYMENT_PENDING, Actor = $Actor, ActorName = $ActorName, Reason = '');
   call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'INIT', Message = 'Order MX-' + toString($Number) + ' staged. Commit #' + $Hash + ' signed.', Visible = true);
   call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'PAYMENT', Message = 'Handshake with payment gateway (simulated)…', Visible = true);
@@ -244,16 +241,14 @@ begin
   declare $Number String = 'MX-' + toString($TheOrder/OrderNumber);
   if $Code = empty then
     $Hex = call microflow Shop.SUB_RandomHex(Length = 12);
-    change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.SUCCEEDED, TransactionId = 'txn_sim_' + $Hex, FinishedAt = $Now);
-    commit $Attempt without events;
+    change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.SUCCEEDED, TransactionId = 'txn_sim_' + $Hex, FinishedAt = $Now) commit without events;
     change $TheOrder (Payment = Shop.PaymentStatus.PAID, PaidAt = $Now, QueuedAt = $Now);
     call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.QUEUED, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/payment-gateway', Reason = '');
     retrieve $Queued from Shop.Order where [OrderStatus = 'QUEUED'];
     $Position = count $Queued;
     call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'PAYMENT', Message = 'Payment confirmed. TxID txn_sim_' + $Hex, Visible = true);
     call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'KITCHEN', Message = 'Order queued at position ' + toString($Position) + '.', Visible = true);
-    $OkEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': SUCCEEDED', Shop.SimulationEvent_Order = $TheOrder);
-    commit $OkEvent without events;
+    $OkEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': SUCCEEDED', Shop.SimulationEvent_Order = $TheOrder) commit without events;
     -- T-02 side effect: clear the guest's cart and coupon (BR-ORD-07)
     retrieve $Placer from $TheOrder/Shop.Order_PlacedBy;
     if $Placer != empty then
@@ -267,11 +262,9 @@ begin
     end if;
     return;
   end if;
-  change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.FAILED, FailureCode = $Code, FinishedAt = $Now);
-  commit $Attempt without events;
+  change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.FAILED, FailureCode = $Code, FinishedAt = $Now) commit without events;
   declare $Text String = getCaption($Code);
-  $FailEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': FAILED (' + getKey($Code) + ')', Shop.SimulationEvent_Order = $TheOrder);
-  commit $FailEvent without events;
+  $FailEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': FAILED (' + getKey($Code) + ')', Shop.SimulationEvent_Order = $TheOrder) commit without events;
   retrieve $Store from Shop.StoreSettings first;
   call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.ERROR, Tag = 'PAYMENT', Message = 'ERROR 402: ' + $Text + '. Attempt ' + toString($Attempt/AttemptNumber) + ' of 3.', Visible = true);
   if $Attempt/AttemptNumber >= $Store/MaxPaymentAttempts then
@@ -308,8 +301,7 @@ begin
   end if;
   declare $Next Integer = $Count + 1;
   $Attempt = create Shop.PaymentAttempt (AttemptNumber = $Next, Method = $Method, Card = if $Method = Shop.PaymentMethod.CARD then $Card else empty, Amount = $TheOrder/Total,
-    AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = [%CurrentDateTime%], Shop.PaymentAttempt_Order = $TheOrder);
-  commit $Attempt without events;
+    AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = [%CurrentDateTime%], Shop.PaymentAttempt_Order = $TheOrder) commit without events;
   call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.PAYMENT_PENDING, Actor = $Actor, ActorName = $ActorName, Reason = '');
   call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'PAYMENT', Message = 'Retrying payment (attempt ' + toString($Next) + ' of 3)…', Visible = true);
   call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $TheOrder);
@@ -331,11 +323,9 @@ begin
   retrieve $Paid from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder and AttemptStatus = 'SUCCEEDED'] first;
   if $Paid != empty then
     $Hex = call microflow Shop.SUB_RandomHex(Length = 12);
-    change $Paid (AttemptStatus = Shop.PaymentAttemptStatus.REFUNDED, RefundedAt = [%CurrentDateTime%], RefundId = 'rfd_sim_' + $Hex);
-    commit $Paid without events;
+    change $Paid (AttemptStatus = Shop.PaymentAttemptStatus.REFUNDED, RefundedAt = [%CurrentDateTime%], RefundId = 'rfd_sim_' + $Hex) commit without events;
   end if;
-  change $TheOrder (Payment = Shop.PaymentStatus.REFUNDED);
-  commit $TheOrder without events;
+  change $TheOrder (Payment = Shop.PaymentStatus.REFUNDED) commit without events;
 end;
 
 /**

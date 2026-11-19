@@ -260,8 +260,7 @@ begin
   $TaxT = call microflow Shop.SUB_Money(Amount = $O/TaxAmount);
   $TipT = call microflow Shop.SUB_Money(Amount = $O/TipAmount);
   change $View (SubText = $SubT, DiscText = $DiscT, TaxText = $TaxT, TipText = $TipT, TipLabel = if $O/Tip = empty then '0%' else getCaption($O/Tip), NumberText = 'MX-' + toString($O/OrderNumber),
-    FeeText = $FeeT + (if $O/FeeWaivedBy = Shop.FeeWaiver.THRESHOLD then ' (free from $40.00)' else if $O/FeeWaivedBy = Shop.FeeWaiver.COUPON then ' (FREE_DISPATCH)' else ''));
-  change $View (StatusDev = getCaption($St), StatusPlain = $Plain, StatusCls = $Cls, PlacedText = formatDateTime($O/PlacedAt, 'yyyy-MM-dd HH:mm'), TypeText = getKey($O/OrderType),
+    FeeText = $FeeT + (if $O/FeeWaivedBy = Shop.FeeWaiver.THRESHOLD then ' (free from $40.00)' else if $O/FeeWaivedBy = Shop.FeeWaiver.COUPON then ' (FREE_DISPATCH)' else ''), StatusDev = getCaption($St), StatusPlain = $Plain, StatusCls = $Cls, PlacedText = formatDateTime($O/PlacedAt, 'yyyy-MM-dd HH:mm'), TypeText = getKey($O/OrderType),
     S1 = $S1, S2 = $S2, S3 = $S3, S4 = $S4, S5 = $S5,
     T1 = if $O/QueuedAt = empty then '' else formatDateTime($O/QueuedAt, 'HH:mm'), T2 = if $O/BakingStartedAt = empty then '' else formatDateTime($O/BakingStartedAt, 'HH:mm'),
     T3 = if $O/QaStartedAt = empty then '' else formatDateTime($O/QaStartedAt, 'HH:mm'), T4 = if $O/ReadyAt = empty then '' else formatDateTime($O/ReadyAt, 'HH:mm'),
@@ -299,14 +298,14 @@ begin
   call microflow Shop.SUB_Track_Fill(View = $View);
   return $View;
 end;
-grant execute on microflow Shop.DS_Track to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Track to Shop.Guest; -- auto
 
 /**
  * Live refresh of an order screen (BR-ORD-20: within 5 s).
  *
  * @param $View The track view
  */
-create or modify microflow Shop.ACT_Track_Refresh ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Track_Refresh ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
@@ -316,7 +315,19 @@ begin
   end if;
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
-grant execute on microflow Shop.ACT_Track_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Live refresh of an order screen (BR-ORD-20: within 5 s).
+ * Page entry point; the logic is in SUB_Track_Refresh.
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Track_Refresh ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Track_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Track_Refresh to Shop.Guest; -- auto
 
 /**
  * Payment sheet refresh: when the payment succeeded, close the sheet and
@@ -324,7 +335,7 @@ grant execute on microflow Shop.ACT_Track_Refresh to Shop.Guest, Shop.Administra
  *
  * @param $View The track view of the order being paid
  */
-create or modify microflow Shop.ACT_Pay_Refresh ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Pay_Refresh ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   call microflow Shop.ACT_Track_Refresh(View = $View);
@@ -334,7 +345,20 @@ begin
     show page Shop.Confirmation(TheOrder = $O);
   end if;
 end;
-grant execute on microflow Shop.ACT_Pay_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Payment sheet refresh: when the payment succeeded, close the sheet and
+ * show the confirmation (US-103 AC5).
+ * Page entry point; the logic is in SUB_Pay_Refresh.
+ *
+ * @param $View The track view of the order being paid
+ */
+create or modify microflow Shop.ACT_Pay_Refresh ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Pay_Refresh(View = $View);
+end;
+grant execute on microflow Shop.ACT_Pay_Refresh to Shop.Guest; -- auto
 
 /**
  * Retry payment with the method and test card chosen on the sheet (US-106,
@@ -342,7 +366,7 @@ grant execute on microflow Shop.ACT_Pay_Refresh to Shop.Guest, Shop.Administrato
  *
  * @param $View The track view
  */
-create or modify microflow Shop.ACT_Pay_Retry ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Pay_Retry ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
@@ -353,7 +377,20 @@ begin
   end if;
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
-grant execute on microflow Shop.ACT_Pay_Retry to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Retry payment with the method and test card chosen on the sheet (US-106,
+ * US-113). A second tab gets a notice instead of a second attempt (US-285).
+ * Page entry point; the logic is in SUB_Pay_Retry.
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Pay_Retry ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Pay_Retry(View = $View);
+end;
+grant execute on microflow Shop.ACT_Pay_Retry to Shop.Guest; -- auto
 
 /**
  * Cancel an order after a failed payment (US-108, T-06): no refund (nothing
@@ -361,7 +398,7 @@ grant execute on microflow Shop.ACT_Pay_Retry to Shop.Guest, Shop.Administrator;
  *
  * @param $View The track view
  */
-create or modify microflow Shop.ACT_Pay_Cancel ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Pay_Cancel ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
@@ -374,7 +411,20 @@ begin
   call microflow Shop.SUB_Toast(Message = 'Order MX-' + toString($O/OrderNumber) + ' cancelled. Nothing was charged.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
-grant execute on microflow Shop.ACT_Pay_Cancel to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Cancel an order after a failed payment (US-108, T-06): no refund (nothing
+ * was paid), the cart is unchanged.
+ * Page entry point; the logic is in SUB_Pay_Cancel.
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Pay_Cancel ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Pay_Cancel(View = $View);
+end;
+grant execute on microflow Shop.ACT_Pay_Cancel to Shop.Guest; -- auto
 
 /**
  * Cancel from the payment sheet: closes it and opens the cart (US-108 AC2).
@@ -388,7 +438,7 @@ begin
   close page;
   call microflow Shop.ACT_Nav_Cart();
 end;
-grant execute on microflow Shop.ACT_Pay_CancelAndCart to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Pay_CancelAndCart to Shop.Guest; -- auto
 
 /**
  * Rollback order while QUEUED (US-129, T-09): cancelled by the guest with a
@@ -397,7 +447,7 @@ grant execute on microflow Shop.ACT_Pay_CancelAndCart to Shop.Guest, Shop.Admini
  *
  * @param $View The track view
  */
-create or modify microflow Shop.ACT_Track_Rollback ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Track_Rollback ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
@@ -415,20 +465,46 @@ begin
   call microflow Shop.SUB_Order_Cancel(TheOrder = $Fresh, Actor = Shop.ActorType.GUEST, ActorName = 'guest', Reason = 'Cancelled by customer', LogMessage = 'Order rolled back by customer. Refund issued.');
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
-grant execute on microflow Shop.ACT_Track_Rollback to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Rollback order while QUEUED (US-129, T-09): cancelled by the guest with a
+ * full simulated refund. Rejected when baking already started (US-129 AC4,
+ * BR-ORD-08) or another tab cancelled first (US-285).
+ * Page entry point; the logic is in SUB_Track_Rollback.
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Track_Rollback ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Track_Rollback(View = $View);
+end;
+grant execute on microflow Shop.ACT_Track_Rollback to Shop.Guest; -- auto
 
 /**
  * Opens tracking of an order (from confirmation, home, sidebar).
  *
- * @param $TheOrder The order
+ * @param $View The track view of the order
  */
-create or modify microflow Shop.ACT_Track_OpenView ($View: Shop.TrackView)
+create or modify microflow Shop.SUB_Track_OpenView ($View: Shop.TrackView)
 folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
   show page Shop.Tracking(TheOrder = $O);
 end;
-grant execute on microflow Shop.ACT_Track_OpenView to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens tracking of an order (from confirmation, home, sidebar).
+ * Page entry point; the logic is in SUB_Track_OpenView.
+ *
+ * @param $View The track view of the order
+ */
+create or modify microflow Shop.ACT_Track_OpenView ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Track_OpenView(View = $View);
+end;
+grant execute on microflow Shop.ACT_Track_OpenView to Shop.Guest; -- auto
 
 /**
  * Opens tracking of an order (from confirmation and other pages).
@@ -441,7 +517,7 @@ begin
   close page;
   show page Shop.Tracking(TheOrder = $TheOrder);
 end;
-grant execute on microflow Shop.ACT_Track_Open to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Track_Open to Shop.Guest; -- auto
 
 /**
  * Opens the receipt of an order (US-128, US-166).
@@ -454,7 +530,7 @@ begin
   close page;
   show page Shop.Receipt(TheOrder = $TheOrder);
 end;
-grant execute on microflow Shop.ACT_Receipt_Open to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Receipt_Open to Shop.Guest; -- auto
 
 /**
  * Personal tracking link (US-121 AC2, NFR-11): /p/track/{Token}. A valid
@@ -464,8 +540,7 @@ grant execute on microflow Shop.ACT_Receipt_Open to Shop.Guest, Shop.Administrat
  *
  * @param $Token The tracking token from the link
  */
-create or modify microflow Shop.ACT_Track_Token ($Token: String)
-url 'track/{Token}'
+create or modify microflow Shop.SUB_Track_Token ($Token: String)
 folder 'Tracking'
 begin
   retrieve $O from Shop.Order where [TrackingToken = $Token and Source = 'GUEST'] first;
@@ -476,4 +551,20 @@ begin
   call microflow Shop.SUB_Order_Grant(TheOrder = $O);
   show page Shop.Tracking(TheOrder = $O);
 end;
-grant execute on microflow Shop.ACT_Track_Token to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Personal tracking link (US-121 AC2, NFR-11): /p/track/{Token}. A valid
+ * token of a guest order grants this browser session access and opens
+ * SCR-09; an unknown or altered token shows the invalid-link state (US-134).
+ * Simulated orders are never reachable (LITE-SEC-05).
+ * Page entry point; the logic is in SUB_Track_Token.
+ *
+ * @param $Token The tracking token from the link
+ */
+create or modify microflow Shop.ACT_Track_Token ($Token: String)
+url 'track/{Token}'
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Track_Token(Token = $Token);
+end;
+grant execute on microflow Shop.ACT_Track_Token to Shop.Guest; -- auto

@@ -18,8 +18,7 @@ begin
   if $ToStatus = Shop.CourierStatus.AVAILABLE then
     change $Courier (Shop.Courier_CurrentOrder = empty);
   end if;
-  change $Courier (CourierStatus = $ToStatus, StatusChangedAt = $Now, TripProgress = 0, TripAnchorAt = $Now, TripSeconds = $TripSeconds, TripProgressPercent = 0);
-  commit $Courier without events;
+  change $Courier (CourierStatus = $ToStatus, StatusChangedAt = $Now, TripProgress = 0, TripAnchorAt = $Now, TripSeconds = $TripSeconds, TripProgressPercent = 0) commit without events;
   retrieve $Current from $Courier/Shop.Courier_CurrentOrder;
   declare $Suffix String = '';
   if $Current != empty then
@@ -72,13 +71,11 @@ begin
   begin
     $QaP = call microflow Shop.SUB_Order_Progress(TheOrder = $QaOrder);
     if $QaP >= 0.3333 and not($QaOrder/QaSlicedDone) then
-      change $QaOrder (QaSlicedDone = true);
-      commit $QaOrder without events;
+      change $QaOrder (QaSlicedDone = true) commit without events;
       call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Slice matrix done ✓ by sim/kitchen-auto.', Visible = false);
     end if;
     if $QaP >= 0.6667 and not($QaOrder/QaExtrasDone) then
-      change $QaOrder (QaExtrasDone = true);
-      commit $QaOrder without events;
+      change $QaOrder (QaExtrasDone = true) commit without events;
       call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Dips and sides packed ✓ by sim/kitchen-auto.', Visible = false);
     end if;
     if $QaP >= 1 then
@@ -210,10 +207,8 @@ begin
           $RouteP = call microflow Shop.SUB_Order_Progress(TheOrder = $Trip);
           declare $Pct Integer = min(100, floor($RouteP * 100));
           declare $OldPct Integer = $Trip/RouteProgressPercent;
-          change $Trip (RouteProgressPercent = $Pct);
-          commit $Trip without events;
-          change $Courier (TripProgressPercent = $Pct);
-          commit $Courier without events;
+          change $Trip (RouteProgressPercent = $Pct) commit without events;
+          change $Courier (TripProgressPercent = $Pct) commit without events;
           if $OldPct < 50 and $Pct >= 50 and $Pct < 100 then
             declare $Left Decimal = round($Trip/DistanceMiles * (100 - $Pct) div 100, 1);
             call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'COURIER', Message = 'Halfway there. ' + formatDecimal($Left, '0.0') + ' mi to go.', Visible = true);
@@ -225,8 +220,7 @@ begin
             change $Trip (RouteProgressPercent = 100, CompletedAt = $Now);
             call microflow Shop.SUB_Order_Transition(TheOrder = $Trip, ToStatus = Shop.OrderStatus.DELIVERED, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/courier', Reason = '');
             call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.SUCCESS, Tag = 'DEPLOY', Message = 'Delivered. Enjoy your build!', Visible = true);
-            $Delivered = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.DELIVERY_COMPLETED, Message = 'MX-' + toString($Trip/OrderNumber) + ' delivered by ' + $Courier/Code, Shop.SimulationEvent_Order = $Trip);
-            commit $Delivered without events;
+            $Delivered = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.DELIVERY_COMPLETED, Message = 'MX-' + toString($Trip/OrderNumber) + ' delivered by ' + $Courier/Code, Shop.SimulationEvent_Order = $Trip) commit without events;
             declare $ReturnSeconds Integer = round($Sim/TravelBase + $Sim/TravelPerMile * $Trip/DistanceMiles);
             call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.RETURNING, TripSeconds = $ReturnSeconds);
           end if;
@@ -234,15 +228,13 @@ begin
       end if;
     else
       $CourierP = call microflow Shop.SUB_Timer_Progress(Progress = $Courier/TripProgress, AnchorAt = $Courier/TripAnchorAt, BaseSeconds = max($Courier/TripSeconds, 1));
-      change $Courier (TripProgressPercent = min(100, floor($CourierP * 100)));
-      commit $Courier without events;
+      change $Courier (TripProgressPercent = min(100, floor($CourierP * 100))) commit without events;
       if $CourierP >= 1 then
         if $Courier/CourierStatus = Shop.CourierStatus.TO_STORE then
           call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.AT_STORE, TripSeconds = $Sim/Handover);
           if $Trip != empty then
             call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = $Courier/NodeHandle + ' is at the store.', Visible = true);
-            $Arrived = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ARRIVED, Message = $Courier/Code + ' at the store for MX-' + toString($Trip/OrderNumber), Shop.SimulationEvent_Order = $Trip);
-            commit $Arrived without events;
+            $Arrived = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ARRIVED, Message = $Courier/Code + ' at the store for MX-' + toString($Trip/OrderNumber), Shop.SimulationEvent_Order = $Trip) commit without events;
           end if;
         else
           if $Courier/CourierStatus = Shop.CourierStatus.AT_STORE then
@@ -275,15 +267,13 @@ begin
   begin
     retrieve $Idle from Shop.Courier where [CourierStatus = 'AVAILABLE'] sort by StatusChangedAt asc first;
     if $Idle != empty then
-      change $WaitOrder (Shop.Order_Courier = $Idle);
-      commit $WaitOrder without events;
+      change $WaitOrder (Shop.Order_Courier = $Idle) commit without events;
       change $Idle (Shop.Courier_CurrentOrder = $WaitOrder);
       call microflow Shop.SUB_Courier_SetStatus(Courier = $Idle, ToStatus = Shop.CourierStatus.TO_STORE, TripSeconds = $Sim/CourierToStore);
       $ToStoreEff = call microflow Shop.SUB_Eff(Base = $Sim/CourierToStore);
       $ToStoreText = call microflow Shop.SUB_MmSs(Seconds = $ToStoreEff);
       call microflow Shop.SUB_Order_Log(TheOrder = $WaitOrder, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = 'Courier ' + $Idle/NodeHandle + ' assigned. Arriving at the store in ~' + $ToStoreText + '.', Visible = true);
-      $Assigned = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ASSIGNED, Message = $Idle/Code + ' assigned to MX-' + toString($WaitOrder/OrderNumber), Shop.SimulationEvent_Order = $WaitOrder);
-      commit $Assigned without events;
+      $Assigned = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ASSIGNED, Message = $Idle/Code + ' assigned to MX-' + toString($WaitOrder/OrderNumber), Shop.SimulationEvent_Order = $WaitOrder) commit without events;
     end if;
   end loop;
 end;
@@ -303,8 +293,7 @@ begin
       change $ReadyOrder (CompletedAt = [%CurrentDateTime%]);
       call microflow Shop.SUB_Order_Transition(TheOrder = $ReadyOrder, ToStatus = Shop.OrderStatus.PICKED_UP, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/pickup', Reason = '');
       call microflow Shop.SUB_Order_Log(TheOrder = $ReadyOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'DEPLOY', Message = 'Picked up. Enjoy your build!', Visible = true);
-      $Collected = create Shop.SimulationEvent (OccurredAt = [%CurrentDateTime%], EventType = Shop.SimulationEventType.PICKUP_COMPLETED, Message = 'MX-' + toString($ReadyOrder/OrderNumber) + ' picked up', Shop.SimulationEvent_Order = $ReadyOrder);
-      commit $Collected without events;
+      $Collected = create Shop.SimulationEvent (OccurredAt = [%CurrentDateTime%], EventType = Shop.SimulationEventType.PICKUP_COMPLETED, Message = 'MX-' + toString($ReadyOrder/OrderNumber) + ' picked up', Shop.SimulationEvent_Order = $ReadyOrder) commit without events;
     end if;
   end loop;
 end;
@@ -328,8 +317,7 @@ begin
   end if;
   declare $Jittered Integer = round($Sim/TrafficIntervalSeconds * (0.8 + random() * 0.4));
   $NextEff = call microflow Shop.SUB_Eff(Base = $Jittered);
-  change $Sim (TrafficProgress = 0, TrafficAnchorAt = [%CurrentDateTime%], TrafficIntervalEffective = $NextEff);
-  commit $Sim without events;
+  change $Sim (TrafficProgress = 0, TrafficAnchorAt = [%CurrentDateTime%], TrafficIntervalEffective = $NextEff) commit without events;
   retrieve $OpenSim from Shop.Order where [Source = 'SIMULATOR' and IsOpen = true];
   $OpenCount = count $OpenSim;
   if $OpenCount < $Sim/TrafficMaxActiveOrders then
@@ -387,8 +375,7 @@ begin
   end if;
   log info node 'Simulation' 'SPAWN MX-' + toString($Order/OrderNumber) + ' ' + getKey($Order/OrderType) + ' ' + $Where + ' items=' + toString($Order/ItemCount);
   $Spawned = create Shop.SimulationEvent (OccurredAt = [%CurrentDateTime%], EventType = Shop.SimulationEventType.ORDER_SPAWNED,
-    Message = 'Spawned MX-' + toString($Order/OrderNumber) + ' (' + getKey($Order/OrderType) + ', ' + (if $Delivery then $Customer/Zip + ', ' else '') + toString($Order/ItemCount) + ' items)', Shop.SimulationEvent_Order = $Order);
-  commit $Spawned without events;
+    Message = 'Spawned MX-' + toString($Order/OrderNumber) + ' (' + getKey($Order/OrderType) + ', ' + (if $Delivery then $Customer/Zip + ', ' else '') + toString($Order/ItemCount) + ' items)', Shop.SimulationEvent_Order = $Order) commit without events;
 end;
 
 /**
@@ -406,8 +393,7 @@ begin
       return;
     end if;
   end if;
-  change $Sim (LastHousekeepingAt = $Now);
-  commit $Sim without events;
+  change $Sim (LastHousekeepingAt = $Now) commit without events;
   declare $Cutoff DateTime = addHours($Now, -$Sim/RetentionHours);
   retrieve $Old from Shop.Order where [Source = 'SIMULATOR' and IsOpen = false and StatusChangedAt < $Cutoff];
   retrieve $OldEvents from Shop.SimulationEvent where [OccurredAt < $Cutoff];
@@ -418,8 +404,7 @@ begin
   end if;
   delete $OldEvents;
   delete $Old;
-  $Done = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.HOUSEKEEPING, Message = 'Housekeeping removed ' + toString($OrderCount) + ' orders and ' + toString($EventCount) + ' events');
-  commit $Done without events;
+  $Done = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.HOUSEKEEPING, Message = 'Housekeeping removed ' + toString($OrderCount) + ' orders and ' + toString($EventCount) + ' events') commit without events;
 end;
 
 /**
@@ -435,8 +420,7 @@ begin
   if $Sim = empty then
     return;
   end if;
-  change $Sim (LastTickAt = [%CurrentDateTime%]);
-  commit $Sim without events;
+  change $Sim (LastTickAt = [%CurrentDateTime%]) commit without events;
   call microflow Shop.SIM_Payments() on error continue;
   call microflow Shop.SIM_Kitchen() on error continue;
   call microflow Shop.SIM_Couriers() on error continue;

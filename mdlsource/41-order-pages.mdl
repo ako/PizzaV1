@@ -30,7 +30,7 @@ begin
   $Copied = call javascript action Shop.JS_CopyText(Text = $O/CommitHash);
   call microflow Shop.ACT_Toast_Copied();
 end;
-grant execute on nanoflow Shop.NF_CopyHash to Shop.Guest, Shop.Administrator; -- auto
+grant execute on nanoflow Shop.NF_CopyHash to Shop.Guest; -- auto
 
 /**
  * Copy the personal tracking link (US-110 AC5).
@@ -43,7 +43,7 @@ begin
   $Copied = call javascript action Shop.JS_CopyText(Text = $View/TrackingUrl);
   call microflow Shop.ACT_Toast_Copied();
 end;
-grant execute on nanoflow Shop.NF_CopyLink to Shop.Guest, Shop.Administrator; -- auto
+grant execute on nanoflow Shop.NF_CopyLink to Shop.Guest; -- auto
 
 /** Print receipt (US-167). */
 create or modify nanoflow Shop.NF_Print ()
@@ -51,7 +51,7 @@ folder 'Tracking'
 begin
   $Printed = call javascript action Shop.JS_Print();
 end;
-grant execute on nanoflow Shop.NF_Print to Shop.Guest, Shop.Administrator; -- auto
+grant execute on nanoflow Shop.NF_Print to Shop.Guest; -- auto
 
 /**
  * Toast after a copy action (TXT-GEN-11).
@@ -61,7 +61,7 @@ folder 'Tracking'
 begin
   call microflow Shop.SUB_Toast(Message = 'Copied to clipboard.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = false);
 end;
-grant execute on microflow Shop.ACT_Toast_Copied to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Toast_Copied to Shop.Guest; -- auto
 
 /**
  * Lookup form data source (SCR-10).
@@ -75,7 +75,7 @@ begin
   $Form = create Shop.LookupForm (OrderNumber = '', Email = '', Error = '');
   return $Form;
 end;
-grant execute on microflow Shop.DS_Lookup to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Lookup to Shop.Guest; -- auto
 
 /**
  * git log --grep (US-133, US-136): finds a guest order by number (MX-1061,
@@ -85,7 +85,7 @@ grant execute on microflow Shop.DS_Lookup to Shop.Guest, Shop.Administrator; -- 
  *
  * @param $Form The lookup form
  */
-create or modify microflow Shop.ACT_Lookup ($Form: Shop.LookupForm)
+create or modify microflow Shop.SUB_Lookup ($Form: Shop.LookupForm)
 folder 'Tracking'
 begin
   declare $Raw String = if $Form/OrderNumber = empty then '' else toUpperCase(trim($Form/OrderNumber));
@@ -105,15 +105,29 @@ begin
   declare $Number Integer = if isMatch($Digits, '[0-9]{1,9}') then parseInteger($Digits) else -1;
   retrieve $O from Shop.Order where [OrderNumber = $Number and Source = 'GUEST'] first;
   if $O = empty or toLowerCase($O/ContactEmail) != $Email then
-    $Miss = create Shop.LookupAttempt (AttemptedAt = [%CurrentDateTime%], Shop.LookupAttempt_User = [%CurrentUser%]);
-    commit $Miss without events;
+    $Miss = create Shop.LookupAttempt (AttemptedAt = [%CurrentDateTime%], Shop.LookupAttempt_User = [%CurrentUser%]) commit without events;
     change $Form (Error = 'No order matches this order number and email.');
     return;
   end if;
   call microflow Shop.SUB_Order_Grant(TheOrder = $O);
   show page Shop.Tracking(TheOrder = $O);
 end;
-grant execute on microflow Shop.ACT_Lookup to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * git log --grep (US-133, US-136): finds a guest order by number (MX-1061,
+ * mx-1061 or 1061) and contact email, case-insensitive and trimmed. A miss
+ * never says which field is wrong; after 5 misses in 10 minutes lookups are
+ * refused for 10 minutes. A hit grants this session access and opens SCR-09.
+ * Page entry point; the logic is in SUB_Lookup.
+ *
+ * @param $Form The lookup form
+ */
+create or modify microflow Shop.ACT_Lookup ($Form: Shop.LookupForm)
+folder 'Tracking'
+begin
+  call microflow Shop.SUB_Lookup(Form = $Form);
+end;
+grant execute on microflow Shop.ACT_Lookup to Shop.Guest; -- auto
 
 /**
  * Data source of the home Live Build Status panel (US-024): the most recent
@@ -134,7 +148,7 @@ begin
   call microflow Shop.SUB_Track_Fill(View = $View);
   return $View;
 end;
-grant execute on microflow Shop.DS_Home_Active to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Home_Active to Shop.Guest; -- auto
 
 /**
  * Back to the cart after a rolled-back order (US-107 AC2).
@@ -145,7 +159,7 @@ begin
   close page;
   call microflow Shop.ACT_Nav_Cart();
 end;
-grant execute on microflow Shop.ACT_Pay_ToCart to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Pay_ToCart to Shop.Guest; -- auto
 
 /**
  * Retry from the tracking page (US-113 AC2): opens the payment sheet in its
@@ -158,7 +172,7 @@ folder 'Tracking'
 begin
   show page Shop.PaymentSheet(TheOrder = $TheOrder);
 end;
-grant execute on microflow Shop.ACT_Track_RetryOpen to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Track_RetryOpen to Shop.Guest; -- auto
 
 /** Live log of an order (US-123): customer-visible lines only, oldest first. */
 create or modify snippet Shop.SNIP_OrderLog (Params: ($TheOrder: Shop.Order)) {

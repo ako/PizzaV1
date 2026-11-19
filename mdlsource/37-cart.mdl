@@ -17,7 +17,7 @@ begin
   close page;
   show page Shop.Checkout();
 end;
-grant execute on microflow Shop.ACT_Cart_Checkout to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Cart_Checkout to Shop.Guest; -- auto
 
 /**
  * git checkout menu from the empty cart (US-062).
@@ -28,7 +28,7 @@ begin
   close page;
   call microflow Shop.ACT_Nav_Menu(Category = 'PIZZAS');
 end;
-grant execute on microflow Shop.ACT_Cart_ToMenu to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Cart_ToMenu to Shop.Guest; -- auto
 
 /**
  * Edit a pizza line (US-050): closes the drawer and opens the configurator.
@@ -41,7 +41,7 @@ begin
   close page;
   call microflow Shop.ACT_Configure_Edit(Line = $Line);
 end;
-grant execute on microflow Shop.ACT_Cart_Edit to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.ACT_Cart_Edit to Shop.Guest; -- auto
 
 /** SCR-05 MANIFEST.LOCK. */
 create or modify page Shop.Cart_Drawer (

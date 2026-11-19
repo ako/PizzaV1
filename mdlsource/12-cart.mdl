@@ -16,8 +16,7 @@ begin
   if $Existing != empty then
     return $Existing;
   end if;
-  $Cart = create Shop.Cart (MenuCategory = 'PIZZAS', CouponState = Shop.CouponState.NONE, ItemCount = 0, Subtotal = 0, UpdatedAt = [%CurrentDateTime%], Shop.Cart_Owner = [%CurrentUser%]);
-  commit $Cart without events;
+  $Cart = create Shop.Cart (MenuCategory = 'PIZZAS', CouponState = Shop.CouponState.NONE, ItemCount = 0, Subtotal = 0, UpdatedAt = [%CurrentDateTime%], Shop.Cart_Owner = [%CurrentUser%]) commit without events;
   return $Cart;
 end;
 
@@ -59,8 +58,7 @@ begin
     if $Product/Kind != Shop.ProductKind.DRINK then
       set $NonDrink = true;
     end if;
-    change $Line (UnavailableReason = $Reason);
-    commit $Line without events;
+    change $Line (UnavailableReason = $Reason) commit without events;
     set $Count = $Count + $Line/Quantity;
     set $Subtotal = $Subtotal + $Line/LineTotal;
   end loop;
@@ -106,11 +104,9 @@ begin
     set $Badge = 'VALIDATED (' + (if $Price/Discount > 0 then $DiscText else 'FREE_DISPATCH') + ')';
   end if;
   change $Cart (SubtotalText = $SubText, DiscountText = $DiscText, TotalText = $TotText, CouponCode = if $Coupon = empty then '' else $Coupon/Code, CouponBadge = $Badge,
-    FreeUnlocked = $Subtotal >= $Store/FreeDeliveryThreshold, CountText = toString($Count) + (if $Count = 1 then ' DEPENDENCY INSTALLED' else ' DEPENDENCIES INSTALLED'));
-  change $Cart (ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
+    FreeUnlocked = $Subtotal >= $Store/FreeDeliveryThreshold, CountText = toString($Count) + (if $Count = 1 then ' DEPENDENCY INSTALLED' else ' DEPENDENCIES INSTALLED'), ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
     DiscountPreview = $Price/Discount, Total = $Subtotal - $Price/Discount, HasUnavailable = $Unavailable, OnlyDrinks = $Count > 0 and not($NonDrink),
-    FreeDeliveryHint = $Free, MinimumHint = $Minimum, CheckoutBlock = $Block, UpdatedAt = [%CurrentDateTime%]);
-  commit $Cart without events refresh;
+    FreeDeliveryHint = $Free, MinimumHint = $Minimum, CheckoutBlock = $Block, UpdatedAt = [%CurrentDateTime%]) commit without events refresh;
 end;
 
 /**
@@ -153,8 +149,7 @@ begin
       return false;
     end if;
     declare $New Integer = min($Before + $Quantity, $Store/MaxQuantityPerLine);
-    change $Same (Quantity = $New);
-    commit $Same without events;
+    change $Same (Quantity = $New) commit without events;
     call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
     if $Before + $Quantity > $Store/MaxQuantityPerLine then
       call microflow Shop.SUB_Toast(Message = 'Only ' + toString($New - $Before) + ' more could be added — max 10 of the same item per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = true);
@@ -199,7 +194,7 @@ end;
  * @param $Product The product
  * @param $Quantity Instances to add (1–10)
  */
-create or modify microflow Shop.ACT_Product_Add ($Product: Shop.Product, $Quantity: Integer)
+create or modify microflow Shop.SUB_Product_Add ($Product: Shop.Product, $Quantity: Integer)
 folder 'Cart'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
@@ -219,11 +214,25 @@ begin
 end;
 
 /**
+ * Adds a product's default configuration in a quantity (quick add and the
+ * item info modal, US-028, US-029).
+ * Page entry point; the logic is in SUB_Product_Add.
+ *
+ * @param $Product The product
+ * @param $Quantity Instances to add (1–10)
+ */
+create or modify microflow Shop.ACT_Product_Add ($Product: Shop.Product, $Quantity: Integer)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Product_Add(Product = $Product, Quantity = $Quantity);
+end;
+
+/**
  * Increases a line's quantity by one (US-063): max 10 per line, 30 per cart.
  *
  * @param $Line The cart line
  */
-create or modify microflow Shop.ACT_Line_Increase ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Line_Increase ($Line: Shop.CartLine)
 folder 'Cart'
 begin
   retrieve $Cart from $Line/Shop.CartLine_Cart;
@@ -236,9 +245,20 @@ begin
     call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
     return;
   end if;
-  change $Line (Quantity = $Line/Quantity + 1);
-  commit $Line without events refresh;
+  change $Line (Quantity = $Line/Quantity + 1) commit without events refresh;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+end;
+
+/**
+ * Increases a line's quantity by one (US-063): max 10 per line, 30 per cart.
+ * Page entry point; the logic is in SUB_Line_Increase.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Increase ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Line_Increase(Line = $Line);
 end;
 
 /**
@@ -246,16 +266,27 @@ end;
  *
  * @param $Line The cart line
  */
-create or modify microflow Shop.ACT_Line_Decrease ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Line_Decrease ($Line: Shop.CartLine)
 folder 'Cart'
 begin
   if $Line/Quantity <= 1 then
     return;
   end if;
   retrieve $Cart from $Line/Shop.CartLine_Cart;
-  change $Line (Quantity = $Line/Quantity - 1);
-  commit $Line without events refresh;
+  change $Line (Quantity = $Line/Quantity - 1) commit without events refresh;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+end;
+
+/**
+ * Decreases a line's quantity by one; never below 1 (removal is rm, US-063).
+ * Page entry point; the logic is in SUB_Line_Decrease.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Decrease ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Line_Decrease(Line = $Line);
 end;
 
 /**
@@ -263,7 +294,7 @@ end;
  *
  * @param $Line The cart line
  */
-create or modify microflow Shop.ACT_Line_Remove ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Line_Remove ($Line: Shop.CartLine)
 folder 'Cart'
 begin
   retrieve $Cart from $Line/Shop.CartLine_Cart;
@@ -280,12 +311,24 @@ begin
 end;
 
 /**
+ * Removes a line (rm, US-064). Removing the last line also removes the coupon.
+ * Page entry point; the logic is in SUB_Line_Remove.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Remove ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Line_Remove(Line = $Line);
+end;
+
+/**
  * Empties the cart: all lines and the coupon (CLEAR (rm -rf), US-065).
  * The confirmation is asked by the button.
  *
  * @param $Cart The cart
  */
-create or modify microflow Shop.ACT_Cart_Clear ($Cart: Shop.Cart)
+create or modify microflow Shop.SUB_Cart_Clear ($Cart: Shop.Cart)
 folder 'Cart'
 begin
   retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false];
@@ -296,32 +339,42 @@ begin
 end;
 
 /**
+ * Empties the cart: all lines and the coupon (CLEAR (rm -rf), US-065).
+ * The confirmation is asked by the button.
+ * Page entry point; the logic is in SUB_Cart_Clear.
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Cart_Clear ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Cart_Clear(Cart = $Cart);
+end;
+
+/**
  * Applies the typed coupon code (US-066..068): case-insensitive; an unknown
  * or expired code shows its message and never removes a valid coupon; a
  * valid code replaces the current one (one coupon per cart).
  *
  * @param $Cart The cart
  */
-create or modify microflow Shop.ACT_Coupon_Apply ($Cart: Shop.Cart)
+create or modify microflow Shop.SUB_Coupon_Apply ($Cart: Shop.Cart)
 folder 'Cart'
 begin
   declare $Code String = toUpperCase(trim($Cart/CouponInput));
   if $Cart/CouponInput = empty or $Code = '' then
-    change $Cart (CouponFieldError = 'Enter a coupon code.');
-    commit $Cart without events refresh;
+    change $Cart (CouponFieldError = 'Enter a coupon code.') commit without events refresh;
     return;
   end if;
   retrieve $Coupon from Shop.Coupon where [Code = $Code] first;
   if $Coupon = empty then
-    change $Cart (CouponFieldError = 'Coupon not found: ' + $Code, CouponInput = $Code);
-    commit $Cart without events refresh;
+    change $Cart (CouponFieldError = 'Coupon not found: ' + $Code, CouponInput = $Code) commit without events refresh;
     return;
   end if;
   $Probe = create Shop.PriceResult ();
   call microflow Shop.SUB_Coupon_Evaluate(Coupon = $Coupon, Subtotal = $Cart/Subtotal, OrderType = Shop.OrderType.DELIVERY, Result = $Probe);
   if $Probe/CouponState = Shop.CouponState.INVALID then
-    change $Cart (CouponFieldError = $Probe/CouponMessage, CouponInput = $Code);
-    commit $Cart without events refresh;
+    change $Cart (CouponFieldError = $Probe/CouponMessage, CouponInput = $Code) commit without events refresh;
     return;
   end if;
   retrieve $Old from $Cart/Shop.Cart_Coupon;
@@ -333,11 +386,25 @@ begin
 end;
 
 /**
+ * Applies the typed coupon code (US-066..068): case-insensitive; an unknown
+ * or expired code shows its message and never removes a valid coupon; a
+ * valid code replaces the current one (one coupon per cart).
+ * Page entry point; the logic is in SUB_Coupon_Apply.
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Coupon_Apply ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Coupon_Apply(Cart = $Cart);
+end;
+
+/**
  * Removes the coupon from the cart (rm coupon, US-068).
  *
  * @param $Cart The cart
  */
-create or modify microflow Shop.ACT_Coupon_Remove ($Cart: Shop.Cart)
+create or modify microflow Shop.SUB_Coupon_Remove ($Cart: Shop.Cart)
 folder 'Cart'
 begin
   retrieve $Old from $Cart/Shop.Cart_Coupon;
@@ -346,4 +413,16 @@ begin
   if $Old != empty then
     call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' removed.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
   end if;
+end;
+
+/**
+ * Removes the coupon from the cart (rm coupon, US-068).
+ * Page entry point; the logic is in SUB_Coupon_Remove.
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Coupon_Remove ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Coupon_Remove(Cart = $Cart);
 end;

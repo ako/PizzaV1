@@ -133,8 +133,7 @@ begin
     $Oldest = head $Existing;
     delete $Oldest;
   end if;
-  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShowCartAction = $ShowCartAction, Shop.Toast_Owner = [%CurrentUser%]);
-  commit $Toast without events refresh;
+  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShowCartAction = $ShowCartAction, Shop.Toast_Owner = [%CurrentUser%]) commit without events refresh;
 end;
 
 /**
@@ -142,8 +141,20 @@ end;
  *
  * @param $Toast The toast to close
  */
-create or modify microflow Shop.ACT_Toast_Close ($Toast: Shop.Toast)
+create or modify microflow Shop.SUB_Toast_Close ($Toast: Shop.Toast)
 folder 'Core'
 begin
   delete $Toast refresh;
+end;
+
+/**
+ * Closes one toast (keyboard or click on its close button).
+ * Page entry point; the logic is in SUB_Toast_Close.
+ *
+ * @param $Toast The toast to close
+ */
+create or modify microflow Shop.ACT_Toast_Close ($Toast: Shop.Toast)
+folder 'Core'
+begin
+  call microflow Shop.SUB_Toast_Close(Toast = $Toast);
 end;

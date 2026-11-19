@@ -5,17 +5,18 @@ mdl 1;
 -- without entity access and re-check every guard themselves.
 
 create or modify module role Shop.Guest description 'Every visitor: an anonymous guest';
-create or modify module role Shop.Administrator description 'Built-in administrator (runtime only, no screens)';
 
 -- ── Catalog: published menu only
+-- public reference data (the allergen notice lists them all); accepted SEC007, see FINDINGS.md
 grant read * on entity Shop.Allergen to Shop.Guest;
-grant read * on entity Shop.Category to Shop.Guest;
+grant read * on entity Shop.Category to Shop.Guest where [Shop.Product_Category/Shop.Product/ProductStatus = 'PUBLISHED'];
 grant read * on entity Shop.Product to Shop.Guest where [ProductStatus = 'PUBLISHED'];
 grant read * on entity Shop.ProductSize to Shop.Guest where [Shop.ProductSize_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
 grant read * on entity Shop.RecipeItem to Shop.Guest where [Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
-grant read * on entity Shop.Ingredient to Shop.Guest;
+grant read * on entity Shop.Ingredient to Shop.Guest where [Shop.RecipeItem_Ingredient/Shop.RecipeItem/Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED' or Shop.Option_Ingredient/Shop.Option/IsActive = true];
 grant read * on entity Shop.Option to Shop.Guest where [IsActive = true];
-grant read * on entity Shop.DeliveryZone to Shop.Guest;
+-- only the zone of the guest's own checkout or orders (the zone table itself is checked server-side)
+grant read * on entity Shop.DeliveryZone to Shop.Guest where [Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]' or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
 grant read (StoreName, AddressLine, Phone, TaxRatePercent, DeliveryFee, FreeDeliveryThreshold, MinDeliverySubtotal, MaxQuantityPerLine, MaxItemsPerOrder, MaxPaymentAttempts) on entity Shop.StoreSettings to Shop.Guest;
 
 -- ── The guest's own session state
@@ -44,35 +45,3 @@ grant read (LoggedAt, TimeText, Level, Tag, Message, Seq, IsCustomerVisible, Ord
 -- courier and oven of a token order: display fields only
 grant read (Name, NodeHandle, Vehicle) on entity Shop.Courier to Shop.Guest where [Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
 grant read (Code, DisplayName) on entity Shop.Oven to Shop.Guest where [Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-
--- ── Built-in administrator: same screens as a guest (there are no admin screens),
--- unrestricted reads so the runtime checks pass for this role too.
-grant read * on entity Shop.Allergen to Shop.Administrator;
-grant read * on entity Shop.Category to Shop.Administrator;
-grant read * on entity Shop.Product to Shop.Administrator;
-grant read * on entity Shop.ProductSize to Shop.Administrator;
-grant read * on entity Shop.RecipeItem to Shop.Administrator;
-grant read * on entity Shop.Ingredient to Shop.Administrator;
-grant read * on entity Shop.Option to Shop.Administrator;
-grant read * on entity Shop.DeliveryZone to Shop.Administrator;
-grant read * on entity Shop.StoreSettings to Shop.Administrator;
-grant read *, write (CouponInput, SearchInput, SearchQuery) on entity Shop.Cart to Shop.Administrator;
-grant read * on entity Shop.CartLine to Shop.Administrator;
-grant read *, write (AddressLine1, AddressLine2, City, StateCode, Zip, DeliveryNotes, ContactName, ContactEmail, ContactPhone) on entity Shop.CheckoutForm to Shop.Administrator;
-grant read * on entity Shop.Toast to Shop.Administrator;
-grant read * on entity Shop.Coupon to Shop.Administrator;
-grant read * on entity Shop.PriceResult to Shop.Administrator;
-grant read * on entity Shop.HomeView to Shop.Administrator;
-grant read * on entity Shop.OrderAccess to Shop.Administrator;
-grant read * on entity Shop.Order to Shop.Administrator;
-grant read * on entity Shop.OrderLine to Shop.Administrator;
-grant read * on entity Shop.OrderLineModifier to Shop.Administrator;
-grant read * on entity Shop.PaymentAttempt to Shop.Administrator;
-grant read * on entity Shop.OrderStatusChange to Shop.Administrator;
-grant read * on entity Shop.OrderLogEntry to Shop.Administrator;
-grant read * on entity Shop.Courier to Shop.Administrator;
-grant read * on entity Shop.Oven to Shop.Administrator;
-grant read * on entity Shop.MenuView to Shop.Administrator;
-grant read * on entity Shop.Choice to Shop.Administrator;
-grant read * on entity Shop.TrackView to Shop.Administrator;
-grant read *, write (OrderNumber, Email) on entity Shop.LookupForm to Shop.Administrator;

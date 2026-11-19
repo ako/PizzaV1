@@ -7,6 +7,8 @@ cd "$(dirname "$0")/.."
 for f in mdlsource/*.mdl; do
   out=$(./mxcli exec "$f" -p GitPizza.mpr 2>&1 || true)
   if grep -q 'cannot be spliced' <<<"$out"; then
+    # write every other statement first (new flows the rebuilt ones call), then rebuild
+    ./mxcli exec "$f" -p GitPizza.mpr --continue-on-error >/dev/null 2>&1 || true
     python3 tools/mdl_rebuild.py "$f"
     out=$(./mxcli exec "$f" -p GitPizza.mpr 2>&1 || true)
   fi

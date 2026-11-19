@@ -309,12 +309,9 @@ begin
     RealLine = if $Product/Kind = Shop.ProductKind.PIZZA then $Product/RealWorldName else $Product/RealWorldName + ' · ' + $Default/ServingDescription,
     CodeCrust = if $DefCrustC = empty then '' else $DefCrustC/Name,
     CodeSauce = if $DefSauceC = empty then '' else if $DefSauceC/Code = 'SA-06' then 'null' else $DefSauceC/Name,
-    CodeCheese = if $DefCheeseC = empty then '' else if $DefCheeseC/Code = 'CH-04' then 'null' else $DefCheeseC/Name);
-  change $Product (ModulePath = './' + $Folder + '/' + $Product/ModuleKey + '.ts', CardPriceLabel = $PriceLabel, SpiceLabel = $Spice);
-  change $Product (CardPrice = $Default/Price, CardSizeLabel = $SizeLabel, ServingLabel = $Default/ServingDescription, CaloriesLabel = $Calories,
+    CodeCheese = if $DefCheeseC = empty then '' else if $DefCheeseC/Code = 'CH-04' then 'null' else $DefCheeseC/Name, ModulePath = './' + $Folder + '/' + $Product/ModuleKey + '.ts', CardPriceLabel = $PriceLabel, SpiceLabel = $Spice, CardPrice = $Default/Price, CardSizeLabel = $SizeLabel, ServingLabel = $Default/ServingDescription, CaloriesLabel = $Calories,
     IsVegetarian = $Probe/IsVegetarian, IsVegan = $Probe/IsVegan, IsOrderable = $Orderable, AllergenText = $AllergenText,
-    SearchText = toLowerCase($Search));
-  commit $Product without events;
+    SearchText = toLowerCase($Search)) commit without events;
   delete $Probe;
 end;
 

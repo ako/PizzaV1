@@ -113,12 +113,25 @@ end;
  * @param $View The home view
  * @param $Step -1 or 1
  */
-create or modify microflow Shop.ACT_Home_Carousel ($View: Shop.HomeView, $Step: Integer)
+create or modify microflow Shop.SUB_Home_Carousel ($View: Shop.HomeView, $Step: Integer)
 folder 'Home'
 begin
   declare $Max Integer = max(0, $View/FeaturedCount - 3);
   change $View (CarouselStart = max(0, min($Max, $View/CarouselStart + $Step)));
   call microflow Shop.SUB_Home_CarouselPos(View = $View);
+end;
+
+/**
+ * Carousel arrows: moves one card left or right, never past the ends.
+ * Page entry point; the logic is in SUB_Home_Carousel.
+ *
+ * @param $View The home view
+ * @param $Step -1 or 1
+ */
+create or modify microflow Shop.ACT_Home_Carousel ($View: Shop.HomeView, $Step: Integer)
+folder 'Home'
+begin
+  call microflow Shop.SUB_Home_Carousel(View = $View, Step = $Step);
 end;
 
 /**

@@ -152,7 +152,7 @@ begin
   end loop;
   return $Choices;
 end;
-grant execute on microflow Shop.DS_Config_Choices to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Config_Choices to Shop.Guest; -- auto
 
 /**
  * Applies a click on a configurator tile (US-042..US-046, US-051):
@@ -162,7 +162,7 @@ grant execute on microflow Shop.DS_Config_Choices to Shop.Guest, Shop.Administra
  *
  * @param $Choice The tile that was clicked
  */
-create or modify microflow Shop.ACT_Config_Choose ($Choice: Shop.Choice)
+create or modify microflow Shop.SUB_Config_Choose ($Choice: Shop.Choice)
 folder 'Configurator'
 begin
   retrieve $Line from $Choice/Shop.Choice_Line;
@@ -226,7 +226,22 @@ begin
   call microflow Shop.SUB_Line_Recalculate(Line = $Line);
   commit $Line without events refresh;
 end;
-grant execute on microflow Shop.ACT_Config_Choose to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Applies a click on a configurator tile (US-042..US-046, US-051):
+ * size (resets a crust or removes extras the new size does not allow, with a
+ * notice), crust/sauce/cheese, extra on/off (max per product), or recipe
+ * item unlink/link. Disabled, fixed or unavailable choices change nothing.
+ * Page entry point; the logic is in SUB_Config_Choose.
+ *
+ * @param $Choice The tile that was clicked
+ */
+create or modify microflow Shop.ACT_Config_Choose ($Choice: Shop.Choice)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Config_Choose(Choice = $Choice);
+end;
+grant execute on microflow Shop.ACT_Config_Choose to Shop.Guest; -- auto
 
 /**
  * Quantity stepper of the configurator: 1–10 (US-049).
@@ -234,14 +249,27 @@ grant execute on microflow Shop.ACT_Config_Choose to Shop.Guest, Shop.Administra
  * @param $Line The draft line
  * @param $Delta -1 or 1
  */
-create or modify microflow Shop.ACT_Config_Qty ($Line: Shop.CartLine, $Delta: Integer)
+create or modify microflow Shop.SUB_Config_Qty ($Line: Shop.CartLine, $Delta: Integer)
 folder 'Configurator'
 begin
   change $Line (Quantity = max(1, min(10, $Line/Quantity + $Delta)));
   call microflow Shop.SUB_Line_Recalculate(Line = $Line);
   commit $Line without events refresh;
 end;
-grant execute on microflow Shop.ACT_Config_Qty to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Quantity stepper of the configurator: 1–10 (US-049).
+ * Page entry point; the logic is in SUB_Config_Qty.
+ *
+ * @param $Line The draft line
+ * @param $Delta -1 or 1
+ */
+create or modify microflow Shop.ACT_Config_Qty ($Line: Shop.CartLine, $Delta: Integer)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Config_Qty(Line = $Line, Delta = $Delta);
+end;
+grant execute on microflow Shop.ACT_Config_Qty to Shop.Guest; -- auto
 
 /**
  * Returns to the page the configurator was opened from (US-049 AC2).
@@ -270,7 +298,7 @@ end;
  *
  * @param $Line The draft line
  */
-create or modify microflow Shop.ACT_Config_Commit ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Config_Commit ($Line: Shop.CartLine)
 folder 'Configurator'
 begin
   retrieve $Cart from $Line/Shop.CartLine_Cart;
@@ -319,21 +347,48 @@ begin
   call microflow Shop.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
   call microflow Shop.ACT_Nav_Cart();
 end;
-grant execute on microflow Shop.ACT_Config_Commit to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Build & Deploy / Commit to manifest (US-049, US-050): adds the draft to the
+ * cart (merging an identical build, max 10), or in edit mode replaces the
+ * edited line (merging with an identical other line). Rejected when the
+ * build became unavailable or the edited line no longer exists.
+ * Page entry point; the logic is in SUB_Config_Commit.
+ *
+ * @param $Line The draft line
+ */
+create or modify microflow Shop.ACT_Config_Commit ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Config_Commit(Line = $Line);
+end;
+grant execute on microflow Shop.ACT_Config_Commit to Shop.Guest; -- auto
 
 /**
  * Leaves the configurator without committing (US-050 AC4): the cart is unchanged.
  *
  * @param $Line The draft line
  */
-create or modify microflow Shop.ACT_Config_Back ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Config_Back ($Line: Shop.CartLine)
 folder 'Configurator'
 begin
   declare $ReturnTo String = $Line/ReturnTo;
   delete $Line;
   call microflow Shop.SUB_Config_Return(ReturnTo = $ReturnTo);
 end;
-grant execute on microflow Shop.ACT_Config_Back to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Leaves the configurator without committing (US-050 AC4): the cart is unchanged.
+ * Page entry point; the logic is in SUB_Config_Back.
+ *
+ * @param $Line The draft line
+ */
+create or modify microflow Shop.ACT_Config_Back ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Config_Back(Line = $Line);
+end;
+grant execute on microflow Shop.ACT_Config_Back to Shop.Guest; -- auto
 
 /**
  * Edit a pizza line of the cart in the configurator (US-050): a draft copy
@@ -341,7 +396,7 @@ grant execute on microflow Shop.ACT_Config_Back to Shop.Guest, Shop.Administrato
  *
  * @param $Line The cart line
  */
-create or modify microflow Shop.ACT_Configure_Edit ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Configure_Edit ($Line: Shop.CartLine)
 folder 'Configurator'
 begin
   retrieve $Cart from $Line/Shop.CartLine_Cart;
@@ -360,7 +415,20 @@ begin
   commit $Draft without events;
   show page Shop.Configurator(Line = $Draft);
 end;
-grant execute on microflow Shop.ACT_Configure_Edit to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Edit a pizza line of the cart in the configurator (US-050): a draft copy
+ * with the line's configuration and quantity; Commit to manifest replaces it.
+ * Page entry point; the logic is in SUB_Configure_Edit.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Configure_Edit ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Configure_Edit(Line = $Line);
+end;
+grant execute on microflow Shop.ACT_Configure_Edit to Shop.Guest; -- auto
 
 /**
  * Adds the shown product from module.info in the chosen quantity (US-029)
@@ -368,7 +436,7 @@ grant execute on microflow Shop.ACT_Configure_Edit to Shop.Guest, Shop.Administr
  *
  * @param $Line Draft line holding product and quantity
  */
-create or modify microflow Shop.ACT_Info_Add ($Line: Shop.CartLine)
+create or modify microflow Shop.SUB_Info_Add ($Line: Shop.CartLine)
 folder 'Configurator'
 begin
   retrieve $Product from $Line/Shop.CartLine_Product;
@@ -377,7 +445,20 @@ begin
   call microflow Shop.ACT_Product_Add(Product = $Product, Quantity = $Qty);
   close page;
 end;
-grant execute on microflow Shop.ACT_Info_Add to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Adds the shown product from module.info in the chosen quantity (US-029)
+ * and closes the modal.
+ * Page entry point; the logic is in SUB_Info_Add.
+ *
+ * @param $Line Draft line holding product and quantity
+ */
+create or modify microflow Shop.ACT_Info_Add ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Info_Add(Line = $Line);
+end;
+grant execute on microflow Shop.ACT_Info_Add to Shop.Guest; -- auto
 
 /**
  * Draft line that holds the quantity chosen in module.info (US-029).
@@ -390,29 +471,39 @@ returns Shop.CartLine as $Line
 folder 'Configurator'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
-  $Line = create Shop.CartLine (Quantity = 1, IsDraft = true, Shop.CartLine_Cart = $Cart, Shop.CartLine_Product = $Product);
-  commit $Line without events;
+  $Line = create Shop.CartLine (Quantity = 1, IsDraft = true, Shop.CartLine_Cart = $Cart, Shop.CartLine_Product = $Product) commit without events;
   return $Line;
 end;
-grant execute on microflow Shop.DS_Info_Line to Shop.Guest, Shop.Administrator; -- auto
+grant execute on microflow Shop.DS_Info_Line to Shop.Guest; -- auto
 
 /**
  * Configure from the home carousel: returns to the home page afterwards.
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Configure_FromHome ($Product: Shop.Product)
+create or modify microflow Shop.SUB_Configure_FromHome ($Product: Shop.Product)
 folder 'Configurator'
 begin
   call microflow Shop.ACT_Configure_Open(Product = $Product);
   retrieve $Cart from Shop.Cart where [Shop.Cart_Owner = '[%CurrentUser%]'] first;
   retrieve $Draft from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = true] first;
   if $Draft != empty then
-    change $Draft (ReturnTo = 'HOME');
-    commit $Draft without events;
+    change $Draft (ReturnTo = 'HOME') commit without events;
   end if;
 end;
-grant execute on microflow Shop.ACT_Configure_FromHome to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Configure from the home carousel: returns to the home page afterwards.
+ * Page entry point; the logic is in SUB_Configure_FromHome.
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Configure_FromHome ($Product: Shop.Product)
+folder 'Configurator'
+begin
+  call microflow Shop.SUB_Configure_FromHome(Product = $Product);
+end;
+grant execute on microflow Shop.ACT_Configure_FromHome to Shop.Guest; -- auto
 
 /** One option tile (crust, sauce, cheese, size). */
 create or modify snippet Shop.SNIP_OptTile (Params: ($Choice: Shop.Choice)) {
