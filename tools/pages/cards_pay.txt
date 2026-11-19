@@ -1,0 +1,25 @@
+            container pyc0 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_4242 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_4242')) {
+              dynamictext pyc0i (Content: 'credit_card', Class: 'ms')
+              dynamictext pyc0t (Content: 'Visa •••• 4242', Class: 'o-title')
+              dynamictext pyc0o (Content: 'APPROVES', Class: 'chip tag-badge pay-outcome')
+            }
+            container pyc1 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.MASTERCARD_4444 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'MASTERCARD_4444')) {
+              dynamictext pyc1i (Content: 'credit_card', Class: 'ms')
+              dynamictext pyc1t (Content: 'Mastercard •••• 4444', Class: 'o-title')
+              dynamictext pyc1o (Content: 'APPROVES', Class: 'chip tag-badge pay-outcome')
+            }
+            container pyc2 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_0002 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_0002')) {
+              dynamictext pyc2i (Content: 'credit_card', Class: 'ms')
+              dynamictext pyc2t (Content: 'Visa •••• 0002', Class: 'o-title')
+              dynamictext pyc2o (Content: 'DECLINED', Class: 'chip tag-spice pay-outcome')
+            }
+            container pyc3 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_9995 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_9995')) {
+              dynamictext pyc3i (Content: 'credit_card', Class: 'ms')
+              dynamictext pyc3t (Content: 'Visa •••• 9995', Class: 'o-title')
+              dynamictext pyc3o (Content: 'INSUFFICIENT FUNDS', Class: 'chip tag-spice pay-outcome')
+            }
+            container pyc4 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.AMEX_0005 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'AMEX_0005')) {
+              dynamictext pyc4i (Content: 'credit_card', Class: 'ms')
+              dynamictext pyc4t (Content: 'Amex •••• 0005', Class: 'o-title')
+              dynamictext pyc4o (Content: 'GATEWAY TIMEOUT', Class: 'chip tag-spice pay-outcome')
+            }
