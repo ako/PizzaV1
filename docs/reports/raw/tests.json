@@ -2,7 +2,7 @@
   "kind": "tests",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 14:26",
+  "generated": "2026-11-19 18:24",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "Microflow test results and per-test assertion counts come from `mxcli test --junit` (the `assertions` property), run by this command with `--run` or read from `--junit`.",
@@ -41,14 +41,13 @@
     "hasResults": true,
     "hasJourneys": true,
     "hasSpans": true,
-    "database": "fresh-demo-reset",
     "tests": [
       {
         "name": "Money with thousands separator and two decimals",
         "file": "tests/helpers.test.mdl",
         "status": "passed",
         "assertions": 1,
-        "seconds": 0.001,
+        "seconds": 0.002,
         "calls": [
           "Core.SUB_Money"
         ],
@@ -74,7 +73,7 @@
         "file": "tests/helpers.test.mdl",
         "status": "passed",
         "assertions": 1,
-        "seconds": 0.002,
+        "seconds": 0.001,
         "calls": [
           "Core.SUB_MmSs"
         ],
@@ -113,6 +112,7 @@
         "file": "tests/helpers.test.mdl",
         "status": "passed",
         "assertions": 1,
+        "seconds": 0.001,
         "calls": [
           "Core.SUB_FormatPhone"
         ],
@@ -149,7 +149,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 4,
-        "seconds": 0.007,
+        "seconds": 0.01,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -179,7 +179,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 1,
-        "seconds": 0.003,
+        "seconds": 0.005,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -194,7 +194,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 5,
-        "seconds": 0.003,
+        "seconds": 0.004,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -209,7 +209,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 3,
-        "seconds": 0.003,
+        "seconds": 0.008,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -239,7 +239,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 3,
-        "seconds": 0.003,
+        "seconds": 0.005,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -269,7 +269,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 3,
-        "seconds": 0.006,
+        "seconds": 0.004,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -284,7 +284,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 4,
-        "seconds": 0.003,
+        "seconds": 0.004,
         "calls": [
           "Fulfilment.SUB_Price_Compute"
         ],
@@ -329,7 +329,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 4,
-        "seconds": 0.037,
+        "seconds": 0.046,
         "calls": [
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -338,6 +338,7 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Money",
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -348,7 +349,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 4,
-        "seconds": 0.043,
+        "seconds": 0.05,
         "calls": [
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -357,6 +358,7 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Money",
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -367,7 +369,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 2,
-        "seconds": 0.033,
+        "seconds": 0.038,
         "calls": [
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -376,6 +378,7 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Money",
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -386,7 +389,7 @@
         "file": "tests/pricing.test.mdl",
         "status": "passed",
         "assertions": 1,
-        "seconds": 0.039,
+        "seconds": 0.048,
         "calls": [
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -395,6 +398,7 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Money",
           "Shop.SUB_Line_ApplyDefaults",
           "Shop.SUB_Line_Recalculate"
@@ -409,6 +413,7 @@
         "executed": [
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_FormatPhone",
           "Core.SUB_MmSs",
@@ -421,6 +426,7 @@
           "Fulfilment.SUB_Order_RefreshPaymentLabel",
           "Fulfilment.SUB_Order_TimerBase",
           "Fulfilment.SUB_Order_Transition",
+          "Fulfilment.SUB_Payment_Retry",
           "Fulfilment.SUB_Price_Compute",
           "Fulfilment.SUB_Timer_Progress",
           "Shop.ACT_Checkout_Changed",
@@ -438,7 +444,6 @@
           "Shop.DS_Menu_Products",
           "Shop.DS_Order_Lines",
           "Shop.DS_Order_Log",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.DS_Track",
           "Shop.SUB_Cart_AddLine",
@@ -471,7 +476,6 @@
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
           "Simulation.SUB_Courier_SetStatus",
-          "Simulation.SUB_Order_SliceSummary",
           "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
@@ -483,15 +487,14 @@
         "executed": [
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_MmSs",
           "Core.SUB_Money",
-          "Core.SUB_RandomHex",
           "Core.SUB_Toast",
           "Fulfilment.SUB_Coupon_Evaluate",
           "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
-          "Fulfilment.SUB_Order_RefreshPaymentLabel",
           "Fulfilment.SUB_Order_TimerBase",
           "Fulfilment.SUB_Order_Transition",
           "Fulfilment.SUB_Price_Compute",
@@ -508,7 +511,6 @@
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
           "Shop.DS_Product_Allergens",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.SUB_Cart_AddLine",
           "Shop.SUB_Cart_Current",
@@ -522,9 +524,6 @@
           "Shop.SUB_Menu_Refresh",
           "Shop.SUB_Menu_Refresh_Do",
           "Shop.SUB_Menu_Tab",
-          "Shop.SUB_OrderLine_SnapshotModifiers",
-          "Shop.SUB_Order_Place",
-          "Shop.SUB_Payment_Resolve",
           "Shop.SUB_Product_Add",
           "Shop.SUB_Shell_Refresh",
           "Simulation.SIM_ClockRun",
@@ -535,10 +534,8 @@
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
-          "Simulation.SUB_Courier_SetStatus",
           "Simulation.SUB_Order_SliceSummary",
-          "Simulation.SUB_Oven_FirstFree",
-          "Simulation.SUB_Traffic_Spawn"
+          "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
       },
@@ -549,6 +546,7 @@
         "executed": [
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_FormatPhone",
           "Core.SUB_MmSs",
@@ -579,7 +577,6 @@
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
           "Shop.DS_Order_Log",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.DS_Track",
           "Shop.SUB_Cart_AddLine",
@@ -604,6 +601,7 @@
           "Shop.SUB_Shell_Refresh",
           "Shop.SUB_Track_Fill",
           "Shop.SUB_Track_Refresh",
+          "Simulation.SE_ClockWatchdog",
           "Simulation.SIM_ClockRun",
           "Simulation.SIM_Couriers",
           "Simulation.SIM_Housekeeping",
@@ -627,7 +625,6 @@
           "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
           "Fulfilment.SUB_Order_TimerBase",
-          "Fulfilment.SUB_Order_Transition",
           "Fulfilment.SUB_Timer_Progress",
           "Shop.ACT_Lookup",
           "Shop.ACT_Shell_Refresh",
@@ -636,7 +633,6 @@
           "Shop.SUB_Cart_Current",
           "Shop.SUB_Lookup",
           "Shop.SUB_Shell_Refresh",
-          "Simulation.SE_ClockWatchdog",
           "Simulation.SIM_ClockRun",
           "Simulation.SIM_Couriers",
           "Simulation.SIM_Housekeeping",
@@ -645,7 +641,8 @@
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
-          "Simulation.SUB_Order_SliceSummary"
+          "Simulation.SUB_Courier_SetStatus",
+          "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
       },
@@ -656,7 +653,6 @@
         "executed": [
           "Core.SUB_Eff",
           "Core.SUB_MmSs",
-          "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
           "Fulfilment.SUB_Order_TimerBase",
           "Fulfilment.SUB_Timer_Progress",
@@ -670,7 +666,7 @@
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
-          "Simulation.SUB_Courier_SetStatus"
+          "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
       },
@@ -690,7 +686,6 @@
           "Shop.ACT_Shell_Refresh",
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.SUB_Cart_Current",
           "Shop.SUB_Menu_Refresh",
@@ -704,7 +699,6 @@
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
-          "Simulation.SUB_Order_SliceSummary",
           "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
@@ -717,9 +711,11 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_MmSs",
           "Core.SUB_Money",
+          "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
           "Fulfilment.SUB_Order_TimerBase",
           "Fulfilment.SUB_Timer_Progress",
@@ -752,7 +748,8 @@
           "Simulation.SIM_Payments",
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
-          "Simulation.SIM_Traffic"
+          "Simulation.SIM_Traffic",
+          "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
       },
@@ -764,13 +761,16 @@
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
           "Catalog.SUB_Option_PriceFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_MmSs",
           "Core.SUB_Money",
+          "Core.SUB_RandomHex",
           "Core.SUB_Toast",
           "Fulfilment.SUB_Coupon_Evaluate",
           "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
+          "Fulfilment.SUB_Order_RefreshPaymentLabel",
           "Fulfilment.SUB_Order_TimerBase",
           "Fulfilment.SUB_Order_Transition",
           "Fulfilment.SUB_Price_Compute",
@@ -790,7 +790,6 @@
           "Shop.DS_Line_Removed",
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.SUB_Cart_AddLine",
           "Shop.SUB_Cart_Clear",
@@ -806,6 +805,8 @@
           "Shop.SUB_Line_Recalculate",
           "Shop.SUB_Menu_Refresh",
           "Shop.SUB_Menu_Refresh_Do",
+          "Shop.SUB_Order_Place",
+          "Shop.SUB_Payment_Resolve",
           "Shop.SUB_Shell_Refresh",
           "Simulation.SIM_ClockRun",
           "Simulation.SIM_Couriers",
@@ -816,7 +817,9 @@
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
           "Simulation.SUB_Courier_SetStatus",
-          "Simulation.SUB_Order_SliceSummary"
+          "Simulation.SUB_Order_SliceSummary",
+          "Simulation.SUB_Oven_FirstFree",
+          "Simulation.SUB_Traffic_Spawn"
         ],
         "executedOutside": 0
       },
@@ -830,7 +833,6 @@
           "Fulfilment.SUB_Order_Log",
           "Fulfilment.SUB_Order_Progress",
           "Fulfilment.SUB_Order_TimerBase",
-          "Fulfilment.SUB_Order_Transition",
           "Fulfilment.SUB_Timer_Progress",
           "Shop.ACT_Menu_Filter",
           "Shop.ACT_Menu_Refresh",
@@ -838,7 +840,6 @@
           "Shop.ACT_Shell_Refresh",
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.SUB_Cart_Current",
           "Shop.SUB_Menu_Filter",
@@ -865,6 +866,7 @@
         "executed": [
           "Catalog.SUB_AllergenText",
           "Catalog.SUB_Option_AvailableFor",
+          "Catalog.SUB_Option_Selectable",
           "Core.SUB_Eff",
           "Core.SUB_FormatPhone",
           "Core.SUB_MmSs",
@@ -899,7 +901,6 @@
           "Shop.DS_Menu_Products",
           "Shop.DS_Order_Lines",
           "Shop.DS_Order_Log",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.DS_Track",
           "Shop.SUB_Cart_AddLine",
@@ -934,8 +935,8 @@
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
           "Simulation.SUB_Courier_SetStatus",
-          "Simulation.SUB_Oven_FirstFree",
-          "Simulation.SUB_Traffic_Spawn"
+          "Simulation.SUB_Order_SliceSummary",
+          "Simulation.SUB_Oven_FirstFree"
         ],
         "executedOutside": 0
       },
@@ -955,7 +956,6 @@
           "Shop.ACT_Shell_Refresh",
           "Shop.DS_Menu",
           "Shop.DS_Menu_Products",
-          "Shop.DS_Product_Recipe",
           "Shop.DS_Shell_Cart",
           "Shop.SUB_Cart_Current",
           "Shop.SUB_Menu_Refresh",
@@ -969,17 +969,17 @@
           "Simulation.SIM_Pickups",
           "Simulation.SIM_Tick",
           "Simulation.SIM_Traffic",
-          "Simulation.SUB_Order_SliceSummary"
+          "Simulation.SUB_Courier_SetStatus"
         ],
         "executedOutside": 0
       }
     ],
-    "microflows": 362,
+    "microflows": 363,
     "modules": [
       {
         "module": "Catalog",
-        "total": 3,
-        "both": 3,
+        "total": 4,
+        "both": 4,
         "testsOnly": 0,
         "journeysOnly": 0,
         "startup": 0,
@@ -1008,9 +1008,9 @@
         "total": 137,
         "both": 2,
         "testsOnly": 0,
-        "journeysOnly": 86,
+        "journeysOnly": 85,
         "startup": 2,
-        "neither": 47
+        "neither": 48
       },
       {
         "module": "Simulation",
@@ -1024,12 +1024,12 @@
     ],
     "totals": {
       "module": "",
-      "total": 362,
-      "both": 10,
+      "total": 363,
+      "both": 11,
       "testsOnly": 0,
-      "journeysOnly": 111,
+      "journeysOnly": 110,
       "startup": 193,
-      "neither": 48
+      "neither": 49
     },
     "gaps": [
       {
@@ -1073,6 +1073,7 @@
           "Shop.DS_OrderLine_Modifiers",
           "Shop.DS_Order_History",
           "Shop.DS_Order_Payments",
+          "Shop.DS_Product_Recipe",
           "Shop.SUB_Checkout_Pickup",
           "Shop.SUB_Config_Back",
           "Shop.SUB_Config_Qty",
@@ -1095,6 +1096,7 @@
       "Catalog.SUB_AllergenText": "both",
       "Catalog.SUB_Option_AvailableFor": "both",
       "Catalog.SUB_Option_PriceFor": "both",
+      "Catalog.SUB_Option_Selectable": "both",
       "Core.SUB_Eff": "journeys only",
       "Core.SUB_FormatPhone": "both",
       "Core.SUB_MmSs": "both",
@@ -1189,7 +1191,7 @@
       "Shop.DS_Order_Log": "journeys only",
       "Shop.DS_Order_Payments": "neither",
       "Shop.DS_Product_Allergens": "journeys only",
-      "Shop.DS_Product_Recipe": "journeys only",
+      "Shop.DS_Product_Recipe": "neither",
       "Shop.DS_Shell_Cart": "journeys only",
       "Shop.DS_Track": "journeys only",
       "Shop.SUB_Cart_AddLine": "journeys only",

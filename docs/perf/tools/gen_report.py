@@ -20,6 +20,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 _sys.path.insert(0, os.path.join(HERE, '..', '..', '..', 'tools'))
 from report_fonts import font_face_css  # noqa: E402
 FONT_FACES = font_face_css()
+from report_kit import nav as _nav  # noqa: E402
+NAV = _nav('performance')
 DATA = os.path.join(HERE, '..', 'data')
 OUT = os.path.join(HERE, '..', 'report.html')
 E = html.escape
@@ -254,6 +256,8 @@ body {{ background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
 .wrap {{ max-width: 1180px; margin: 0 auto; display: grid; gap: 40px; }}
 .wrap > *, .findings > *, .pair > *, .kpis > * {{ min-width: 0; }}
 header.top {{ border-bottom: 6px solid var(--brand); padding-block: 36px 24px; display: grid; gap: 10px; }}
+nav.reports {{ display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 13px var(--f-body); }}
+nav.reports a {{ color: var(--muted); text-decoration: none; }} nav.reports a[aria-current] {{ color: var(--ink); font-weight: 600; }}
 .eyebrow {{ font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
 h1 {{ font: 700 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }}
 h2 {{ font: 700 24px/1.2 var(--f-display); margin: 0 0 12px; letter-spacing: -.01em; }}
@@ -308,6 +312,7 @@ ul {{ margin: 0; padding-left: 20px; max-width: 72ch; }} li {{ margin-bottom: 6p
 </style>
 <div class="wrap">
 <header class="top">
+  {NAV}
   <span class="eyebrow">GitPizza · performance under load · 19 November 2026</span>
   <h1>GitPizza Load Test</h1>
   <p class="lede">Two guest journeys measured against a year of a busy store: {orders:,} orders and about ten million rows. Each step ran six times; figures are medians of the five

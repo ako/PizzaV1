@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="tests" tests="24" failures="0" errors="0" skipped="0" time="0.251">
-    <testcase name="Money with thousands separator and two decimals" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.001">
+  <testsuite name="tests" tests="24" failures="0" errors="0" skipped="0" time="0.282">
+    <testcase name="Money with thousands separator and two decimals" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.002">
       <properties>
         <property name="assertions" value="1"></property>
       </properties>
@@ -11,7 +11,7 @@
         <property name="assertions" value="1"></property>
       </properties>
     </testcase>
-    <testcase name="Timer text mm:ss" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.002">
+    <testcase name="Timer text mm:ss" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.001">
       <properties>
         <property name="assertions" value="1"></property>
       </properties>
@@ -26,7 +26,7 @@
         <property name="assertions" value="1"></property>
       </properties>
     </testcase>
-    <testcase name="Phone with country code +1 is normalised" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.000">
+    <testcase name="Phone with country code +1 is normalised" classname="tests.helpers" file="tests/helpers.test.mdl" time="0.001">
       <properties>
         <property name="assertions" value="1"></property>
       </properties>
@@ -41,7 +41,7 @@
         <property name="assertions" value="1"></property>
       </properties>
     </testcase>
-    <testcase name="Example A: delivery over the free-delivery threshold, tip 15 %" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.007">
+    <testcase name="Example A: delivery over the free-delivery threshold, tip 15 %" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.010">
       <properties>
         <property name="assertions" value="4"></property>
       </properties>
@@ -51,17 +51,17 @@
         <property name="assertions" value="2"></property>
       </properties>
     </testcase>
-    <testcase name="Example A0: no tip" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.003">
+    <testcase name="Example A0: no tip" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.005">
       <properties>
         <property name="assertions" value="1"></property>
       </properties>
     </testcase>
-    <testcase name="Example B: GITHUB_STUDENT 15 % on delivery under the threshold" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.003">
+    <testcase name="Example B: GITHUB_STUDENT 15 % on delivery under the threshold" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.004">
       <properties>
         <property name="assertions" value="5"></property>
       </properties>
     </testcase>
-    <testcase name="Example D: pickup has no fee and no tip" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.003">
+    <testcase name="Example D: pickup has no fee and no tip" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.008">
       <properties>
         <property name="assertions" value="3"></property>
       </properties>
@@ -71,7 +71,7 @@
         <property name="assertions" value="2"></property>
       </properties>
     </testcase>
-    <testcase name="P2: FREE_DISPATCH waives the delivery fee" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.003">
+    <testcase name="P2: FREE_DISPATCH waives the delivery fee" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.005">
       <properties>
         <property name="assertions" value="3"></property>
       </properties>
@@ -81,12 +81,12 @@
         <property name="assertions" value="3"></property>
       </properties>
     </testcase>
-    <testcase name="P3: below the coupon minimum names the missing amount" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.006">
+    <testcase name="P3: below the coupon minimum names the missing amount" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.004">
       <properties>
         <property name="assertions" value="3"></property>
       </properties>
     </testcase>
-    <testcase name="P4: percentage discount capped at the coupon maximum" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.003">
+    <testcase name="P4: percentage discount capped at the coupon maximum" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.004">
       <properties>
         <property name="assertions" value="4"></property>
       </properties>
@@ -101,22 +101,22 @@
         <property name="assertions" value="1"></property>
       </properties>
     </testcase>
-    <testcase name="P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.037">
+    <testcase name="P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.046">
       <properties>
         <property name="assertions" value="4"></property>
       </properties>
     </testcase>
-    <testcase name="P7: stuffed crust makes a vegetarian pizza non-vegan" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.043">
+    <testcase name="P7: stuffed crust makes a vegetarian pizza non-vegan" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.050">
       <properties>
         <property name="assertions" value="4"></property>
       </properties>
     </testcase>
-    <testcase name="P8: gluten-free crust on Small removes GLUTEN" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.033">
+    <testcase name="P8: gluten-free crust on Small removes GLUTEN" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.038">
       <properties>
         <property name="assertions" value="2"></property>
       </properties>
     </testcase>
-    <testcase name="Example C: Boolean Pepperoni Large fully configured" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.039">
+    <testcase name="Example C: Boolean Pepperoni Large fully configured" classname="tests.pricing" file="tests/pricing.test.mdl" time="0.048">
       <properties>
         <property name="assertions" value="1"></property>
       </properties>

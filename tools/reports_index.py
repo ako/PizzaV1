@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
-"""Build docs/reports/index.html: one overview page over the mxcli reports.
+"""Overview of all report pages: docs/reports/index.html, in the shared house style.
 
     python3 tools/reports_index.py
 
-Reads the reports' own JSON (docs/reports/raw/*.json, written with --format json)
-and the triage annotations, so every number on the page is the report's number.
-Charts are inline SVG + a small hover layer: no libraries, no network.
-Colours follow the dataviz reference palette (validated: slots 1-2 pass CVD and
-normal-vision checks in light and dark mode).
+Reads the reports' own data: docs/reports/raw/*.json (mxcli report … --format json), the
+performance before/after (docs/perf/data/*.json) and docs/reports/security-annotations.yaml.
+Each card links the report page (docs/<kind>/report.html) and mxcli's built-in rendering.
 """
-import html
 import json
-import math
 import os
 import re
+import sys
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from report_kit import E, MODULE_COLOR, bar, kpis, page, stack, write  # noqa: E402
+
+ROOT = os.path.abspath(os.path.join(HERE, '..'))
 REP = os.path.join(ROOT, 'docs', 'reports')
 RAW = os.path.join(REP, 'raw')
 
@@ -24,222 +25,158 @@ def load(name):
     return json.load(open(os.path.join(RAW, name + '.json'), encoding='utf-8'))
 
 
-def annotations(name):
-    """Tiny reader for the flat `"key": {status: x, ...}` lines of our YAML files."""
-    out = {}
+def triage(name):
     path = os.path.join(REP, name + '-annotations.yaml')
-    if not os.path.exists(path):
-        return out
-    for m in re.finditer(r'^\s+"([^"]+)":\s*\{status:\s*(\w+)', open(path, encoding='utf-8').read(), re.M):
-        out[m.group(1)] = m.group(2)
+    out = {}
+    if os.path.exists(path):
+        for m in re.finditer(r'^\s+"([^"]+)":\s*\{status:\s*(\w+)', open(path, encoding='utf-8').read(), re.M):
+            out[m.group(1)] = m.group(2)
     return out
 
 
-E = html.escape
-quality, tests, trace, sec, perf, arch = (load(n) for n in ('quality', 'tests', 'traceability', 'security', 'performance', 'architecture'))
-T, TR, S, P, A = tests['data'], trace['data'], sec['data'], perf['data'], arch['data']
+quality, tests, trace, sec, arch = (load(n) for n in ('quality', 'tests', 'traceability', 'security', 'architecture'))
+T, TR, S, A = tests['data'], trace['data'], sec['data'], arch['data']
+pb = {(s['journey'], s['step']): s for s in json.load(open(os.path.join(ROOT, 'docs', 'perf', 'data', 'before.json')))['steps']}
+pa = {(s['journey'], s['step']): s for s in json.load(open(os.path.join(ROOT, 'docs', 'perf', 'data', 'after.json')))['steps']}
+vis = json.load(open(os.path.join(ROOT, 'docs', 'overview', 'data', 'visual.json')))
 
-# ---- headline numbers -------------------------------------------------------------
-tests_total = len(T['tests'] or [])
-tests_pass = sum(1 for t in (T['tests'] or []) if t.get('status') == 'passed')
+# ---------------------------------------------------------------- numbers
+t_total = len(T['tests'] or [])
+t_pass = sum(1 for t in (T['tests'] or []) if t.get('status') == 'passed')
 j_total = len(T['journeys'] or [])
 j_pass = sum(1 for j in (T['journeys'] or []) if j.get('status') == 'passed')
 tot = T['totals']
-gap_scope = tot['total'] - tot['startup']
+scope = tot['total'] - tot['startup']
 reached = tot['both'] + tot['testsOnly'] + tot['journeysOnly']
 reqs = [r for m in TR['milestones'] for r in m['requirements']]
 built = sum(1 for r in reqs if r['status'] == 'built')
+partial = [r['title'].split()[0] for r in reqs if r['status'] != 'built']
 proven = sum(1 for r in reqs if r.get('tests') or r.get('journeys'))
-sec_ann = annotations('security')
+st = triage('security')
 open_hm = [f for f in S['findings'] if f['severity'] in ('high', 'medium')
-           and sec_ann.get('finding:' + f['id'], 'open') not in ('fixed', 'intended', 'accepted')]
+           and st.get('finding:' + f['id'], 'open') not in ('fixed', 'intended', 'accepted')]
 mods = A['modules']
-layers = max(m['layer'] for m in mods) + 1
-steps = P['steps']
-gen = max(d['generated'] for d in (tests, trace, sec, perf, arch))
+layers = len({m['layer'] for m in mods})
+cycles = len(A.get('cycles') or [])
+cats = quality['categories']
+gen = max(d['generated'] for d in (tests, trace, sec, arch))
 
-# ---- small SVG helpers ------------------------------------------------------------
-def hbars(rows, maxv, unit='', width=520, row_h=30, label_w=190, fmt=lambda v: f'{v:g}'):
-    """Single-series horizontal bars. rows: (label, value, tooltip)."""
-    plot = width - label_w - 60
-    h = row_h * len(rows) + 8
-    out = [f'<svg class="viz" viewBox="0 0 {width} {h}" role="img" aria-label="bar chart">']
-    for i, (label, v, tip) in enumerate(rows):
-        y = 4 + i * row_h
-        w = max(2, plot * v / maxv) if maxv else 2
-        out.append(f'<text class="lbl" x="{label_w - 10}" y="{y + row_h / 2 + 4}" text-anchor="end">{E(label)}</text>')
-        out.append(f'<rect class="track" x="{label_w}" y="{y + 7}" width="{plot}" height="{row_h - 14}" rx="4"/>')
-        out.append(f'<rect class="bar s1" x="{label_w}" y="{y + 7}" width="{w:.1f}" height="{row_h - 14}" rx="4" data-tip="{E(tip)}"/>')
-        out.append(f'<text class="val" x="{label_w + w + 8:.1f}" y="{y + row_h / 2 + 4}">{fmt(v)}{unit}</text>')
-    out.append('</svg>')
-    return ''.join(out)
+# ---------------------------------------------------------------- cards
+def card(href, builtin, title, desc, viz, facts):
+    links = f'<a class="open" href="{href}">Open report →</a>' + (f'<a class="alt" href="{builtin}">built-in rendering</a>' if builtin else '')
+    return (f'<article class="card"><header><h2>{E(title)}</h2><div class="links">{links}</div></header><p class="desc">{desc}</p>'
+            f'<div class="viz">{viz}</div><ul class="facts">{"".join(f"<li>{x}</li>" for x in facts)}</ul></article>')
 
 
-def stacked(rows, series, width=560, row_h=30, label_w=190):
-    label_w = max(label_w, 12 + 6.6 * max(len(r[0]) for r in rows))
-    """Stacked horizontal bars with a 2px surface gap between segments.
-    rows: (label, [values], tooltip); series: [(name, css class)]."""
-    plot = width - label_w - 50
-    maxv = max(sum(v) for _, v, _ in rows) or 1
-    h = row_h * len(rows) + 8
-    out = [f'<svg class="viz" viewBox="0 0 {width} {h}" role="img" aria-label="stacked bar chart">']
-    for i, (label, vals, tip) in enumerate(rows):
-        y = 4 + i * row_h
-        x = label_w
-        out.append(f'<text class="lbl" x="{label_w - 10}" y="{y + row_h / 2 + 4}" text-anchor="end">{E(label)}</text>')
-        for (name, cls), v in zip(series, vals):
-            if not v:
-                continue
-            w = plot * v / maxv
-            out.append(f'<rect class="bar {cls}" x="{x:.1f}" y="{y + 7}" width="{max(w - 2, 1):.1f}" height="{row_h - 14}" rx="3" '
-                       f'data-tip="{E(label)} · {E(name)}: {v}"/>')
-            x += w
-        out.append(f'<text class="val" x="{x + 6:.1f}" y="{y + row_h / 2 + 4}">{sum(vals)}</text>')
-    out.append('</svg>')
-    legend = ''.join(f'<span class="key"><i class="sw {cls}"></i>{E(n)}</span>' for n, cls in series)
-    return f'<div class="legend">{legend}</div>' + ''.join(out)
+def row(label, inner, value=''):
+    return f'<div class="row"><span class="lab">{E(label)}</span><span class="cell">{inner}</span><span class="val">{value}</span></div>'
 
 
-def layer_diagram():
-    by_layer = {}
-    for m in mods:
-        by_layer.setdefault(m['layer'], []).append(m)
-    W, box_w, box_h, gap_y = 560, 150, 46, 92
-    pos = {}
-    order = sorted(by_layer, reverse=True)
-    for row, layer in enumerate(order):
-        ms = sorted(by_layer[layer], key=lambda m: m['name'])
-        span = len(ms) * box_w + (len(ms) - 1) * 40
-        x0 = (W - span) / 2 + 40
-        for k, m in enumerate(ms):
-            pos[m['name']] = (x0 + k * (box_w + 40), 18 + row * gap_y)
-    H = 18 + len(order) * gap_y
-    maxref = max(e['refs'] for e in A['domainEdges'])
-    out = [f'<svg class="viz" viewBox="0 0 {W} {H}" role="img" aria-label="module layer diagram">',
-           '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
-           '<path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker></defs>']
-    for row, layer in enumerate(order):
-        out.append(f'<text class="axis" x="6" y="{18 + row * gap_y + box_h / 2 + 4}">layer {layer}</text>')
-    for e in A['domainEdges']:
-        (x1, y1), (x2, y2) = pos[e['from']], pos[e['to']]
-        sw = 1 + 3 * math.log10(e['refs']) / math.log10(maxref)
-        out.append(f'<line class="edge" x1="{x1 + box_w / 2:.1f}" y1="{y1 + box_h}" x2="{x2 + box_w / 2:.1f}" y2="{y2 - 2}" '
-                   f'stroke-width="{sw:.2f}" marker-end="url(#ah)" data-tip="{E(e["from"])} uses {E(e["to"])}: {e["refs"]:,} references"/>')
-    for m in mods:
-        x, y = pos[m['name']]
-        tip = f'{m["name"]}: {m["documents"]} documents, cohesion {m["cohesion"]:.0f}% — {m.get("purpose") or ""}'
-        out.append(f'<rect class="node" x="{x}" y="{y}" width="{box_w}" height="{box_h}" rx="6" data-tip="{E(tip)}"/>')
-        out.append(f'<text class="nodet" x="{x + box_w / 2}" y="{y + 20}" text-anchor="middle">{E(m["name"])}</text>')
-        out.append(f'<text class="nodes" x="{x + box_w / 2}" y="{y + 36}" text-anchor="middle">{m["documents"]} docs</text>')
-    out.append('</svg>')
-    return ''.join(out)
-
-
-# ---- charts -----------------------------------------------------------------------
-cat_rows = [(c['name'], c['score'], f'{c["name"]}: {c["score"]}/100 · {c["errors"]} errors, {c["warnings"]} warnings, {c["infos"]} info')
-            for c in quality['categories']]
-quality_svg = hbars(cat_rows, 100, fmt=lambda v: f'{v:.0f}')
-
-ms_rows = []
+# traceability: per milestone built+proven / built, not reached / partial
+tr_rows = ''
 for m in TR['milestones']:
     rs = m['requirements']
     pv = sum(1 for r in rs if r['status'] == 'built' and (r.get('tests') or r.get('journeys')))
     bu = sum(1 for r in rs if r['status'] == 'built') - pv
-    nb = len(rs) - pv - bu
-    ms_rows.append((m['name'], [pv, bu, nb], ''))
-trace_svg = stacked(ms_rows, [('built and proven by a test or journey', 's1'), ('built, no test reaches it', 's2'),
-                              ('not fully built', 'crit')])
+    pa_ = len(rs) - pv - bu
+    tr_rows += row(m['name'].split('—')[0].strip() + ' ' + m['name'].split('—')[-1].strip()[:22],
+                   stack([(pv, '--good', 'built, reached by a test or journey'), (bu, '--s1', 'built, no test reaches it'), (pa_, '--warn', 'partly built')]),
+                   f'{pv + bu}/{len(rs)}')
+tr_leg = '<div class="legend"><span><i style="background:var(--good)"></i>built, tested</span><span><i style="background:var(--s1)"></i>built, untested</span><span><i style="background:var(--warn)"></i>partly built</span></div>'
 
-mod_rows = [(m['module'], [m['both'] + m['testsOnly'] + m['journeysOnly'], m['neither'], m['startup']], '')
-            for m in T['modules'] if m['module']]
-cov_svg = stacked(mod_rows, [('reached by tests or journeys', 's1'), ('reached by neither', 's2'),
-                             ('startup or scheduled (not a gap)', 'neutral')])
+# tests: per module coverage
+te_rows = ''
+for m in sorted([m for m in T['modules'] if m['module']], key=lambda m: ['Simulation', 'Shop', 'Fulfilment', 'Catalog', 'Core'].index(m['module']) if m['module'] in MODULE_COLOR else 9):
+    r = m['both'] + m['testsOnly'] + m['journeysOnly']
+    te_rows += row(m['module'], stack([(m['both'] + m['testsOnly'], '--good', 'reached by microflow tests'), (m['journeysOnly'], '--s1', 'reached by journeys only'),
+                                       (m['neither'], '--bad', 'reached by neither'), (m['startup'], '--none-bg', 'startup or scheduled')]),
+                   f'{r}/{r + m["neither"]}')
+te_leg = '<div class="legend"><span><i style="background:var(--good)"></i>microflow tests</span><span><i style="background:var(--s1)"></i>journeys only</span><span><i style="background:var(--bad)"></i>neither</span><span><i style="background:var(--none-bg)"></i>startup / scheduled</span></div>'
 
-step_rows = [(s['step'], s['browserMs'], f'{s["step"]}: browser {s["browserMs"]:.0f} ms · server {s["serverMs"]:.0f} ms · '
-              f'database {s["dbMs"]:.0f} ms · {s["queries"]} queries (median of {s["warmRuns"]} warm runs)') for s in steps]
-perf_svg = hbars(step_rows, max(s['browserMs'] for s in steps), unit=' ms', label_w=230, fmt=lambda v: f'{v:,.0f}')
+# performance: steps that changed
+pf_rows = ''
+for k in [('Guest orders a pizza', '2 open menu'), ('Guest orders a pizza', '5 add to cart'), ('Guest orders a pizza', '1 open home'), ('Guest orders a pizza', '3 open configurator')]:
+    b, a = pb[k], pa[k]
+    pf_rows += row(k[1].split(' ', 1)[1], bar(100 * a['dbMs'] / max(b['dbMs'], 1), 'brand', f'{a["dbMs"]:.0f} of {b["dbMs"]:.0f} ms'), f'{b["queries"]:.0f}→{a["queries"]:.0f} q')
 
-arch_svg = layer_diagram()
+# architecture: modules per layer with cohesion
+ar_rows = ''
+for m in sorted(mods, key=lambda m: -m['layer']):
+    p = m['cohesion']
+    ar_rows += row(f'L{m["layer"]} {m["name"]}', bar(p, 'good' if p >= 70 else 'warn' if p >= 40 else 'bad'), f'{m["fanOut"]} uses')
 
-# ---- page -------------------------------------------------------------------------
-def tile(value, label, sub, status=None):
-    st = ''
-    if status:
-        icon = {'good': '✔', 'warn': '!', 'crit': '✖'}[status]
-        st = f'<span class="status {status}"><b>{icon}</b> {E({"good": "on target", "warn": "needs attention", "crit": "failing"}[status])}</span>'
-    return f'<div class="tile"><div class="big">{E(value)}</div><div class="tl">{E(label)}</div><div class="ts">{E(sub)}</div>{st}</div>'
+# security
+sev = {}
+for f in S['findings']:
+    sev.setdefault(f['severity'], []).append(st.get('finding:' + f['id'], 'open'))
+se_rows = ''.join(row(s, ' '.join(f'<span class="tag {"good" if v in ("fixed", "intended", "accepted") else "bad"}">{E(v)}</span>' for v in sev[s]), str(len(sev[s])))
+                  for s in ('high', 'medium', 'low', 'info') if s in sev)
 
+# quality
+qu_rows = ''.join(row(c['name'], bar(c['score'], 'good' if c['score'] >= 80 else 'warn' if c['score'] >= 50 else 'bad'),
+                      f'{c["errors"]}E {c["warnings"]}W {c["infos"]}I') for c in cats)
 
-tiles = ''.join([
-    tile(f'{quality["overallScore"]:.0f}/100', 'quality score', f'{quality["summary"]["errors"]} errors · {quality["summary"]["warnings"]} warnings', 'warn'),
-    tile(f'{built}/{len(reqs)}', 'requirements built', f'{proven} proven by a test or journey', 'good' if built == len(reqs) else 'warn'),
-    tile(f'{tests_pass}/{tests_total} · {j_pass}/{j_total}', 'microflow tests · journeys', 'all passing' if tests_pass == tests_total and j_pass == j_total else 'failures', 'good' if tests_pass == tests_total and j_pass == j_total else 'crit'),
-    tile(f'{100 * reached / gap_scope:.0f}%', 'microflows reached', f'{reached} of {gap_scope} (excl. {tot["startup"]} startup/scheduled)'),
-    tile(str(len(open_hm)), 'open high/medium security findings', 'after triage', 'good' if not open_hm else 'crit'),
-    tile(f'{len(mods)} · {layers} · {len(A["cycles"] or [])}', 'modules · layers · cycles', 'all dependencies point down', 'good' if not A['cycles'] else 'crit'),
+menu_b, menu_a = pb[('Guest orders a pizza', '2 open menu')], pa[('Guest orders a pizza', '2 open menu')]
+cards = [
+    card('../traceability/report.html', 'traceability.html', 'Traceability',
+         f'All {len(reqs)} PRD user stories per milestone: derived status, the microflows behind each, and the tests and journeys that reach them.',
+         tr_rows + tr_leg, [f'{built} of {len(reqs)} built; partly: {", ".join(partial) or "none"}', f'{proven} reached by a test or journey']),
+    card('../testing/report.html', 'tests.html', 'Tests and coverage',
+         'Microflow tests, browser journeys and the visual comparison with the prototype, and which microflows they reach per module.',
+         te_rows + te_leg, [f'{t_pass}/{t_total} microflow tests · {j_pass}/{j_total} journeys pass',
+                            f'{reached} of {scope} non-startup microflows reached · visual {sum(1 for r in vis["screens"] if r["mismatch"] <= r["budget"])}/{len(vis["screens"])} within budget']),
+    card('../perf/report.html', 'performance.html', 'Performance under load',
+         'Two guest journeys on 400,000 orders, before and after the fixes: findings grouped by improvement, flame-chart pairs, statements.',
+         pf_rows + '<p class="note">Database time after the fixes, as a share of before.</p>',
+         [f'menu {menu_b["browserMs"]:.0f} → {menu_a["browserMs"]:.0f} ms', 'housekeeping backlog no longer blocks checkout (F1)']),
+    card('../architecture/report.html', 'architecture.html', 'Architecture',
+         'Module map with counts and cohesion, with and without the generated seed; coupling, bounded contexts, bridges and recommendations.',
+         ar_rows + '<p class="note">Cohesion per module (share of references that stay inside).</p>',
+         [f'{len(mods)} modules · {layers} layers · {cycles} cycles', 'Simulation is mostly generated seed; see the report']),
+    card('../security/report.html', 'security.html', 'Security',
+         'Who can read what, client-callable flows that trust the caller, unsafe defaults, and a verdict per security rule.',
+         se_rows, [f'{len(open_hm)} open high/medium findings after triage', 'every visitor is an anonymous guest; data is row-scoped']),
+    card('../quality/report.html', 'quality.html', 'Quality score',
+         'Every lint finding by category and rule, with a verdict per rule and the changes that would move the score most.',
+         qu_rows, [f'score {quality["overallScore"]:g}/100', f'{quality["summary"]["errors"]} errors · {quality["summary"]["warnings"]} warnings · {quality["summary"]["infos"]} info']),
+    card('map.html', None, 'Software map',
+         'Interactive guide for a newcomer: features per slice, module map, page flows per role, data across modules, conventions, background work and an index.',
+         '', ['self-contained: diagrams drawn in the browser']),
+]
+
+head_tiles = kpis([
+    (f'{built}/{len(reqs)}', f'PRD stories built ({len(partial)} partly), {proven} reached by a test or journey', 'good' if not partial else 'warn'),
+    (f'{t_pass}/{t_total} · {j_pass}/{j_total}', 'Microflow tests · browser journeys passing', 'good' if t_pass == t_total and j_pass == j_total else 'bad'),
+    (f'{len(open_hm)}', 'Open high or medium security findings after triage', 'good' if not open_hm else 'bad'),
+    (f'{quality["overallScore"]:g}/100', 'Scored quality report: ' + ', '.join(c['name'] for c in sorted(cats, key=lambda c: c['score'])[:3]) + ' score lowest (see the quality report)', 'warn'),
 ])
 
-cards = [
-    ('../architecture/report.html', 'Architecture', 'Module map with counts and cohesion (with and without the generated seed), health, coupling, bounded contexts, bridges and recommendations.', arch_svg,
-     'Arrows point from a module to what it uses; thicker means more references. The built-in rendering is in architecture.html.'),
-    ('traceability.html', 'Traceability', f'All {len(reqs)} user stories per milestone: built, partial, proven — with footprint, tests and journeys.', trace_svg,
-     'Status is derived from each requirement’s anchors in the model, never ticked off by hand.'),
-    ('tests.html', 'Tests and coverage', f'{tests_total} microflow tests, {j_total} browser journeys, measured microflow reach per module.', cov_svg,
-     'Reach = microflows entered by a test (call graph) or a journey (runtime spans).'),
-    ('../perf/report.html', 'Performance under load', 'Two journeys on 400,000 orders, before and after the fixes: findings grouped by improvement, flame-chart pairs, statements.', perf_svg,
-     'Median browser time of 5 warm runs per step, after the fixes. The built-in rendering of the same data is in performance.html.'),
-    ('quality.html', 'Quality score', 'Scored best-practice report: every lint finding by category.', quality_svg,
-     'Scores fall 10 per error, 3 per warning and 1 per info, per category.'),
-]
-cards_html = ''.join(
-    f'<section class="card"><header><h2>{E(t)}</h2><a class="open" href="{h}">Open full report →</a></header>'
-    f'<p class="desc">{E(d)}</p><div class="chart">{svg}</div><p class="note">{E(n)}</p></section>' for h, t, d, svg, n in cards)
-more = (f'<section class="card wide"><header><h2>Also in this set</h2></header><ul class="links">'
-        f'<li><a href="security.html">Security review</a> — access grid per role, client-callable flows, unsafe defaults, lint security verdicts '
-        f'({len(S["findings"])} findings, {len(open_hm)} open high/medium after triage).</li>'
-        f'<li><a href="map.html">Software map</a> — interactive guide: features per slice, module map, page flows, data across modules, index.</li>'
-        f'</ul></section>')
-
-CSS = """
-:root{color-scheme:light;--surface:#fcfcfb;--card:#ffffff;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7a7974;--grid:#e1e0d9;--axis:#c3c2b7;
---border:rgba(11,11,11,.10);--s1:#2a78d6;--s2:#eb6834;--neutral:#c3c2b7;--good:#0ca30c;--warn:#fab219;--crit:#d03b3b;--link:#1f5fae}
-@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){color-scheme:dark;--surface:#1a1a19;--card:#222220;--ink:#f0efec;
---ink2:#c3c2b7;--ink3:#8f8e88;--grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--neutral:#4a4a46;--link:#7fb0ef}}
-:root[data-theme="dark"]{color-scheme:dark;--surface:#1a1a19;--card:#222220;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8e88;--grid:#2c2c2a;
---axis:#383835;--border:rgba(255,255,255,.10);--s1:#3987e5;--s2:#d95926;--neutral:#4a4a46;--link:#7fb0ef}
-*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1240px;margin:0 auto;padding:32px 20px 60px}h1{font-size:28px;margin:0 0 4px}.sub{color:var(--ink2);margin:0 0 24px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
-.tile{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}.big{font-size:26px;font-weight:650}
-.tl{color:var(--ink);font-size:13px}.ts{color:var(--ink3);font-size:12px}.status{display:inline-block;margin-top:6px;font-size:12px;color:var(--ink2)}
-.status b{display:inline-block;width:16px;height:16px;border-radius:8px;text-align:center;line-height:16px;color:#fff;font-size:10px;margin-right:4px}
-.status.good b{background:var(--good)}.status.warn b{background:var(--warn);color:#0b0b0b}.status.crit b{background:var(--crit)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,560px),1fr));gap:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}.card.wide{grid-column:1/-1}
-.card header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.card h2{font-size:18px;margin:0}
-a{color:var(--link)}.open{font-size:14px;white-space:nowrap}.desc{color:var(--ink2);margin:4px 0 12px;font-size:14px}.note{color:var(--ink3);font-size:12px;margin:8px 0 0}
-.chart{overflow-x:auto}.viz{width:100%;height:auto;display:block;font-size:12px}
-.viz .lbl{fill:var(--ink2)}.viz .val{fill:var(--ink)}.viz .axis{fill:var(--ink3);font-size:11px}.viz .track{fill:var(--grid)}
-.viz .bar{cursor:default}.viz .s1{fill:var(--s1)}.viz .s2{fill:var(--s2)}.viz .neutral{fill:var(--neutral)}.viz .crit{fill:var(--crit)}
-.viz .bar:hover{opacity:.82}.viz .node{fill:var(--card);stroke:var(--s1);stroke-width:2}.viz .nodet{fill:var(--ink);font-weight:600;font-size:13px}
-.viz .nodes{fill:var(--ink3);font-size:11px}.viz .edge{stroke:var(--axis)}.viz .edge:hover{stroke:var(--s1)}.viz .arrowhead{fill:var(--axis)}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink2);margin-bottom:6px}.key{display:inline-flex;align-items:center;gap:6px}
-.sw{display:inline-block;width:12px;height:12px;border-radius:3px}.sw.s1{background:var(--s1)}.sw.s2{background:var(--s2)}.sw.neutral{background:var(--neutral)}.sw.crit{background:var(--crit)}
-.links{margin:8px 0 0;padding-left:18px}.links li{margin:4px 0}
-#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);padding:6px 9px;border-radius:6px;font-size:12px;max-width:340px;
-display:none;z-index:9}footer{color:var(--ink3);font-size:12px;margin-top:28px}
-"""
-JS = """const tip=document.getElementById('tip');document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');
-if(!t){tip.style.display='none';return}tip.textContent=t.getAttribute('data-tip');tip.style.display='block';
-const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8);tip.style.left=x+'px';tip.style.top=(e.clientY+16)+'px'});"""
-
-page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GitPizza quality reports</title><style>{CSS}</style></head><body><main>
-<h1>GitPizza quality reports</h1>
-<p class="sub">Five modules in four layers — Simulation → Shop → Fulfilment → Catalog + Core. Generated {E(gen)} by {E(arch['mxcli'])}; every number below is the linked report's own.</p>
-<div class="tiles">{tiles}</div>
-<div class="grid">{cards_html}{more}</div>
-<footer>Rebuild: run the reports with <code>--format json -o docs/reports/raw/&lt;kind&gt;.json</code>, then <code>python3 tools/reports_index.py</code>.</footer>
-</main><div id="tip" role="tooltip"></div><script>{JS}</script></body></html>"""
-open(os.path.join(REP, 'index.html'), 'w', encoding='utf-8').write(page)
-print('wrote docs/reports/index.html')
+CSS = '''
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 14px; }
+.card h2 { margin: 0; font-size: 21px; }
+.card .links { display: flex; gap: 14px; font-size: 13.5px; }
+.card .links .open { font-weight: 600; color: var(--ink); text-decoration-color: var(--brand); text-decoration-thickness: 2px; }
+.card .links .alt { color: var(--muted); }
+.card .desc { color: var(--muted); margin: 0; }
+.viz { display: grid; gap: 6px; }
+.row { display: grid; grid-template-columns: minmax(90px, 160px) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.row .lab { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .val { font: 12px var(--f-mono); color: var(--muted); white-space: nowrap; }
+.row .bar { width: 100%; }
+.facts { margin: 0; padding-left: 18px; font-size: 13.5px; }
+.also { color: var(--muted); font-size: 14px; }
+'''
+body = head_tiles + f'<section class="cards">{"".join(cards)}</section>' + (
+    '<section class="also"><h2>Also</h2><ul class="tight">'
+    '<li><a href="../../RUN/delivery-notes.md">Delivery notes</a>, <a href="../../RUN/operations.md">operations</a>, '
+    '<a href="../../RUN/journal.md">journal</a> and <a href="../../RUN/self-assessment.json">self-assessment</a> (RUN/).</li>'
+    '<li>Narrated journey videos: <a href="../../demo/films/order-desktop.mp4">ordering</a> and <a href="../../demo/films/declined-desktop.mp4">declined card</a> (desktop; phone versions next to them).</li>'
+    '<li>Build overview sketch deck: <code>docs/overview/</code> (published privately as a Claude artifact).</li>'
+    f'<li>Generated from each report\'s own data; latest data {E(gen)}. Rebuild: see <code>docs/reports/README.md</code>.</li></ul></section>')
+html = page('GitPizza Reports', 'GitPizza · quality reports · 19 November 2026',
+            'Every report on how the app was built and how it holds up: traceability to the PRD, tests, performance under load, architecture, security, '
+            'quality score and a software map. All pages work offline and share one look; each also has mxcli\'s built-in rendering of the same data.',
+            body, current='index', extra_css=CSS)
+write(os.path.join(REP, 'index.html'), html)

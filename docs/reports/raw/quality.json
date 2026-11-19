@@ -1,12 +1,12 @@
 {
   "projectName": "GitPizza",
-  "date": "2026-11-19 14:27:58",
+  "date": "2026-11-19 18:24:58",
   "overallScore": 47.5,
   "summary": {
-    "total": 245,
+    "total": 246,
     "errors": 2,
     "warnings": 99,
-    "infos": 144
+    "infos": 145
   },
   "categories": [
     {
@@ -20,17 +20,17 @@
         "GRANT \u003cRole\u003e ON Core.SimulationSettings (READ *)",
         "Review the user role assignments for 'Shop.Guest' and ensure a 1:1 mapping",
         "Intended if the list is meant to be row-scoped; otherwise grant an unconstrained READ to a module role those user roles hold",
-        "Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public.",
-        "Add an XPath constraint to limit which rows 'Catalog.Guest' can READ on 'Allergen'"
+        "Add an XPath constraint to limit which rows 'Catalog.Guest' can READ on 'Allergen'",
+        "Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public."
       ]
     },
     {
       "name": "Quality",
       "score": 0,
-      "total": 169,
+      "total": 170,
       "errors": 0,
       "warnings": 35,
-      "infos": 134,
+      "infos": 135,
       "topActions": [
         "Remove the container, or give it the content it was meant to hold",
         "Extract logical sections into SUB_ microflows to keep each under 15 activities",
@@ -98,126 +98,6 @@
     }
   ],
   "violations": [
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "SNIP_Stepper",
-      "documentType": "snippet",
-      "documentId": "56fb5992-c0e4-477d-93b1-fb71e5b98553",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
     {
       "ruleId": "MPR006",
       "severity": "info",
@@ -761,6 +641,56 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
+      "message": "CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
       "message": "CONTAINER 'titleC' in Shop.NotFound is empty — valid and it renders, but probably unintended",
       "module": "Shop",
       "document": "NotFound",
@@ -801,11 +731,11 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "SNIP_HomeActiveOrder",
+      "document": "SNIP_Stepper",
       "documentType": "snippet",
-      "documentId": "0703651d-5adb-430d-ad8b-50043038a813",
+      "documentId": "56fb5992-c0e4-477d-93b1-fb71e5b98553",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -891,41 +821,11 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "document": "SNIP_HomeActiveOrder",
+      "documentType": "snippet",
+      "documentId": "0703651d-5adb-430d-ad8b-50043038a813",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -961,61 +861,111 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "PaymentSheet",
+      "document": "Configurator",
       "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "PaymentSheet",
+      "document": "Configurator",
       "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "PaymentSheet",
+      "document": "Configurator",
       "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "PaymentSheet",
+      "document": "Configurator",
       "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "PaymentSheet",
+      "document": "Configurator",
       "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "SNIP_Header",
-      "documentType": "snippet",
-      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -1036,6 +986,56 @@
       "document": "Menu",
       "documentType": "page",
       "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "SNIP_Header",
+      "documentType": "snippet",
+      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -1428,7 +1428,7 @@
     {
       "ruleId": "MDL-FLOW01",
       "severity": "info",
-      "message": "'Simulation.SIM_Housekeeping': 2 branches of a decision at (680, 200) rejoin at one shared point before the decision's own merge, so the block cannot be nested. DESCRIBE renders it as nested IFs and drops the path that enters the shared part early — the described flow is not the flow you drew [recombinable, overlap 13 node(s)]",
+      "message": "'Simulation.SIM_Housekeeping': 2 branches of a decision at (680, 200) rejoin at one shared point before the decision's own merge, so the block cannot be nested. DESCRIBE renders it as nested IFs and drops the path that enters the shared part early — the described flow is not the flow you drew [recombinable, overlap 15 node(s)]",
       "module": "Simulation",
       "document": "SIM_Housekeeping",
       "documentType": "microflow",
@@ -1519,7 +1519,7 @@
     {
       "ruleId": "CONV009",
       "severity": "info",
-      "message": "Microflow 'DS_Config_Choices' has 61 activities (convention max: 15). Split into sub-microflows.",
+      "message": "Microflow 'DS_Config_Choices' has 64 activities (convention max: 15). Split into sub-microflows.",
       "module": "Shop",
       "document": "Shop.DS_Config_Choices",
       "documentType": "Microflow",
@@ -1600,7 +1600,7 @@
     {
       "ruleId": "CONV009",
       "severity": "info",
-      "message": "Microflow 'SUB_Line_Recalculate' has 60 activities (convention max: 15). Split into sub-microflows.",
+      "message": "Microflow 'SUB_Line_Recalculate' has 65 activities (convention max: 15). Split into sub-microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Line_Recalculate",
       "documentType": "Microflow",
@@ -1654,7 +1654,7 @@
     {
       "ruleId": "CONV009",
       "severity": "info",
-      "message": "Microflow 'SUB_Product_Recalculate' has 50 activities (convention max: 15). Split into sub-microflows.",
+      "message": "Microflow 'SUB_Product_Recalculate' has 54 activities (convention max: 15). Split into sub-microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Product_Recalculate",
       "documentType": "Microflow",
@@ -1861,7 +1861,7 @@
     {
       "ruleId": "DESIGN001",
       "severity": "warning",
-      "message": "Entity 'Product' has 45 attributes (max: 10). Consider splitting into smaller entities.",
+      "message": "Entity 'Product' has 46 attributes (max: 10). Consider splitting into smaller entities.",
       "module": "Catalog",
       "document": "Catalog.Product",
       "documentType": "Entity",
@@ -2140,7 +2140,7 @@
     {
       "ruleId": "QUAL003",
       "severity": "warning",
-      "message": "Microflow 'DS_Config_Choices' has 61 activities (max: 25). Consider splitting into smaller microflows.",
+      "message": "Microflow 'DS_Config_Choices' has 64 activities (max: 25). Consider splitting into smaller microflows.",
       "module": "Shop",
       "document": "Shop.DS_Config_Choices",
       "documentType": "Microflow",
@@ -2212,7 +2212,7 @@
     {
       "ruleId": "QUAL003",
       "severity": "warning",
-      "message": "Microflow 'SUB_Line_Recalculate' has 60 activities (max: 25). Consider splitting into smaller microflows.",
+      "message": "Microflow 'SUB_Line_Recalculate' has 65 activities (max: 25). Consider splitting into smaller microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Line_Recalculate",
       "documentType": "Microflow",
@@ -2239,7 +2239,7 @@
     {
       "ruleId": "QUAL003",
       "severity": "warning",
-      "message": "Microflow 'SUB_Product_Recalculate' has 50 activities (max: 25). Consider splitting into smaller microflows.",
+      "message": "Microflow 'SUB_Product_Recalculate' has 54 activities (max: 25). Consider splitting into smaller microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Product_Recalculate",
       "documentType": "Microflow",
@@ -2338,7 +2338,7 @@
     {
       "ruleId": "QUAL001",
       "severity": "warning",
-      "message": "Microflow 'SUB_Line_Recalculate' has complexity 19 (max: 10). Consider splitting into smaller microflows.",
+      "message": "Microflow 'SUB_Line_Recalculate' has complexity 21 (max: 10). Consider splitting into smaller microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Line_Recalculate",
       "documentType": "Microflow",
@@ -2347,7 +2347,7 @@
     {
       "ruleId": "QUAL001",
       "severity": "warning",
-      "message": "Microflow 'SUB_Product_Recalculate' has complexity 12 (max: 10). Consider splitting into smaller microflows.",
+      "message": "Microflow 'SUB_Product_Recalculate' has complexity 14 (max: 10). Consider splitting into smaller microflows.",
       "module": "Shop",
       "document": "Shop.SUB_Product_Recalculate",
       "documentType": "Microflow",
@@ -2379,6 +2379,15 @@
       "document": "Simulation.SIM_Kitchen",
       "documentType": "Microflow",
       "suggestion": "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows."
+    },
+    {
+      "ruleId": "QUAL004",
+      "severity": "info",
+      "message": "Microflow 'DS_Product_Recipe' is not called from anywhere.",
+      "module": "Shop",
+      "document": "Shop.DS_Product_Recipe",
+      "documentType": "Microflow",
+      "suggestion": "Remove if unused, rename with ACT_/SCH_ prefix if it's an entry point, or add its prefix to rules.QUAL004.options.entry_point_prefixes in lint-config.yaml."
     },
     {
       "ruleId": "QUAL004",

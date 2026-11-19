@@ -28,21 +28,21 @@
 <body>
 <h1>Mendix Best Practices Report</h1>
 <p class='meta'><strong>Project:</strong> GitPizza</p>
-<p class='meta'><strong>Date:</strong> 2026-11-19 14:26:17</p>
+<p class='meta'><strong>Date:</strong> 2026-11-19 18:29:08</p>
 <p class='overall'>Overall Score: <span class='score-bar'><span class='score-fill score-bad' style='width: 48%'></span></span> 48/100</p>
 <h2>Summary</h2>
 <table>
 <tr><th>Metric</th><th>Count</th></tr>
 <tr><td class='severity-error'>Errors</td><td>2</td></tr>
 <tr><td class='severity-warning'>Warnings</td><td>99</td></tr>
-<tr><td class='severity-info'>Info</td><td>144</td></tr>
-<tr><td><strong>Total</strong></td><td><strong>245</strong></td></tr>
+<tr><td class='severity-info'>Info</td><td>145</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>246</strong></td></tr>
 </table>
 <h2>Category Scores</h2>
 <table>
 <tr><th>Category</th><th>Score</th><th>Errors</th><th>Warnings</th><th>Info</th></tr>
 <tr><td>Security</td><td><span class='score-bar'><span class='score-fill score-ok' style='width: 50%'></span></span> 50</td><td>2</td><td>7</td><td>9</td></tr>
-<tr><td>Quality</td><td><span class='score-bar'><span class='score-fill score-bad' style='width: 0%'></span></span> 0</td><td>0</td><td>35</td><td>134</td></tr>
+<tr><td>Quality</td><td><span class='score-bar'><span class='score-fill score-bad' style='width: 0%'></span></span> 0</td><td>0</td><td>35</td><td>135</td></tr>
 <tr><td>Architecture</td><td><span class='score-bar'><span class='score-fill score-bad' style='width: 46%'></span></span> 46</td><td>0</td><td>18</td><td>0</td></tr>
 <tr><td>Performance</td><td><span class='score-bar'><span class='score-fill score-ok' style='width: 64%'></span></span> 64</td><td>0</td><td>12</td><td>0</td></tr>
 <tr><td>Naming</td><td><span class='score-bar'><span class='score-fill score-good' style='width: 100%'></span></span> 100</td><td>0</td><td>0</td><td>0</td></tr>
@@ -54,8 +54,8 @@
 <div class='recommendation'>GRANT <Role> ON Core.SimulationSettings (READ *)</div>
 <div class='recommendation'>Review the user role assignments for 'Shop.Guest' and ensure a 1:1 mapping</div>
 <div class='recommendation'>Intended if the list is meant to be row-scoped; otherwise grant an unconstrained READ to a module role those user roles hold</div>
-<div class='recommendation'>Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public.</div>
 <div class='recommendation'>Add an XPath constraint to limit which rows 'Catalog.Guest' can READ on 'Allergen'</div>
+<div class='recommendation'>Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public.</div>
 <h3>Quality</h3>
 <div class='recommendation'>Remove the container, or give it the content it was meant to hold</div>
 <div class='recommendation'>Extract logical sections into SUB_ microflows to keep each under 15 activities</div>
@@ -77,6 +77,16 @@
 <h2>Detailed Findings</h2>
 <table>
 <tr><th>Rule</th><th>Severity</th><th>Location</th><th>Message</th></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.SNIP_HomeActiveOrder</td><td>CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'titleC' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td1' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td2' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td3' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'thLiveDot' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'dFill' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'l1' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
@@ -85,16 +95,13 @@
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'prC' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'route' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Tracking</td><td>CONTAINER 'trkPoll' in Shop.Tracking is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Menu</td><td>CONTAINER 'de2c' in Shop.Menu is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Menu</td><td>CONTAINER 'menuPoll' in Shop.Menu is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.SNIP_Header</td><td>CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.SNIP_HomeActiveOrder</td><td>CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md1' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md2' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md3' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'glow1' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'glow2' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'envDot' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
@@ -149,28 +156,21 @@
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'pb4' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'pb5' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Home</td><td>CONTAINER 'liveHome' in Shop.Home is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.PaymentSheet</td><td>CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md1' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md2' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Checkout</td><td>CONTAINER 'md3' in Shop.Checkout is empty — valid and it renders, but probably unintended</td></tr>
+<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.SNIP_Stepper</td><td>CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Confirmation</td><td>CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Menu</td><td>CONTAINER 'de2c' in Shop.Menu is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Menu</td><td>CONTAINER 'menuPoll' in Shop.Menu is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.SNIP_Stepper</td><td>CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.Configurator</td><td>CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'titleC' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td1' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td2' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
-<tr><td>MPR006</td><td class='severity-info'>info</td><td>Shop.NotFound</td><td>CONTAINER 'td3' in Shop.NotFound is empty — valid and it renders, but probably unintended</td></tr>
 <tr><td>MPR010</td><td class='severity-warning'>warning</td><td>Shop.Cart_Drawer</td><td>DataView 'dvCart' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid</td></tr>
 <tr><td>MPR010</td><td class='severity-warning'>warning</td><td>Shop.Checkout</td><td>DataView 'dvForm' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid</td></tr>
 <tr><td>MPR010</td><td class='severity-warning'>warning</td><td>Shop.Menu</td><td>DataView 'dvTabs' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid</td></tr>
@@ -210,7 +210,7 @@
 <tr><td>CONV014</td><td class='severity-warning'>warning</td><td>Simulation.SIM_Tick</td><td>Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors.</td></tr>
 <tr><td>CONV014</td><td class='severity-warning'>warning</td><td>Simulation.SIM_Tick</td><td>Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors.</td></tr>
 <tr><td>CONV014</td><td class='severity-warning'>warning</td><td>Simulation.SIM_Tick</td><td>Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors.</td></tr>
-<tr><td>MDL-FLOW01</td><td class='severity-info'>info</td><td>Simulation.SIM_Housekeeping</td><td>'Simulation.SIM_Housekeeping': 2 branches of a decision at (680, 200) rejoin at one shared point before the decision's own merge, so the block cannot be nested. DESCRIBE renders it as nested IFs and drops the path that enters the shared part early — the described flow is not the flow you drew [recombinable, overlap 13 node(s)]</td></tr>
+<tr><td>MDL-FLOW01</td><td class='severity-info'>info</td><td>Simulation.SIM_Housekeeping</td><td>'Simulation.SIM_Housekeeping': 2 branches of a decision at (680, 200) rejoin at one shared point before the decision's own merge, so the block cannot be nested. DESCRIBE renders it as nested IFs and drops the path that enters the shared part early — the described flow is not the flow you drew [recombinable, overlap 15 node(s)]</td></tr>
 <tr><td>CONV007</td><td class='severity-info'>info</td><td>Catalog.Allergen</td><td>Entity 'Catalog.Allergen' has unconstrained READ access for role 'Catalog.Guest' - all rows are accessible</td></tr>
 <tr><td>CONV007</td><td class='severity-info'>info</td><td>Core.StoreSettings</td><td>Entity 'Core.StoreSettings' has unconstrained READ access for role 'Core.Guest' - all rows are accessible</td></tr>
 <tr><td>CONV008</td><td class='severity-info'>info</td><td>ProjectSecurity</td><td>Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role.</td></tr>
@@ -220,7 +220,7 @@
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Fulfilment.SUB_Coupon_Evaluate</td><td>Microflow 'SUB_Coupon_Evaluate' has 18 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Fulfilment.SUB_Order_TimerBase</td><td>Microflow 'SUB_Order_TimerBase' has 23 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Fulfilment.SUB_Price_Compute</td><td>Microflow 'SUB_Price_Compute' has 35 activities (convention max: 15). Split into sub-microflows.</td></tr>
-<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.DS_Config_Choices</td><td>Microflow 'DS_Config_Choices' has 61 activities (convention max: 15). Split into sub-microflows.</td></tr>
+<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.DS_Config_Choices</td><td>Microflow 'DS_Config_Choices' has 64 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.DS_Menu_Products</td><td>Microflow 'DS_Menu_Products' has 19 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Cart_AddLine</td><td>Microflow 'SUB_Cart_AddLine' has 33 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Cart_Recalculate</td><td>Microflow 'SUB_Cart_Recalculate' has 37 activities (convention max: 15). Split into sub-microflows.</td></tr>
@@ -229,13 +229,13 @@
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Config_Choose</td><td>Microflow 'SUB_Config_Choose' has 38 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Config_Commit</td><td>Microflow 'SUB_Config_Commit' has 35 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Home_Refresh</td><td>Microflow 'SUB_Home_Refresh' has 33 activities (convention max: 15). Split into sub-microflows.</td></tr>
-<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has 60 activities (convention max: 15). Split into sub-microflows.</td></tr>
+<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has 65 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Lookup</td><td>Microflow 'SUB_Lookup' has 17 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Menu_Refresh</td><td>Microflow 'SUB_Menu_Refresh' has 33 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_OrderLine_SnapshotModifiers</td><td>Microflow 'SUB_OrderLine_SnapshotModifiers' has 22 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Order_Place</td><td>Microflow 'SUB_Order_Place' has 25 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Payment_Resolve</td><td>Microflow 'SUB_Payment_Resolve' has 40 activities (convention max: 15). Split into sub-microflows.</td></tr>
-<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has 50 activities (convention max: 15). Split into sub-microflows.</td></tr>
+<tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has 54 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Shop.SUB_Track_Fill</td><td>Microflow 'SUB_Track_Fill' has 184 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Simulation.SEED_Catalog</td><td>Microflow 'SEED_Catalog' has 376 activities (convention max: 15). Split into sub-microflows.</td></tr>
 <tr><td>CONV009</td><td class='severity-info'>info</td><td>Simulation.SEED_Order_1017_Lines</td><td>Microflow 'SEED_Order_1017_Lines' has 19 activities (convention max: 15). Split into sub-microflows.</td></tr>
@@ -258,7 +258,7 @@
 <tr><td>ARCH001</td><td class='severity-warning'>warning</td><td>Shop.ItemInfo</td><td>Widget 'dvInfo' in 'Shop.ItemInfo' references entity 'Catalog.Product' from module 'Catalog'. Use a view entity or microflow instead.</td></tr>
 <tr><td>ARCH001</td><td class='severity-warning'>warning</td><td>Shop.SNIP_Toasts</td><td>Widget 'lvToasts' in 'Shop.SNIP_Toasts' references entity 'Core.Toast' from module 'Core'. Use a view entity or microflow instead.</td></tr>
 <tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Catalog.Option</td><td>Entity 'Option' has 16 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
-<tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Catalog.Product</td><td>Entity 'Product' has 45 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
+<tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Catalog.Product</td><td>Entity 'Product' has 46 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
 <tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Core.SimulationSettings</td><td>Entity 'SimulationSettings' has 24 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
 <tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Core.StoreSettings</td><td>Entity 'StoreSettings' has 11 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
 <tr><td>DESIGN001</td><td class='severity-warning'>warning</td><td>Fulfilment.Courier</td><td>Entity 'Courier' has 12 attributes (max: 10). Consider splitting into smaller entities.</td></tr>
@@ -289,7 +289,7 @@
 <tr><td>ARCH003</td><td class='severity-warning'>warning</td><td>Shop.CheckoutForm</td><td>Entity 'CheckoutForm' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification.</td></tr>
 <tr><td>ARCH003</td><td class='severity-warning'>warning</td><td>Shop.LookupAttempt</td><td>Entity 'LookupAttempt' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Fulfilment.SUB_Price_Compute</td><td>Microflow 'SUB_Price_Compute' has 35 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
-<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.DS_Config_Choices</td><td>Microflow 'DS_Config_Choices' has 61 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.DS_Config_Choices</td><td>Microflow 'DS_Config_Choices' has 64 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Cart_AddLine</td><td>Microflow 'SUB_Cart_AddLine' has 33 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Cart_Recalculate</td><td>Microflow 'SUB_Cart_Recalculate' has 37 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Checkout_Compute</td><td>Microflow 'SUB_Checkout_Compute' has 51 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
@@ -297,10 +297,10 @@
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Config_Choose</td><td>Microflow 'SUB_Config_Choose' has 38 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Config_Commit</td><td>Microflow 'SUB_Config_Commit' has 35 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Home_Refresh</td><td>Microflow 'SUB_Home_Refresh' has 33 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
-<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has 60 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has 65 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Menu_Refresh</td><td>Microflow 'SUB_Menu_Refresh' has 33 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Payment_Resolve</td><td>Microflow 'SUB_Payment_Resolve' has 40 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
-<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has 50 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has 54 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Shop.SUB_Track_Fill</td><td>Microflow 'SUB_Track_Fill' has 184 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Simulation.SEED_Catalog</td><td>Microflow 'SEED_Catalog' has 376 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL003</td><td class='severity-warning'>warning</td><td>Simulation.SEED_Orders</td><td>Microflow 'SEED_Orders' has 46 activities (max: 25). Consider splitting into smaller microflows.</td></tr>
@@ -311,11 +311,12 @@
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Cart_Recalculate</td><td>Microflow 'SUB_Cart_Recalculate' has complexity 14 (max: 10). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Checkout_Place</td><td>Microflow 'SUB_Checkout_Place' has complexity 16 (max: 10). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Config_Choose</td><td>Microflow 'SUB_Config_Choose' has complexity 14 (max: 10). Consider splitting into smaller microflows.</td></tr>
-<tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has complexity 19 (max: 10). Consider splitting into smaller microflows.</td></tr>
-<tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has complexity 12 (max: 10). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Line_Recalculate</td><td>Microflow 'SUB_Line_Recalculate' has complexity 21 (max: 10). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Product_Recalculate</td><td>Microflow 'SUB_Product_Recalculate' has complexity 14 (max: 10). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Shop.SUB_Track_Fill</td><td>Microflow 'SUB_Track_Fill' has complexity 38 (max: 10). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Simulation.SIM_Couriers</td><td>Microflow 'SIM_Couriers' has complexity 17 (max: 10). Consider splitting into smaller microflows.</td></tr>
 <tr><td>QUAL001</td><td class='severity-warning'>warning</td><td>Simulation.SIM_Kitchen</td><td>Microflow 'SIM_Kitchen' has complexity 13 (max: 10). Consider splitting into smaller microflows.</td></tr>
+<tr><td>QUAL004</td><td class='severity-info'>info</td><td>Shop.DS_Product_Recipe</td><td>Microflow 'DS_Product_Recipe' is not called from anywhere.</td></tr>
 <tr><td>QUAL004</td><td class='severity-info'>info</td><td>Shop.FaultProbe</td><td>Page 'FaultProbe' is not shown from any microflow.</td></tr>
 <tr><td>QUAL004</td><td class='severity-info'>info</td><td>Shop.UnexpectedError</td><td>Page 'UnexpectedError' is not shown from any microflow.</td></tr>
 <tr><td>SEC004</td><td class='severity-warning'>warning</td><td>ProjectSecurity</td><td>Guest access is enabled. Review entity access rules granted to the anonymous user role - any unconstrained READ exposes data to unauthenticated users (DIVD-2022-00019).</td></tr>

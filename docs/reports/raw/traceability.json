@@ -2,7 +2,7 @@
   "kind": "traceability",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 14:27",
+  "generated": "2026-11-19 18:24",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "Requirements, decisions and open questions are read from the project brain (`docs/brain/`) with `brain list`; each requirement's anchor resolutions come from the same check `brain plan` uses, so \"built\" is defined in one place.",
@@ -203,7 +203,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work."
+            ],
             "questions": null
           },
           {
@@ -269,7 +271,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
             "questions": null
           },
           {
@@ -308,7 +312,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work."
+            ],
             "questions": null
           },
           {
@@ -404,7 +410,9 @@
               "J8 home: featured carousel pages and Configure opens the configurator",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "a1bb79: US-022 carousel: the position lives on the guest's cart, because a list fed by a microflow only refreshes when a persistent context object is committed."
+            ],
             "questions": null
           },
           {
@@ -432,7 +440,9 @@
             "journeys": [
               "J8 home: featured carousel pages and Configure opens the configurator"
             ],
-            "decisions": null,
+            "decisions": [
+              "42a525: Indexes from the volume test: Order.CompletedAt for the home KPIs, Order(Source, IsOpen, StatusChangedAt) for the traffic generator and housekeeping, SimulationEvent.OccurredAt for housekeeping; each replaced a full scan of 400,000 orders (docs/perf/report.html F2, F3)."
+            ],
             "questions": null
           },
           {
@@ -557,16 +567,11 @@
             ],
             "tests": null,
             "journeys": [
-              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
-              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
-              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
-              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
-              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
-              "J10 menu grep and dietary filters (US-027, US-033)",
-              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
-              "J7 phone: bottom navigation and menu cards render at 390 px"
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58"
             ],
-            "decisions": null,
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
             "questions": null
           },
           {
@@ -638,7 +643,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "da951c: The menu card's toppings line is stored on the product (Catalog.Product.CodeToppings) by Shop.SUB_Product_Recalculate, and the catalog's stored card values are recalculated at every start, not only at a reset: the per-card recipe data source cost 12 calls per menu render (docs/perf/report.html F4). Shop.DS_Product_Recipe is unused since; re-anchor US-026 before deleting it."
+            ],
             "questions": null
           },
           {
@@ -742,7 +749,9 @@
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
             "questions": null
           },
           {
@@ -774,7 +783,9 @@
               "J8 home: featured carousel pages and Configure opens the configurator",
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
             ],
-            "decisions": null,
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
             "questions": null
           },
           {
@@ -886,7 +897,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "a6e68d: US-033 dietary filter chips are built although the prototype lacks them (the story requires them); hidden only in the visual comparison."
+            ],
             "questions": null
           },
           {
@@ -923,7 +936,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "2bfb84: US-034 loading state: skeleton cards drawn by CSS on the empty list the client renders while loading."
+            ],
             "questions": null
           },
           {
@@ -1940,7 +1955,10 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts.",
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
             "questions": null
           },
           {
@@ -1977,7 +1995,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2037,7 +2057,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
             "questions": null
           },
           {
@@ -2074,7 +2096,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2099,7 +2123,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2124,7 +2150,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2149,7 +2177,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2182,9 +2212,12 @@
               "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "c7be68: Page actions: every ACT_ flow only delegates to a SUB_ with the logic (lint CONV010), keeping the permission boundary thin."
+            ],
             "questions": null
           },
           {
@@ -2221,7 +2254,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
             "questions": null
           },
           {
@@ -2246,7 +2281,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2271,7 +2308,9 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
             "questions": null
           },
           {
@@ -2331,14 +2370,17 @@
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "c7be68: Page actions: every ACT_ flow only delegates to a SUB_ with the logic (lint CONV010), keeping the permission boundary thin."
+            ],
             "questions": null
           },
           {
             "id": "86ff90",
             "slice": "05-checkout",
             "title": "US-097 Delivery preview map",
-            "status": "built",
+            "status": "partial",
+            "statusReason": "decision 13ee26: no distance label; fixed destination pin",
             "anchors": [
               {
                 "anchor": "@Shop.Checkout",
@@ -2369,7 +2411,10 @@
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
-            "decisions": null,
+            "decisions": [
+              "968fd2: Security: guest read on Coupon removed (no page reads it; the code shows as text on the cart); DeliveryZone readable only for the guest's own orders. This also closed the one Fulfilment\u003c-\u003eShop cycle.",
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
             "questions": null
           }
         ]
@@ -3681,14 +3726,16 @@
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J4 order lookup rejects an unknown order without revealing which field was wrong",
-              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
               "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
               "J10 menu grep and dietary filters (US-027, US-033)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "f2c8ab: Store time (BR-DATA-05): the runtime's default time zone America/Los_Angeles; order-log times are stored as server-formatted text because client-formatted dates follow the browser's zone."
+            ],
             "questions": null
           },
           {
@@ -3752,7 +3799,9 @@
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
-            "decisions": null,
+            "decisions": [
+              "b327f8: Housekeeping deletes in bounded batches (1,000 events, 50 orders per tick, oldest first) and marks its run done only when a batch comes back short: deleting a backlog in one transaction inside the simulator tick held the store-settings lock for 10 minutes on a 400,000-order volume seed, blocked every checkout and was aborted by the runtime (docs/perf/report.html F1)."
+            ],
             "questions": null
           }
         ]
@@ -3810,7 +3859,9 @@
             ],
             "tests": null,
             "journeys": null,
-            "decisions": null,
+            "decisions": [
+              "5ae203: US-282 / US-289: the platform's error dialog is replaced by a client hook that opens SCR-41 with an incident id that DS_Error also writes to the server log; an opt-in constant FaultInjection triggers it for the acceptance test."
+            ],
             "questions": null
           },
           {
@@ -3902,7 +3953,10 @@
             ],
             "tests": null,
             "journeys": null,
-            "decisions": null,
+            "decisions": [
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
             "questions": null
           },
           {
@@ -3927,7 +3981,11 @@
             ],
             "tests": null,
             "journeys": null,
-            "decisions": null,
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work.",
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
             "questions": null
           },
           {
@@ -3954,6 +4012,7 @@
             ],
             "tests": null,
             "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],
@@ -3986,7 +4045,11 @@
             ],
             "tests": null,
             "journeys": null,
-            "decisions": null,
+            "decisions": [
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "5ae203: US-282 / US-289: the platform's error dialog is replaced by a client hook that opens SCR-41 with an incident id that DS_Error also writes to the server log; an opt-in constant FaultInjection triggers it for the acceptance test.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
             "questions": null
           }
         ]
