@@ -243,7 +243,7 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) 
       container cl5 (Class: 'cl') {
         dynamictext c5k (Content: '  toppings: ')
         dynamictext c5o (Content: '[', Class: 'p')
-        listview lvTop (DataSource: DATABASE Shop.RecipeItem WHERE [Shop.RecipeItem_Product = $Product] SORT BY SortOrder ASC, Class: 'code-list') {
+        listview lvTop (DataSource: DATABASE Shop.RecipeItem WHERE [Shop.RecipeItem_Product = $Product] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') {
           dynamictext c5v (Content: '''{1}''', ContentParams: ({1} = Shop.RecipeItem_Ingredient/Name), Class: 's')
         }
         dynamictext c5c (Content: ']', Class: 'p')
@@ -263,7 +263,7 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) 
       container cl8 (Class: 'cl') {
         dynamictext c8k (Content: '  allergens: ')
         dynamictext c8o (Content: '[', Class: 'p')
-        listview lvAll (DataSource: DATABASE Shop.Allergen WHERE [Shop.Product_Allergen = $Product] SORT BY SortOrder ASC, Class: 'code-list') {
+        listview lvAll (DataSource: DATABASE Shop.Allergen WHERE [Shop.Product_Allergen = $Product] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') {
           dynamictext c8v (Content: '''{1}''', ContentParams: ({1} = Caption), Class: 's')
         }
         dynamictext c8c (Content: '],', Class: 'p')
@@ -393,7 +393,7 @@ create or modify page Shop.Menu (
                 container fVegan (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegan then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'vegan')) { dynamictext fVeganT (Content: '--vegan') }
                 container fSpicy (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterSpicy then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'spicy')) { dynamictext fSpicyT (Content: '--spicy') }
               }
-              listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(View = $dvMenu), Class: 'cards mt-16') {
+              listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(View = $dvMenu), PageSize: 200, Class: 'cards mt-16') {
                 snippetcall card (Snippet: Shop.SNIP_MenuCard, Params: (Product = $currentObject))
               }
               container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/NoResults) {
@@ -439,7 +439,7 @@ create or modify page Shop.Menu (
               }
               container dbgFull (Visible: $currentObject/ItemCount > 0) {
                 dynamictext df1 (Content: '[INFO] {1} {2} installed.', ContentParams: ({1} = ItemCount, {2} = if $currentObject/ItemCount = 1 then 'dependency' else 'dependencies'), Class: 'tag-success')
-                listview lvDbg (DataSource: DATABASE Shop.CartLine WHERE [Shop.CartLine_Cart = $currentObject and IsDraft = false] SORT BY CreatedAt ASC, Class: 'dbg-lines') {
+                listview lvDbg (DataSource: DATABASE Shop.CartLine WHERE [Shop.CartLine_Cart = $currentObject and IsDraft = false] SORT BY CreatedAt ASC, PageSize: 200, Class: 'dbg-lines') {
                   container dl (Class: 'mt-8 dbg-line') {
                     dynamictext dlOk (Content: '[OK]', Class: 'c-green')
                     dynamictext dlTxt (Content: ' {1}× {2} ', ContentParams: ({1} = Quantity, {2} = DisplayName))

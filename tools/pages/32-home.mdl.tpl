@@ -169,7 +169,7 @@ create or modify snippet Shop.SNIP_FeaturedCard (Params: ($Product: Shop.Product
     container pFoot (Class: 'pcard-foot') {
       actionbutton pImport (Caption: '+ import', Action: CALL MICROFLOW Shop.ACT_Product_QuickAdd(Product = $Product), Class: 'btn btn-primary', Visible: $Product/IsOrderable)
       actionbutton pSoldBtn (Caption: '404: OUT_OF_STOCK', Action: NOTHING, Class: 'btn btn-primary is-disabled', Visible: not($Product/IsOrderable))
-      container pConfigure (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product)) {
+      container pConfigure (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Configure_FromHome(Product = $Product)) {
         dynamictext pTune (Content: 'tune', Class: 'ms md')
       }
     }
@@ -276,7 +276,7 @@ create or modify page Shop.Home (
             }
           }
         }
-        listview lvFeatured (DataSource: MICROFLOW Shop.DS_Home_Featured(View = $currentObject), Class: 'carousel') {
+        listview lvFeatured (DataSource: MICROFLOW Shop.DS_Home_Featured(View = $currentObject), PageSize: 200, Class: 'carousel') {
           snippetcall scCard (Snippet: Shop.SNIP_FeaturedCard, Params: (Product = $currentObject))
         }
       }

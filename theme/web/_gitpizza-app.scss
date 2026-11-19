@@ -233,3 +233,62 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .scr-02 .notice .mx-text { display: inline; }
 .gp-app .code .code-list .mx-dataview, .gp-app .code .code-list .mx-dataview-content { display: inline; }
 .gp-app .code .cl .mx-text { white-space: pre; }
+
+// ── SCR-03 Configurator
+.gp-app .scr-03 .product-dv, .gp-app .scr-03 .product-dv > .mx-dataview-content { display: block; }
+.gp-app .scr-03 .crumb .mx-text { display: inline; }
+.gp-app .scr-03 .crumb .b { color: var(--primary-light); font-weight: 500; }
+.gp-app .scr-03 .back-link { color: var(--primary-light); }
+.gp-app .scr-03 .notice .mx-text { display: inline; }
+.gp-app .scr-03 .pimg-wrap { position: relative; }
+.gp-app .scr-03 .conf-left .img-frame { aspect-ratio: 1 / 1; border-radius: var(--r-xl); }
+.gp-app .scr-03 .conf-left .img-frame .pimg, .gp-app .scr-03 .conf-left .img-frame .pimg img { width: 100%; height: 100%; object-fit: cover; }
+.gp-app .scr-03 .live-tag .mx-text { display: inline; }
+.gp-app .scr-03 .term-bar .tb-right { margin-left: auto; }
+.gp-app .scr-03 .manifest { border: 0; border-radius: 0; margin: 0; }
+.gp-app .scr-03 .conf-desc { margin: 12px 0 0; }
+.gp-app .scr-03 .section-label .mx-text { display: inline; }
+.gp-app .scr-03 .section-label .sl-sub { text-transform: none; font-weight: 500; color: var(--text-muted); }
+.gp-app .scr-03 .group-head .section-label { margin: 0; }
+.gp-app .scr-03 .seg-lv, .gp-app .scr-03 .opts-lv, .gp-app .scr-03 .extras-lv, .gp-app .scr-03 .rows-lv { display: block; }
+.gp-app .scr-03 .seg-lv > ul { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+.gp-app .scr-03 .opts-lv > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.gp-app .scr-03 .extras-lv > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.gp-app .scr-03 .seg-lv > ul > li, .gp-app .scr-03 .opts-lv > ul > li, .gp-app .scr-03 .extras-lv > ul > li { display: flex; min-width: 0; }
+.gp-app .scr-03 .seg-lv li > *, .gp-app .scr-03 .opts-lv li > *, .gp-app .scr-03 .extras-lv li > * { flex: 1; min-width: 0; }
+.gp-app .opt.selected { border: 2px solid var(--primary); background: var(--primary-subtle); box-shadow: var(--glow-s); padding: 11px 13px; }
+.gp-app .opt.selected .o-title { color: var(--primary-light); }
+.gp-app .opt.unavailable { opacity: 0.38; cursor: not-allowed; }
+.gp-app .scr-03 .recipe-lv > ul > li { border-bottom: 1px solid var(--border-subtle); }
+.gp-app .scr-03 .recipe-lv > ul > li:last-child { border-bottom: 0; }
+.gp-app .scr-03 .ing { border-bottom: 0; }
+.gp-app .scr-03 .ing .ing-right { margin-left: auto; display: flex; }
+.gp-app .scr-03 .ing .chip .mx-text { display: inline; }
+.gp-app .scr-03 .xopt .xbox { width: 18px; height: 18px; flex: none; border: 1px solid var(--border-strong); border-radius: 2px; background: var(--surface-highest); display: grid; place-items: center; }
+.gp-app .scr-03 .xopt.on .xbox { background: var(--primary); border-color: var(--primary); color: var(--primary-on); }
+.gp-app .scr-03 .xopt .xbox .ms { font-size: 14px; }
+.gp-app .scr-03 .full-note { margin-bottom: 8px; }
+.gp-app .scr-03 .div-line { border-top: 1px solid var(--border-subtle); margin: 8px 0; }
+.gp-app .scr-03 .diet .mx-text, .gp-app .scr-03 .diet { gap: 6px; }
+.gp-app .stepper .st-btn { width: 36px; height: 36px; min-height: 36px; padding: 0; background: none; border: 0; color: var(--success-text); font-size: 18px; font-weight: 700; }
+.gp-app .stepper .st-btn.is-disabled { color: var(--text-disabled); cursor: not-allowed; }
+.gp-app .stepper .lbl { padding: 0 8px 0 12px; color: var(--text-muted); font-size: 12px; }
+.gp-app .stepper .val { min-width: 24px; text-align: center; font-weight: 700; }
+.gp-app .scr-03 .line-total { text-align: right; }
+.gp-app .scr-03 .btn-block { width: 100%; }
+
+// ── SCR-04 module.info (modal)
+.mx-window:has(.scr-04) { width: min(640px, calc(100vw - 32px)) !important; }
+.gp-app .scr-04 .modal-head .t-h3 { flex: 1; }
+.gp-app .scr-04 .close-x { background: none; border: 0; color: var(--text-muted); min-height: 0; }
+.gp-app .scr-04 .info-body { display: grid; grid-template-columns: 200px 1fr; gap: 20px; }
+@media (max-width: 767px) { .gp-app .scr-04 .info-body { grid-template-columns: 1fr; } }
+.gp-app .scr-04 .info-img .pimg, .gp-app .scr-04 .info-img .pimg img { width: 100%; height: 100%; object-fit: cover; }
+.gp-app .scr-04 .facts .sum-row .lbl { font-weight: 700; letter-spacing: .05em; font-size: 12px; }
+.gp-app .scr-04 .notice .mx-text { display: inline; }
+.gp-app .scr-04 .qty-dv, .gp-app .scr-04 .qty-dv > .mx-dataview-content { display: block; }
+.gp-app .scr-04 .modal-foot { align-items: center; }
+.gp-app .scr-04 .modal-foot .stepper { margin-right: auto; }
+@media (max-width: 767px) { .modal-dialog.mx-window:has(.scr-04) { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: 100% !important; border-radius: var(--r-lg) var(--r-lg) 0 0; } }
+.gp-app .between::before, .gp-app .between::after, .gp-app .row::before, .gp-app .row::after { content: none; display: none; }
+.gp-app .row { margin-left: 0; margin-right: 0; }

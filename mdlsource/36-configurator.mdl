@@ -1,0 +1,687 @@
+mdl 1;
+-- SCR-03 Pizza configurator (EP-03: US-041..US-053) and SCR-04 item info (US-029, US-030).
+
+/**
+ * Builds the tiles of one configurator group for the draft line: sizes,
+ * crusts, sauces, cheeses, default recipe items, extras, or the price
+ * breakdown rows (US-052). Selection, availability (size, stock, max
+ * extras) and price labels are decided here, on the server.
+ *
+ * @param $Line The draft line being configured
+ * @param $Kind SIZE, CRUST, SAUCE, CHEESE, RECIPE, EXTRA or ROW
+ * @returns Choices in display order
+ */
+create or modify microflow Shop.DS_Config_Choices ($Line: Shop.CartLine, $Kind: String)
+returns List of Shop.Choice as $Choices
+folder 'Configurator'
+begin
+  $Choices = create list of Shop.Choice;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  declare $SizeCode Enumeration(Shop.SizeCode) = $Size/Size;
+  if $Kind = 'SIZE' then
+    retrieve $Sizes from Shop.ProductSize where [Shop.ProductSize_Product = $Product] sort by SortOrder asc;
+    loop $S in $Sizes
+    begin
+      $SPrice = call microflow Shop.SUB_Money(Amount = $S/Price);
+      $SC = create Shop.Choice (Kind = 'SIZE', Title = toUpperCase(getKey($S/Size)), Sub = $S/ServingDescription + ' · ' + $SPrice, IsSelected = $S = $Size, SortOrder = $S/SortOrder, Shop.Choice_Size = $S, Shop.Choice_Line = $Line);
+      add $SC to $Choices;
+    end loop;
+    return $Choices;
+  end if;
+  if $Kind = 'CRUST' or $Kind = 'SAUCE' or $Kind = 'CHEESE' then
+    retrieve $AllOptions from Shop.Option where [IsActive = true and OptionGroup != 'EXTRA'] sort by SortOrder asc;
+    $Options = filter $AllOptions where getKey($currentObject/OptionGroup) = $Kind;
+    retrieve $LCrust from $Line/Shop.CartLine_Crust;
+    retrieve $LSauce from $Line/Shop.CartLine_Sauce;
+    retrieve $LCheese from $Line/Shop.CartLine_Cheese;
+    retrieve $PCrust from $Product/Shop.Product_DefaultCrust;
+    retrieve $PSauce from $Product/Shop.Product_DefaultSauce;
+    retrieve $PCheese from $Product/Shop.Product_DefaultCheese;
+    $Pick = create list of Shop.Option;
+    if $Kind = 'CRUST' then
+      add $LCrust to $Pick;
+      add $PCrust to $Pick;
+    end if;
+    if $Kind = 'SAUCE' then
+      add $LSauce to $Pick;
+      add $PSauce to $Pick;
+    end if;
+    if $Kind = 'CHEESE' then
+      add $LCheese to $Pick;
+      add $PCheese to $Pick;
+    end if;
+    $Current = head $Pick;
+    $Rest = tail $Pick;
+    $Default = head $Rest;
+    loop $O in $Options
+    begin
+      $OAvail = call microflow Shop.SUB_Option_AvailableFor(Option = $O, Size = $SizeCode);
+      retrieve $OIng from $O/Shop.Option_Ingredient;
+      declare $InStock Boolean = $OIng = empty or $OIng/IsInStock;
+      declare $Sub String = '';
+      if not($InStock) then
+        set $Sub = 'unavailable today';
+      else
+        if not($OAvail) then
+          set $Sub = if $O/ForSmall and not($O/ForMedium) then 'Small 10" only' else 'Medium & Large only';
+        else
+          if $O = $Default or $O/Surcharge = 0 then
+            set $Sub = 'included';
+          else
+            $Sur = call microflow Shop.SUB_Money(Amount = $O/Surcharge);
+            set $Sub = '+' + $Sur;
+          end if;
+          if $O = $Default then
+            set $Sub = $Sub + ' · default';
+          end if;
+        end if;
+      end if;
+      $OC = create Shop.Choice (Kind = $Kind, Title = $O/Name, Sub = $O/OptionKey + ' · ' + $Sub, IsSelected = $O = $Current, IsDisabled = not($OAvail),
+        IsDefault = $O = $Default, SortOrder = $O/SortOrder, Shop.Choice_Option = $O, Shop.Choice_Line = $Line);
+      add $OC to $Choices;
+    end loop;
+    return $Choices;
+  end if;
+  if $Kind = 'RECIPE' then
+    retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+    retrieve $Removed from $Line/Shop.CartLine_Removed;
+    loop $R in $Recipe
+    begin
+      retrieve $RIng from $R/Shop.RecipeItem_Ingredient;
+      $IsRemoved = contains $RIng in $Removed;
+      $RC = create Shop.Choice (Kind = 'RECIPE', Title = $RIng/Name, Sub = if $R/Role = Shop.RecipeRole.FINISH then 'finish' else 'topping',
+        IsRemoved = $IsRemoved, IsFixed = not($R/IsRemovable), IsUnavailable = not($RIng/IsInStock), SortOrder = $R/SortOrder, Shop.Choice_Ingredient = $RIng, Shop.Choice_Line = $Line);
+      add $RC to $Choices;
+    end loop;
+    return $Choices;
+  end if;
+  if $Kind = 'EXTRA' then
+    retrieve $Extras from Shop.Option where [OptionGroup = 'EXTRA' and IsActive = true] sort by SortOrder asc;
+    retrieve $Chosen from $Line/Shop.CartLine_Extra;
+    $ChosenCount = count $Chosen;
+    declare $Full Boolean = $ChosenCount >= $Product/MaxExtras;
+    loop $X in $Extras
+    begin
+      $XOn = contains $X in $Chosen;
+      $XAvail = call microflow Shop.SUB_Option_AvailableFor(Option = $X, Size = $SizeCode);
+      $XPrice = call microflow Shop.SUB_Option_PriceFor(Option = $X, Size = $SizeCode);
+      $XPriceText = call microflow Shop.SUB_Money(Amount = $XPrice);
+      $XC = create Shop.Choice (Kind = 'EXTRA', Title = $X/OptionKey, Sub = $X/Name + ' · ' + (if $XAvail then $X/VersionTag else 'unavailable today'), PriceLabel = '+' + $XPriceText,
+        IsSelected = $XOn, IsDisabled = not($XOn) and ($Full or not($XAvail)), SortOrder = $X/SortOrder, Shop.Choice_Option = $X, Shop.Choice_Line = $Line);
+      add $XC to $Choices;
+    end loop;
+    return $Choices;
+  end if;
+  -- ROW: price breakdown (US-052)
+  retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
+  retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
+  retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+  retrieve $Crust from $Line/Shop.CartLine_Crust;
+  retrieve $Sauce from $Line/Shop.CartLine_Sauce;
+  retrieve $Cheese from $Line/Shop.CartLine_Cheese;
+  $BasePrice = call microflow Shop.SUB_Money(Amount = $Size/Price);
+  $Row0 = create Shop.Choice (Kind = 'ROW', Title = getCaption($SizeCode), PriceLabel = $BasePrice, SortOrder = 0);
+  add $Row0 to $Choices;
+  $Base = create list of Shop.Option;
+  add $Crust to $Base;
+  add $Sauce to $Base;
+  add $Cheese to $Base;
+  loop $B in $Base
+  begin
+    if $B != $DefCrust and $B != $DefSauce and $B != $DefCheese then
+      $BText = call microflow Shop.SUB_Money(Amount = $B/Surcharge);
+      $RowB = create Shop.Choice (Kind = 'ROW', Title = $B/Name, PriceLabel = '+' + $BText, SortOrder = 1);
+      add $RowB to $Choices;
+    end if;
+  end loop;
+  retrieve $LineExtras from $Line/Shop.CartLine_Extra;
+  $SortedLineExtras = sort $LineExtras by SortOrder asc;
+  loop $E in $SortedLineExtras
+  begin
+    $EPrice = call microflow Shop.SUB_Option_PriceFor(Option = $E, Size = $SizeCode);
+    $EText = call microflow Shop.SUB_Money(Amount = $EPrice);
+    $RowE = create Shop.Choice (Kind = 'ROW', Title = '+ ' + $E/Name, PriceLabel = '+' + $EText, SortOrder = 2);
+    add $RowE to $Choices;
+  end loop;
+  retrieve $LineRemoved from $Line/Shop.CartLine_Removed;
+  loop $Rm in $LineRemoved
+  begin
+    $RowR = create Shop.Choice (Kind = 'ROW', Title = $Rm/Name + ' removed', PriceLabel = '$0.00', SortOrder = 3);
+    add $RowR to $Choices;
+  end loop;
+  return $Choices;
+end;
+grant execute on microflow Shop.DS_Config_Choices to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Applies a click on a configurator tile (US-042..US-046, US-051):
+ * size (resets a crust or removes extras the new size does not allow, with a
+ * notice), crust/sauce/cheese, extra on/off (max per product), or recipe
+ * item unlink/link. Disabled, fixed or unavailable choices change nothing.
+ *
+ * @param $Choice The tile that was clicked
+ */
+create or modify microflow Shop.ACT_Config_Choose ($Choice: Shop.Choice)
+folder 'Configurator'
+begin
+  retrieve $Line from $Choice/Shop.Choice_Line;
+  if $Line = empty or $Choice/IsDisabled or $Choice/IsFixed or $Choice/IsUnavailable then
+    return;
+  end if;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  declare $Notice String = '';
+  if $Choice/Kind = 'SIZE' then
+    retrieve $NewSize from $Choice/Shop.Choice_Size;
+    change $Line (Shop.CartLine_Size = $NewSize);
+    retrieve $Crust from $Line/Shop.CartLine_Crust;
+    $CrustOk = call microflow Shop.SUB_Option_AvailableFor(Option = $Crust, Size = $NewSize/Size);
+    if not($CrustOk) then
+      retrieve $Neapolitan from Shop.Option where [Code = 'CR-01'] first;
+      change $Line (Shop.CartLine_Crust = $Neapolitan);
+      set $Notice = 'core_kernel reset to neapolitan_core: ' + $Crust/Name + ' is not available in ' + getCaption($NewSize/Size) + '.';
+    end if;
+    retrieve $Extras from $Line/Shop.CartLine_Extra;
+    loop $X in $Extras
+    begin
+      $XOk = call microflow Shop.SUB_Option_AvailableFor(Option = $X, Size = $NewSize/Size);
+      if not($XOk) then
+        remove $X from $Line/Shop.CartLine_Extra;
+        set $Notice = $Notice + ' ' + $X/Name + ' is not available in ' + getCaption($NewSize/Size) + ' and was removed.';
+      end if;
+    end loop;
+  end if;
+  retrieve $Option from $Choice/Shop.Choice_Option;
+  if $Choice/Kind = 'CRUST' and $Product/CrustSelectable then
+    change $Line (Shop.CartLine_Crust = $Option);
+  end if;
+  if $Choice/Kind = 'SAUCE' then
+    change $Line (Shop.CartLine_Sauce = $Option);
+  end if;
+  if $Choice/Kind = 'CHEESE' then
+    change $Line (Shop.CartLine_Cheese = $Option);
+  end if;
+  if $Choice/Kind = 'EXTRA' then
+    if $Choice/IsSelected then
+      remove $Option from $Line/Shop.CartLine_Extra;
+    else
+      retrieve $Chosen from $Line/Shop.CartLine_Extra;
+      $ChosenCount = count $Chosen;
+      if $ChosenCount >= $Product/MaxExtras then
+        set $Notice = 'Dependency limit reached: max ' + toString($Product/MaxExtras) + ' extras per pizza.';
+      else
+        add $Option to $Line/Shop.CartLine_Extra;
+      end if;
+    end if;
+  end if;
+  if $Choice/Kind = 'RECIPE' then
+    retrieve $Ing from $Choice/Shop.Choice_Ingredient;
+    if $Choice/IsRemoved then
+      remove $Ing from $Line/Shop.CartLine_Removed;
+    else
+      add $Ing to $Line/Shop.CartLine_Removed;
+    end if;
+  end if;
+  change $Line (Notice = trim($Notice));
+  call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+  commit $Line without events refresh;
+end;
+grant execute on microflow Shop.ACT_Config_Choose to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Quantity stepper of the configurator: 1–10 (US-049).
+ *
+ * @param $Line The draft line
+ * @param $Delta -1 or 1
+ */
+create or modify microflow Shop.ACT_Config_Qty ($Line: Shop.CartLine, $Delta: Integer)
+folder 'Configurator'
+begin
+  change $Line (Quantity = max(1, min(10, $Line/Quantity + $Delta)));
+  call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+  commit $Line without events refresh;
+end;
+grant execute on microflow Shop.ACT_Config_Qty to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Returns to the page the configurator was opened from (US-049 AC2).
+ *
+ * @param $ReturnTo HOME, MENU or CART
+ */
+create or modify microflow Shop.SUB_Config_Return ($ReturnTo: String)
+folder 'Configurator'
+begin
+  if $ReturnTo = 'HOME' then
+    show page Shop.Home();
+    return;
+  end if;
+  if $ReturnTo = 'CART' then
+    call microflow Shop.ACT_Nav_Cart();
+    return;
+  end if;
+  show page Shop.Menu();
+end;
+
+/**
+ * Build & Deploy / Commit to manifest (US-049, US-050): adds the draft to the
+ * cart (merging an identical build, max 10), or in edit mode replaces the
+ * edited line (merging with an identical other line). Rejected when the
+ * build became unavailable or the edited line no longer exists.
+ *
+ * @param $Line The draft line
+ */
+create or modify microflow Shop.ACT_Config_Commit ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  retrieve $Cart from $Line/Shop.CartLine_Cart;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  declare $ReturnTo String = $Line/ReturnTo;
+  call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+  if not($Line/IsAvailable) then
+    call microflow Shop.SUB_Toast(Message = 'This build is no longer available: ' + $Product/Name + ' cannot be made today.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    return;
+  end if;
+  retrieve $Original from $Line/Shop.CartLine_EditOf;
+  if $Original = empty then
+    $Added = call microflow Shop.SUB_Cart_AddLine(Cart = $Cart, Line = $Line, Quantity = $Line/Quantity, Kind = 'build');
+    if $Added then
+      call microflow Shop.SUB_Config_Return(ReturnTo = $ReturnTo);
+    end if;
+    return;
+  end if;
+  -- edit mode: the original keeps its identity, takes the new configuration
+  retrieve $Still from Shop.CartLine where [id = $Original] first;
+  if $Still = empty then
+    call microflow Shop.SUB_Toast(Message = 'This manifest line no longer exists.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.ACT_Nav_Cart();
+    return;
+  end if;
+  retrieve $Crust from $Line/Shop.CartLine_Crust;
+  retrieve $Sauce from $Line/Shop.CartLine_Sauce;
+  retrieve $Cheese from $Line/Shop.CartLine_Cheese;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  retrieve $Extras from $Line/Shop.CartLine_Extra;
+  retrieve $Removed from $Line/Shop.CartLine_Removed;
+  change $Original (Quantity = $Line/Quantity, Shop.CartLine_Size = $Size, Shop.CartLine_Crust = $Crust, Shop.CartLine_Sauce = $Sauce, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $Extras, Shop.CartLine_Removed = $Removed);
+  call microflow Shop.SUB_Line_Recalculate(Line = $Original);
+  declare $Key String = $Original/ConfigurationKey;
+  retrieve $Twin from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false and ConfigurationKey = $Key and id != $Original] first;
+  if $Twin != empty then
+    change $Twin (Quantity = min(10, $Twin/Quantity + $Original/Quantity));
+    call microflow Shop.SUB_Line_Recalculate(Line = $Twin);
+    commit $Twin without events;
+    delete $Original;
+  else
+    commit $Original without events;
+  end if;
+  delete $Line;
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  call microflow Shop.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+  call microflow Shop.ACT_Nav_Cart();
+end;
+grant execute on microflow Shop.ACT_Config_Commit to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Leaves the configurator without committing (US-050 AC4): the cart is unchanged.
+ *
+ * @param $Line The draft line
+ */
+create or modify microflow Shop.ACT_Config_Back ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  declare $ReturnTo String = $Line/ReturnTo;
+  delete $Line;
+  call microflow Shop.SUB_Config_Return(ReturnTo = $ReturnTo);
+end;
+grant execute on microflow Shop.ACT_Config_Back to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Edit a pizza line of the cart in the configurator (US-050): a draft copy
+ * with the line's configuration and quantity; Commit to manifest replaces it.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Configure_Edit ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  retrieve $Cart from $Line/Shop.CartLine_Cart;
+  retrieve $OldDrafts from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = true];
+  delete $OldDrafts;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  retrieve $Crust from $Line/Shop.CartLine_Crust;
+  retrieve $Sauce from $Line/Shop.CartLine_Sauce;
+  retrieve $Cheese from $Line/Shop.CartLine_Cheese;
+  retrieve $Extras from $Line/Shop.CartLine_Extra;
+  retrieve $Removed from $Line/Shop.CartLine_Removed;
+  $Draft = create Shop.CartLine (Quantity = $Line/Quantity, IsDraft = true, ReturnTo = 'CART', Shop.CartLine_Cart = $Cart, Shop.CartLine_EditOf = $Line, Shop.CartLine_Product = $Product,
+    Shop.CartLine_Size = $Size, Shop.CartLine_Crust = $Crust, Shop.CartLine_Sauce = $Sauce, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $Extras, Shop.CartLine_Removed = $Removed);
+  call microflow Shop.SUB_Line_Recalculate(Line = $Draft);
+  commit $Draft without events;
+  show page Shop.Configurator(Line = $Draft);
+end;
+grant execute on microflow Shop.ACT_Configure_Edit to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Adds the shown product from module.info in the chosen quantity (US-029)
+ * and closes the modal.
+ *
+ * @param $Line Draft line holding product and quantity
+ */
+create or modify microflow Shop.ACT_Info_Add ($Line: Shop.CartLine)
+folder 'Configurator'
+begin
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  declare $Qty Integer = $Line/Quantity;
+  delete $Line;
+  call microflow Shop.ACT_Product_Add(Product = $Product, Quantity = $Qty);
+  close page;
+end;
+grant execute on microflow Shop.ACT_Info_Add to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Draft line that holds the quantity chosen in module.info (US-029).
+ *
+ * @param $Product The product shown
+ * @returns A draft line with quantity 1
+ */
+create or modify microflow Shop.DS_Info_Line ($Product: Shop.Product)
+returns Shop.CartLine as $Line
+folder 'Configurator'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  $Line = create Shop.CartLine (Quantity = 1, IsDraft = true, Shop.CartLine_Cart = $Cart, Shop.CartLine_Product = $Product);
+  commit $Line without events;
+  return $Line;
+end;
+grant execute on microflow Shop.DS_Info_Line to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Configure from the home carousel: returns to the home page afterwards.
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Configure_FromHome ($Product: Shop.Product)
+folder 'Configurator'
+begin
+  call microflow Shop.ACT_Configure_Open(Product = $Product);
+  retrieve $Cart from Shop.Cart where [Shop.Cart_Owner = '[%CurrentUser%]'] first;
+  retrieve $Draft from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = true] first;
+  if $Draft != empty then
+    change $Draft (ReturnTo = 'HOME');
+    commit $Draft without events;
+  end if;
+end;
+grant execute on microflow Shop.ACT_Configure_FromHome to Shop.Guest, Shop.Administrator; -- auto
+
+/** One option tile (crust, sauce, cheese, size). */
+create or modify snippet Shop.SNIP_OptTile (Params: ($Choice: Shop.Choice)) {
+  container opt (Class: 'opt', DynamicClasses: (if $Choice/IsSelected then 'selected ' else '') + (if $Choice/IsDisabled then 'unavailable' else ''), OnClick: CALL MICROFLOW Shop.ACT_Config_Choose(Choice = $Choice)) {
+    dynamictext oTitle (Content: '{1}', ContentParams: ({1} = $Choice/Title), Class: 'o-title')
+    dynamictext oSub (Content: '{1}', ContentParams: ({1} = $Choice/Sub), Class: 'o-sub')
+  }
+};
+
+/** SCR-03 configure_module.ts. */
+create or modify page Shop.Configurator (
+  Title: 'Configure pizza — Git Pizza MxDev',
+  Layout: Shop.Layout_Guest,
+  Params: ($Line: Shop.CartLine)
+) {
+  dataview dvLine (DataSource: $Line, Class: 'page-dv') {
+    container page (Class: 'page scr-03') {
+      container topRow (Class: 'between') {
+        container crumb (Class: 'crumb') {
+          dynamictext crIcon (Content: 'folder_open', Class: 'ms sm')
+          dynamictext crPath (Content: 'src › modules › ')
+          dynamictext crFile (Content: '{1}', ContentParams: ({1} = 'configure_module.ts'), Class: 'b')
+        }
+        linkbutton back (Caption: '← back to ./menu.ts', Action: CALL MICROFLOW Shop.ACT_Config_Back(Line = $currentObject), Class: 't-small back-link')
+      }
+      container editBanner (Class: 'notice info mt-16', Visible: $currentObject/Shop.CartLine_EditOf != empty) {
+        dynamictext ebIcon (Content: 'edit', Class: 'ms')
+        dynamictext ebTxt (Content: 'Editing a manifest line. Committing replaces it in your cart.')
+      }
+      dataview dvProduct (DataSource: $currentObject/Shop.CartLine_Product, Class: 'product-dv') {
+        container soldBanner (Class: 'notice error mt-16', Visible: not($currentObject/IsOrderable)) {
+          dynamictext sbIcon (Content: 'block', Class: 'ms')
+          dynamictext sbTxt (Content: '404: OUT_OF_STOCK // {1} is sold out today. You can look, but you can''t deploy it.', ContentParams: ({1} = Name))
+        }
+        container conf (Class: 'conf') {
+          container confLeft (Class: 'conf-left') {
+            container imgWrap (Class: 'pimg-wrap') {
+              container frame (Class: 'img-frame') {
+                image img (ImageType: imageUrl, ImageUrl: '/assets/products/{1}', ImageUrlParams: ({1} = ImageFile), AlternativeText: '{1}', AlternativeTextParams: ({1} = ImageAlt), Class: 'pimg')
+              }
+              container liveTag (Class: 'live-tag') {
+                container ltDot (Class: 'live-dot') { }
+                dynamictext ltTxt (Content: 'LIVE_RENDER: {1}@{2}', ContentParams: ({1} = ModuleKey, {2} = VersionTag))
+              }
+            }
+            container term (Class: 'term') {
+              container termBar (Class: 'term-bar') {
+                container dots (Class: 'dots') {
+                  container d1 (Class: 'dot') { }
+                  container d2 (Class: 'dot') { }
+                  container d3 (Class: 'dot') { }
+                }
+                dynamictext tbName (Content: '{1}', ContentParams: ({1} = 'manifest.json'))
+                dynamictext tbPrev (Content: 'preview', Class: 'c-green tb-right')
+              }
+              container manifest (Class: 'code manifest') {
+                dynamictext m0 (Content: '{', Class: 'p')
+                container m1 (Class: 'cl') { dynamictext m1k (Content: '  "module": ') dynamictext m1v (Content: '"{1}"', ContentParams: ({1} = ModuleKey), Class: 's') dynamictext m1p (Content: ',', Class: 'p') }
+                container m2 (Class: 'cl') { dynamictext m2k (Content: '  "version": ') dynamictext m2v (Content: '"{1}"', ContentParams: ({1} = VersionTag), Class: 's') dynamictext m2p (Content: ',', Class: 'p') }
+                container m3 (Class: 'cl') { dynamictext m3k (Content: '  "size": ') dynamictext m3v (Content: '"{1}"', ContentParams: ({1} = $Line/SizeKey), Class: 's') dynamictext m3p (Content: ',', Class: 'p') }
+                container m4 (Class: 'cl') { dynamictext m4k (Content: '  "core_kernel": ') dynamictext m4v (Content: '"{1}"', ContentParams: ({1} = $Line/Shop.CartLine_Crust/OptionKey), Class: 's') dynamictext m4p (Content: ',', Class: 'p') }
+                container m5 (Class: 'cl') { dynamictext m5k (Content: '  "base_layer": ') dynamictext m5v (Content: '"{1}"', ContentParams: ({1} = $Line/Shop.CartLine_Sauce/OptionKey), Class: 's') dynamictext m5p (Content: ',', Class: 'p') }
+                container m6 (Class: 'cl') { dynamictext m6k (Content: '  "cheese_driver": ') dynamictext m6v (Content: '"{1}"', ContentParams: ({1} = $Line/Shop.CartLine_Cheese/OptionKey), Class: 's') dynamictext m6p (Content: ',', Class: 'p') }
+                container m7 (Class: 'cl') {
+                  dynamictext m7k (Content: '  "dependencies": ')
+                  dynamictext m7o (Content: '[', Class: 'p')
+                  listview lvDeps (DataSource: DATABASE Shop.Option WHERE [Shop.CartLine_Extra = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m7v (Content: '"{1}"', ContentParams: ({1} = OptionKey), Class: 's') }
+                  dynamictext m7c (Content: '],', Class: 'p')
+                }
+                container m8 (Class: 'cl') {
+                  dynamictext m8k (Content: '  "unlinked": ')
+                  dynamictext m8o (Content: '[', Class: 'p')
+                  listview lvUnl (DataSource: DATABASE Shop.Ingredient WHERE [Shop.CartLine_Removed = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m8v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
+                  dynamictext m8c (Content: '],', Class: 'p')
+                }
+                container m9 (Class: 'cl') { dynamictext m9k (Content: '  "instances": ') dynamictext m9v (Content: '{1}', ContentParams: ({1} = toString($Line/Quantity)), Class: 'n') dynamictext m9p (Content: ',', Class: 'p') }
+                container m10 (Class: 'cl') { dynamictext m10k (Content: '  "unit_price": ') dynamictext m10v (Content: '{1}', ContentParams: ({1} = $Line/UnitPriceJson), Class: 'n') dynamictext m10p (Content: ',', Class: 'p') }
+                container m11 (Class: 'cl') {
+                  dynamictext m11k (Content: '  "allergens": ')
+                  dynamictext m11o (Content: '[', Class: 'p')
+                  listview lvAl (DataSource: DATABASE Shop.Allergen WHERE [Shop.CartLine_Allergen = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m11v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
+                  dynamictext m11c (Content: '],', Class: 'p')
+                }
+                container m12 (Class: 'cl') { dynamictext m12k (Content: '  "vegetarian": ') dynamictext m12v (Content: '{1}', ContentParams: ({1} = if $Line/IsVegetarian then 'true' else 'false'), Class: 'b') dynamictext m12p (Content: ',', Class: 'p') }
+                container m13 (Class: 'cl') { dynamictext m13k (Content: '  "vegan": ') dynamictext m13v (Content: '{1}', ContentParams: ({1} = if $Line/IsVegan then 'true' else 'false'), Class: 'b') }
+                dynamictext m14 (Content: '}', Class: 'p')
+              }
+            }
+          }
+          container confRight (Class: 'conf-right') {
+            dynamictext path (Content: '{1} · {2}', ContentParams: ({1} = ModulePath, {2} = Code), Class: 't-micro c-muted')
+            dynamictext name (Content: '{1}', ContentParams: ({1} = Name), RenderMode: H1, Class: 't-h1 mt-8')
+            dynamictext real (Content: '{1}', ContentParams: ({1} = RealWorldName), Class: 'c-secondary t-small')
+            dynamictext desc (Content: '{1}', ContentParams: ({1} = Description), Class: 't-body-long conf-desc')
+            container badges (Class: 'row mt-16 badges') {
+              dynamictext bVegan (Content: '<Vegan />', Class: 'chip tag-badge', Visible: $Line/IsVegan)
+              dynamictext bVeg (Content: '<Vegetarian />', Class: 'chip tag-badge', Visible: $Line/IsVegetarian and not($Line/IsVegan))
+              dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $currentObject/BadgeClassic)
+              dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $currentObject/BadgeBestSeller)
+              dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $currentObject/BadgeNew)
+              dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $currentObject/BadgeChefPick)
+              container bSpice (Class: 'chip tag-spice', Visible: $currentObject/SpiceLabel != '') {
+                dynamictext bSpiceIcon (Content: 'local_fire_department', Class: 'ms sm')
+                dynamictext bSpiceTxt (Content: '{1}', ContentParams: ({1} = SpiceLabel))
+              }
+            }
+            container gSize (Class: 'group') {
+              container gSizeH (Class: 'section-label') { dynamictext gSizeI (Content: 'straighten', Class: 'ms') dynamictext gSizeT (Content: 'scale_factor') dynamictext gSizeS (Content: ' // size', Class: 'c-muted sl-sub') }
+              listview lvSize (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'SIZE'), PageSize: 200, Class: 'seg-lv') { snippetcall tSize (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
+              container notice (Class: 'notice warn mt-8', Visible: $Line/Notice != empty and $Line/Notice != '') {
+                dynamictext nIcon (Content: 'warning', Class: 'ms')
+                dynamictext nTxt (Content: '{1}', ContentParams: ({1} = $Line/Notice))
+              }
+            }
+            container gCrust (Class: 'group') {
+              container gCrustH (Class: 'section-label') { dynamictext gCrustI (Content: 'layers', Class: 'ms') dynamictext gCrustT (Content: 'core_kernel') dynamictext gCrustS (Content: ' // crust', Class: 'c-muted sl-sub') }
+              listview lvCrust (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'CRUST'), PageSize: 200, Class: 'opts-lv', Visible: $currentObject/CrustSelectable) { snippetcall tCrust (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
+              container crustFixed (Class: 'notice info', Visible: not($currentObject/CrustSelectable)) {
+                dynamictext cfIcon (Content: 'lock', Class: 'ms')
+                dynamictext cfTxt (Content: 'Crust is fixed for this module: Neapolitan Core. A calzone is folded from our Neapolitan dough.')
+              }
+            }
+            container gSauce (Class: 'group') {
+              container gSauceH (Class: 'section-label') { dynamictext gSauceI (Content: 'water_drop', Class: 'ms') dynamictext gSauceT (Content: 'base_layer') dynamictext gSauceS (Content: ' // sauce', Class: 'c-muted sl-sub') }
+              listview lvSauce (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'SAUCE'), PageSize: 200, Class: 'opts-lv') { snippetcall tSauce (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
+            }
+            container gCheese (Class: 'group') {
+              container gCheeseH (Class: 'section-label') { dynamictext gCheeseI (Content: 'egg_alt', Class: 'ms') dynamictext gCheeseT (Content: 'cheese_driver') dynamictext gCheeseS (Content: ' // cheese', Class: 'c-muted sl-sub') }
+              listview lvCheese (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'CHEESE'), PageSize: 200, Class: 'opts-lv') { snippetcall tCheese (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
+            }
+            container gRecipe (Class: 'group') {
+              container gRecipeH (Class: 'section-label') { dynamictext gRecipeI (Content: 'account_tree', Class: 'ms') dynamictext gRecipeT (Content: 'default_recipe') dynamictext gRecipeS (Content: ' // Default ingredients', Class: 'c-muted sl-sub') }
+              listview lvRecipe (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'RECIPE'), PageSize: 200, Class: 'panel recipe-lv') {
+                container ing (Class: 'ing', DynamicClasses: if $currentObject/IsRemoved then 'removed' else '') {
+                  dynamictext ingIcon (Content: '{1}', ContentParams: ({1} = if $currentObject/IsRemoved then 'link_off' else 'link'), Class: 'ms sm', DynamicClasses: if $currentObject/IsRemoved then 'c-disabled' else 'c-green')
+                  dynamictext ingName (Content: '{1}', ContentParams: ({1} = Title), Class: 'nm')
+                  dynamictext ingRole (Content: '{1}', ContentParams: ({1} = Sub), Class: 't-micro c-muted')
+                  container ingRight (Class: 'ing-right') {
+                    container ingFixed (Class: 'chip', Visible: $currentObject/IsFixed) { dynamictext ifI (Content: 'lock', Class: 'ms sm') dynamictext ifT (Content: 'fixed') }
+                    dynamictext ingSold (Content: 'unavailable today', Class: 'chip tag-spice', Visible: not($currentObject/IsFixed) and $currentObject/IsUnavailable)
+                    actionbutton ingToggle (Caption: '{1}', CaptionParams: ({1} = if $currentObject/IsRemoved then 'relink' else 'unlink'), Action: CALL MICROFLOW Shop.ACT_Config_Choose(Choice = $currentObject), Class: 'btn btn-sm', DynamicClasses: if $currentObject/IsRemoved then 'btn-secondary' else 'btn-ghost', Visible: not($currentObject/IsFixed) and not($currentObject/IsUnavailable))
+                  }
+                }
+              }
+            }
+            container gExtras (Class: 'group') {
+              container gExtrasHead (Class: 'group-head') {
+                container gExtrasH (Class: 'section-label') { dynamictext gExtrasI (Content: 'extension', Class: 'ms') dynamictext gExtrasT (Content: 'dependencies') dynamictext gExtrasS (Content: ' // Extra toppings', Class: 'c-muted sl-sub') }
+                dynamictext gExtrasN (Content: '{1} / {2} dependencies', ContentParams: ({1} = toString($Line/ExtrasCount), {2} = toString($currentObject/MaxExtras)), Class: 't-small', DynamicClasses: if $Line/ExtrasCount >= $currentObject/MaxExtras then 'c-warn' else 'c-green')
+              }
+              container fullNote (Class: 'notice warn full-note', Visible: $Line/ExtrasCount >= $currentObject/MaxExtras) {
+                dynamictext fnI (Content: 'warning', Class: 'ms')
+                dynamictext fnT (Content: 'Dependency limit reached: max {1} extras per pizza.', ContentParams: ({1} = MaxExtras))
+              }
+              listview lvExtras (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'EXTRA'), PageSize: 200, Class: 'extras-lv') {
+                container xopt (Class: 'xopt', DynamicClasses: (if $currentObject/IsSelected then 'on ' else '') + (if $currentObject/IsDisabled then 'dis' else ''), OnClick: CALL MICROFLOW Shop.ACT_Config_Choose(Choice = $currentObject)) {
+                  container xBox (Class: 'xbox') { dynamictext xCheck (Content: 'check', Class: 'ms sm', Visible: $currentObject/IsSelected) }
+                  container xText {
+                    dynamictext xName (Content: '{1}', ContentParams: ({1} = Title), Class: 'nm')
+                    dynamictext xSub (Content: '{1}', ContentParams: ({1} = Sub), Class: 'vt')
+                  }
+                  dynamictext xPrice (Content: '{1}', ContentParams: ({1} = PriceLabel), Class: 'pr')
+                }
+              }
+            }
+            container gSummary (Class: 'grid-2 group') {
+              container allergens (Class: 'panel panel-pad') {
+                container alH (Class: 'section-label') { dynamictext alI (Content: 'health_and_safety', Class: 'ms') dynamictext alT (Content: 'allergens') }
+                dynamictext alTxt (Content: 'Allergens: {1}', ContentParams: ({1} = $Line/AllergenText), Class: 't-small')
+                container alDiet (Class: 'row mt-8 diet') {
+                  dynamictext dVeg (Content: '{1} Vegetarian', ContentParams: ({1} = if $Line/IsVegetarian then '✓' else '✗'), Class: 'chip', DynamicClasses: if $Line/IsVegetarian then 'tag-badge' else '')
+                  dynamictext dVegan (Content: '{1} Vegan', ContentParams: ({1} = if $Line/IsVegan then '✓' else '✗'), Class: 'chip', DynamicClasses: if $Line/IsVegan then 'tag-badge' else '')
+                }
+                dynamictext alNote (Content: 'Recalculated for this configuration. Cross-contact possible, see allergen notice on the menu.', Class: 't-micro c-muted mt-8')
+              }
+              container unitPrice (Class: 'panel panel-pad') {
+                container upH (Class: 'section-label') { dynamictext upI (Content: 'receipt_long', Class: 'ms') dynamictext upT (Content: 'unit price') }
+                listview lvRows (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'ROW'), PageSize: 200, Class: 'rows-lv') {
+                  container row (Class: 'sum-row') {
+                    dynamictext rowL (Content: '{1}', ContentParams: ({1} = Title), Class: 'lbl')
+                    dynamictext rowV (Content: '{1}', ContentParams: ({1} = PriceLabel))
+                  }
+                }
+                container upDiv (Class: 'div-line') { }
+                container upUnit (Class: 'sum-row') {
+                  dynamictext upUnitL (Content: 'Unit price', Class: 'lbl')
+                  dynamictext upUnitV (Content: '{1}', ContentParams: ({1} = $Line/UnitPriceText), Class: 'price')
+                }
+                dynamictext upNote (Content: 'Removing ingredients is free. Prices exclude sales tax.', Class: 't-micro c-muted')
+              }
+            }
+            container ctabar (Class: 'ctabar') {
+              container ctaRow (Class: 'between') {
+                container stepper (Class: 'stepper') {
+                  dynamictext stLbl (Content: 'instances:', Class: 'lbl hide-phone')
+                  actionbutton stMinus (Caption: '−', Action: CALL MICROFLOW Shop.ACT_Config_Qty(Line = $Line, Delta = -1), Class: 'st-btn', DynamicClasses: if $Line/Quantity <= 1 then 'is-disabled' else '')
+                  dynamictext stVal (Content: '{1}', ContentParams: ({1} = toString($Line/Quantity)), Class: 'val')
+                  actionbutton stPlus (Caption: '+', Action: CALL MICROFLOW Shop.ACT_Config_Qty(Line = $Line, Delta = 1), Class: 'st-btn', DynamicClasses: if $Line/Quantity >= 10 then 'is-disabled' else '')
+                }
+                container lineTotal (Class: 'line-total') {
+                  dynamictext ltL (Content: 'line total', Class: 't-micro c-muted')
+                  dynamictext ltV (Content: '{1}', ContentParams: ({1} = $Line/LineTotalText), Class: 't-price-lg c-primary')
+                }
+              }
+              container deploy (Class: 'btn btn-primary btn-lg btn-block mt-16', DynamicClasses: if $currentObject/IsOrderable then '' else 'is-disabled', OnClick: CALL MICROFLOW Shop.ACT_Config_Commit(Line = $Line)) {
+                dynamictext dpIcon (Content: 'rocket_launch', Class: 'ms')
+                dynamictext dpTxt (Content: '{1}', ContentParams: ({1} = if not($currentObject/IsOrderable) then 'SOLD_OUT' else if $Line/Shop.CartLine_EditOf != empty then 'Commit to manifest' else 'Build & Deploy'))
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+/** SCR-04 module.info: details, allergens, nutrition; quantity and + import (US-029, US-030). */
+create or modify page Shop.ItemInfo (
+  Title: 'module.info',
+  Layout: Shop.Layout_Modal,
+  Params: ($Product: Shop.Product)
+) {
+  dataview dvInfo (DataSource: $Product, Class: 'gp-info scr-04') {
+    container head (Class: 'modal-head') {
+      dynamictext hIcon (Content: 'info', Class: 'ms c-primary')
+      dynamictext hTitle (Content: 'module.info // {1}', ContentParams: ({1} = Name), RenderMode: H2, Class: 't-h3')
+      actionbutton hClose (Caption: 'close', Action: CLOSE PAGE, Class: 'icon-btn ms close-x')
+    }
+    container body (Class: 'modal-body info-body') {
+      container infoImg (Class: 'img-frame info-img') {
+        image iImg (ImageType: imageUrl, ImageUrl: '/assets/products/{1}', ImageUrlParams: ({1} = ImageFile), AlternativeText: '{1}', AlternativeTextParams: ({1} = ImageAlt), Class: 'pimg')
+      }
+      container infoText (Class: 'info-text') {
+        dynamictext iName (Content: '{1}', ContentParams: ({1} = Name), Class: 't-h2 c-primary')
+        dynamictext iReal (Content: '{1}', ContentParams: ({1} = RealWorldName), Class: 'c-secondary t-small')
+        dynamictext iKey (Content: '{1} · {2}', ContentParams: ({1} = FileLabel, {2} = VersionTag), Class: 't-micro c-muted mt-8')
+        dynamictext iSold (Content: '404: OUT_OF_STOCK', Class: 'chip tag-sold mt-8', Visible: not($currentObject/IsOrderable))
+        dynamictext iDesc (Content: '{1}', ContentParams: ({1} = Description), Class: 't-body-long mt-8')
+        container facts (Class: 'facts mt-16') {
+          container fServing (Class: 'sum-row') { dynamictext fsL (Content: 'SERVING', Class: 'lbl') dynamictext fsV (Content: '{1}', ContentParams: ({1} = ServingLabel)) }
+          container fPrice (Class: 'sum-row') { dynamictext fpL (Content: 'PRICE', Class: 'lbl') dynamictext fpV (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/Kind = Shop.ProductKind.PIZZA then 'from ' else '', {2} = CardPriceLabel), Class: 'price') }
+          container fCal (Class: 'sum-row') { dynamictext fcL (Content: 'CALORIES', Class: 'lbl') dynamictext fcV (Content: '{1}{2}', ContentParams: ({1} = CaloriesLabel, {2} = if $currentObject/Kind = Shop.ProductKind.PIZZA then ' (whole pizza, by size)' else '')) }
+          container fSpice (Class: 'sum-row') { dynamictext fspL (Content: 'SPICE', Class: 'lbl') dynamictext fspV (Content: '{1}', ContentParams: ({1} = if $currentObject/Spice = Shop.SpiceLevel.NONE then 'Not spicy' else getKey($currentObject/Spice))) }
+          container fCaf (Class: 'sum-row', Visible: $currentObject/CaffeineMg > 0) { dynamictext fcfL (Content: 'CAFFEINE', Class: 'lbl') dynamictext fcfV (Content: '{1} mg', ContentParams: ({1} = CaffeineMg)) }
+          container fDiet (Class: 'sum-row') { dynamictext fdL (Content: 'DIET', Class: 'lbl') dynamictext fdV (Content: '{1}', ContentParams: ({1} = if $currentObject/IsVegan then '<Vegan />' else if $currentObject/IsVegetarian then '<Vegetarian />' else 'Not vegetarian'), Class: 'c-green') }
+          container fAll (Class: 'sum-row') { dynamictext faL (Content: 'ALLERGENS', Class: 'lbl') dynamictext faV (Content: '{1}', ContentParams: ({1} = if $currentObject/AllergenText = '' then 'No major allergens' else $currentObject/AllergenText)) }
+        }
+        dynamictext iDefault (Content: 'Default build. Changes in the configurator update allergens.', Class: 't-micro c-muted mt-8', Visible: $currentObject/Kind = Shop.ProductKind.PIZZA)
+        container notice (Class: 'notice info mt-16') {
+          dynamictext nI (Content: 'info', Class: 'ms')
+          dynamictext nT (Content: 'All items are prepared in a kitchen that handles gluten, milk, eggs, tree nuts, mustard, fish and other allergens. Cross-contact is possible. The Gluten-Free Fork crust is made without gluten ingredients but is not certified gluten-free.')
+        }
+      }
+    }
+    dataview dvQty (DataSource: MICROFLOW Shop.DS_Info_Line(Product = $Product), Class: 'qty-dv') {
+      container foot (Class: 'modal-foot') {
+        container stepper (Class: 'stepper') {
+          dynamictext stLbl (Content: 'instances:', Class: 'lbl')
+          actionbutton stMinus (Caption: '−', Action: CALL MICROFLOW Shop.ACT_Config_Qty(Line = $currentObject, Delta = -1), Class: 'st-btn', DynamicClasses: if $currentObject/Quantity <= 1 then 'is-disabled' else '')
+          dynamictext stVal (Content: '{1}', ContentParams: ({1} = Quantity), Class: 'val')
+          actionbutton stPlus (Caption: '+', Action: CALL MICROFLOW Shop.ACT_Config_Qty(Line = $currentObject, Delta = 1), Class: 'st-btn', DynamicClasses: if $currentObject/Quantity >= 10 then 'is-disabled' else '')
+        }
+        container cfg (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Shop.ProductKind.PIZZA and $Product/IsOrderable) {
+          dynamictext cfgT (Content: 'Configure this module →')
+        }
+        container add (Class: 'btn btn-primary', DynamicClasses: if $Product/IsOrderable then '' else 'is-disabled', OnClick: CALL MICROFLOW Shop.ACT_Info_Add(Line = $currentObject)) {
+          dynamictext addT (Content: '+ import')
+        }
+      }
+    }
+  }
+};

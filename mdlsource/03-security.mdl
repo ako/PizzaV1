@@ -27,6 +27,7 @@ grant read * on entity Shop.Coupon to Shop.Guest where [Shop.Cart_Coupon/Shop.Ca
 grant read * on entity Shop.PriceResult to Shop.Guest;
 grant read * on entity Shop.HomeView to Shop.Guest;
 grant read * on entity Shop.MenuView to Shop.Guest;
+grant read * on entity Shop.Choice to Shop.Guest;
 
 -- ── Orders the guest holds a token for (LITE-SES-03): placed, looked up or opened by tracking link
 grant read * on entity Shop.OrderAccess to Shop.Guest where [Shop.OrderAccess_User = '[%CurrentUser%]'];
@@ -70,3 +71,4 @@ grant read * on entity Shop.OrderLogEntry to Shop.Administrator;
 grant read * on entity Shop.Courier to Shop.Administrator;
 grant read * on entity Shop.Oven to Shop.Administrator;
 grant read * on entity Shop.MenuView to Shop.Administrator;
+grant read * on entity Shop.Choice to Shop.Administrator;

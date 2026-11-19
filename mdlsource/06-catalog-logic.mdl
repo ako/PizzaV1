@@ -193,7 +193,12 @@ begin
     set $SizeText = getCaption($SizeCode);
     set $Display = $Product/Name + ' (' + $SizeText + ')';
   end if;
-  change $Line (DisplayName = $Display, SizeText = $SizeText, UnitPrice = $Unit, LineTotal = $Unit * $Line/Quantity, IsVegetarian = $Veg, IsVegan = $Vegan, IsAvailable = $Available, ConfigurationKey = $Key, ConfigText = $Text, Shop.CartLine_Allergen = $Allergens);
+  $LineAllergenText = call microflow Shop.SUB_AllergenText(Allergens = $Allergens);
+  retrieve $CountExtras from $Line/Shop.CartLine_Extra;
+  $ExtrasCount = count $CountExtras;
+  $UnitText = call microflow Shop.SUB_Money(Amount = $Unit);
+  $TotalText = call microflow Shop.SUB_Money(Amount = $Unit * $Line/Quantity);
+  change $Line (SizeKey = getKey($SizeCode), UnitPriceText = $UnitText, LineTotalText = $TotalText, UnitPriceJson = formatDecimal($Unit, '0.00'), AllergenText = if $LineAllergenText = '' then 'No major allergens' else $LineAllergenText, ExtrasCount = $ExtrasCount, DisplayName = $Display, SizeText = $SizeText, UnitPrice = $Unit, LineTotal = $Unit * $Line/Quantity, IsVegetarian = $Veg, IsVegan = $Vegan, IsAvailable = $Available, ConfigurationKey = $Key, ConfigText = $Text, Shop.CartLine_Allergen = $Allergens);
 end;
 
 /**
