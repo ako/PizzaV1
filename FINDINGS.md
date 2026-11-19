@@ -479,7 +479,7 @@ A baseline is committed in `verify-baseline/` (247 lint findings, 0 mx check err
 | New entity without access rules | passes by default; lint fails with `--fail-on warning` (SEC001) | 0 / 18 |
 | Drop `Catalog.Product.CodeToppings`, still used by a microflow and a page | **only** mx check (CE1613); `mxcli check` passed it, and exec only printed a warning | 20 |
 
-**Problems found in verify / mxcli:**
+**Problems found in verify / mxcli** (filed as ako/mxcli#2453 (1, 5), #2454 (2), #2455 (3, 6), #2456 (4)):
 1. Several scripts (`verify a.mdl b.mdl`): the check stage fails with "--format json writes one document for one script". The help advertises `[script.mdl...]`.
 2. Flaky MPR017: on the first verify after a model change it logs "could not read their attributes". Its 3 findings then count as "fixed" and a bogus new warning appears. A second run is correct.
 3. Lint configuration is not part of the baseline. With `.claude/lint-config.yaml` missing, 383 Marketplace findings appear as "new"; with `.claude/lint-rules/` missing, 115 findings show as "fixed" and the gate passes.
