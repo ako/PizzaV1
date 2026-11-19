@@ -1,0 +1,704 @@
+{
+ "entities": [
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "4",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "Allergen",
+   "QualifiedName": "Catalog.Allergen"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "5",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "Category",
+   "QualifiedName": "Catalog.Category"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "6",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "Ingredient",
+   "QualifiedName": "Catalog.Ingredient"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "16",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "Option",
+   "QualifiedName": "Catalog.Option"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "46",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "Product",
+   "QualifiedName": "Catalog.Product"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "8",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "ProductSize",
+   "QualifiedName": "Catalog.ProductSize"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "3",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Catalog",
+   "Name": "RecipeItem",
+   "QualifiedName": "Catalog.RecipeItem"
+  },
+  {
+   "AccessRuleCount": "0",
+   "AttributeCount": "24",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Core",
+   "Name": "SimulationSettings",
+   "QualifiedName": "Core.SimulationSettings"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "11",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Core",
+   "Name": "StoreSettings",
+   "QualifiedName": "Core.StoreSettings"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "5",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Core",
+   "Name": "Toast",
+   "QualifiedName": "Core.Toast"
+  },
+  {
+   "AccessRuleCount": "0",
+   "AttributeCount": "10",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "Coupon",
+   "QualifiedName": "Fulfilment.Coupon"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "12",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "Courier",
+   "QualifiedName": "Fulfilment.Courier"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "4",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "DeliveryZone",
+   "QualifiedName": "Fulfilment.DeliveryZone"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "51",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "Order",
+   "QualifiedName": "Fulfilment.Order"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "1",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "OrderAccess",
+   "QualifiedName": "Fulfilment.OrderAccess"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "15",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "OrderLine",
+   "QualifiedName": "Fulfilment.OrderLine"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "6",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "OrderLineModifier",
+   "QualifiedName": "Fulfilment.OrderLineModifier"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "7",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "OrderLogEntry",
+   "QualifiedName": "Fulfilment.OrderLogEntry"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "7",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "OrderStatusChange",
+   "QualifiedName": "Fulfilment.OrderStatusChange"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "6",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "Oven",
+   "QualifiedName": "Fulfilment.Oven"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "12",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "PaymentAttempt",
+   "QualifiedName": "Fulfilment.PaymentAttempt"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "10",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "PriceResult",
+   "QualifiedName": "Fulfilment.PriceResult"
+  },
+  {
+   "AccessRuleCount": "0",
+   "AttributeCount": "3",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Fulfilment",
+   "Name": "SimulationEvent",
+   "QualifiedName": "Fulfilment.SimulationEvent"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "28",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "Cart",
+   "QualifiedName": "Shop.Cart"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "21",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "CartLine",
+   "QualifiedName": "Shop.CartLine"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "46",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "CheckoutForm",
+   "QualifiedName": "Shop.CheckoutForm"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "11",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "Choice",
+   "QualifiedName": "Shop.Choice"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "1",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "ErrorView",
+   "QualifiedName": "Shop.ErrorView"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "17",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "HomeView",
+   "QualifiedName": "Shop.HomeView"
+  },
+  {
+   "AccessRuleCount": "0",
+   "AttributeCount": "1",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "LookupAttempt",
+   "QualifiedName": "Shop.LookupAttempt"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "3",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "LookupForm",
+   "QualifiedName": "Shop.LookupForm"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "10",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "MenuView",
+   "QualifiedName": "Shop.MenuView"
+  },
+  {
+   "AccessRuleCount": "1",
+   "AttributeCount": "64",
+   "EntityType": "NON_PERSISTENT",
+   "ModuleName": "Shop",
+   "Name": "TrackView",
+   "QualifiedName": "Shop.TrackView"
+  },
+  {
+   "AccessRuleCount": "0",
+   "AttributeCount": "12",
+   "EntityType": "PERSISTENT",
+   "ModuleName": "Simulation",
+   "Name": "SimCustomer",
+   "QualifiedName": "Simulation.SimCustomer"
+  }
+ ],
+ "permissions": [
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.Allergen",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.Category",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[Catalog.Product_Category/Catalog.Product/ProductStatus = 'PUBLISHED']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.Ingredient",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[ Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED' or Catalog.Option_Ingredient/Catalog.Option/IsActive = true ]"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.Option",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[IsActive = true]"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.Product",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[ProductStatus = 'PUBLISHED']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.ProductSize",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[Catalog.ProductSize_Product/Catalog.Product/ProductStatus = 'PUBLISHED']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Catalog.RecipeItem",
+   "ModuleRoleName": "Catalog.Guest",
+   "XPathConstraint": "[Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Core.StoreSettings",
+   "ModuleRoleName": "Core.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Core.Toast",
+   "ModuleRoleName": "Core.Guest",
+   "XPathConstraint": "[Core.Toast_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.Courier",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.Order_Courier/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.DeliveryZone",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.Order_Zone/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.Order",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.OrderAccess",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.OrderLine",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.OrderLineModifier",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.OrderLineModifier_OrderLine/Fulfilment.OrderLine/Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.OrderLogEntry",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[ IsCustomerVisible = true and Fulfilment.OrderLogEntry_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]' ]"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.OrderStatusChange",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.OrderStatusChange_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.Oven",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.Order_Oven/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.PaymentAttempt",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": "[Fulfilment.PaymentAttempt_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Fulfilment.PriceResult",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.Cart",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": "[Shop.Cart_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "WRITE",
+   "ElementName": "Shop.Cart",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": "[Shop.Cart_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.CartLine",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": "[Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.CheckoutForm",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": "[Shop.CheckoutForm_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "WRITE",
+   "ElementName": "Shop.CheckoutForm",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": "[Shop.CheckoutForm_Owner = '[%CurrentUser%]']"
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.Choice",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.ErrorView",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.HomeView",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.LookupForm",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "WRITE",
+   "ElementName": "Shop.LookupForm",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.MenuView",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  },
+  {
+   "AccessType": "READ",
+   "ElementName": "Shop.TrackView",
+   "ModuleRoleName": "Shop.Guest",
+   "XPathConstraint": ""
+  }
+ ],
+ "roleMappings": [
+  {
+   "ModuleName": "Administration",
+   "ModuleRoleName": "Administration.Administrator",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "Catalog",
+   "ModuleRoleName": "Catalog.Guest",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "Core",
+   "ModuleRoleName": "Core.Guest",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "Fulfilment",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "Shop",
+   "ModuleRoleName": "Shop.Guest",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "System",
+   "ModuleRoleName": "System.Administrator",
+   "UserRoleName": "Administrator"
+  },
+  {
+   "ModuleName": "Atlas_Core",
+   "ModuleRoleName": "Atlas_Core.User",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "Atlas_Web_Content",
+   "ModuleRoleName": "Atlas_Web_Content.Anonymous",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "Catalog",
+   "ModuleRoleName": "Catalog.Guest",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "Core",
+   "ModuleRoleName": "Core.Guest",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "DataWidgets",
+   "ModuleRoleName": "DataWidgets.User",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "Fulfilment",
+   "ModuleRoleName": "Fulfilment.Guest",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "NanoflowCommons",
+   "ModuleRoleName": "NanoflowCommons.User",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "Shop",
+   "ModuleRoleName": "Shop.Guest",
+   "UserRoleName": "Anonymous"
+  },
+  {
+   "ModuleName": "System",
+   "ModuleRoleName": "System.User",
+   "UserRoleName": "Anonymous"
+  }
+ ],
+ "constants": [
+  {
+   "DataType": "String",
+   "DefaultValue": "http://localhost:8080/",
+   "Description": "Public base URL of the app, used in the personal tracking link (US-110 AC5). Set per environment.",
+   "ExposedToClient": "0",
+   "QualifiedName": "Shop.AppUrl"
+  },
+  {
+   "DataType": "Boolean",
+   "DefaultValue": "False",
+   "Description": "When true, the page at /p/fault raises an unhandled error (acceptance test of US-282). Off in production.",
+   "ExposedToClient": "0",
+   "QualifiedName": "Shop.FaultInjection"
+  },
+  {
+   "DataType": "Boolean",
+   "DefaultValue": "False",
+   "Description": "When true, the demo reset runs once at every start before the simulator ticks (LITE-CFG-01).",
+   "ExposedToClient": "0",
+   "QualifiedName": "Simulation.ResetOnStartup"
+  },
+  {
+   "DataType": "Integer",
+   "DefaultValue": "1",
+   "Description": "Speed factor of the simulation clock: 1, 2, 5 or 10 (LITE-CFG-01). Any other value is treated as 1.",
+   "ExposedToClient": "0",
+   "QualifiedName": "Simulation.SpeedFactor"
+  }
+ ],
+ "flowCalls": {
+  "Shop.ACT_Cart_Checkout": [
+   "Core.SUB_Toast",
+   "Shop.SUB_Cart_Recalculate"
+  ],
+  "Shop.ACT_Cart_Clear": [
+   "Shop.SUB_Cart_Clear"
+  ],
+  "Shop.ACT_Cart_Edit": [
+   "Shop.ACT_Configure_Edit"
+  ],
+  "Shop.ACT_Checkout_Changed": [
+   "Shop.SUB_Checkout_Compute"
+  ],
+  "Shop.ACT_Checkout_Pay": [
+   "Shop.SUB_Checkout_Pay"
+  ],
+  "Shop.ACT_Checkout_Pickup": [
+   "Shop.SUB_Checkout_Pickup"
+  ],
+  "Shop.ACT_Checkout_Place": [
+   "Shop.SUB_Checkout_Place"
+  ],
+  "Shop.ACT_Checkout_Tip": [
+   "Shop.SUB_Checkout_Tip"
+  ],
+  "Shop.ACT_Checkout_Type": [
+   "Shop.SUB_Checkout_Type"
+  ],
+  "Shop.ACT_Config_Back": [
+   "Shop.SUB_Config_Back"
+  ],
+  "Shop.ACT_Config_Commit": [
+   "Shop.SUB_Config_Commit"
+  ],
+  "Shop.ACT_Config_Qty": [
+   "Shop.SUB_Config_Qty"
+  ],
+  "Shop.ACT_Configure_Edit": [
+   "Shop.SUB_Configure_Edit"
+  ],
+  "Shop.ACT_Configure_FromHome": [
+   "Shop.SUB_Configure_FromHome"
+  ],
+  "Shop.ACT_Configure_Open": [
+   "Shop.SUB_Configure_Open"
+  ],
+  "Shop.ACT_Coupon_Apply": [
+   "Shop.SUB_Coupon_Apply"
+  ],
+  "Shop.ACT_Coupon_Remove": [
+   "Shop.SUB_Coupon_Remove"
+  ],
+  "Shop.ACT_Info_Add": [
+   "Shop.SUB_Info_Add"
+  ],
+  "Shop.ACT_Line_Decrease": [
+   "Shop.SUB_Line_Decrease"
+  ],
+  "Shop.ACT_Line_Increase": [
+   "Shop.SUB_Line_Increase"
+  ],
+  "Shop.ACT_Line_Remove": [
+   "Shop.SUB_Line_Remove"
+  ],
+  "Shop.ACT_Nav_Search": [
+   "Shop.SUB_Nav_Search"
+  ],
+  "Shop.ACT_Product_Add": [
+   "Shop.SUB_Product_Add"
+  ],
+  "Shop.ACT_Product_Info": [],
+  "Shop.ACT_Product_QuickAdd": [
+   "Shop.ACT_Product_Add"
+  ],
+  "Shop.ACT_Receipt_Open": [],
+  "Shop.ACT_Shell_Refresh": [
+   "Shop.SUB_Shell_Refresh"
+  ],
+  "Shop.ACT_Toast_Close": [
+   "Core.SUB_Toast_Close"
+  ],
+  "Shop.ACT_Track_Open": [],
+  "Shop.ACT_Track_RetryOpen": [],
+  "Shop.DS_Config_Choices": [
+   "Catalog.SUB_Option_PriceFor",
+   "Catalog.SUB_Option_Selectable",
+   "Core.SUB_Money"
+  ],
+  "Shop.DS_Home_Featured": [],
+  "Shop.DS_Info_Line": [
+   "Shop.SUB_Cart_Current"
+  ],
+  "Shop.DS_Line_Allergens": [],
+  "Shop.DS_Line_Extras": [],
+  "Shop.DS_Line_Removed": [],
+  "Shop.DS_Menu_Products": [],
+  "Shop.DS_OrderLine_Modifiers": [],
+  "Shop.DS_Order_History": [],
+  "Shop.DS_Order_Lines": [],
+  "Shop.DS_Order_Log": [],
+  "Shop.DS_Order_Payments": [],
+  "Shop.DS_Product_Allergens": [],
+  "Shop.DS_Product_Recipe": [],
+  "Shop.DS_Track": [
+   "Shop.SUB_Track_Fill"
+  ]
+ },
+ "projectSecurity": [
+  "Security Level: Production",
+  "Check Security: true",
+  "Strict Mode: true",
+  "Demo Users Enabled: false",
+  "Guest Access: true",
+  "Admin User: MxAdmin",
+  "Admin User Role: Administrator",
+  "Admin Password: set",
+  "Guest User Role: Anonymous",
+  "User Roles: 2",
+  "Demo Users: 0",
+  "",
+  "Password Policy:",
+  "  Minimum Length: 12",
+  "  Require Digit: true",
+  "  Require Mixed Case: true",
+  "  Require Symbol: false"
+ ]
+}
