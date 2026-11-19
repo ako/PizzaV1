@@ -343,3 +343,8 @@ afterwards, along with the Postgres settings.
   - give order placement and pricing a home below Shop;
   - put the seed in its own module.
 - Of the 4 "unused" documents, 3 are reached by URL or a client hook.
+- **Offline check (all report pages).** All report pages were opened from `file://` with the
+  network blocked: they render, run their scripts, and the links between pages resolve. The
+  only network request was Google Fonts in the two new reports. Those reports now embed the
+  app's own fonts (JetBrains Mono, Geist, OFL) as data URIs via `tools/report_fonts.py`,
+  about 140 KB per page, so they look the same offline.

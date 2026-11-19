@@ -9,11 +9,15 @@ without the generated seed flows. Placement (ROWS), cluster names, module roles 
 are written here by hand from that data; an assert stops the build when a module changes layer.
 """
 import html
+import sys as _sys
 import json
 import math
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+_sys.path.insert(0, os.path.join(HERE, '..', '..', '..', 'tools'))
+from report_fonts import font_face_css  # noqa: E402
+FONT_FACES = font_face_css()
 d = json.load(open(os.path.join(HERE, '..', 'arch.json')))
 OUT = os.path.join(HERE, '..', 'report.html')
 E = html.escape
@@ -225,15 +229,14 @@ recs = [
 ]
 
 page = f'''<title>GitPizza Architecture</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 <style>
+{FONT_FACES}
 :root {{
   --bg: #f6f5f1; --surface: #ffffff; --ink: #1b1b1c; --muted: #5e6066; --line: #dedcd5; --brand: #ff9d00; --code: #131313;
   --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
   --high-bg: #e6f4ec; --high-bd: #1f7a4a; --mid-bg: #fdf3dc; --mid-bd: #b7860b; --low-bg: #fbe7e6; --low-bd: #b3261e;
   --edge: #8d8f96; --edge-seed: #c9c6bd; --heat: 32, 120, 214;
-  --f-display: "JetBrains Mono", ui-monospace, monospace; --f-body: "IBM Plex Sans", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --f-display: "JetBrains Mono", ui-monospace, monospace; --f-body: "Geist", system-ui, sans-serif; --f-mono: "JetBrains Mono", ui-monospace, monospace;
 }}
 @media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{
   --bg: #131313; --surface: #1b1b1c; --ink: #ececec; --muted: #a2a4aa; --line: #2f2f31; color-scheme: dark;
@@ -248,7 +251,7 @@ body {{ background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
 .wrap > *, .kpis > *, .cols > * {{ min-width: 0; }}
 header.top {{ border-bottom: 6px solid var(--brand); padding-block: 36px 24px; display: grid; gap: 10px; }}
 .eyebrow {{ font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
-h1 {{ font: 800 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }}
+h1 {{ font: 700 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }}
 h2 {{ font: 700 24px/1.2 var(--f-display); margin: 0 0 12px; letter-spacing: -.01em; }}
 h3 {{ font: 600 17px/1.3 var(--f-body); margin: 0 0 6px; }}
 p {{ margin: 0 0 10px; max-width: 74ch; }}

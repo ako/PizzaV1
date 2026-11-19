@@ -11,11 +11,15 @@ before-/after-statements.psv (pg_stat_statements), f1-incident.json (runtime log
 volume run) and volume.json. The findings' prose is written here, by hand, from that data.
 """
 import html
+import sys as _sys
 import json
 import os
 import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+_sys.path.insert(0, os.path.join(HERE, '..', '..', '..', 'tools'))
+from report_fonts import font_face_css  # noqa: E402
+FONT_FACES = font_face_css()
 DATA = os.path.join(HERE, '..', 'data')
 OUT = os.path.join(HERE, '..', 'report.html')
 E = html.escape
@@ -232,14 +236,13 @@ alls = ''.join(figure(A[k], J[k[0]] + ' · ' + k[1].split(' ', 1)[1]) for k in O
 vol = ''.join(f'<tr><td>{E(n)}</td><td>{c:,}</td></tr>' for n, c in volume['rows'])
 
 page = f'''<title>GitPizza Load Test</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 <style>
+{FONT_FACES}
 :root {{
   --bg: #f6f5f1; --surface: #ffffff; --ink: #1b1b1c; --muted: #5e6066; --line: #dedcd5;
   --brand: #ff9d00; --brand-ink: #2c1700; --code: #131313; --hit: #fff1d9; --good: #127a3a; --bad: #b3261e;
   --c-request: #1b1b1c; --c-microflow: #ff9d00; --c-action: #ffc485; --c-db: #c4373a; --c-label: #ffffff; --c-label-dark: #1b1b1c;
-  --f-display: "JetBrains Mono", ui-monospace, monospace; --f-body: "IBM Plex Sans", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --f-display: "JetBrains Mono", ui-monospace, monospace; --f-body: "Geist", system-ui, sans-serif; --f-mono: "JetBrains Mono", ui-monospace, monospace;
 }}
 @media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{
   --bg: #131313; --surface: #1b1b1c; --ink: #ececec; --muted: #a2a4aa; --line: #2f2f31; --hit: #2c2210; --good: #72ff70; --bad: #ff7a6e;
@@ -252,7 +255,7 @@ body {{ background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body);
 .wrap > *, .findings > *, .pair > *, .kpis > * {{ min-width: 0; }}
 header.top {{ border-bottom: 6px solid var(--brand); padding-block: 36px 24px; display: grid; gap: 10px; }}
 .eyebrow {{ font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
-h1 {{ font: 800 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }}
+h1 {{ font: 700 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }}
 h2 {{ font: 700 24px/1.2 var(--f-display); margin: 0 0 12px; letter-spacing: -.01em; }}
 h3 {{ font: 600 18px/1.3 var(--f-body); margin: 0 0 6px; }}
 p {{ margin: 0 0 10px; max-width: 72ch; }}
