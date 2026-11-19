@@ -44,7 +44,7 @@ body { font: 400 14px/1.5 var(--font-mono); -webkit-font-smoothing: antialiased;
 .gp-app .app-header-dv .app-header { position: static; }
 .gp-app .layout > .sidebar-dv { display: flex; flex-direction: column; flex: none; align-self: stretch; }
 .gp-app .layout > .sidebar-dv > .mx-dataview-content { flex: 1; display: flex; flex-direction: column; }
-.gp-app .layout > .sidebar-dv .sidebar { flex: 1; }
+.gp-app .layout > .sidebar-dv .sidebar { flex: none; } /* sticky, viewport height (proto) */
 @media (max-width: 1199px) { .gp-app .layout > .sidebar-dv { display: none; } }
 .gp-app .page-dv, .gp-app .page-dv > .mx-dataview-content { display: block; }
 
@@ -83,7 +83,7 @@ body { font: 400 14px/1.5 var(--font-mono); -webkit-font-smoothing: antialiased;
   color: var(--success-text); border-bottom-color: var(--success-text);
 }
 .gp-app:has(.scr-01) .sidebar .sb-item.nav-home,
-.gp-app:has(.scr-02) .sidebar .sb-item.nav-menu,
+.gp-app:has(.scr-02) .sidebar .sb-item.nav-menu, .gp-app:has(.scr-03) .sidebar .sb-item.nav-menu,
 .gp-app:has(.scr-09) .sidebar .sb-item.nav-track {
   background: var(--surface-highest); color: var(--success-text); border-left-color: var(--success-text);
 }
@@ -207,6 +207,7 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .scr-02 .code-line .mx-text, .gp-app .code .cl .mx-text { display: inline; }
 .gp-app .scr-02 .code-line { margin-bottom: 0; }
 .gp-app .cards.mx-listview { display: block; }
+.gp-app .cards.mx-listview.mt-16 { margin-top: 16px; }
 .gp-app .cards.mx-listview > ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .gp-app .cards.mx-listview > ul > li { display: flex; min-width: 0; }
 .gp-app .cards.mx-listview > ul > li > .pcard { flex: 1; }
@@ -248,6 +249,8 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .scr-03 .crumb .mx-text { display: inline; }
 .gp-app .scr-03 .crumb .b { color: var(--primary-light); font-weight: 500; }
 .gp-app .scr-03 .back-link { color: var(--primary-light); }
+/* prototype: a 19.5px text link; keep a 24px target (WCAG 2.5.8) without moving the layout */
+.gp-app .back-link.mx-link { min-height: 24px; margin-bottom: -4.5px; }
 .gp-app .scr-03 .notice .mx-text { display: inline; }
 .gp-app .scr-03 .pimg-wrap { position: relative; }
 .gp-app .scr-03 .conf-left .img-frame { aspect-ratio: 1 / 1; border-radius: var(--r-xl); }
@@ -392,8 +395,14 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .scr-09 .prompt-line { margin-top: 12px; }
 .gp-app .scr-09 .prompt-line .mx-text { display: inline; }
 .gp-app .scr-09-invalid .invalid-box { max-width: 720px; margin: 40px auto; }
-.gp-app .scr-10 { max-width: 760px; }
-.gp-app .scr-10 .lookup-panel { margin-top: 24px; max-width: 560px; }
+/* SCR-10 mirrors the prototype box: max 620px, 24px top margin, h1 mt-8, intro as a <p>
+   (1em margins), form = panel + 12px grid (fields 6px). */
+.gp-app .scr-10 { max-width: 620px; margin: 24px auto 0; }
+.gp-app .scr-10 h1.t-h1 { margin-top: 8px; }
+.gp-app .scr-10 .l-intro.mt-8 { margin: 1em 0; }
+.gp-app .scr-10 .lookup-panel { margin-top: 16px; display: grid; gap: 12px; }
+.gp-app .scr-10 .lookup-panel > .mt-16 { margin-top: 0; }
+.gp-app .scr-10 .lookup-panel .field { display: grid; gap: 6px; }
 .gp-app .scr-10 .field-error .mx-text, .gp-app .field-error .mx-text { display: inline; }
 .gp-app .scr-10 .btn-block { width: 100%; }
 .gp-app .scr-13 .r-title { display: flex; align-items: baseline; gap: 8px; }
@@ -410,7 +419,8 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .err-page .err-code .mx-text, .gp-app .err-page .err-title .mx-text { display: inline; }
 .gp-app .err-page .err-illus img { width: 240px; height: auto; }
 .gp-app .err-page .err-logo-img img { height: 48px; width: auto; }
-.gp-app .err-page .trace .tr { display: flex; }
+.gp-app .err-page .trace .tr { display: block; }
+.gp-app .err-page .err-title .cursor { margin-left: 0.6em; }
 .gp-app .err-page .trace .tr .mx-text { display: inline; }
 .gp-app .err-page .err-actions { gap: 12px; }
 // sheets
@@ -434,3 +444,22 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .scr-08 .term-bar .chip { margin-left: auto; }
 .gp-app .active-dv, .gp-app .active-dv > .mx-dataview-content { display: block; }
 .gp-app .active-order { margin-top: 24px; }
+
+/* Focus rings (outline + halo) on clickable elements only after keyboard navigation
+   (html.gp-kbd, set by JS_LivePoller on Tab): the platform's initial programmatic focus
+   does not draw one. Form fields keep theirs; keyboard users always get rings (WCAG 2.4.7). */
+html:not(.gp-kbd) .gp-app [tabindex]:not(input):not(textarea):not(select):focus-visible,
+html:not(.gp-kbd) .gp-app .mx-link:focus-visible,
+html:not(.gp-kbd) .gp-app .btn:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* SCR-40/41 decorative trace: phones show 3 lines and "Show more" (NF_ExpandTrace removes .collapsed). */
+.gp-app .err-page .trace > .more { display: none; justify-self: start; margin-top: 8px; }
+@media (max-width: 767px) {
+  .gp-app .err-page .trace.collapsed > .more { display: inline-flex !important; width: 100%; justify-content: center; }
+}
+.gp-app .err-page .resol .mx-text { display: inline; white-space: pre-wrap; }
+
+/* Atlas gives data views overflow:auto, which makes every page data view a scroll
+   container: position:sticky (sidebar, debugger, configurator image, checkout summary)
+   then sticks to it instead of the viewport. The document is the only scroller here. */
+.gp-app .mx-dataview-content, .gp-app .mx-placeholder > .mx-dataview > .mx-dataview-content { overflow: visible; }

@@ -613,40 +613,4 @@ create or modify page Shop.Receipt (
   }
 };
 
-/** SCR-40 ERROR 404 // CRUST_NOT_FOUND (US-281). */
-create or modify page Shop.NotFound (
-  Title: 'Not found — Git Pizza MxDev',
-  Layout: Shop.Layout_Minimal,
-  Url: 'not-found'
-) {
-  container page (Class: 'err-page scr-40') {
-    container wrap (Class: 'err-wrap') {
-      container logo (Class: 'err-logo', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { image logoImg (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-horizontal.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'err-logo-img') }
-      container head (Class: 'err-head') {
-        image illus (ImageType: imageUrl, ImageUrl: '/assets/illustrations/error-crust-not-found.png', AlternativeText: '', Class: 'err-illus')
-        container ht {
-          container code (Class: 'err-code') { dynamictext codeI (Content: 'report', Class: 'ms') dynamictext codeT (Content: 'ERROR 404') }
-          container title (Class: 'err-title t-h2') { dynamictext titleT (Content: 'CRUST_NOT_FOUND') container titleC (Class: 'cursor amber') { } }
-          dynamictext expl (Content: 'The page or record you asked for doesn''t exist. It may have been archived, or the demo was reset.', Class: 't-body-long')
-        }
-      }
-      container trace (Class: 'term') {
-        container tBar (Class: 'term-bar') { container tDots (Class: 'dots') { container td1 (Class: 'dot') { } container td2 (Class: 'dot') { } container td3 (Class: 'dot') { } } dynamictext tName (Content: '{1}', ContentParams: ({1} = 'stack_trace.log')) }
-        container tBody (Class: 'term-body trace') {
-          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t (Content: '[FATAL] Uncaught ReferenceError: ''crust'' is not defined in scope.', Class: 'c-error') }
-          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t (Content: 'at Kitchen.assemble("/menu/pizzas/pineapple-on-mainframe") // kitchen.ts:102:14') }
-          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t (Content: '{1}', ContentParams: ({1} = 'at Oven.bake({ temp: 850, unit: ''F'' }) // oven.ts:45:22')) }
-          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t (Content: 'at Router.resolve("/menu/pizzas/pineapple-on-mainframe") // router.ts:12:3') }
-          container tr5 (Class: 'tr') { dynamictext tr5n (Content: '5', Class: 'ln') dynamictext tr5t (Content: 'at GitPizza.boot() // main.js:1:1') }
-        }
-      }
-      dynamictext resol (Content: '// SUGGESTED RESOLUTION: Re-synchronize with the main branch.', Class: 't-small c-muted')
-      container actions (Class: 'row err-actions') {
-        container aMain (Class: 'btn btn-primary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aMainI (Content: 'terminal', Class: 'ms md') dynamictext aMainT (Content: 'RETURN_TO_MAIN') }
-        container aTrack (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Track) { dynamictext aTrackI (Content: 'route', Class: 'ms md') dynamictext aTrackT (Content: './track.log') }
-      }
-      dynamictext status (Content: 'STATUS 404 · demo time', Class: 't-micro c-muted')
-    }
-  }
-};
 

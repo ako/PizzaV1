@@ -12,7 +12,7 @@ import { Big } from "big.js";
 
 /**
  * Starts the page poller once per browser tab (idempotent).
- * @param {Big} intervalMs
+ * @param {Big} intervalMs - Interval in milliseconds between refreshes (≥ 1000).
  * @returns {Promise.<boolean>}
  */
 export async function JS_LivePoller(intervalMs) {
@@ -57,8 +57,18 @@ export async function JS_LivePoller(intervalMs) {
 	    try { sessionStorage.setItem('gp-failed-url', location.pathname + location.search); } catch (e) { /* storage blocked */ }
 	    location.assign('/p/error');
 	}
+	// A new page starts at the top: the layout's scroll container would otherwise keep
+	// the previous page's position (e.g. Configure from far down the menu).
+	var lastTitle = document.title;
+	function resetScrollOnNavigation() {
+	    if (document.title === lastTitle) { return; }
+	    lastTitle = document.title;
+	    window.scrollTo(0, 0);
+	    document.querySelectorAll('.mx-scrollcontainer-wrapper, .mx-placeholder').forEach(function (el) { el.scrollTop = 0; });
+	}
 	function watchDialogs() {
 	    new MutationObserver(function () {
+	        resetScrollOnNavigation();
 	        if (offline) {
 	            // US-287: lost-connection dialogs become the banner plus a toast.
 	            document.querySelectorAll('.mx-dialog, .modal-dialog').forEach(function (d) {
@@ -82,6 +92,10 @@ export async function JS_LivePoller(intervalMs) {
 	    e.stopImmediatePropagation();
 	    toast('Could not reach the server. Check your connection and try again.', 'error');
 	}
+	// Focus rings for keyboard users only: the platform focuses the first element on
+	// page load, which would otherwise draw a ring the prototype does not have.
+	document.addEventListener('keydown', function (e) { if (e.key === 'Tab') { document.documentElement.classList.add('gp-kbd'); } }, true);
+	document.addEventListener('mousedown', function () { document.documentElement.classList.remove('gp-kbd'); }, true);
 	document.addEventListener('click', guardOffline, true);
 	document.addEventListener('keydown', guardOffline, true);
 	watchDialogs();

@@ -67,6 +67,59 @@ begin
 end;
 grant execute on nanoflow Shop.NF_RetryLast to Shop.Guest, Shop.Administrator;
 
+/** Shows the full decorative stack trace on phones ("Show more" on SCR-40/41). */
+create or modify javascript action Shop."JS_ExpandTrace" () returns Boolean
+as $$
+    document.querySelectorAll('.err-page .trace.collapsed').forEach(function (t) { t.classList.remove('collapsed'); });
+    return true;
+$$;
+
+/** "Show more" under the decorative stack trace. */
+create or modify nanoflow Shop.NF_ExpandTrace ()
+folder 'Errors'
+begin
+  $Expanded = call javascript action Shop.JS_ExpandTrace();
+end;
+grant execute on nanoflow Shop.NF_ExpandTrace to Shop.Guest, Shop.Administrator;
+
+/** SCR-40 ERROR 404 // CRUST_NOT_FOUND (US-281). */
+create or modify page Shop.NotFound (
+  Title: 'Not found — Git Pizza MxDev',
+  Layout: Shop.Layout_Minimal,
+  Url: 'not-found'
+) {
+  container page (Class: 'err-page scr-40') {
+    container wrap (Class: 'err-wrap') {
+      container logo (Class: 'err-logo', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { image logoImg (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-horizontal.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'err-logo-img') }
+      container head (Class: 'err-head') {
+        image illus (ImageType: imageUrl, ImageUrl: '/assets/illustrations/error-crust-not-found.png', AlternativeText: '', Class: 'err-illus')
+        container ht {
+          container code (Class: 'err-code') { dynamictext codeI (Content: 'report', Class: 'ms') dynamictext codeT (Content: 'ERROR 404') }
+          container title (Class: 'err-title t-h1') { dynamictext titleT (Content: 'CRUST_NOT_FOUND') container titleC (Class: 'cursor amber') { } }
+          dynamictext expl (Content: 'The page or record you asked for doesn''t exist. It may have been archived, or the demo was reset.', Class: 't-body-long')
+        }
+      }
+      container trace (Class: 'term') {
+        container tBar (Class: 'term-bar') { container tDots (Class: 'dots') { container td1 (Class: 'dot') { } container td2 (Class: 'dot') { } container td3 (Class: 'dot') { } } dynamictext tName (Content: '{1}', ContentParams: ({1} = 'stack_trace.log')) }
+        container tBody (Class: 'term-body trace collapsed') {
+          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t0 (Content: '{1}', ContentParams: ({1} = '[FATAL] Uncaught ReferenceError: ''crust'' is not defined in scope.'), Class: 'c-error') }
+          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr2t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr2t2 (Content: '{1}', ContentParams: ({1} = 'Kitchen.assemble'), Class: 'f') dynamictext tr2t3 (Content: '{1}', ContentParams: ({1} = '(')) dynamictext tr2t4 (Content: '{1}', ContentParams: ({1} = '"/menu/pizzas/pineapple-on-mainframe"'), Class: 's') dynamictext tr2t5 (Content: '{1}', ContentParams: ({1} = ') ')) dynamictext tr2t6 (Content: '{1}', ContentParams: ({1} = '// kitchen.ts:102:14'), Class: 'cm') }
+          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr3t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr3t2 (Content: '{1}', ContentParams: ({1} = 'Oven.bake'), Class: 'f') dynamictext tr3t3 (Content: '{1}', ContentParams: ({1} = '({ temp: ')) dynamictext tr3t4 (Content: '{1}', ContentParams: ({1} = '850'), Class: 'n') dynamictext tr3t5 (Content: '{1}', ContentParams: ({1} = ', unit: ')) dynamictext tr3t6 (Content: '{1}', ContentParams: ({1} = '''F'''), Class: 's') dynamictext tr3t7 (Content: '{1}', ContentParams: ({1} = ' }) ')) dynamictext tr3t8 (Content: '{1}', ContentParams: ({1} = '// oven.ts:45:22'), Class: 'cm') }
+          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr4t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr4t2 (Content: '{1}', ContentParams: ({1} = 'Router.resolve'), Class: 'f') dynamictext tr4t3 (Content: '{1}', ContentParams: ({1} = '(')) dynamictext tr4t4 (Content: '{1}', ContentParams: ({1} = '"/menu/pizzas/pineapple-on-mainframe"'), Class: 's') dynamictext tr4t5 (Content: '{1}', ContentParams: ({1} = ') ')) dynamictext tr4t6 (Content: '{1}', ContentParams: ({1} = '// router.ts:12:3'), Class: 'cm') }
+          container tr5 (Class: 'tr') { dynamictext tr5n (Content: '5', Class: 'ln') dynamictext tr5t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr5t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr5t2 (Content: '{1}', ContentParams: ({1} = 'GitPizza.boot'), Class: 'f') dynamictext tr5t3 (Content: '{1}', ContentParams: ({1} = '() ')) dynamictext tr5t4 (Content: '{1}', ContentParams: ({1} = '// main.js:1:1'), Class: 'cm') }
+          container more (Class: 'btn btn-ghost btn-sm more', OnClick: CALL NANOFLOW Shop.NF_ExpandTrace) { dynamictext moreT (Content: 'Show more') }
+        }
+      }
+      container resol (Class: 't-small resol') { dynamictext resolK (Content: '{1}', ContentParams: ({1} = '// SUGGESTED RESOLUTION:'), Class: 'cm') dynamictext resolT (Content: ' Re-synchronize with the main branch.') }
+      container actions (Class: 'row err-actions') {
+        container aMain (Class: 'btn btn-primary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aMainI (Content: 'terminal', Class: 'ms md') dynamictext aMainT (Content: 'RETURN_TO_MAIN') }
+        container aTrack (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Track) { dynamictext aTrackI (Content: 'route', Class: 'ms md') dynamictext aTrackT (Content: './track.log') }
+      }
+      dynamictext status (Content: 'STATUS 404 · demo time', Class: 't-micro c-muted')
+    }
+  }
+};
+
 /** Fault probe (opt-in, see Shop.FaultInjection): with injection off it says so and links home. */
 create or modify page Shop.FaultProbe (
   Title: 'Fault probe — Git Pizza MxDev',
@@ -95,21 +148,22 @@ create or modify page Shop.UnexpectedError (
         image illus (ImageType: imageUrl, ImageUrl: '/assets/illustrations/error-seg-fault.png', AlternativeText: '', Class: 'err-illus')
         container ht {
           container code (Class: 'err-code') { dynamictext codeI (Content: 'bug_report', Class: 'ms') dynamictext codeT (Content: 'ERROR 500') }
-          container title (Class: 'err-title t-h2') { dynamictext titleT (Content: 'SEG_FAULT') container titleC (Class: 'cursor amber') { } }
+          container title (Class: 'err-title t-h1') { dynamictext titleT (Content: 'SEG_FAULT') container titleC (Class: 'cursor amber') { } }
           dynamictext expl (Content: 'Something went wrong on our side. Your manifest and orders are safe.', Class: 't-body-long')
-          dynamictext incident (Content: 'INCIDENT_ID: {1}', ContentParams: ({1} = IncidentId), Class: 'c-warn t-small mt-8 select-all')
+          dynamictext incident (Content: 'INCIDENT_ID: {1}', ContentParams: ({1} = IncidentId), Class: 't-small c-secondary mt-8 select-all')
         }
       }
       container trace (Class: 'term') {
         container tBar (Class: 'term-bar') { container tDots (Class: 'dots') { container td1 (Class: 'dot') { } container td2 (Class: 'dot') { } container td3 (Class: 'dot') { } } dynamictext tName (Content: '{1}', ContentParams: ({1} = 'stack_trace.log')) }
-        container tBody (Class: 'term-body trace') {
-          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t (Content: '[FATAL] Segmentation fault in OvenCluster.dispatch()', Class: 'c-error') }
-          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t (Content: 'at Pipeline.run() // pipeline.ts:88:7') }
-          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t (Content: 'at Kitchen.handle() // kitchen.ts:211:9') }
-          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t (Content: 'at GitPizza.boot() // main.js:1:1') }
+        container tBody (Class: 'term-body trace collapsed') {
+          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t0 (Content: '{1}', ContentParams: ({1} = '[FATAL] Segmentation fault in OvenCluster.dispatch()'), Class: 'c-error') }
+          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr2t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr2t2 (Content: '{1}', ContentParams: ({1} = 'Pipeline.run'), Class: 'f') dynamictext tr2t3 (Content: '{1}', ContentParams: ({1} = '() ')) dynamictext tr2t4 (Content: '{1}', ContentParams: ({1} = '// pipeline.ts:88:7'), Class: 'cm') }
+          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr3t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr3t2 (Content: '{1}', ContentParams: ({1} = 'Kitchen.handle'), Class: 'f') dynamictext tr3t3 (Content: '{1}', ContentParams: ({1} = '() ')) dynamictext tr3t4 (Content: '{1}', ContentParams: ({1} = '// kitchen.ts:211:9'), Class: 'cm') }
+          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t0 (Content: '{1}', ContentParams: ({1} = 'at'), Class: 'k') dynamictext tr4t1 (Content: '{1}', ContentParams: ({1} = ' ')) dynamictext tr4t2 (Content: '{1}', ContentParams: ({1} = 'GitPizza.boot'), Class: 'f') dynamictext tr4t3 (Content: '{1}', ContentParams: ({1} = '() ')) dynamictext tr4t4 (Content: '{1}', ContentParams: ({1} = '// main.js:1:1'), Class: 'cm') }
+          container more (Class: 'btn btn-ghost btn-sm more', OnClick: CALL NANOFLOW Shop.NF_ExpandTrace) { dynamictext moreT (Content: 'Show more') }
         }
       }
-      dynamictext resol (Content: '// SUGGESTED RESOLUTION: Re-synchronize with the main branch.', Class: 't-small c-muted')
+      container resol (Class: 't-small resol') { dynamictext resolK (Content: '{1}', ContentParams: ({1} = '// SUGGESTED RESOLUTION:'), Class: 'cm') dynamictext resolT (Content: ' Re-synchronize with the main branch.') }
       container actions (Class: 'row err-actions') {
         container aRetry (Class: 'btn btn-primary', OnClick: CALL NANOFLOW Shop.NF_RetryLast) { dynamictext aRetryI (Content: 'refresh', Class: 'ms md') dynamictext aRetryT (Content: 'RETRY_DEPLOYMENT') }
         container aMain (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aMainI (Content: 'terminal', Class: 'ms md') dynamictext aMainT (Content: 'RETURN_TO_MAIN') }
