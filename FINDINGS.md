@@ -433,7 +433,7 @@ Built from ako/mxcli main. The build needs ANTLR: run `make -C mdl/grammar boots
 - **`report readiness` and `report all`:** all ten reports in 20 s, every page error-free
   offline. Verdict: "not assessed in full", 0 blocking.
 
-**Problems with `report all` / readiness:**
+**Problems with `report all` / readiness** (filed as ako/mxcli#2451):
 1. **`--journeys` and `--spans` reach only the tests and performance reports, not
    traceability.** Readiness therefore claims 57 of M1's requirements have no test or
    journey, against 101 of 111 proven when traceability gets the evidence
