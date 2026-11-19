@@ -1,0 +1,446 @@
+mdl 1;
+-- Simulator (10-simulations/): SIM-01 payments, SIM-02 kitchen, SIM-04 couriers,
+-- SIM-05 traffic, SIM-06 pickup, SIM-08 housekeeping, SIM-09 clock (tick).
+
+/**
+ * Changes a courier's status (SIM-04) and writes exactly one COURIER line on
+ * the Simulation log node (LITE-CFG-05). Restarts the courier's trip timer.
+ *
+ * @param $Courier The courier
+ * @param $ToStatus New status
+ * @param $TripSeconds Base duration of the new trip phase (0 when none)
+ */
+create or modify microflow Shop.SUB_Courier_SetStatus ($Courier: Shop.Courier, $ToStatus: Enumeration(Shop.CourierStatus), $TripSeconds: Integer)
+folder 'Simulation'
+begin
+  declare $From String = getKey($Courier/CourierStatus);
+  declare $Now DateTime = [%CurrentDateTime%];
+  if $ToStatus = Shop.CourierStatus.AVAILABLE then
+    change $Courier (Shop.Courier_CurrentOrder = empty);
+  end if;
+  change $Courier (CourierStatus = $ToStatus, StatusChangedAt = $Now, TripProgress = 0, TripAnchorAt = $Now, TripSeconds = $TripSeconds, TripProgressPercent = 0);
+  commit $Courier without events;
+  retrieve $Current from $Courier/Shop.Courier_CurrentOrder;
+  declare $Suffix String = '';
+  if $Current != empty then
+    set $Suffix = ' order=MX-' + toString($Current/OrderNumber);
+  end if;
+  log info node 'Simulation' 'COURIER ' + $Courier/Code + ' ' + $From + ' -> ' + getKey($ToStatus) + $Suffix;
+end;
+
+/**
+ * SIM-01: decides due payment attempts and expires abandoned failed
+ * payments (T-07); simulated customers retry once after 15 s (T-05).
+ */
+create or modify microflow Shop.SIM_Payments ()
+folder 'Simulation'
+begin
+  retrieve $Pending from Shop.Order where [OrderStatus = 'PAYMENT_PENDING'];
+  loop $PendingOrder in $Pending
+  begin
+    $PendingP = call microflow Shop.SUB_Order_Progress(TheOrder = $PendingOrder);
+    if $PendingP >= 1 then
+      call microflow Shop.SUB_Payment_Resolve(TheOrder = $PendingOrder);
+    end if;
+  end loop;
+  retrieve $Failed from Shop.Order where [OrderStatus = 'PAYMENT_FAILED'];
+  loop $FailedOrder in $Failed
+  begin
+    $FailedP = call microflow Shop.SUB_Order_Progress(TheOrder = $FailedOrder);
+    if $FailedP >= 1 then
+      if $FailedOrder/Source = Shop.OrderSource.SIMULATOR then
+        $Retried = call microflow Shop.SUB_Payment_Retry(TheOrder = $FailedOrder, Method = Shop.PaymentMethod.CARD, Card = Shop.TestCard.VISA_4242, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/customer');
+      else
+        call microflow Shop.SUB_Order_Cancel(TheOrder = $FailedOrder, Actor = Shop.ActorType.SYSTEM, ActorName = 'sys/timer', Reason = 'Payment not completed in time', LogMessage = 'Payment window expired. Order rolled back.');
+      end if;
+    end if;
+  end loop;
+end;
+
+/**
+ * SIM-02: runs the kitchen. QA checklist and seal (T-11/T-12), pull from
+ * the oven after the bake time (T-10), then start baking queued orders in
+ * queue order while an ONLINE oven has a free slot (T-08, BR-ORD-11).
+ */
+create or modify microflow Shop.SIM_Kitchen ()
+folder 'Simulation'
+begin
+  declare $Now DateTime = [%CurrentDateTime%];
+  -- QA checklist and seal
+  retrieve $InQa from Shop.Order where [OrderStatus = 'QA_CHECK'];
+  loop $QaOrder in $InQa
+  begin
+    $QaP = call microflow Shop.SUB_Order_Progress(TheOrder = $QaOrder);
+    if $QaP >= 0.3333 and not($QaOrder/QaSlicedDone) then
+      change $QaOrder (QaSlicedDone = true);
+      commit $QaOrder without events;
+      call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Slice matrix done ✓ by sim/kitchen-auto.', Visible = false);
+    end if;
+    if $QaP >= 0.6667 and not($QaOrder/QaExtrasDone) then
+      change $QaOrder (QaExtrasDone = true);
+      commit $QaOrder without events;
+      call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Dips and sides packed ✓ by sim/kitchen-auto.', Visible = false);
+    end if;
+    if $QaP >= 1 then
+      change $QaOrder (QaSlicedDone = true, QaExtrasDone = true, QaSealedDone = true, ReadyAt = $Now);
+      call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Box sealed ✓ by sim/kitchen-auto.', Visible = false);
+      if $QaOrder/OrderType = Shop.OrderType.DELIVERY then
+        call microflow Shop.SUB_Order_Transition(TheOrder = $QaOrder, ToStatus = Shop.OrderStatus.READY_FOR_DISPATCH, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
+        $SliceText = call microflow Shop.SUB_Order_SliceSummary(TheOrder = $QaOrder);
+        call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'QA', Message = 'Passed: ' + $SliceText + ', dips added, box sealed.', Visible = true);
+        call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = 'Waiting for courier…', Visible = true);
+      else
+        call microflow Shop.SUB_Order_Transition(TheOrder = $QaOrder, ToStatus = Shop.OrderStatus.READY_FOR_PICKUP, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
+        call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'QA', Message = 'Passed: box sealed.', Visible = true);
+        call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'DEPLOY', Message = 'Ready for pickup at the counter.', Visible = true);
+      end if;
+    end if;
+  end loop;
+  -- pull from the oven
+  retrieve $Baking from Shop.Order where [OrderStatus = 'BAKING'];
+  loop $BakeOrder in $Baking
+  begin
+    $BakeP = call microflow Shop.SUB_Order_Progress(TheOrder = $BakeOrder);
+    if $BakeP >= 1 then
+      retrieve $UsedOven from $BakeOrder/Shop.Order_Oven;
+      declare $BakeSeconds Integer = 0;
+      if $BakeOrder/BakingStartedAt != empty then
+        set $BakeSeconds = round(secondsBetween($BakeOrder/BakingStartedAt, $Now));
+      end if;
+      $BakeText = call microflow Shop.SUB_MmSs(Seconds = $BakeSeconds);
+      change $BakeOrder (QaStartedAt = $Now, QaSlicedDone = false, QaExtrasDone = false, QaSealedDone = false);
+      call microflow Shop.SUB_Order_Transition(TheOrder = $BakeOrder, ToStatus = Shop.OrderStatus.QA_CHECK, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
+      call microflow Shop.SUB_Order_Log(TheOrder = $BakeOrder, Level = Shop.LogLevel.INFO, Tag = 'OVEN', Message = 'Pulled from ' + $UsedOven/Code + ' after ' + $BakeText + '.', Visible = true);
+      call microflow Shop.SUB_Order_Log(TheOrder = $BakeOrder, Level = Shop.LogLevel.INFO, Tag = 'QA', Message = 'Quality check started.', Visible = true);
+    end if;
+  end loop;
+  -- start baking in queue order
+  retrieve $Queue from Shop.Order where [OrderStatus = 'QUEUED'] sort by IsPriority desc, QueuedAt asc;
+  retrieve $Ovens from Shop.Oven where [OvenStatus = 'ONLINE'] sort by Code asc;
+  declare $Stop Boolean = false;
+  loop $QueuedOrder in $Queue
+  begin
+    if not($Stop) then
+      $QueueP = call microflow Shop.SUB_Order_Progress(TheOrder = $QueuedOrder);
+      if $QueueP < 1 then
+        set $Stop = true;
+      else
+        $Free = call microflow Shop.SUB_Oven_FirstFree(Ovens = $Ovens);
+        if $Free = empty then
+          set $Stop = true;
+        else
+          retrieve $SimS from Shop.SimulationSettings first;
+          $BakeEffReal = call microflow Shop.SUB_Eff(Base = $SimS/Bake);
+          $TimerText = call microflow Shop.SUB_MmSs(Seconds = $BakeEffReal);
+          change $QueuedOrder (BakingStartedAt = $Now, Shop.Order_Oven = $Free);
+          call microflow Shop.SUB_Order_Transition(TheOrder = $QueuedOrder, ToStatus = Shop.OrderStatus.BAKING, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
+          call microflow Shop.SUB_Order_Log(TheOrder = $QueuedOrder, Level = Shop.LogLevel.INFO, Tag = 'KITCHEN', Message = 'Dough stretched, toppings injected.', Visible = true);
+          call microflow Shop.SUB_Order_Log(TheOrder = $QueuedOrder, Level = Shop.LogLevel.INFO, Tag = 'OVEN', Message = 'Entered ' + $Free/Code + ' at ' + toString($Free/TargetTempF) + '°F. Bake timer ' + $TimerText + '.', Visible = true);
+        end if;
+      end if;
+    end if;
+  end loop;
+end;
+
+/**
+ * Slice summary of the QA log line (SIM-02 3.3): "8 slices" (6 for Small),
+ * "calzone not cut" for a calzone, "no pizzas" when the order has none.
+ *
+ * @param $TheOrder The order
+ * @returns Summary text
+ */
+create or modify microflow Shop.SUB_Order_SliceSummary ($TheOrder: Shop.Order)
+returns String as $Summary
+folder 'Simulation'
+begin
+  retrieve $Pizza from Shop.OrderLine where [Shop.OrderLine_Order = $TheOrder and Kind = 'PIZZA'] sort by SortOrder asc first;
+  if $Pizza = empty then
+    return 'no pizzas';
+  end if;
+  if $Pizza/ModuleKey = 'calzone-container' then
+    return 'calzone not cut';
+  end if;
+  if $Pizza/Size = Shop.SizeCode.SMALL then
+    return '6 slices';
+  end if;
+  return '8 slices';
+end;
+
+/**
+ * First ONLINE oven by code with a free slot (BR-ORD-11).
+ *
+ * @param $Ovens ONLINE ovens sorted by code
+ * @returns The oven, or empty when every slot is taken
+ */
+create or modify microflow Shop.SUB_Oven_FirstFree ($Ovens: List of Shop.Oven)
+returns Shop.Oven as $Free
+folder 'Simulation'
+begin
+  $Candidates = create list of Shop.Oven;
+  loop $Oven in $Ovens
+  begin
+    retrieve $InOven from Shop.Order where [OrderStatus = 'BAKING' and Shop.Order_Oven = $Oven];
+    $Used = count $InOven;
+    if $Used < $Oven/CapacityOrders then
+      add $Oven to $Candidates;
+    end if;
+  end loop;
+  $Free = head $Candidates;
+  return $Free;
+end;
+
+/**
+ * SIM-04: courier trips and dispatch. TO_STORE → AT_STORE, handover
+ * (T-14), route progress and delivery (T-15), return trip, then assigns the
+ * courier available longest to the order waiting longest (BR-ORD-16).
+ */
+create or modify microflow Shop.SIM_Couriers ()
+folder 'Simulation'
+begin
+  declare $Now DateTime = [%CurrentDateTime%];
+  retrieve $Sim from Shop.SimulationSettings first;
+  retrieve $Couriers from Shop.Courier where [CourierStatus != 'OFF_DUTY' and CourierStatus != 'AVAILABLE'];
+  loop $Courier in $Couriers
+  begin
+    retrieve $Trip from $Courier/Shop.Courier_CurrentOrder;
+    if $Courier/CourierStatus = Shop.CourierStatus.DELIVERING then
+      -- route progress follows the order's timer
+      if $Trip != empty then
+        if $Trip/OrderStatus = Shop.OrderStatus.OUT_FOR_DELIVERY then
+          $RouteP = call microflow Shop.SUB_Order_Progress(TheOrder = $Trip);
+          declare $Pct Integer = min(100, floor($RouteP * 100));
+          declare $OldPct Integer = $Trip/RouteProgressPercent;
+          change $Trip (RouteProgressPercent = $Pct);
+          commit $Trip without events;
+          change $Courier (TripProgressPercent = $Pct);
+          commit $Courier without events;
+          if $OldPct < 50 and $Pct >= 50 and $Pct < 100 then
+            declare $Left Decimal = round($Trip/DistanceMiles * (100 - $Pct) div 100, 1);
+            call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'COURIER', Message = 'Halfway there. ' + formatDecimal($Left, '0.0') + ' mi to go.', Visible = true);
+          end if;
+          if $OldPct < 90 and $Pct >= 90 and $Pct < 100 then
+            call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'COURIER', Message = 'Approaching your address.', Visible = true);
+          end if;
+          if $RouteP >= 1 then
+            change $Trip (RouteProgressPercent = 100, CompletedAt = $Now);
+            call microflow Shop.SUB_Order_Transition(TheOrder = $Trip, ToStatus = Shop.OrderStatus.DELIVERED, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/courier', Reason = '');
+            call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.SUCCESS, Tag = 'DEPLOY', Message = 'Delivered. Enjoy your build!', Visible = true);
+            $Delivered = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.DELIVERY_COMPLETED, Message = 'MX-' + toString($Trip/OrderNumber) + ' delivered by ' + $Courier/Code, Shop.SimulationEvent_Order = $Trip);
+            commit $Delivered without events;
+            declare $ReturnSeconds Integer = round($Sim/TravelBase + $Sim/TravelPerMile * $Trip/DistanceMiles);
+            call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.RETURNING, TripSeconds = $ReturnSeconds);
+          end if;
+        end if;
+      end if;
+    else
+      $CourierP = call microflow Shop.SUB_Timer_Progress(Progress = $Courier/TripProgress, AnchorAt = $Courier/TripAnchorAt, BaseSeconds = max($Courier/TripSeconds, 1));
+      change $Courier (TripProgressPercent = min(100, floor($CourierP * 100)));
+      commit $Courier without events;
+      if $CourierP >= 1 then
+        if $Courier/CourierStatus = Shop.CourierStatus.TO_STORE then
+          call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.AT_STORE, TripSeconds = $Sim/Handover);
+          if $Trip != empty then
+            call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = $Courier/NodeHandle + ' is at the store.', Visible = true);
+            $Arrived = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ARRIVED, Message = $Courier/Code + ' at the store for MX-' + toString($Trip/OrderNumber), Shop.SimulationEvent_Order = $Trip);
+            commit $Arrived without events;
+          end if;
+        else
+          if $Courier/CourierStatus = Shop.CourierStatus.AT_STORE then
+            if $Trip != empty then
+              if $Trip/OrderStatus = Shop.OrderStatus.READY_FOR_DISPATCH then
+                change $Trip (DispatchedAt = $Now, RouteProgressPercent = 0);
+                call microflow Shop.SUB_Order_Transition(TheOrder = $Trip, ToStatus = Shop.OrderStatus.OUT_FOR_DELIVERY, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/courier', Reason = '');
+                call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = 'Handed over to ' + $Courier/NodeHandle + '.', Visible = true);
+                call microflow Shop.SUB_Order_Log(TheOrder = $Trip, Level = Shop.LogLevel.INFO, Tag = 'COURIER', Message = 'On the way. Distance ' + formatDecimal($Trip/DistanceMiles, '0.0') + ' mi.', Visible = true);
+                $TripSeconds = call microflow Shop.SUB_Order_TimerBase(TheOrder = $Trip);
+                call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.DELIVERING, TripSeconds = $TripSeconds);
+              else
+                call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.AVAILABLE, TripSeconds = 0);
+              end if;
+            else
+              call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.AVAILABLE, TripSeconds = 0);
+            end if;
+          else
+            if $Courier/CourierStatus = Shop.CourierStatus.RETURNING then
+              call microflow Shop.SUB_Courier_SetStatus(Courier = $Courier, ToStatus = Shop.CourierStatus.AVAILABLE, TripSeconds = 0);
+            end if;
+          end if;
+        end if;
+      end if;
+    end if;
+  end loop;
+  -- dispatch: oldest waiting order gets the courier available longest
+  retrieve $Waiting from Shop.Order where [OrderStatus = 'READY_FOR_DISPATCH' and not(Shop.Order_Courier/Shop.Courier)] sort by ReadyAt asc;
+  loop $WaitOrder in $Waiting
+  begin
+    retrieve $Idle from Shop.Courier where [CourierStatus = 'AVAILABLE'] sort by StatusChangedAt asc first;
+    if $Idle != empty then
+      change $WaitOrder (Shop.Order_Courier = $Idle);
+      commit $WaitOrder without events;
+      change $Idle (Shop.Courier_CurrentOrder = $WaitOrder);
+      call microflow Shop.SUB_Courier_SetStatus(Courier = $Idle, ToStatus = Shop.CourierStatus.TO_STORE, TripSeconds = $Sim/CourierToStore);
+      $ToStoreEff = call microflow Shop.SUB_Eff(Base = $Sim/CourierToStore);
+      $ToStoreText = call microflow Shop.SUB_MmSs(Seconds = $ToStoreEff);
+      call microflow Shop.SUB_Order_Log(TheOrder = $WaitOrder, Level = Shop.LogLevel.INFO, Tag = 'ROUTER', Message = 'Courier ' + $Idle/NodeHandle + ' assigned. Arriving at the store in ~' + $ToStoreText + '.', Visible = true);
+      $Assigned = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.COURIER_ASSIGNED, Message = $Idle/Code + ' assigned to MX-' + toString($WaitOrder/OrderNumber), Shop.SimulationEvent_Order = $WaitOrder);
+      commit $Assigned without events;
+    end if;
+  end loop;
+end;
+
+/**
+ * SIM-06: a simulated customer collects a pickup order pickupArrival
+ * seconds after it became ready (T-16).
+ */
+create or modify microflow Shop.SIM_Pickups ()
+folder 'Simulation'
+begin
+  retrieve $Ready from Shop.Order where [OrderStatus = 'READY_FOR_PICKUP'];
+  loop $ReadyOrder in $Ready
+  begin
+    $PickupP = call microflow Shop.SUB_Order_Progress(TheOrder = $ReadyOrder);
+    if $PickupP >= 1 then
+      change $ReadyOrder (CompletedAt = [%CurrentDateTime%]);
+      call microflow Shop.SUB_Order_Transition(TheOrder = $ReadyOrder, ToStatus = Shop.OrderStatus.PICKED_UP, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/pickup', Reason = '');
+      call microflow Shop.SUB_Order_Log(TheOrder = $ReadyOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'DEPLOY', Message = 'Picked up. Enjoy your build!', Visible = true);
+      $Collected = create Shop.SimulationEvent (OccurredAt = [%CurrentDateTime%], EventType = Shop.SimulationEventType.PICKUP_COMPLETED, Message = 'MX-' + toString($ReadyOrder/OrderNumber) + ' picked up', Shop.SimulationEvent_Order = $ReadyOrder);
+      commit $Collected without events;
+    end if;
+  end loop;
+end;
+
+/**
+ * SIM-05: spawns a simulated order about every 120 s (±20 % jitter, scaled
+ * by speed) while fewer than 8 simulated orders are open.
+ */
+create or modify microflow Shop.SIM_Traffic ()
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Interval Integer = max($Sim/TrafficIntervalEffective, 1);
+  declare $Elapsed Decimal = 0;
+  if $Sim/TrafficAnchorAt != empty then
+    set $Elapsed = secondsBetween($Sim/TrafficAnchorAt, [%CurrentDateTime%]);
+  end if;
+  declare $P Decimal = $Sim/TrafficProgress + $Elapsed div $Interval;
+  if $P < 1 then
+    return;
+  end if;
+  declare $Jittered Integer = round($Sim/TrafficIntervalSeconds * (0.8 + random() * 0.4));
+  $NextEff = call microflow Shop.SUB_Eff(Base = $Jittered);
+  change $Sim (TrafficProgress = 0, TrafficAnchorAt = [%CurrentDateTime%], TrafficIntervalEffective = $NextEff);
+  commit $Sim without events;
+  retrieve $OpenSim from Shop.Order where [Source = 'SIMULATOR' and IsOpen = true];
+  $OpenCount = count $OpenSim;
+  if $OpenCount < $Sim/TrafficMaxActiveOrders then
+    call microflow Shop.SUB_Traffic_Spawn();
+  end if;
+end;
+
+/**
+ * Creates one simulated order (SIM-05): a fictional customer, 1–4 lines of
+ * orderable products in their default build (never sold-out items or
+ * options), delivery to the customer's zone or pickup, and an approving
+ * payment method. Uses the same rules as a guest order (SUB_Order_Place).
+ */
+create or modify microflow Shop.SUB_Traffic_Spawn ()
+folder 'Simulation'
+begin
+  retrieve $Customers from Shop.SimCustomer;
+  $CustomerCount = count $Customers;
+  if $CustomerCount = 0 then
+    return;
+  end if;
+  $PickedList = range $Customers offset floor(random() * $CustomerCount) limit 1;
+  $Customer = head $PickedList;
+  retrieve $Products from Shop.Product where [ProductStatus = 'PUBLISHED' and IsOrderable = true];
+  $ProductCount = count $Products;
+  declare $LineCount Integer = 1 + floor(random() * 4);
+  $Lines = create list of Shop.CartLine;
+  declare $I Integer = 0;
+  while $I < $LineCount
+  begin
+    $OneList = range $Products offset floor(random() * $ProductCount) limit 1;
+    $Product = head $OneList;
+    $Line = create Shop.CartLine (Quantity = 1 + floor(random() * 2), IsDraft = true);
+    call microflow Shop.SUB_Line_ApplyDefaults(Line = $Line, Product = $Product);
+    call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+    add $Line to $Lines;
+    set $I = $I + 1;
+  end while;
+  $Subtotal = sum $Lines by LineTotal;
+  retrieve $Zone from Shop.DeliveryZone where [Zip = $Customer/Zip and IsActive = true] first;
+  declare $Delivery Boolean = $Zone != empty and $Subtotal >= 15 and random() < 0.75;
+  declare $MethodRoll Decimal = random();
+  $Order = create Shop.Order (Source = Shop.OrderSource.SIMULATOR, OrderType = if $Delivery then Shop.OrderType.DELIVERY else Shop.OrderType.PICKUP,
+    ContactName = $Customer/FirstName + ' ' + $Customer/LastName, ContactEmail = $Customer/Email, ContactPhone = $Customer/Phone,
+    AddressLine1 = if $Delivery then $Customer/Line1 else '', AddressLine2 = if $Delivery then $Customer/Line2 else '', City = if $Delivery then $Customer/City else '',
+    StateCode = if $Delivery then $Customer/StateCode else '', Zip = if $Delivery then $Customer/Zip else '', DeliveryNotes = if $Delivery then $Customer/DeliveryNotes else '',
+    Tip = if $Delivery then Shop.TipOption.FIFTEEN else Shop.TipOption.NONE, Shop.Order_Zone = if $Delivery then $Zone else empty, OrderNumber = 0);
+  call microflow Shop.SUB_Order_Place(TheOrder = $Order, Lines = $Lines, Coupon = empty,
+    Method = if $MethodRoll < 0.5 then Shop.PaymentMethod.CARD else if $MethodRoll < 0.75 then Shop.PaymentMethod.APPLE_PAY else Shop.PaymentMethod.GOOGLE_PAY,
+    Card = if $MethodRoll < 0.3 then Shop.TestCard.VISA_4242 else if $MethodRoll < 0.5 then Shop.TestCard.MASTERCARD_4444 else empty,
+    Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/traffic');
+  declare $Where String = 'COUNTER';
+  if $Delivery then
+    set $Where = $Customer/Zip;
+  end if;
+  log info node 'Simulation' 'SPAWN MX-' + toString($Order/OrderNumber) + ' ' + getKey($Order/OrderType) + ' ' + $Where + ' items=' + toString($Order/ItemCount);
+  $Spawned = create Shop.SimulationEvent (OccurredAt = [%CurrentDateTime%], EventType = Shop.SimulationEventType.ORDER_SPAWNED,
+    Message = 'Spawned MX-' + toString($Order/OrderNumber) + ' (' + getKey($Order/OrderType) + ', ' + (if $Delivery then $Customer/Zip + ', ' else '') + toString($Order/ItemCount) + ' items)', Shop.SimulationEvent_Order = $Order);
+  commit $Spawned without events;
+end;
+
+/**
+ * SIM-08 section 7: every 15 minutes removes simulated orders that reached
+ * a final state more than retentionHours ago, with all their children, and
+ * old simulation events. Guest orders are never removed.
+ */
+create or modify microflow Shop.SIM_Housekeeping ()
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Now DateTime = [%CurrentDateTime%];
+  if $Sim/LastHousekeepingAt != empty then
+    if secondsBetween($Sim/LastHousekeepingAt, $Now) < 900 then
+      return;
+    end if;
+  end if;
+  change $Sim (LastHousekeepingAt = $Now);
+  commit $Sim without events;
+  declare $Cutoff DateTime = addHours($Now, -$Sim/RetentionHours);
+  retrieve $Old from Shop.Order where [Source = 'SIMULATOR' and IsOpen = false and StatusChangedAt < $Cutoff];
+  retrieve $OldEvents from Shop.SimulationEvent where [OccurredAt < $Cutoff];
+  $OrderCount = count $Old;
+  $EventCount = count $OldEvents;
+  if $OrderCount = 0 and $EventCount = 0 then
+    return;
+  end if;
+  delete $OldEvents;
+  delete $Old;
+  $Done = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.HOUSEKEEPING, Message = 'Housekeeping removed ' + toString($OrderCount) + ' orders and ' + toString($EventCount) + ' events');
+  commit $Done without events;
+end;
+
+/**
+ * One simulator tick (SIM-09): advances payments, kitchen, couriers,
+ * pickups, traffic and housekeeping to now. Each step is guarded, so a
+ * conflict in one (for example a guest's rollback at the same moment)
+ * never stops the others; the step is retried on the next tick.
+ */
+create or modify microflow Shop.SIM_Tick ()
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  if $Sim = empty then
+    return;
+  end if;
+  change $Sim (LastTickAt = [%CurrentDateTime%]);
+  commit $Sim without events;
+  call microflow Shop.SIM_Payments() on error continue;
+  call microflow Shop.SIM_Kitchen() on error continue;
+  call microflow Shop.SIM_Couriers() on error continue;
+  call microflow Shop.SIM_Pickups() on error continue;
+  call microflow Shop.SIM_Traffic() on error continue;
+  call microflow Shop.SIM_Housekeeping() on error continue;
+end;
