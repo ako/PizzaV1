@@ -1,0 +1,327 @@
+mdl 1;
+-- Catalog and configuration rules: BR-PRICE-01..04, BR-DATA-10..12.
+
+/**
+ * Price of an option for a pizza size. Extras are priced per size
+ * (BR-PRICE-03); crust, sauce and cheese carry a flat surcharge.
+ *
+ * @param $Option The option
+ * @param $Size The chosen size
+ * @returns Price in dollars
+ */
+create or modify microflow Shop.SUB_Option_PriceFor ($Option: Shop.Option, $Size: Enumeration(Shop.SizeCode))
+returns Decimal as $Price
+folder 'Catalog'
+begin
+  declare $Price Decimal = $Option/Surcharge;
+  if $Option/OptionGroup = Shop.OptionGroup.EXTRA then
+    if $Size = Shop.SizeCode.SMALL then
+      set $Price = $Option/PriceSmall;
+    else
+      if $Size = Shop.SizeCode.LARGE then
+        set $Price = $Option/PriceLarge;
+      else
+        set $Price = $Option/PriceMedium;
+      end if;
+    end if;
+  end if;
+  return $Price;
+end;
+
+/**
+ * Whether an option can be chosen for a size today: active, its ingredient
+ * in stock (BR-DATA-12), and the size in its available sizes.
+ *
+ * @param $Option The option
+ * @param $Size The chosen size
+ * @returns True when selectable
+ */
+create or modify microflow Shop.SUB_Option_AvailableFor ($Option: Shop.Option, $Size: Enumeration(Shop.SizeCode))
+returns Boolean as $Ok
+folder 'Catalog'
+begin
+  declare $Ok Boolean = $Option/IsActive;
+  retrieve $Ing from $Option/Shop.Option_Ingredient;
+  if $Ing != empty then
+    if not($Ing/IsInStock) then
+      set $Ok = false;
+    end if;
+  end if;
+  if ($Size = Shop.SizeCode.SMALL and not($Option/ForSmall)) or ($Size = Shop.SizeCode.MEDIUM and not($Option/ForMedium)) or ($Size = Shop.SizeCode.LARGE and not($Option/ForLarge)) then
+    set $Ok = false;
+  end if;
+  return $Ok;
+end;
+
+/**
+ * Puts the product's default configuration on a line: default size,
+ * default crust, sauce and cheese, no extras, and every removable recipe
+ * ingredient that is out of stock removed automatically (BR-DATA-12).
+ *
+ * @param $Line The line to fill (not committed)
+ * @param $Product The product
+ */
+create or modify microflow Shop.SUB_Line_ApplyDefaults ($Line: Shop.CartLine, $Product: Shop.Product)
+folder 'Catalog'
+begin
+  retrieve $Size from Shop.ProductSize where [Shop.ProductSize_Product = $Product and IsDefault = true] first;
+  retrieve $Crust from $Product/Shop.Product_DefaultCrust;
+  retrieve $Sauce from $Product/Shop.Product_DefaultSauce;
+  retrieve $Cheese from $Product/Shop.Product_DefaultCheese;
+  $NoOptions = create list of Shop.Option;
+  retrieve $SoldOut from Shop.Ingredient where [IsInStock = false and Shop.RecipeItem_Ingredient/Shop.RecipeItem[Shop.RecipeItem_Product = $Product and IsRemovable = true]];
+  change $Line (Shop.CartLine_Product = $Product, Shop.CartLine_Size = $Size, Shop.CartLine_Crust = $Crust, Shop.CartLine_Sauce = $Sauce, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $NoOptions, Shop.CartLine_Removed = $SoldOut);
+end;
+
+/**
+ * Recalculates every derived value of a configured line: unit price
+ * (BR-PRICE-02/03), line total (BR-PRICE-04), allergens (BR-DATA-11),
+ * vegetarian/vegan flags (BR-DATA-10), availability (BR-DATA-12), the
+ * configuration key used to merge identical lines, and the short text that
+ * lists the differences from the default build. Does not commit.
+ *
+ * @param $Line The line to recalculate
+ */
+create or modify microflow Shop.SUB_Line_Recalculate ($Line: Shop.CartLine)
+folder 'Catalog'
+begin
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  declare $SizeCode Enumeration(Shop.SizeCode) = $Size/Size;
+  declare $Unit Decimal = $Size/Price;
+  declare $Veg Boolean = true;
+  declare $Vegan Boolean = true;
+  declare $Available Boolean = $Product/ProductStatus = Shop.ProductStatus.PUBLISHED and not($Product/IsSoldOut);
+  declare $Key String = $Product/Code + '|' + getKey($SizeCode);
+  declare $Text String = '';
+  $Allergens = create list of Shop.Allergen;
+  if $Product/Kind != Shop.ProductKind.PIZZA then
+    retrieve $Declared from $Product/Shop.Product_Allergen;
+    add $Declared to $Allergens;
+    set $Veg = $Product/DeclaredVegetarian;
+    set $Vegan = $Product/DeclaredVegan;
+  else
+    retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
+    retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
+    retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+    retrieve $Crust from $Line/Shop.CartLine_Crust;
+    retrieve $Sauce from $Line/Shop.CartLine_Sauce;
+    retrieve $Cheese from $Line/Shop.CartLine_Cheese;
+    retrieve $Extras from $Line/Shop.CartLine_Extra;
+    retrieve $Removed from $Line/Shop.CartLine_Removed;
+    $Base = create list of Shop.Option;
+    add $Crust to $Base;
+    add $Sauce to $Base;
+    add $Cheese to $Base;
+    -- surcharges: a default option never costs extra (BR-PRICE-02)
+    if $Crust != $DefCrust then
+      set $Unit = $Unit + $Crust/Surcharge;
+      set $Text = $Text + ', ' + $Crust/Name;
+    end if;
+    if $Sauce != $DefSauce then
+      set $Unit = $Unit + $Sauce/Surcharge;
+      set $Text = $Text + ', ' + $Sauce/Name;
+    end if;
+    if $Cheese != $DefCheese then
+      set $Unit = $Unit + $Cheese/Surcharge;
+      set $Text = $Text + ', ' + $Cheese/Name;
+    end if;
+    $SortedExtras = sort $Extras by SortOrder asc;
+    declare $ExtraKey String = '';
+    loop $Extra in $SortedExtras
+    begin
+      $ExtraPrice = call microflow Shop.SUB_Option_PriceFor(Option = $Extra, Size = $SizeCode);
+      set $Unit = $Unit + $ExtraPrice;
+      set $ExtraKey = $ExtraKey + ',' + $Extra/Code;
+      set $Text = $Text + ', + ' + $Extra/Name;
+    end loop;
+    add $SortedExtras to $Base;
+    -- availability of every chosen option
+    loop $Opt in $Base
+    begin
+      $OptOk = call microflow Shop.SUB_Option_AvailableFor(Option = $Opt, Size = $SizeCode);
+      if not($OptOk) then
+        set $Available = false;
+      end if;
+      retrieve $OptIng from $Opt/Shop.Option_Ingredient;
+      if $OptIng != empty then
+        retrieve $OptAll from $OptIng/Shop.Ingredient_Allergen;
+        add $OptAll to $Allergens;
+        if not($OptIng/IsVegetarian) then
+          set $Veg = false;
+        end if;
+        if not($OptIng/IsVegan) then
+          set $Vegan = false;
+        end if;
+      end if;
+    end loop;
+    -- remaining default recipe items
+    retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+    declare $RemovedKey String = '';
+    loop $Item in $Recipe
+    begin
+      retrieve $Ing from $Item/Shop.RecipeItem_Ingredient;
+      $IsRemoved = contains $Ing in $Removed;
+      if $IsRemoved then
+        set $RemovedKey = $RemovedKey + ',' + $Ing/Code;
+        set $Text = $Text + ', − ' + $Ing/Name;
+      else
+        if not($Ing/IsInStock) then
+          set $Available = false;
+        end if;
+        retrieve $IngAll from $Ing/Shop.Ingredient_Allergen;
+        add $IngAll to $Allergens;
+        if not($Ing/IsVegetarian) then
+          set $Veg = false;
+        end if;
+        if not($Ing/IsVegan) then
+          set $Vegan = false;
+        end if;
+      end if;
+    end loop;
+    set $Key = $Key + '|' + $Crust/Code + '|' + $Sauce/Code + '|' + $Cheese/Code + '|' + $ExtraKey + '|' + $RemovedKey;
+  end if;
+  if $Vegan then
+    set $Veg = true;
+  end if;
+  if startsWith($Text, ', ') then
+    set $Text = substring($Text, 2);
+  end if;
+  declare $SizeText String = $Size/ServingDescription;
+  declare $Display String = $Product/Name;
+  if $Product/Kind = Shop.ProductKind.PIZZA then
+    set $SizeText = getCaption($SizeCode);
+    set $Display = $Product/Name + ' (' + $SizeText + ')';
+  end if;
+  change $Line (DisplayName = $Display, SizeText = $SizeText, UnitPrice = $Unit, LineTotal = $Unit * $Line/Quantity, IsVegetarian = $Veg, IsVegan = $Vegan, IsAvailable = $Available, ConfigurationKey = $Key, ConfigText = $Text, Shop.CartLine_Allergen = $Allergens);
+end;
+
+/**
+ * Joins the captions of a list of allergens in catalog order, e.g.
+ * "Cereals containing gluten, Milk".
+ *
+ * @param $Allergens The allergens (duplicates allowed)
+ * @returns Comma-separated captions; empty text when none
+ */
+create or modify microflow Shop.SUB_AllergenText ($Allergens: List of Shop.Allergen)
+returns String as $Text
+folder 'Catalog'
+begin
+  $Sorted = sort $Allergens by SortOrder asc;
+  declare $Text String = '';
+  declare $Last String = '';
+  loop $A in $Sorted
+  begin
+    if $A/Code != $Last then
+      if $Text = '' then
+        set $Text = $A/Caption;
+      else
+        set $Text = $Text + ', ' + $A/Caption;
+      end if;
+      set $Last = $A/Code;
+    end if;
+  end loop;
+  return $Text;
+end;
+
+/**
+ * Derives and stores a product's card values: card price and size label
+ * (BR-PRICE-01), serving, calorie range, allergens and diet flags of the
+ * default configuration, orderable flag (BR-DATA-12) and the lower-case
+ * search text (dev name, real-world name, short description and default
+ * ingredient names, US-027).
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.SUB_Product_Recalculate ($Product: Shop.Product)
+folder 'Catalog'
+begin
+  retrieve $Sizes from Shop.ProductSize where [Shop.ProductSize_Product = $Product] sort by SortOrder asc;
+  $Default = find $Sizes where $currentObject/IsDefault;
+  $Lowest = minimum $Sizes by Calories;
+  $Highest = maximum $Sizes by Calories;
+  declare $SizeLabel String = $Default/ServingDescription;
+  declare $Calories String = formatDecimal($Highest, '#,##0') + ' kcal';
+  if $Product/Kind = Shop.ProductKind.PIZZA then
+    set $SizeLabel = toString($Default/DiameterInches) + '"';
+    if $Lowest != $Highest then
+      set $Calories = formatDecimal($Lowest, '#,##0') + '–' + formatDecimal($Highest, '#,##0') + ' kcal';
+    end if;
+  end if;
+  $Probe = create Shop.CartLine (Quantity = 1);
+  call microflow Shop.SUB_Line_ApplyDefaults(Line = $Probe, Product = $Product);
+  call microflow Shop.SUB_Line_Recalculate(Line = $Probe);
+  retrieve $Allergens from $Probe/Shop.CartLine_Allergen;
+  $AllergenText = call microflow Shop.SUB_AllergenText(Allergens = $Allergens);
+  -- orderable: published, not sold out and every non-removable recipe ingredient and default option available
+  declare $Orderable Boolean = $Probe/IsAvailable;
+  -- search text
+  declare $Search String = $Product/Name + ' ' + $Product/RealWorldName + ' ' + $Product/ShortDescription;
+  retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+  loop $Item in $Recipe
+  begin
+    retrieve $Ing from $Item/Shop.RecipeItem_Ingredient;
+    set $Search = $Search + ' ' + $Ing/Name;
+  end loop;
+  if $Product/Kind = Shop.ProductKind.PIZZA then
+    change $Product (Shop.Product_Allergen = $Allergens);
+  end if;
+  retrieve $Category from $Product/Shop.Product_Category;
+  declare $Folder String = substring($Category/FileName, 0, find($Category/FileName, '.'));
+  $PriceText = call microflow Shop.SUB_Money(Amount = $Default/Price);
+  declare $PriceLabel String = $PriceText;
+  if $Product/Kind = Shop.ProductKind.PIZZA then
+    set $PriceLabel = $PriceText + ' · ' + $SizeLabel;
+  end if;
+  declare $Spice String = '';
+  if $Product/Spice = Shop.SpiceLevel.MILD then
+    set $Spice = 'HOTFIX_SPICY 1/3';
+  end if;
+  if $Product/Spice = Shop.SpiceLevel.MEDIUM then
+    set $Spice = 'HOTFIX_SPICY 2/3';
+  end if;
+  if $Product/Spice = Shop.SpiceLevel.HOT then
+    set $Spice = 'HOTFIX_SPICY 3/3';
+  end if;
+  retrieve $DefCrustC from $Product/Shop.Product_DefaultCrust;
+  retrieve $DefSauceC from $Product/Shop.Product_DefaultSauce;
+  retrieve $DefCheeseC from $Product/Shop.Product_DefaultCheese;
+  declare $Ext String = '.ts';
+  declare $Var String = 'pizza';
+  if $Product/Kind = Shop.ProductKind.SIDE then
+    set $Ext = '.yml';
+    set $Var = 'side';
+  end if;
+  if $Product/Kind = Shop.ProductKind.DRINK then
+    set $Ext = '.env';
+    set $Var = 'drink';
+  end if;
+  if $Product/Kind = Shop.ProductKind.DESSERT then
+    set $Ext = '.md';
+    set $Var = 'dessert';
+  end if;
+  change $Product (Kcal = $Default/Calories, FileLabel = $Product/ModuleKey + $Ext, CardIcon = if $Product/Kind = Shop.ProductKind.PIZZA then 'data_object' else 'description', CodeVar = $Var,
+    RealLine = if $Product/Kind = Shop.ProductKind.PIZZA then $Product/RealWorldName else $Product/RealWorldName + ' · ' + $Default/ServingDescription,
+    CodeCrust = if $DefCrustC = empty then '' else $DefCrustC/Name,
+    CodeSauce = if $DefSauceC = empty then '' else if $DefSauceC/Code = 'SA-06' then 'null' else $DefSauceC/Name,
+    CodeCheese = if $DefCheeseC = empty then '' else if $DefCheeseC/Code = 'CH-04' then 'null' else $DefCheeseC/Name);
+  change $Product (ModulePath = './' + $Folder + '/' + $Product/ModuleKey + '.ts', CardPriceLabel = $PriceLabel, SpiceLabel = $Spice);
+  change $Product (CardPrice = $Default/Price, CardSizeLabel = $SizeLabel, ServingLabel = $Default/ServingDescription, CaloriesLabel = $Calories,
+    IsVegetarian = $Probe/IsVegetarian, IsVegan = $Probe/IsVegan, IsOrderable = $Orderable, AllergenText = $AllergenText,
+    SearchText = toLowerCase($Search));
+  commit $Product without events;
+  delete $Probe;
+end;
+
+/**
+ * Recalculates the stored card values of every product (after seed/reset).
+ */
+create or modify microflow Shop.SUB_Catalog_RecalculateAll ()
+folder 'Catalog'
+begin
+  retrieve $Products from Shop.Product;
+  loop $Product in $Products
+  begin
+    call microflow Shop.SUB_Product_Recalculate(Product = $Product);
+  end loop;
+end;
