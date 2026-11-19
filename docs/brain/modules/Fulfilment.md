@@ -18,3 +18,7 @@ Anchors: `@Fulfilment.Coupon`, `@Fulfilment.DeliveryZone` · id `968fd2` · 2026
 ## Store time (BR-DATA-05): the runtime's default time zone America/Los_Angeles; order-log times are stored as server-formatted text because client-formatted dates follow the browser's zone.
 
 Anchors: `@Fulfilment.OrderLogEntry.TimeText`, `@Fulfilment.SUB_Order_Log` · id `f2c8ab` · 2026-11-19
+
+## Indexes from the volume test: Order.CompletedAt for the home KPIs, Order(Source, IsOpen, StatusChangedAt) for the traffic generator and housekeeping, SimulationEvent.OccurredAt for housekeeping; each replaced a full scan of 400,000 orders (docs/perf/report.html F2, F3).
+
+Anchors: `@Fulfilment.Order`, `@Shop.SUB_Home_Refresh` · id `42a525` · 2026-11-19

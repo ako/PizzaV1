@@ -72,3 +72,7 @@ Anchors: `@Shop` · id `fad15d` · 2026-11-19
 Anchors: `@Shop` · id `cb8adb` · 2026-11-19
 
 Resolves: PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessment.json, RUN/operations.md, RUN/start.ps1 and RUN/stop.ps1 (00-README section 8). RUN/delivery-notes.md exists but lacks the Marketplace module list and the object-name mapping.
+
+## The menu card's toppings line is stored on the product (Catalog.Product.CodeToppings) by Shop.SUB_Product_Recalculate, and the catalog's stored card values are recalculated at every start, not only at a reset: the per-card recipe data source cost 12 calls per menu render (docs/perf/report.html F4). Shop.DS_Product_Recipe is unused since; re-anchor US-026 before deleting it.
+
+Anchors: `@Shop.SUB_Product_Recalculate`, `@Simulation.ASU_Startup` · id `da951c` · 2026-11-19

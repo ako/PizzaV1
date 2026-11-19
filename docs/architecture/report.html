@@ -1,0 +1,209 @@
+<title>GitPizza Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f5f1; --surface: #ffffff; --ink: #1b1b1c; --muted: #5e6066; --line: #dedcd5; --brand: #ff9d00; --code: #131313;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --high-bg: #e6f4ec; --high-bd: #1f7a4a; --mid-bg: #fdf3dc; --mid-bd: #b7860b; --low-bg: #fbe7e6; --low-bd: #b3261e;
+  --edge: #8d8f96; --edge-seed: #c9c6bd; --heat: 32, 120, 214;
+  --f-display: "JetBrains Mono", ui-monospace, monospace; --f-body: "IBM Plex Sans", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #131313; --surface: #1b1b1c; --ink: #ececec; --muted: #a2a4aa; --line: #2f2f31; color-scheme: dark;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --high-bg: #15291e; --high-bd: #5cc98e; --mid-bg: #2d2510; --mid-bd: #e0b54a; --low-bg: #321615; --low-bd: #f07575; --edge: #8b8e96; --edge-seed: #44464b; --heat: 57, 135, 229 } }
+:root[data-theme="dark"] {
+  --bg: #131313; --surface: #1b1b1c; --ink: #ececec; --muted: #a2a4aa; --line: #2f2f31; color-scheme: dark;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --high-bg: #15291e; --high-bd: #5cc98e; --mid-bg: #2d2510; --mid-bd: #e0b54a; --low-bg: #321615; --low-bd: #f07575; --edge: #8b8e96; --edge-seed: #44464b; --heat: 57, 135, 229 }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); margin: 0; padding: 0 16px 64px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 40px; }
+.wrap > *, .kpis > *, .cols > * { min-width: 0; }
+header.top { border-bottom: 6px solid var(--brand); padding-block: 36px 24px; display: grid; gap: 10px; }
+.eyebrow { font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 800 clamp(30px, 5vw, 44px)/1.1 var(--f-display); margin: 0; letter-spacing: -.02em; }
+h2 { font: 700 24px/1.2 var(--f-display); margin: 0 0 12px; letter-spacing: -.01em; }
+h3 { font: 600 17px/1.3 var(--f-body); margin: 0 0 6px; }
+p { margin: 0 0 10px; max-width: 74ch; }
+.lede { font-size: 17px; max-width: 76ch; }
+code { font-family: var(--f-mono); font-size: 12.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; display: grid; gap: 6px; align-content: start; }
+.kpi .v { font: 600 26px/1.1 var(--f-mono); }
+.kpi .l { color: var(--muted); font-size: 13.5px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; overflow-x: auto; }
+svg.map { display: block; width: 100%; min-width: 760px; }
+svg.map .lay { font: 600 11px var(--f-mono); fill: var(--muted); }
+svg.map .lg { stroke: var(--line); stroke-dasharray: 3 5; }
+svg.map .e { fill: none; stroke: var(--edge); opacity: .9; }
+svg.map .e.seed { stroke: var(--edge-seed); }
+svg.map .e:hover { stroke: var(--brand); opacity: 1; }
+svg.map .mk { fill: var(--edge); }
+svg.map .n rect { stroke-width: 1.5; }
+svg.map .n.high rect:first-of-type { fill: var(--high-bg); stroke: var(--high-bd); }
+svg.map .n.mid rect:first-of-type { fill: var(--mid-bg); stroke: var(--mid-bd); }
+svg.map .n.low rect:first-of-type { fill: var(--low-bg); stroke: var(--low-bd); }
+svg.map .nm { font: 600 15px var(--f-body); fill: var(--ink); text-anchor: middle; }
+svg.map .sub { font: 11px var(--f-mono); fill: var(--muted); text-anchor: middle; }
+svg.map .el rect { fill: var(--surface); stroke: var(--line); }
+svg.map .el text { font: 10.5px var(--f-mono); fill: var(--ink); text-anchor: middle; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: 0; border: 1.5px solid; }
+.legend .l1 { background: var(--high-bg); border-color: var(--high-bd); } .legend .l2 { background: var(--mid-bg); border-color: var(--mid-bd); } .legend .l3 { background: var(--low-bg); border-color: var(--low-bd); }
+.legend .ln { height: 0; border: 0; border-top: 3px solid var(--edge); width: 18px; } .legend .ls { height: 0; border: 0; border-top: 3px solid var(--edge-seed); width: 18px; }
+i.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 0; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font: 600 12px/1.2 var(--f-body); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--ink); }
+td.num { font-family: var(--f-mono); font-size: 13px; white-space: nowrap; }
+td.note { color: var(--muted); font-size: 13.5px; min-width: 260px; }
+.rng { display: block; color: var(--muted); font: 11.5px var(--f-mono); }
+.bar { position: relative; width: 150px; height: 18px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.bar.thin { height: 14px; margin-top: 4px; }
+.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 3px 0 0 3px; }
+.bar.high i { background: var(--high-bd); } .bar.mid i { background: var(--mid-bd); } .bar.low i { background: var(--low-bd); }
+.bar span { position: absolute; left: 6px; top: 0; font: 600 11.5px/18px var(--f-mono); color: var(--ink); mix-blend-mode: normal; }
+.bar.thin span { line-height: 14px; font-size: 10.5px; }
+table.mx { width: auto; }
+table.mx td { font: 13px var(--f-mono); text-align: right; min-width: 92px; }
+table.mx td.h { background: rgba(var(--heat), calc(.12 + var(--t) * .75)); color: var(--ink); }
+table.mx td.self { color: var(--muted); background: repeating-linear-gradient(135deg, transparent 0 6px, var(--line) 6px 7px); }
+.stack { display: flex; height: 16px; width: 260px; border-radius: 3px; overflow: hidden; gap: 2px; background: var(--surface); }
+.stack i { display: block; height: 100%; }
+b.used { color: var(--high-bd); } b.unused { color: var(--low-bd); }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr)); gap: 24px; }
+.cols.wide { grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); }
+.cols.wide td, .cols.wide th { font-size: 13px; padding: 6px 8px; }
+ul.recs { display: grid; gap: 10px; padding-left: 20px; max-width: 80ch; margin: 0; }
+.scroll { overflow-x: auto; }
+</style>
+<div class="wrap">
+<header class="top">
+  <span class="eyebrow">GitPizza · architecture views from the model graph · 19 November 2026</span>
+  <h1>GitPizza Architecture</h1>
+  <p class="lede">How the app's five modules depend on one another, where the bounded contexts really lie, which elements everything hangs on, and what to change. Every figure
+  comes from <code>mxcli report architecture</code> and the mxcli catalog, read from the model itself; the generated demo-data seed is shown separately because it distorts the picture.</p>
+</header>
+
+<section class="kpis"><div class="kpi"><span class="v">4 layers · 0 cycles</span><span class="l">Every dependency between the five app modules points down, Simulation → Shop → Fulfilment → Catalog and Core; no cycle, with or without navigation.</span></div><div class="kpi"><span class="v">186 of 369</span><span class="l">App microflows are the generated seed (<code>Simulation.SEED_*</code>). They create 8,824 of the references into Fulfilment and dominate the graph.</span></div><div class="kpi"><span class="v">223 flows</span><span class="l">Touch <code>Fulfilment.Order</code>, in 3 modules: the app's centre of gravity, and the one entity whose attributes are expensive to change.</span></div><div class="kpi"><span class="v">1 of 4</span><span class="l">"Unused" documents really are unused; the others are reached by URL or a client hook, which the graph does not see.</span></div></section>
+
+<section>
+  <h2>Module map</h2>
+  <p>Each module sits on the layer its domain dependencies put it on. Arrows point from the user to the used module, thicker for more references; the label is the count.
+  Pale arrows are carried almost entirely by the generated seed flows, with the count without them next to it. A box gives hand-written microflows (+ generated seed),
+  pages and snippets, persistent entities, and cohesion: the share of a module's references that stay inside it. Hover a box or an arrow for details.</p>
+  <div class="panel"><svg class="map" viewBox="0 0 1000 590" role="img" aria-label="Layered module map"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk"/></marker></defs><text x="14" y="64" class="lay">layer 3</text><line x1="70" x2="980" y1="117.0" y2="117.0" class="lg"/><text x="14" y="209" class="lay">layer 2</text><line x1="70" x2="980" y1="262.0" y2="262.0" class="lg"/><text x="14" y="354" class="lay">layer 1</text><line x1="70" x2="980" y1="407.0" y2="407.0" class="lg"/><text x="14" y="514" class="lay">layer 0</text><path class="e seed" d="M542,95 C542,194 678,216 678,315" stroke-width="7.7" marker-end="url(#ah)"><title>Simulation → Fulfilment: 8,824 references (271 without the seed flows)
+kinds: call, change, commit, create, delete, member, parameter, retrieve
+e.g. Simulation.SEED_Catalog → Fulfilment.DeliveryZone (create)
+Simulation.SEED_Catalog → Fulfilment.DeliveryZone (commit)
+Simulation.SEED_Catalog → Fulfilment.Coupon (create)</title></path><path class="e seed" d="M380,95 C60,125 60,405 220,475" stroke-width="6.1" marker-end="url(#ah)"><title>Simulation → Catalog: 1,038 references (16 without the seed flows)
+kinds: change, commit, create, delete, member, retrieve, value, xpath
+e.g. Simulation.SEED_Catalog → Catalog.Ingredient (create)
+Simulation.SEED_Catalog → Catalog.Ingredient (change)
+Simulation.SEED_Catalog → Catalog.Ingredient (commit)</title></path><path class="e" d="M374,240 C374,274 647,281 647,315" stroke-width="5.5" marker-end="url(#ah)"><title>Shop → Fulfilment: 434 references
+kinds: associate, call, change, commit, create, member, parameter, retrieve
+e.g. Shop.SUB_Pay_Retry → Fulfilment.SUB_Payment_Retry (call)
+Shop.SUB_Pay_Cancel → Fulfilment.SUB_Order_Cancel (call)
+Shop.SNIP_PaymentChoice → Fulfilment.PaymentMethod.APPLE_PAY (value)</title></path><path class="e" d="M290,240 C290,346 290,369 290,475" stroke-width="5.2" marker-end="url(#ah)"><title>Shop → Catalog: 284 references
+kinds: associate, call, change, commit, datasource, member, parameter, retrieve
+e.g. Shop.SUB_Line_ApplyDefaults → Catalog.Product (parameter)
+Shop.SUB_Line_ApplyDefaults → Catalog.ProductSize (retrieve)
+Shop.SUB_Line_ApplyDefaults → Catalog.Product_DefaultCrust (retrieve)</title></path><path class="e" d="M620,95 C940,125 940,405 780,475" stroke-width="4.7" marker-end="url(#ah)"><title>Simulation → Core: 141 references (63 without the seed flows)
+kinds: call, change, commit, create, delete, member, retrieve, type
+e.g. Simulation.SE_ClockWatchdog → Core.SimulationSettings (retrieve)
+Simulation.SUB_Toast_Broadcast → Core.Toast (create)
+Simulation.SUB_Toast_Broadcast → Core.Toast_Owner (member)</title></path><path class="e" d="M374,240 C374,346 647,369 647,475" stroke-width="4.6" marker-end="url(#ah)"><title>Shop → Core: 125 references
+kinds: call, change, commit, datasource, delete, member, parameter, retrieve
+e.g. Shop.ACT_Toast_Close → Core.Toast (parameter)
+Shop.ACT_Toast_Close → Core.SUB_Toast_Close (call)
+Shop.ACT_Nav_Checkout → Core.SUB_Toast (call)</title></path><path class="e" d="M458,95 C458,129 322,136 322,170" stroke-width="3.1" marker-end="url(#ah)"><title>Simulation → Shop: 17 references
+kinds: call, create, delete, member, retrieve, type
+e.g. Simulation.SIM_Payments → Shop.SUB_Payment_Resolve (call)
+Simulation.SUB_Traffic_Spawn → Shop.CartLine (create)
+Simulation.SUB_Traffic_Spawn → Shop.SUB_Line_ApplyDefaults (call)</title></path><path class="e" d="M710,385 C710,426 710,434 710,475" stroke-width="2.3" marker-end="url(#ah)"><title>Fulfilment → Core: 5 references
+kinds: call, retrieve
+e.g. Fulfilment.SUB_Timer_Progress → Core.SUB_Eff (call)
+Fulfilment.SUB_Coupon_Evaluate → Core.SUB_Money (call)
+Fulfilment.SUB_Price_Compute → Core.StoreSettings (retrieve)</title></path><path class="e" d="M626,385 C626,426 353,434 353,475" stroke-width="2.0" marker-end="url(#ah)"><title>Fulfilment → Catalog: 3 references
+kinds: associate, type
+e.g. Fulfilment.OrderLine_Product → Catalog.Product (associate)
+Fulfilment.OrderLine → Catalog.ProductKind (type)
+Fulfilment.OrderLine → Catalog.SizeCode (type)</title></path><g class="n low"><title>Simulation · layer 3
+Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08).
+204 microflows (186 generated seed), 0 pages, 0 snippets, 1 entities, 0 view models
+uses: 4 modules · used by: 0</title><rect x="365.0" y="25.0" width="270" height="70" rx="7"/><rect class="sw" x="365.0" y="25.0" width="6" height="70" rx="3" style="fill:var(--s1)"/><text x="500" y="48" class="nm">Simulation</text><text x="500" y="66" class="sub">18 mf + 186 seed · 1 ent</text><text x="500" y="82" class="sub">cohesion 3% (9% w/o seed)</text></g><g class="n mid"><title>Shop · layer 2
+Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages.
+143 microflows (0 generated seed), 16 pages, 15 snippets, 4 entities, 6 view models
+uses: 3 modules · used by: 1</title><rect x="155.0" y="170.0" width="270" height="70" rx="7"/><rect class="sw" x="155.0" y="170.0" width="6" height="70" rx="3" style="fill:var(--s2)"/><text x="290" y="193" class="nm">Shop</text><text x="290" y="211" class="sub">143 mf · 31 pg · 4 ent</text><text x="290" y="227" class="sub">cohesion 60%</text></g><g class="n high"><title>Fulfilment · layer 1
+The order domain without UI: orders and their lines, payments, status history and log, couriers, ovens, delivery zones, coupons, pricing and the order transitions.
+11 microflows (0 generated seed), 0 pages, 0 snippets, 12 entities, 1 view models
+uses: 2 modules · used by: 2</title><rect x="575.0" y="315.0" width="270" height="70" rx="7"/><rect class="sw" x="575.0" y="315.0" width="6" height="70" rx="3" style="fill:var(--s3)"/><text x="710" y="338" class="nm">Fulfilment</text><text x="710" y="356" class="sub">11 mf · 12 ent</text><text x="710" y="372" class="sub">cohesion 96%</text></g><g class="n high"><title>Catalog · layer 0
+Product catalog: pizzas, sides, drinks and desserts with sizes, options, recipes, ingredients and allergens (the menu&#x27;s data).
+4 microflows (0 generated seed), 0 pages, 0 snippets, 7 entities, 0 view models
+uses: 0 modules · used by: 3</title><rect x="155.0" y="475.0" width="270" height="70" rx="7"/><rect class="sw" x="155.0" y="475.0" width="6" height="70" rx="3" style="fill:var(--s4)"/><text x="290" y="498" class="nm">Catalog</text><text x="290" y="516" class="sub">4 mf · 7 ent</text><text x="290" y="532" class="sub">cohesion 100%</text></g><g class="n high"><title>Core · layer 0
+Shared foundation: store and simulation settings, guest toasts, and the money, time, phone and id helpers every module uses.
+7 microflows (0 generated seed), 0 pages, 0 snippets, 3 entities, 0 view models
+uses: 0 modules · used by: 3</title><rect x="575.0" y="475.0" width="270" height="70" rx="7"/><rect class="sw" x="575.0" y="475.0" width="6" height="70" rx="3" style="fill:var(--s5)"/><text x="710" y="498" class="nm">Core</text><text x="710" y="516" class="sub">7 mf · 3 ent</text><text x="710" y="532" class="sub">cohesion 95%</text></g><g class="el"><rect x="536" y="196" width="148" height="18" rx="9"/><text x="610" y="209">8,824 · 271 w/o seed</text></g><g class="el"><rect x="49" y="261" width="141" height="18" rx="9"/><text x="120" y="274">1,038 · 16 w/o seed</text></g><g class="el"><rect x="494" y="268" width="32" height="18" rx="9"/><text x="510" y="282">434</text></g><g class="el"><rect x="274" y="348" width="32" height="18" rx="9"/><text x="290" y="362">284</text></g><g class="el"><rect x="864" y="261" width="32" height="18" rx="9"/><text x="880" y="274">141</text></g><g class="el"><rect x="494" y="348" width="32" height="18" rx="9"/><text x="510" y="362">125</text></g><g class="el"><rect x="377" y="124" width="26" height="18" rx="9"/><text x="390" y="136">17</text></g><g class="el"><rect x="701" y="421" width="19" height="18" rx="9"/><text x="710" y="434">5</text></g><g class="el"><rect x="480" y="421" width="19" height="18" rx="9"/><text x="490" y="434">3</text></g></svg>
+  <div class="legend"><span><i class="l1"></i>cohesion ≥ 70 %</span><span><i class="l2"></i>40–70 %</span><span><i class="l3"></i>&lt; 40 %</span>
+  <span><i class="ln"></i>depends on</span><span><i class="ls"></i>mostly seed flows</span></div></div>
+</section>
+
+<section>
+  <h2>Module health</h2>
+  <p>Fulfilment, Catalog and Core are close to self-contained (95–100 %). Shop's 60 % is a storefront's normal share: it reads the catalog and calls the order domain.
+  Simulation is the outlier twice over — its cohesion is 2.8 % because the seed creates every catalog row and demo order from there, and still
+  9 % without it, because the simulator's job is to act on Fulfilment's orders.</p>
+  <div class="scroll"><table class="mods"><thead><tr><th>Module</th><th>Layer</th><th>Cohesion</th><th>Internal</th><th>Out</th><th>In</th><th>Entities + view models</th><th>Microflows (+ seed)</th><th>Pages + snippets</th><th>Used by</th><th>Uses</th><th>Role</th></tr></thead><tbody><tr><th scope="row"><i class="dot" style="background:var(--s1)"></i>Simulation</th><td class="num">3</td><td><div class="bar low"><i style="width:3%"></i><span style="left:calc(3% + 6px)">3%</span></div><div class="bar low thin"><i style="width:9%"></i><span style="left:calc(9% + 6px)">9% w/o seed</span></div></td><td class="num">286</td><td class="num">10,023</td><td class="num">0</td><td class="num">1 + 0</td><td class="num">18 + 186</td><td class="num">0 + 0</td><td class="num">0</td><td class="num">4</td><td class="note">Plays everyone the guest never sees: payment gateway, kitchen, ovens, couriers, other customers, and the demo reset. 186 of its 204 microflows are the seed generated from 09-demo-data, which is why it looks like one big outward arrow.</td></tr><tr><th scope="row"><i class="dot" style="background:var(--s2)"></i>Shop</th><td class="num">2</td><td><div class="bar mid"><i style="width:60%"></i><span style="left:6px">60%</span></div></td><td class="num">1,269</td><td class="num">846</td><td class="num">17</td><td class="num">4 + 6</td><td class="num">143</td><td class="num">16 + 15</td><td class="num">1</td><td class="num">3</td><td class="note">The storefront: pages, guest session, cart and checkout. Also holds three rules the simulator borrows (payment decision, line pricing, order placement) — see recommendations.</td></tr><tr><th scope="row"><i class="dot" style="background:var(--s3)"></i>Fulfilment</th><td class="num">1</td><td><div class="bar high"><i style="width:96%"></i><span style="left:6px">96%</span></div></td><td class="num">268</td><td class="num">10</td><td class="num">9,258</td><td class="num">12 + 1</td><td class="num">11</td><td class="num">0 + 0</td><td class="num">2</td><td class="num">2</td><td class="note">The order domain without UI: orders, lines, payments, status history, log, couriers, ovens, zones, coupons, pricing and the order transitions. Almost everything it does stays inside it.</td></tr><tr><th scope="row"><i class="dot" style="background:var(--s4)"></i>Catalog</th><td class="num">0</td><td><div class="bar high"><i style="width:100%"></i><span style="left:6px">100%</span></div></td><td class="num">69</td><td class="num">0</td><td class="num">1,325</td><td class="num">7 + 0</td><td class="num">4</td><td class="num">0 + 0</td><td class="num">3</td><td class="num">0</td><td class="note">The menu data: products, sizes, options, recipes, ingredients, allergens. Depends on nothing; read by every module above it.</td></tr><tr><th scope="row"><i class="dot" style="background:var(--s5)"></i>Core</th><td class="num">0</td><td><div class="bar high"><i style="width:95%"></i><span style="left:6px">95%</span></div></td><td class="num">19</td><td class="num">1</td><td class="num">271</td><td class="num">3 + 0</td><td class="num">7</td><td class="num">0 + 0</td><td class="num">3</td><td class="num">0</td><td class="note">Settings, toasts and the formatting helpers (money, mm:ss, phone, ids). Depends on nothing.</td></tr></tbody></table></div>
+</section>
+
+<section class="cols">
+  <div><h2>Coupling matrix</h2>
+  <p>Rows use columns, highest layer first. A layered design fills only the triangle above the diagonal — as here: nothing below it. The diagonal is each module's internal references.</p>
+  <div class="scroll"><table class="mx"><thead><tr><th>uses →</th><th class="vh"><span>Simulation</span></th><th class="vh"><span>Shop</span></th><th class="vh"><span>Fulfilment</span></th><th class="vh"><span>Catalog</span></th><th class="vh"><span>Core</span></th></tr></thead><tbody><tr><th scope="row">Simulation</th><td class="self">286</td><td class="h" style="--t:0.32" title="Simulation → Shop: 17">17</td><td class="h" style="--t:1.00" title="Simulation → Fulfilment: 8,824">8,824<span class="rng">271 w/o seed</span></td><td class="h" style="--t:0.76" title="Simulation → Catalog: 1,038">1,038<span class="rng">16 w/o seed</span></td><td class="h" style="--t:0.55" title="Simulation → Core: 141">141<span class="rng">63 w/o seed</span></td></tr><tr><th scope="row">Shop</th><td></td><td class="self">1,269</td><td class="h" style="--t:0.67" title="Shop → Fulfilment: 434">434</td><td class="h" style="--t:0.62" title="Shop → Catalog: 284">284</td><td class="h" style="--t:0.53" title="Shop → Core: 125">125</td></tr><tr><th scope="row">Fulfilment</th><td></td><td></td><td class="self">268</td><td class="h" style="--t:0.15" title="Fulfilment → Catalog: 3">3</td><td class="h" style="--t:0.20" title="Fulfilment → Core: 5">5</td></tr><tr><th scope="row">Catalog</th><td></td><td></td><td></td><td class="self">69</td><td></td></tr><tr><th scope="row">Core</th><td></td><td></td><td></td><td></td><td class="self">19</td></tr></tbody></table></div></div>
+  <div><h2>Outside the app</h2>
+  <p>Only the System module is used from the app modules (Shop → System (3), Simulation → System (3), Fulfilment → System (2), Core → System (1)): the guest user and session for carts, toasts and the session grant. No Marketplace module is
+  called from app code; Atlas provides layouts, DataWidgets the data widgets.</p>
+  <h2 style="margin-top:20px">Cycles</h2>
+  <p>None between app modules, with or without navigation references. The module split (Simulation → Shop → Fulfilment → Catalog + Core) removed the one
+  Fulfilment ↔ Shop cycle the single module had.</p></div>
+</section>
+
+<section>
+  <h2>Bounded contexts</h2>
+  <p>Clusters of elements that reference each other more than the rest (the catalog's community detection), coloured by the module each element lives in.
+  Four are real contexts of the shop; three are generated seed, one cluster per kind of generated row; 4 small ones are left out.</p>
+  <div class="legend"><span><i class="dot" style="background:var(--s1)"></i>Simulation</span><span><i class="dot" style="background:var(--s2)"></i>Shop</span><span><i class="dot" style="background:var(--s3)"></i>Fulfilment</span><span><i class="dot" style="background:var(--s4)"></i>Catalog</span><span><i class="dot" style="background:var(--s5)"></i>Core</span></div>
+  <div class="scroll"><table class="cl"><thead><tr><th>Cluster</th><th>Size</th><th>Modules</th><th>What it is</th></tr></thead><tbody><tr><th scope="row">Configure, cart and checkout<span class="rng">Shop · CartLine</span></th><td class="num">90</td><td><div class="stack"><i style="flex:1;background:var(--s1)" title="Simulation: 1"></i><i style="flex:75;background:var(--s2)" title="Shop: 75"></i><i style="flex:11;background:var(--s4)" title="Catalog: 11"></i><i style="flex:3;background:var(--s5)" title="Core: 3"></i></div><span class="rng">Shop 75, Catalog 11, Core 3, Simulation 1</span></td><td class="note">The guest&#x27;s order being built: configurator tiles, cart lines, checkout form, pricing and toasts. A real bounded context; it borrows catalog reads and the money helper.</td></tr><tr><th scope="row">The simulator engine<span class="rng">Simulation · Order</span></th><td class="num">86</td><td><div class="stack"><i style="flex:55;background:var(--s1)" title="Simulation: 55"></i><i style="flex:10;background:var(--s2)" title="Shop: 10"></i><i style="flex:19;background:var(--s3)" title="Fulfilment: 19"></i><i style="flex:2;background:var(--s5)" title="Core: 2"></i></div><span class="rng">Simulation 55, Fulfilment 19, Shop 10, Core 2</span></td><td class="note">Ticks, payments, kitchen, couriers and traffic acting on Fulfilment&#x27;s orders, ovens and zones. Spans Simulation and Fulfilment by design: the simulator stands in for staff and outside systems.</td></tr><tr><th scope="row">Seed: order lines<span class="rng">Simulation · Product</span></th><td class="num">61</td><td><div class="stack"><i style="flex:46;background:var(--s1)" title="Simulation: 46"></i><i style="flex:9;background:var(--s2)" title="Shop: 9"></i><i style="flex:5;background:var(--s3)" title="Fulfilment: 5"></i><i style="flex:1;background:var(--s4)" title="Catalog: 1"></i></div><span class="rng">Simulation 46, Shop 9, Fulfilment 5, Catalog 1</span></td><td class="note">Generated seed flows that create the demo orders&#x27; lines. Not a design decision — one cluster per kind of generated row.</td></tr><tr><th scope="row">Tracking and lookup<span class="rng">Shop · TrackView</span></th><td class="num">58</td><td><div class="stack"><i style="flex:11;background:var(--s1)" title="Simulation: 11"></i><i style="flex:35;background:var(--s2)" title="Shop: 35"></i><i style="flex:9;background:var(--s3)" title="Fulfilment: 9"></i><i style="flex:3;background:var(--s5)" title="Core: 3"></i></div><span class="rng">Shop 35, Simulation 11, Fulfilment 9, Core 3</span></td><td class="note">Confirmation, live tracking, order lookup and the session grant (OrderAccess). Reads the simulation settings for the ETA.</td></tr><tr><th scope="row">Seed: status history<span class="rng">Simulation · OrderStatusChange</span></th><td class="num">52</td><td><div class="stack"><i style="flex:46;background:var(--s1)" title="Simulation: 46"></i><i style="flex:2;background:var(--s2)" title="Shop: 2"></i><i style="flex:4;background:var(--s3)" title="Fulfilment: 4"></i></div><span class="rng">Simulation 46, Fulfilment 4, Shop 2</span></td><td class="note">Generated seed flows for the demo orders&#x27; history.</td></tr><tr><th scope="row">Shell, home and menu<span class="rng">Shop · Cart</span></th><td class="num">49</td><td><div class="stack"><i style="flex:46;background:var(--s2)" title="Shop: 46"></i><i style="flex:3;background:var(--s5)" title="Core: 3"></i></div><span class="rng">Shop 46, Core 3</span></td><td class="note">The guest&#x27;s cart as the page context: menu filters, home carousel and the header. The cart doubles as view state because a microflow-fed list refreshes only on a committed object.</td></tr><tr><th scope="row">Seed: order log<span class="rng">Simulation · OrderLogEntry</span></th><td class="num">49</td><td><div class="stack"><i style="flex:46;background:var(--s1)" title="Simulation: 46"></i><i style="flex:1;background:var(--s2)" title="Shop: 1"></i><i style="flex:2;background:var(--s3)" title="Fulfilment: 2"></i></div><span class="rng">Simulation 46, Fulfilment 2, Shop 1</span></td><td class="note">Generated seed flows for the demo orders&#x27; log lines.</td></tr><tr><th scope="row">Catalog<span class="rng">Catalog</span></th><td class="num">16</td><td><div class="stack"><i style="flex:2;background:var(--s1)" title="Simulation: 2"></i><i style="flex:5;background:var(--s2)" title="Shop: 5"></i><i style="flex:9;background:var(--s4)" title="Catalog: 9"></i></div><span class="rng">Catalog 9, Shop 5, Simulation 2</span></td><td class="note">Products, options, ingredients and allergens, with the storefront&#x27;s menu flows that read them.</td></tr><tr><th scope="row">Error pages<span class="rng">Shop · ErrorView</span></th><td class="num">3</td><td><div class="stack"><i style="flex:3;background:var(--s2)" title="Shop: 3"></i></div><span class="rng">Shop 3</span></td><td class="note">SCR-41 and its fault probe.</td></tr></tbody></table></div>
+</section>
+
+<section class="cols wide">
+  <div><h3>God nodes</h3><p class="note">Most-referenced elements. The order history entities top the list because the seed writes thousands of rows into them; among
+  hand-written code, <code>Fulfilment.Order</code> is the centre.</p><div class="scroll"><table><thead><tr><th>Element</th><th>Kind</th><th>In</th><th>Out</th></tr></thead><tbody><tr><td><code>Fulfilment.OrderLogEntry</code></td><td>entity</td><td>962</td><td>7</td></tr><tr><td><code>Simulation.SEED_Catalog</code></td><td>microflow</td><td>1</td><td>837</td></tr><tr><td><code>Fulfilment.OrderStatusChange</code></td><td>entity</td><td>502</td><td>7</td></tr><tr><td><code>Fulfilment.Order</code></td><td>entity</td><td>430</td><td>10</td></tr><tr><td><code>Fulfilment.OrderLineModifier</code></td><td>entity</td><td>383</td><td>8</td></tr><tr><td><code>Catalog.Product</code></td><td>entity</td><td>255</td><td>5</td></tr><tr><td><code>Fulfilment.OrderLine</code></td><td>entity</td><td>246</td><td>7</td></tr><tr><td><code>Catalog.Option</code></td><td>entity</td><td>144</td><td>3</td></tr></tbody></table></div></div>
+  <div><h3>Bridges</h3><p class="note">Microflows on the most shortest paths between others: pricing and cart recalculation connect configurator, cart, checkout and the
+  traffic generator.</p><div class="scroll"><table><thead><tr><th>Microflow</th><th>Betweenness</th><th>Callers</th><th>Calls</th></tr></thead><tbody><tr><td><code>Shop.SUB_Line_Recalculate</code></td><td>1,126</td><td>12</td><td>67</td></tr><tr><td><code>Shop.SUB_Cart_Recalculate</code></td><td>954</td><td>13</td><td>47</td></tr><tr><td><code>Simulation.SEED_Orders</code></td><td>572</td><td>1</td><td>46</td></tr><tr><td><code>Simulation.SUB_Reset</code></td><td>448</td><td>3</td><td>62</td></tr><tr><td><code>Shop.SUB_Checkout_Recalculate</code></td><td>298</td><td>5</td><td>5</td></tr><tr><td><code>Simulation.SIM_Tick</code></td><td>262</td><td>1</td><td>10</td></tr><tr><td><code>Simulation.SUB_Traffic_Spawn</code></td><td>193</td><td>1</td><td>49</td></tr><tr><td><code>Simulation.SIM_ClockRun</code></td><td>190</td><td>4</td><td>3</td></tr></tbody></table></div></div>
+  <div><h3>Entity hotspots</h3><p class="note">Entities read or written by the most microflows, and from how many modules.</p><div class="scroll"><table><thead><tr><th>Entity</th><th>Flows</th><th>Modules</th></tr></thead><tbody><tr><td><code>Fulfilment.Order</code></td><td>223</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Catalog.Product</code></td><td>68</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.PaymentAttempt</code></td><td>55</td><td>Fulfilment, Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLine</code></td><td>51</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLineModifier</code></td><td>48</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLogEntry</code></td><td>48</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Fulfilment.OrderStatusChange</code></td><td>48</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Fulfilment.Oven</code></td><td>41</td><td>Simulation, Shop</td></tr></tbody></table></div></div>
+</section>
+
+<section>
+  <h2>Unused documents</h2>
+  <p>What the graph finds with no caller, checked by hand.</p>
+  <div class="scroll"><table><thead><tr><th>Document</th><th>Kind</th><th>Verdict</th><th>Why</th></tr></thead><tbody><tr><td><code>Shop.ACT_Track_Token</code></td><td>microflow</td><td><b class="used">used</b></td><td>Entry point of the tracking link <code>/p/track/{token}</code>: a microflow with a URL, which the graph does not count as a caller.</td></tr><tr><td><code>Shop.DS_Product_Recipe</code></td><td>microflow</td><td><b class="unused">unused</b></td><td>No longer used since performance fix F4 stored the toppings on the product; kept because requirement US-026 is anchored on it. Re-anchor, then delete.</td></tr><tr><td><code>Shop.FaultProbe</code></td><td>page</td><td><b class="used">used</b></td><td>Opened by URL <code>/p/fault</code> for the US-282 acceptance test (opt-in constant <code>Shop.FaultInjection</code>).</td></tr><tr><td><code>Shop.UnexpectedError</code></td><td>page</td><td><b class="used">used</b></td><td>Opened by the client error hook (<code>JS_LivePoller</code>) instead of the platform dialog, and by URL <code>/p/error</code>.</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <h2>Recommendations</h2>
+  <p>The simulator calls into the storefront in 5 places (<code>Shop.SUB_Catalog_RecalculateAll</code>, <code>Shop.SUB_Line_ApplyDefaults</code>, <code>Shop.SUB_Line_Recalculate</code>, <code>Shop.SUB_Order_Place</code>, <code>Shop.SUB_Payment_Resolve</code>): that is where the layering bends, and where the first two changes go.</p>
+  <ul class="recs"><li><b>Move the payment decision into Fulfilment.</b> <code>Shop.SUB_Payment_Resolve</code> decides an attempt's outcome and performs T-02/T-03/T-04 on Fulfilment's order and attempt; the simulator calls it from above the storefront. In Fulfilment it sits next to <code>SUB_Payment_Retry</code> and the transitions, and Simulation no longer needs Shop for payments.</li><li><b>Give order placement and line pricing a home below the storefront.</b> The traffic generator builds a <code>Shop.CartLine</code> and calls <code>SUB_Line_ApplyDefaults</code>, <code>SUB_Line_Recalculate</code> and <code>SUB_Order_Place</code> to create a simulated order the same way a guest does. That reuse is right — one pricing path — but it makes the simulator depend on the storefront's cart. A Fulfilment-level "place order from lines" with the pricing rules (BR-PRICE-02…04) lets both callers use it; the cart then only collects choices.</li><li><b>Keep the seed out of the architecture.</b> 186 generated flows turn Simulation into a 2.8 %-cohesion module and fill the god-node list (<code>SEED_Catalog</code> with 837 outgoing references). Moving them to their own module (e.g. <code>DemoData</code>, layer 3) would leave Simulation's own 18 flows to be judged on their own and makes the next report readable without the "w/o seed" column.</li><li><b>Watch the two bridges.</b> <code>Shop.SUB_Line_Recalculate</code> and <code>Shop.SUB_Cart_Recalculate</code> carry most shortest paths in the graph: configurator, cart, checkout and the traffic generator all run through them. They are also the open performance finding F6 (every line recalculated 2–4 times per add); changes there need the pricing tests (<code>tests/pricing.test.mdl</code>) and journeys J2, J9 and J11.</li><li><b>Treat <code>Fulfilment.Order</code> as a published contract.</b> 223 flows in three modules read and write it directly. Additive changes are cheap; renaming or retyping an attribute is not.</li><li><b>Delete <code>Shop.DS_Product_Recipe</code></b> after re-anchoring requirement US-026 on <code>Shop.SUB_Product_Recalculate</code>.</li></ul>
+</section>
+
+<section class="cols">
+  <div><h2>How this was made</h2>
+  <p><code>mxcli report architecture --format json</code> (layers, cohesion, domain edges, communities, god nodes, bridges, hotspots, unused) and catalog queries for
+  document counts and module edges without <code>Simulation.SEED_*</code>, in <code>docs/architecture/arch.json</code>
+  (<code>tools/collect.py</code>); this page is rendered by <code>tools/gen_arch.py</code>. Cluster names, module roles, verdicts and recommendations are written by hand from that data.</p></div>
+  <div><h2>Limits</h2>
+  <p>References are counted from the model, not weighted by how often they run. Microflows reached only by URL, a JavaScript hook or a Java action count as unused.
+  The "without seed" figures count catalog references by source module, which differs slightly from the report's own reference kinds.</p></div>
+</section>
+</div>

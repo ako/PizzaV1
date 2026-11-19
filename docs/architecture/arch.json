@@ -1,0 +1,1296 @@
+{
+ "report": {
+  "kind": "architecture",
+  "schema": 1,
+  "project": "GitPizza",
+  "generated": "2026-11-19 16:43",
+  "mxcli": "nightly-20261118-9d764483c",
+  "method": [
+   "Every number is read from the mxcli catalog (`refresh catalog full`, plus the `communities` pass for clusters, layers and centrality). Each section is a query over `CATALOG.REFS` or a `CATALOG.GRAPH_*` view and can be re-run by hand.",
+   "The app is the project's own modules: Marketplace modules, `System` and the test runner's `MxTest` are outside unless `--include-marketplace` or `--modules` says otherwise. Their edges from app modules are listed under \"Outside the app\".",
+   "Domain dependencies are every reference kind except screen wiring (`layout`, `show_page`, `menu_item`, `home_page`, `widget`, `snippet_call`). The map, layers, matrix and cycles use domain edges only; navigation is reported separately.",
+   "A module's layer is the longest path from it down the condensed domain graph to a module with no dependencies; modules in a cycle share a layer.",
+   "Cohesion is internal references divided by internal plus outbound references, over every kind.",
+   "Clusters are Leiden communities over the structural kinds (`CATALOG.GRAPH_ANALYSIS_SCOPE`), restricted to app modules; clusters smaller than three documents are counted, not shown."
+  ],
+  "limits": [
+   "References made from Java actions are not in the graph (ako/mxcli#1819): a microflow called only from Java reads as unused, and a dependency through Java is invisible.",
+   "A name in a string \u2014 a constant's value, a `call microflow` by name, a URL \u2014 is not a reference. Such documents are marked \"verify\", never \"used\".",
+   "Layers and cycles are about module dependencies, not runtime behaviour: a cycle closed by one reference is as much a cycle as one closed by a hundred.",
+   "Cluster labels are derived (dominant module, then most central member); they are not names. Name them with `--annotations`."
+  ],
+  "data": {
+   "scope": {
+    "app": [
+     "Catalog",
+     "Core",
+     "Fulfilment",
+     "Shop",
+     "Simulation"
+    ],
+    "outside": [
+     "Administration",
+     "Atlas_Core",
+     "Atlas_Web_Content",
+     "DataWidgets",
+     "FeedbackModule",
+     "NanoflowCommons",
+     "System",
+     "WebActions"
+    ]
+   },
+   "navigationKinds": [
+    "layout",
+    "show_page",
+    "menu_item",
+    "home_page",
+    "widget",
+    "snippet_call"
+   ],
+   "modules": [
+    {
+     "name": "Simulation",
+     "purpose": "Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 \u2026 SIM-08).",
+     "layer": 3,
+     "documents": 211,
+     "internal": 286,
+     "externalOut": 10023,
+     "externalIn": 0,
+     "cohesion": 2.8,
+     "fanIn": 0,
+     "fanOut": 4,
+     "navShare": 0,
+     "inCycle": false
+    },
+    {
+     "name": "Shop",
+     "purpose": "Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages.",
+     "layer": 2,
+     "documents": 195,
+     "internal": 1269,
+     "externalOut": 846,
+     "externalIn": 17,
+     "cohesion": 60,
+     "fanIn": 1,
+     "fanOut": 3,
+     "navShare": 0,
+     "inCycle": false
+    },
+    {
+     "name": "Fulfilment",
+     "purpose": "The order domain without UI: orders and their lines, payments, status history and log, couriers, ovens, delivery zones, coupons, pricing and the order transitions.",
+     "layer": 1,
+     "documents": 43,
+     "internal": 268,
+     "externalOut": 10,
+     "externalIn": 9258,
+     "cohesion": 96.4,
+     "fanIn": 2,
+     "fanOut": 2,
+     "navShare": 0,
+     "inCycle": false
+    },
+    {
+     "name": "Catalog",
+     "purpose": "Product catalog: pizzas, sides, drinks and desserts with sizes, options, recipes, ingredients and allergens (the menu's data).",
+     "layer": 0,
+     "documents": 18,
+     "internal": 69,
+     "externalOut": 0,
+     "externalIn": 1325,
+     "cohesion": 100,
+     "fanIn": 3,
+     "fanOut": 0,
+     "navShare": 0,
+     "inCycle": false
+    },
+    {
+     "name": "Core",
+     "purpose": "Shared foundation: store and simulation settings, guest toasts, and the money, time, phone and id helpers every module uses.",
+     "layer": 0,
+     "documents": 11,
+     "internal": 19,
+     "externalOut": 1,
+     "externalIn": 271,
+     "cohesion": 95,
+     "fanIn": 3,
+     "fanOut": 0,
+     "navShare": 0,
+     "inCycle": false
+    }
+   ],
+   "domainEdges": [
+    {
+     "from": "Simulation",
+     "to": "Fulfilment",
+     "refs": 8824,
+     "kinds": [
+      "call",
+      "change",
+      "commit",
+      "create",
+      "delete",
+      "member",
+      "parameter",
+      "retrieve",
+      "return",
+      "type",
+      "value",
+      "xpath"
+     ],
+     "samples": [
+      "Simulation.SEED_Catalog \u2192 Fulfilment.DeliveryZone (create)",
+      "Simulation.SEED_Catalog \u2192 Fulfilment.DeliveryZone (commit)",
+      "Simulation.SEED_Catalog \u2192 Fulfilment.Coupon (create)"
+     ]
+    },
+    {
+     "from": "Simulation",
+     "to": "Catalog",
+     "refs": 1038,
+     "kinds": [
+      "change",
+      "commit",
+      "create",
+      "delete",
+      "member",
+      "retrieve",
+      "value",
+      "xpath"
+     ],
+     "samples": [
+      "Simulation.SEED_Catalog \u2192 Catalog.Ingredient (create)",
+      "Simulation.SEED_Catalog \u2192 Catalog.Ingredient (change)",
+      "Simulation.SEED_Catalog \u2192 Catalog.Ingredient (commit)"
+     ]
+    },
+    {
+     "from": "Shop",
+     "to": "Fulfilment",
+     "refs": 434,
+     "kinds": [
+      "associate",
+      "call",
+      "change",
+      "commit",
+      "create",
+      "member",
+      "parameter",
+      "retrieve",
+      "return",
+      "type",
+      "value",
+      "xpath"
+     ],
+     "samples": [
+      "Shop.SUB_Pay_Retry \u2192 Fulfilment.SUB_Payment_Retry (call)",
+      "Shop.SUB_Pay_Cancel \u2192 Fulfilment.SUB_Order_Cancel (call)",
+      "Shop.SNIP_PaymentChoice \u2192 Fulfilment.PaymentMethod.APPLE_PAY (value)"
+     ]
+    },
+    {
+     "from": "Shop",
+     "to": "Catalog",
+     "refs": 284,
+     "kinds": [
+      "associate",
+      "call",
+      "change",
+      "commit",
+      "datasource",
+      "member",
+      "parameter",
+      "retrieve",
+      "return",
+      "type",
+      "value",
+      "xpath"
+     ],
+     "samples": [
+      "Shop.SUB_Line_ApplyDefaults \u2192 Catalog.Product (parameter)",
+      "Shop.SUB_Line_ApplyDefaults \u2192 Catalog.ProductSize (retrieve)",
+      "Shop.SUB_Line_ApplyDefaults \u2192 Catalog.Product_DefaultCrust (retrieve)"
+     ]
+    },
+    {
+     "from": "Simulation",
+     "to": "Core",
+     "refs": 141,
+     "kinds": [
+      "call",
+      "change",
+      "commit",
+      "create",
+      "delete",
+      "member",
+      "retrieve",
+      "type",
+      "value"
+     ],
+     "samples": [
+      "Simulation.SE_ClockWatchdog \u2192 Core.SimulationSettings (retrieve)",
+      "Simulation.SUB_Toast_Broadcast \u2192 Core.Toast (create)",
+      "Simulation.SUB_Toast_Broadcast \u2192 Core.Toast_Owner (member)"
+     ]
+    },
+    {
+     "from": "Shop",
+     "to": "Core",
+     "refs": 125,
+     "kinds": [
+      "call",
+      "change",
+      "commit",
+      "datasource",
+      "delete",
+      "member",
+      "parameter",
+      "retrieve",
+      "value",
+      "xpath"
+     ],
+     "samples": [
+      "Shop.ACT_Toast_Close \u2192 Core.Toast (parameter)",
+      "Shop.ACT_Toast_Close \u2192 Core.SUB_Toast_Close (call)",
+      "Shop.ACT_Nav_Checkout \u2192 Core.SUB_Toast (call)"
+     ]
+    },
+    {
+     "from": "Simulation",
+     "to": "Shop",
+     "refs": 17,
+     "kinds": [
+      "call",
+      "create",
+      "delete",
+      "member",
+      "retrieve",
+      "type"
+     ],
+     "samples": [
+      "Simulation.SIM_Payments \u2192 Shop.SUB_Payment_Resolve (call)",
+      "Simulation.SUB_Traffic_Spawn \u2192 Shop.CartLine (create)",
+      "Simulation.SUB_Traffic_Spawn \u2192 Shop.SUB_Line_ApplyDefaults (call)"
+     ]
+    },
+    {
+     "from": "Fulfilment",
+     "to": "Core",
+     "refs": 5,
+     "kinds": [
+      "call",
+      "retrieve"
+     ],
+     "samples": [
+      "Fulfilment.SUB_Timer_Progress \u2192 Core.SUB_Eff (call)",
+      "Fulfilment.SUB_Coupon_Evaluate \u2192 Core.SUB_Money (call)",
+      "Fulfilment.SUB_Price_Compute \u2192 Core.StoreSettings (retrieve)"
+     ]
+    },
+    {
+     "from": "Fulfilment",
+     "to": "Catalog",
+     "refs": 3,
+     "kinds": [
+      "associate",
+      "type"
+     ],
+     "samples": [
+      "Fulfilment.OrderLine_Product \u2192 Catalog.Product (associate)",
+      "Fulfilment.OrderLine \u2192 Catalog.ProductKind (type)",
+      "Fulfilment.OrderLine \u2192 Catalog.SizeCode (type)"
+     ]
+    }
+   ],
+   "navigationEdges": null,
+   "outsideEdges": [
+    {
+     "from": "Shop",
+     "to": "System",
+     "refs": 3,
+     "kinds": [
+      "associate"
+     ],
+     "samples": [
+      "Shop.Cart_Owner \u2192 System.User (associate)",
+      "Shop.CheckoutForm_Owner \u2192 System.User (associate)",
+      "Shop.LookupAttempt_User \u2192 System.User (associate)"
+     ]
+    },
+    {
+     "from": "Simulation",
+     "to": "System",
+     "refs": 3,
+     "kinds": [
+      "member",
+      "retrieve"
+     ],
+     "samples": [
+      "Simulation.SUB_Toast_Broadcast \u2192 System.Session (retrieve)",
+      "Simulation.SUB_Toast_Broadcast \u2192 System.Session_User (retrieve)",
+      "Simulation.SUB_Toast_Broadcast \u2192 System.Session_User (member)"
+     ]
+    },
+    {
+     "from": "Fulfilment",
+     "to": "System",
+     "refs": 2,
+     "kinds": [
+      "associate"
+     ],
+     "samples": [
+      "Fulfilment.Order_PlacedBy \u2192 System.User (associate)",
+      "Fulfilment.OrderAccess_User \u2192 System.User (associate)"
+     ]
+    },
+    {
+     "from": "Core",
+     "to": "System",
+     "refs": 1,
+     "kinds": [
+      "associate"
+     ],
+     "samples": [
+      "Core.Toast_Owner \u2192 System.User (associate)"
+     ]
+    }
+   ],
+   "cycles": null,
+   "modulesInCyclesWithNavigation": 0,
+   "communitiesComputed": true,
+   "communities": [
+    {
+     "key": "cluster:Shop.CartLine",
+     "label": "Shop \u00b7 CartLine",
+     "ambiguous": true,
+     "size": 90,
+     "keyMember": "Shop.CartLine",
+     "modules": [
+      {
+       "module": "Shop",
+       "count": 75
+      },
+      {
+       "module": "Catalog",
+       "count": 11
+      },
+      {
+       "module": "Core",
+       "count": 3
+      },
+      {
+       "module": "Simulation",
+       "count": 1
+      }
+     ],
+     "members": [
+      "Shop.CartLine",
+      "Shop.CheckoutForm",
+      "Core.SUB_Toast",
+      "Shop.SUB_Cart_Recalculate",
+      "Core.SUB_Money",
+      "Shop.Choice",
+      "Shop.ACT_Nav_Cart",
+      "Shop.SUB_Checkout_Recalculate",
+      "Shop.SUB_Line_Recalculate",
+      "Shop.CartLine_Product",
+      "Shop.SUB_Checkout_Compute",
+      "Shop.CartLine_Cart"
+     ]
+    },
+    {
+     "key": "cluster:Fulfilment.Order",
+     "label": "Simulation \u00b7 Order",
+     "ambiguous": true,
+     "size": 86,
+     "keyMember": "Fulfilment.Order",
+     "modules": [
+      {
+       "module": "Simulation",
+       "count": 55
+      },
+      {
+       "module": "Fulfilment",
+       "count": 19
+      },
+      {
+       "module": "Shop",
+       "count": 10
+      },
+      {
+       "module": "Core",
+       "count": 2
+      }
+     ],
+     "members": [
+      "Fulfilment.Order",
+      "Core.SUB_RandomHex",
+      "Fulfilment.Courier",
+      "Fulfilment.SUB_Order_RefreshPaymentLabel",
+      "Fulfilment.Oven",
+      "Fulfilment.DeliveryZone",
+      "Fulfilment.SimulationEvent",
+      "Fulfilment.SUB_Order_Log",
+      "Fulfilment.SUB_Order_Transition",
+      "Fulfilment.SUB_Order_Progress",
+      "Fulfilment.SUB_Order_TimerBase",
+      "Fulfilment.SUB_Order_Cancel"
+     ]
+    },
+    {
+     "key": "cluster:Catalog.Product",
+     "label": "Simulation \u00b7 Product",
+     "ambiguous": true,
+     "size": 61,
+     "keyMember": "Catalog.Product",
+     "modules": [
+      {
+       "module": "Simulation",
+       "count": 46
+      },
+      {
+       "module": "Shop",
+       "count": 9
+      },
+      {
+       "module": "Fulfilment",
+       "count": 5
+      },
+      {
+       "module": "Catalog",
+       "count": 1
+      }
+     ],
+     "members": [
+      "Catalog.Product",
+      "Fulfilment.OrderLineModifier",
+      "Fulfilment.OrderLine",
+      "Shop.DS_Menu_Products",
+      "Simulation.SEED_Order_1023_Lines",
+      "Simulation.SEED_Order_1027_Lines",
+      "Simulation.SEED_Order_1043_Lines",
+      "Simulation.SEED_Order_1044_Lines",
+      "Simulation.SEED_Order_1046_Lines",
+      "Simulation.SEED_Order_1004_Lines",
+      "Simulation.SEED_Order_1009_Lines",
+      "Simulation.SEED_Order_1011_Lines"
+     ]
+    },
+    {
+     "key": "cluster:Shop.TrackView",
+     "label": "Shop \u00b7 TrackView",
+     "ambiguous": true,
+     "size": 58,
+     "keyMember": "Shop.TrackView",
+     "modules": [
+      {
+       "module": "Shop",
+       "count": 35
+      },
+      {
+       "module": "Simulation",
+       "count": 11
+      },
+      {
+       "module": "Fulfilment",
+       "count": 9
+      },
+      {
+       "module": "Core",
+       "count": 3
+      }
+     ],
+     "members": [
+      "Shop.TrackView",
+      "Core.SimulationSettings",
+      "Fulfilment.OrderAccess",
+      "Core.SUB_Eff",
+      "Simulation.SIM_ClockRun",
+      "Shop.TrackView_Order",
+      "Shop.LookupForm",
+      "Fulfilment.Coupon",
+      "Shop.SUB_Track_Fill",
+      "Fulfilment.PriceResult",
+      "Core.StoreSettings",
+      "Shop.SUB_Order_Grant"
+     ]
+    },
+    {
+     "key": "cluster:Fulfilment.OrderStatusChange",
+     "label": "Simulation \u00b7 OrderStatusChange",
+     "ambiguous": true,
+     "size": 52,
+     "keyMember": "Fulfilment.OrderStatusChange",
+     "modules": [
+      {
+       "module": "Simulation",
+       "count": 46
+      },
+      {
+       "module": "Fulfilment",
+       "count": 4
+      },
+      {
+       "module": "Shop",
+       "count": 2
+      }
+     ],
+     "members": [
+      "Fulfilment.OrderStatusChange",
+      "Fulfilment.PaymentAttempt",
+      "Simulation.SEED_Order_1023_History",
+      "Simulation.SEED_Order_1027_History",
+      "Simulation.SEED_Order_1043_History",
+      "Simulation.SEED_Order_1044_History",
+      "Simulation.SEED_Order_1046_History",
+      "Simulation.SEED_Order_1004_History",
+      "Simulation.SEED_Order_1009_History",
+      "Simulation.SEED_Order_1011_History",
+      "Simulation.SEED_Order_1015_History",
+      "Simulation.SEED_Order_1020_History"
+     ]
+    },
+    {
+     "key": "cluster:Shop.Cart",
+     "label": "Shop \u00b7 Cart",
+     "ambiguous": true,
+     "size": 49,
+     "keyMember": "Shop.Cart",
+     "modules": [
+      {
+       "module": "Shop",
+       "count": 46
+      },
+      {
+       "module": "Core",
+       "count": 3
+      }
+     ],
+     "members": [
+      "Shop.Cart",
+      "Core.Toast",
+      "Shop.MenuView",
+      "Shop.SUB_Cart_Current",
+      "Shop.HomeView",
+      "Shop.MenuView_Cart",
+      "Shop.SUB_Menu_Refresh",
+      "Shop.SUB_Nav_Menu",
+      "Shop.ACT_Nav_Menu",
+      "Shop.Cart_Coupon",
+      "Shop.SUB_Home_Refresh",
+      "Core.SUB_Toast_Close"
+     ]
+    },
+    {
+     "key": "cluster:Fulfilment.OrderLogEntry",
+     "label": "Simulation \u00b7 OrderLogEntry",
+     "ambiguous": true,
+     "size": 49,
+     "keyMember": "Fulfilment.OrderLogEntry",
+     "modules": [
+      {
+       "module": "Simulation",
+       "count": 46
+      },
+      {
+       "module": "Fulfilment",
+       "count": 2
+      },
+      {
+       "module": "Shop",
+       "count": 1
+      }
+     ],
+     "members": [
+      "Fulfilment.OrderLogEntry",
+      "Simulation.SEED_Order_1023_Log",
+      "Simulation.SEED_Order_1027_Log",
+      "Simulation.SEED_Order_1043_Log",
+      "Simulation.SEED_Order_1044_Log",
+      "Simulation.SEED_Order_1046_Log",
+      "Simulation.SEED_Order_1004_Log",
+      "Simulation.SEED_Order_1009_Log",
+      "Simulation.SEED_Order_1011_Log",
+      "Simulation.SEED_Order_1015_Log",
+      "Simulation.SEED_Order_1020_Log",
+      "Simulation.SEED_Order_1021_Log"
+     ]
+    },
+    {
+     "key": "cluster:Catalog.Option",
+     "label": "Catalog",
+     "size": 16,
+     "keyMember": "Catalog.Option",
+     "modules": [
+      {
+       "module": "Catalog",
+       "count": 9
+      },
+      {
+       "module": "Shop",
+       "count": 5
+      },
+      {
+       "module": "Simulation",
+       "count": 2
+      }
+     ],
+     "members": [
+      "Catalog.Option",
+      "Catalog.Ingredient",
+      "Catalog.Allergen",
+      "Catalog.ProductSize",
+      "Catalog.RecipeItem",
+      "Catalog.Category",
+      "Simulation.SimCustomer",
+      "Catalog.RecipeItem_Ingredient",
+      "Simulation.SEED_Catalog",
+      "Catalog.ProductSize_Product",
+      "Catalog.RecipeItem_Product",
+      "Shop.DS_Line_Allergens"
+     ]
+    },
+    {
+     "key": "cluster:Shop.ErrorView",
+     "label": "Shop \u00b7 ErrorView",
+     "ambiguous": true,
+     "size": 3,
+     "keyMember": "Shop.ErrorView",
+     "modules": [
+      {
+       "module": "Shop",
+       "count": 3
+      }
+     ],
+     "members": [
+      "Shop.ErrorView",
+      "Shop.DS_Error",
+      "Shop.DS_FaultProbe"
+     ]
+    }
+   ],
+   "smallCommunities": 4,
+   "godNodes": [
+    {
+     "name": "Fulfilment.OrderLogEntry",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 962,
+     "out": 7,
+     "degree": 969,
+     "betweenness": 0
+    },
+    {
+     "name": "Simulation.SEED_Catalog",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 1,
+     "out": 837,
+     "degree": 838,
+     "betweenness": 5
+    },
+    {
+     "name": "Fulfilment.OrderStatusChange",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 502,
+     "out": 7,
+     "degree": 509,
+     "betweenness": 0
+    },
+    {
+     "name": "Fulfilment.Order",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 430,
+     "out": 10,
+     "degree": 440,
+     "betweenness": 0
+    },
+    {
+     "name": "Fulfilment.OrderLineModifier",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 383,
+     "out": 8,
+     "degree": 391,
+     "betweenness": 0
+    },
+    {
+     "name": "Catalog.Product",
+     "type": "ENTITY",
+     "module": "Catalog",
+     "in": 255,
+     "out": 5,
+     "degree": 260,
+     "betweenness": 0
+    },
+    {
+     "name": "Fulfilment.OrderLine",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 246,
+     "out": 7,
+     "degree": 253,
+     "betweenness": 0
+    },
+    {
+     "name": "Catalog.Option",
+     "type": "ENTITY",
+     "module": "Catalog",
+     "in": 144,
+     "out": 3,
+     "degree": 147,
+     "betweenness": 0
+    },
+    {
+     "name": "Catalog.Ingredient",
+     "type": "ENTITY",
+     "module": "Catalog",
+     "in": 137,
+     "out": 9,
+     "degree": 146,
+     "betweenness": 0
+    },
+    {
+     "name": "Shop.SUB_Track_Fill",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 9,
+     "out": 128,
+     "degree": 137,
+     "betweenness": 155.7
+    },
+    {
+     "name": "Fulfilment.PaymentAttempt",
+     "type": "ENTITY",
+     "module": "Fulfilment",
+     "in": 125,
+     "out": 9,
+     "degree": 134,
+     "betweenness": 0
+    },
+    {
+     "name": "Catalog.RecipeItem",
+     "type": "ENTITY",
+     "module": "Catalog",
+     "in": 117,
+     "out": 5,
+     "degree": 122,
+     "betweenness": 0
+    },
+    {
+     "name": "Shop.CartLine",
+     "type": "ENTITY",
+     "module": "Shop",
+     "in": 112,
+     "out": 3,
+     "degree": 115,
+     "betweenness": 0
+    },
+    {
+     "name": "Catalog.ProductSize",
+     "type": "ENTITY",
+     "module": "Catalog",
+     "in": 100,
+     "out": 5,
+     "degree": 105,
+     "betweenness": 0
+    },
+    {
+     "name": "Shop.DS_Config_Choices",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 1,
+     "out": 92,
+     "degree": 93,
+     "betweenness": 0
+    }
+   ],
+   "bridges": [
+    {
+     "name": "Shop.SUB_Line_Recalculate",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 12,
+     "out": 67,
+     "degree": 79,
+     "betweenness": 1126.2
+    },
+    {
+     "name": "Shop.SUB_Cart_Recalculate",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 13,
+     "out": 47,
+     "degree": 60,
+     "betweenness": 953.5
+    },
+    {
+     "name": "Simulation.SEED_Orders",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 1,
+     "out": 46,
+     "degree": 47,
+     "betweenness": 571.9
+    },
+    {
+     "name": "Simulation.SUB_Reset",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 3,
+     "out": 62,
+     "degree": 65,
+     "betweenness": 448.4
+    },
+    {
+     "name": "Shop.SUB_Checkout_Recalculate",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 5,
+     "out": 5,
+     "degree": 10,
+     "betweenness": 298
+    },
+    {
+     "name": "Simulation.SIM_Tick",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 1,
+     "out": 10,
+     "degree": 11,
+     "betweenness": 262.1
+    },
+    {
+     "name": "Simulation.SUB_Traffic_Spawn",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 1,
+     "out": 49,
+     "degree": 50,
+     "betweenness": 193.2
+    },
+    {
+     "name": "Simulation.SIM_ClockRun",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 4,
+     "out": 3,
+     "degree": 7,
+     "betweenness": 190.1
+    },
+    {
+     "name": "Shop.ACT_Nav_Cart",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 10,
+     "out": 3,
+     "degree": 13,
+     "betweenness": 175
+    },
+    {
+     "name": "Shop.SUB_Track_Fill",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 9,
+     "out": 128,
+     "degree": 137,
+     "betweenness": 155.7
+    },
+    {
+     "name": "Simulation.SIM_Traffic",
+     "type": "MICROFLOW",
+     "module": "Simulation",
+     "in": 1,
+     "out": 12,
+     "degree": 13,
+     "betweenness": 152.2
+    },
+    {
+     "name": "Shop.SUB_Product_Add",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 1,
+     "out": 12,
+     "degree": 13,
+     "betweenness": 148
+    },
+    {
+     "name": "Shop.SUB_Order_Place",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 2,
+     "out": 85,
+     "degree": 87,
+     "betweenness": 137.8
+    },
+    {
+     "name": "Shop.SUB_Cart_AddLine",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "in": 2,
+     "out": 37,
+     "degree": 39,
+     "betweenness": 122.2
+    },
+    {
+     "name": "Fulfilment.SUB_Price_Compute",
+     "type": "MICROFLOW",
+     "module": "Fulfilment",
+     "in": 3,
+     "out": 27,
+     "degree": 30,
+     "betweenness": 115
+    }
+   ],
+   "hotspots": [
+    {
+     "entity": "Fulfilment.Order",
+     "flows": 223,
+     "modules": "Fulfilment,Simulation,Shop"
+    },
+    {
+     "entity": "Catalog.Product",
+     "flows": 68,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Fulfilment.PaymentAttempt",
+     "flows": 55,
+     "modules": "Fulfilment,Shop,Simulation"
+    },
+    {
+     "entity": "Fulfilment.OrderLine",
+     "flows": 51,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Fulfilment.OrderLineModifier",
+     "flows": 48,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Fulfilment.OrderLogEntry",
+     "flows": 48,
+     "modules": "Fulfilment,Simulation,Shop"
+    },
+    {
+     "entity": "Fulfilment.OrderStatusChange",
+     "flows": 48,
+     "modules": "Fulfilment,Simulation,Shop"
+    },
+    {
+     "entity": "Fulfilment.Oven",
+     "flows": 41,
+     "modules": "Simulation,Shop"
+    },
+    {
+     "entity": "Fulfilment.DeliveryZone",
+     "flows": 37,
+     "modules": "Simulation,Shop"
+    },
+    {
+     "entity": "Shop.CartLine",
+     "flows": 37,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Shop.Cart",
+     "flows": 33,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Fulfilment.Courier",
+     "flows": 28,
+     "modules": "Simulation,Shop"
+    },
+    {
+     "entity": "Shop.TrackView",
+     "flows": 18,
+     "modules": "Shop"
+    },
+    {
+     "entity": "Shop.CheckoutForm",
+     "flows": 16,
+     "modules": "Shop,Simulation"
+    },
+    {
+     "entity": "Shop.MenuView",
+     "flows": 14,
+     "modules": "Shop"
+    }
+   ],
+   "unused": [
+    {
+     "name": "Shop.ACT_Track_Token",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "verdict": "unused"
+    },
+    {
+     "name": "Shop.DS_Product_Recipe",
+     "type": "MICROFLOW",
+     "module": "Shop",
+     "verdict": "unused"
+    },
+    {
+     "name": "Shop.FaultProbe",
+     "type": "PAGE",
+     "module": "Shop",
+     "verdict": "unused"
+    },
+    {
+     "name": "Shop.UnexpectedError",
+     "type": "PAGE",
+     "module": "Shop",
+     "verdict": "unused"
+    }
+   ]
+  }
+ },
+ "counts": {
+  "microflows": {
+   "Administration": 8,
+   "Atlas_Web_Content": 2,
+   "Catalog": 4,
+   "Core": 7,
+   "FeedbackModule": 18,
+   "Fulfilment": 11,
+   "Shop": 143,
+   "Simulation": 204
+  },
+  "seedMicroflows": {
+   "Simulation": 186
+  },
+  "nanoflows": {
+   "Atlas_Web_Content": 2,
+   "FeedbackModule": 11,
+   "Shop": 6
+  },
+  "pages": {
+   "Administration": 9,
+   "FeedbackModule": 6,
+   "Shop": 16
+  },
+  "snippets": {
+   "Administration": 1,
+   "Atlas_Core": 2,
+   "FeedbackModule": 1,
+   "Shop": 15
+  },
+  "entities": {
+   "Administration": 1,
+   "Catalog": 7,
+   "Core": 3,
+   "Fulfilment": 12,
+   "Shop": 4,
+   "Simulation": 1,
+   "System": 26
+  },
+  "viewModels": {
+   "Administration": 1,
+   "Atlas_Web_Content": 1,
+   "FeedbackModule": 2,
+   "Fulfilment": 1,
+   "NanoflowCommons": 2,
+   "Shop": 6,
+   "System": 15
+  },
+  "jsActions": {
+   "DataWidgets": 4,
+   "FeedbackModule": 11,
+   "NanoflowCommons": 44,
+   "Shop": 5,
+   "WebActions": 8
+  },
+  "javaActions": {
+   "FeedbackModule": 2,
+   "Simulation": 1,
+   "System": 1
+  }
+ },
+ "catalogEdges": {
+  "withoutSeed": [
+   {
+    "from": "Catalog",
+    "to": "Catalog",
+    "refs": 69
+   },
+   {
+    "from": "Core",
+    "to": "Core",
+    "refs": 19
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Catalog",
+    "refs": 3
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Core",
+    "refs": 5
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Fulfilment",
+    "refs": 268
+   },
+   {
+    "from": "Shop",
+    "to": "Catalog",
+    "refs": 284
+   },
+   {
+    "from": "Shop",
+    "to": "Core",
+    "refs": 125
+   },
+   {
+    "from": "Shop",
+    "to": "Fulfilment",
+    "refs": 434
+   },
+   {
+    "from": "Shop",
+    "to": "Shop",
+    "refs": 1269
+   },
+   {
+    "from": "Simulation",
+    "to": "Catalog",
+    "refs": 16
+   },
+   {
+    "from": "Simulation",
+    "to": "Core",
+    "refs": 63
+   },
+   {
+    "from": "Simulation",
+    "to": "Fulfilment",
+    "refs": 271
+   },
+   {
+    "from": "Simulation",
+    "to": "Shop",
+    "refs": 17
+   },
+   {
+    "from": "Simulation",
+    "to": "Simulation",
+    "refs": 35
+   }
+  ],
+  "withSeed": [
+   {
+    "from": "Catalog",
+    "to": "Catalog",
+    "refs": 69
+   },
+   {
+    "from": "Core",
+    "to": "Core",
+    "refs": 19
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Catalog",
+    "refs": 3
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Core",
+    "refs": 5
+   },
+   {
+    "from": "Fulfilment",
+    "to": "Fulfilment",
+    "refs": 268
+   },
+   {
+    "from": "Shop",
+    "to": "Catalog",
+    "refs": 284
+   },
+   {
+    "from": "Shop",
+    "to": "Core",
+    "refs": 125
+   },
+   {
+    "from": "Shop",
+    "to": "Fulfilment",
+    "refs": 434
+   },
+   {
+    "from": "Shop",
+    "to": "Shop",
+    "refs": 1269
+   },
+   {
+    "from": "Simulation",
+    "to": "Catalog",
+    "refs": 1038
+   },
+   {
+    "from": "Simulation",
+    "to": "Core",
+    "refs": 141
+   },
+   {
+    "from": "Simulation",
+    "to": "Fulfilment",
+    "refs": 8824
+   },
+   {
+    "from": "Simulation",
+    "to": "Shop",
+    "refs": 17
+   },
+   {
+    "from": "Simulation",
+    "to": "Simulation",
+    "refs": 287
+   }
+  ]
+ },
+ "simulationToShop": [
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.SIM_Payments",
+   "TargetName": "Shop.SUB_Payment_Resolve"
+  },
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.SUB_Traffic_Spawn",
+   "TargetName": "Shop.SUB_Line_ApplyDefaults"
+  },
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.SUB_Traffic_Spawn",
+   "TargetName": "Shop.SUB_Line_Recalculate"
+  },
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.SUB_Traffic_Spawn",
+   "TargetName": "Shop.SUB_Order_Place"
+  },
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.SUB_Reset",
+   "TargetName": "Shop.SUB_Catalog_RecalculateAll"
+  },
+  {
+   "RefKind": "call",
+   "SourceName": "Simulation.ASU_Startup",
+   "TargetName": "Shop.SUB_Catalog_RecalculateAll"
+  },
+  {
+   "RefKind": "create",
+   "SourceName": "Simulation.SUB_Traffic_Spawn",
+   "TargetName": "Shop.CartLine"
+  }
+ ]
+}

@@ -180,8 +180,8 @@ tiles = ''.join([
 ])
 
 cards = [
-    ('architecture.html', 'Architecture', 'Layered module map, coupling matrix, bounded contexts, god nodes and bridges.', arch_svg,
-     'Arrows point from a module to what it uses; thicker means more references. Hover a module or an arrow.'),
+    ('../architecture/report.html', 'Architecture', 'Module map with counts and cohesion (with and without the generated seed), health, coupling, bounded contexts, bridges and recommendations.', arch_svg,
+     'Arrows point from a module to what it uses; thicker means more references. The built-in rendering is in architecture.html.'),
     ('traceability.html', 'Traceability', f'All {len(reqs)} user stories per milestone: built, partial, proven — with footprint, tests and journeys.', trace_svg,
      'Status is derived from each requirement’s anchors in the model, never ticked off by hand.'),
     ('tests.html', 'Tests and coverage', f'{tests_total} microflow tests, {j_total} browser journeys, measured microflow reach per module.', cov_svg,

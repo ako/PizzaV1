@@ -284,3 +284,62 @@ The six files of `12-acceptance/deliverables.md` now exist in `RUN/`.
   - `mx check --warnings` reports 53 warnings.
 - **The journal was reconstructed** from commit times, this file and the brain (DEV-07). The
   brain's open question cb8adb is resolved.
+
+## 2026-11-19 — performance at volume and Rooster-style reports
+
+Compared with ako/RoosterV1, whose reports come from project-written generators with
+hand-written analysis. Ours were mxcli's built-in HTML. Rebuilt both pages the same way:
+`docs/perf/report.html` and `docs/architecture/report.html`. Their generators live in
+`tools/`, and the data sits next to them.
+
+**Volume seed.** `docs/perf/tools/seed.sql` adds 400,000 guest orders over 365 days, about
+10M rows, in about 4 minutes of direct SQL. It was taken after a backup and restored
+afterwards, along with the Postgres settings.
+
+**Bugs found and fixed:**
+- **F1 — housekeeping blocked checkout.**
+  - The cause: housekeeping deleted every simulation event older than 24 h in one
+    transaction, inside the simulator tick. With 800,089 such events, that transaction held
+    the store-settings lock until the runtime aborted it 10 minutes later. Every
+    `Execute Order` waited on that lock.
+  - Because the abort rolled back "last run" too, it restarted every tick, so the shop took
+    no orders at all.
+  - Verified in `pg_stat_activity` (idle in transaction, a Lock wait on
+    `core$storesettings`) and in the runtime log (`Transaction … aborted due to timeout`).
+  - Fix: delete in batches of 1,000 events and 50 orders per tick. On the same backlog this
+    takes 28 ms per tick, and every journey step completed during the drain.
+- **F2 and F3 — three missing indexes.** Each replaced a full scan of 400,000 orders:
+  - `Order.CompletedAt` (the KPI query went from 63.5 to 5.4 ms);
+  - `Order(Source, IsOpen, StatusChangedAt)` (the traffic and housekeeping scans; housekeeping
+    now takes 0.07 ms);
+  - `SimulationEvent.OccurredAt`.
+- **F4 and F5 — query fixes.**
+  - The menu ran one data source per card. It went from 199 to 75 queries and from 418 to
+    224 ms.
+  - The configurator and line pricing read data per option and per ingredient. Queries fell
+    from 305 to 195, and add-to-cart database time from 259 to 89 ms.
+  - Verified with 24/24 tests, 11/11 journeys and 12/12 visual comparisons; menu desktop
+    mismatch went from 2.46 to 3.01 %.
+
+**Tool behaviour worth knowing:**
+- **The built-in step "server time" includes background work.** Any span inside a step's
+  window counts, so the simulator's queued tick (a 1.5 s sleep) added up to 1.6 s to random
+  steps. `docs/perf/tools/analyse.py` counts only traces rooted in a guest request on
+  port 8080.
+- **The browser step time includes the 2 s live poller** when it falls inside the window, up
+  to about 200 ms. "Place order and pay" lands on one of two plateaus (3.8 or 5.8 s), set by
+  the tick.
+- **`ALTER SYSTEM` for `auto_explain.*` is refused** until the library is loaded: restart
+  with `shared_preload_libraries` first, then set the settings.
+- **`mxcli -c` aborts above 10,000 output lines**: use `MXCLI_OUTPUT_LINE_LIMIT=0`.
+
+**Architecture:**
+- The generated seed (`Simulation.SEED_*`, 186 of 369 microflows) makes Simulation's cohesion
+  2.8 %; without it, it is 9 %.
+- The simulator calls into the storefront 7 times: the payment decision, line pricing,
+  order placement and catalog recalculation.
+- Recommended in the report:
+  - move `Shop.SUB_Payment_Resolve` to Fulfilment;
+  - give order placement and pricing a home below Shop;
+  - put the seed in its own module.
+- Of the 4 "unused" documents, 3 are reached by URL or a client hook.

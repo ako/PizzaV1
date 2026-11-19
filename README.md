@@ -27,10 +27,13 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 
 ## Quality reports
 
-Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. It links the
-full mxcli reports, all HTML: architecture (layered module diagram), traceability (all 111
-user stories per milestone), tests and coverage, performance (per-step flame charts and
-Postgres plans), security, the scored quality report, and the interactive software map.
+Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. It links:
+- [performance under load](docs/perf/report.html): 400,000 orders, before and after the fixes,
+  with findings, flame-chart pairs and statements;
+- the [architecture views](docs/architecture/report.html): module map with and without the
+  generated seed, health, clusters and recommendations;
+- mxcli's built-in reports: traceability, tests and coverage, security, the scored quality
+  report, the software map, and the built-in renderings of performance and architecture.
 
 ## Build overview
 
