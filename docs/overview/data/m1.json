@@ -1,0 +1,375 @@
+{
+ "lane": "m1",
+ "name": "M1 — Browse and order",
+ "collectedAt": "2026-11-19 14:50 UTC",
+ "prd": {
+  "epics": [
+   {
+    "id": "EP-01",
+    "title": "Shell, navigation and branding",
+    "area": "FD-01 Shell, navigation and branding",
+    "screens": "SCR-16 (frame of every screen)",
+    "moscow": "Must",
+    "range": "US-001 – US-012",
+    "file": "package-lite/03-user-stories/EP-01-shell-navigation.md",
+    "stories": 9,
+    "priorities": {
+     "Must": 9
+    }
+   },
+   {
+    "id": "EP-02",
+    "title": "Menu browsing (module explorer)",
+    "area": "FD-02 Menu browsing",
+    "screens": "SCR-01, SCR-02, SCR-04",
+    "moscow": "Must",
+    "range": "US-021 – US-034",
+    "file": "package-lite/03-user-stories/EP-02-menu-browsing.md",
+    "stories": 14,
+    "priorities": {
+     "Must": 12,
+     "Could": 1,
+     "Should": 1
+    }
+   },
+   {
+    "id": "EP-03",
+    "title": "Pizza configurator (dependency manager)",
+    "area": "FD-03 Pizza configurator",
+    "screens": "SCR-03 (and SCR-05 for editing a line)",
+    "moscow": "Must",
+    "range": "US-041 – US-053",
+    "file": "package-lite/03-user-stories/EP-03-pizza-configurator.md",
+    "stories": 13,
+    "priorities": {
+     "Must": 11,
+     "Should": 2
+    }
+   },
+   {
+    "id": "EP-04",
+    "title": "Cart (manifest) and coupons",
+    "area": "FD-04 Cart and coupons",
+    "screens": "SCR-05 (and the cart summary in SCR-02, SCR-16)",
+    "moscow": "Must",
+    "range": "US-061 – US-073",
+    "file": "package-lite/03-user-stories/EP-04-cart-coupons.md",
+    "stories": 13,
+    "priorities": {
+     "Must": 13
+    }
+   },
+   {
+    "id": "EP-05",
+    "title": "Checkout (deploy config)",
+    "area": "FD-05 Checkout",
+    "screens": "SCR-06 `checkout_config.json`",
+    "moscow": "Must",
+    "range": "US-081 – US-097",
+    "file": "package-lite/03-user-stories/EP-05-checkout.md",
+    "stories": 14,
+    "priorities": {
+     "Must": 12,
+     "Should": 1,
+     "Could": 1
+    }
+   }
+  ],
+  "note": "Milestones are the brain's grouping of the PRD epics; the PRD itself has none."
+ },
+ "decisions": [
+  {
+   "id": "e77a06",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts.",
+   "anchors": [
+    "@Shop.SUB_Checkout_Compute",
+    "@Shop.SUB_Checkout_Recalculate"
+   ]
+  },
+  {
+   "id": "a1bb79",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "US-022 carousel: the position lives on the guest's cart, because a list fed by a microflow only refreshes when a persistent context object is …",
+   "anchors": [
+    "@Shop.SUB_Home_Carousel",
+    "@Shop.DS_Home_Featured"
+   ]
+  },
+  {
+   "id": "a6e68d",
+   "kind": "deviation",
+   "module": "Shop",
+   "text": "US-033 dietary filter chips are built although the prototype lacks them (the story requires them); hidden only in the visual comparison.",
+   "anchors": [
+    "@Shop.ACT_Menu_Filter"
+   ]
+  },
+  {
+   "id": "2bfb84",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "US-034 loading state: skeleton cards drawn by CSS on the empty list the client renders while loading.",
+   "anchors": [
+    "@Shop.Menu"
+   ]
+  },
+  {
+   "id": "13ee26",
+   "kind": "partial",
+   "module": "Shop",
+   "text": "US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and …",
+   "anchors": [
+    "@Shop.Checkout"
+   ]
+  }
+ ],
+ "model": {
+  "modules": {
+   "Shop": 100,
+   "Simulation": 3,
+   "Core": 3,
+   "Fulfilment": 1
+  },
+  "footprintMicroflows": 107,
+  "pages": [
+   "Shop.Cart_Drawer",
+   "Shop.Checkout",
+   "Shop.Configurator",
+   "Shop.Home",
+   "Shop.ItemInfo",
+   "Shop.Menu"
+  ],
+  "snippets": [
+   "Shop.SNIP_BottomNav",
+   "Shop.SNIP_CodeBlock",
+   "Shop.SNIP_DemoBanner",
+   "Shop.SNIP_FeaturedCard",
+   "Shop.SNIP_Footer",
+   "Shop.SNIP_Header",
+   "Shop.SNIP_HomeActiveOrder",
+   "Shop.SNIP_MenuCard",
+   "Shop.SNIP_Sidebar",
+   "Shop.SNIP_Toasts"
+  ],
+  "entities": [
+   "Shop.CartLine",
+   "Shop.Cart",
+   "Catalog.Product",
+   "Shop.MenuView",
+   "Shop.CheckoutForm",
+   "Fulfilment.Order",
+   "Core.StoreSettings",
+   "Shop.HomeView",
+   "Catalog.Option",
+   "Catalog.Allergen"
+  ],
+  "jsActions": [],
+  "nanoflows": [],
+  "anchorKinds": {
+   "attribute": 2,
+   "entity": 3,
+   "enumeration": 1,
+   "layout": 1,
+   "microflow": 77,
+   "page": 6,
+   "snippet": 10
+  }
+ },
+ "proof": {
+  "tests": [
+   {
+    "name": "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P7: stuffed crust makes a vegetarian pizza non-vegan",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P8: gluten-free crust on Small removes GLUTEN",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example C: Boolean Pepperoni Large fully configured",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example A: delivery over the free-delivery threshold, tip 15 %",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example A20: tip 20 %",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example A0: no tip",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example B: GITHUB_STUDENT 15 % on delivery under the threshold",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Example D: pickup has no fee and no tip",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P1: percentage discount rounded half-up (4.425 to 4.43)",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P2: FREE_DISPATCH waives the delivery fee",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P2-pickup: a delivery-only coupon is not applied to pickup",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P3: below the coupon minimum names the missing amount",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P4: percentage discount capped at the coupon maximum",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P10: pickup under the delivery minimum",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "P11: tax rounded half-up (1.7457 to 1.75)",
+    "file": "tests/pricing.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Phone with spaces is normalised",
+    "file": "tests/helpers.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Phone with country code +1 is normalised",
+    "file": "tests/helpers.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Phone with letters is rejected",
+    "file": "tests/helpers.test.mdl",
+    "passed": true
+   },
+   {
+    "name": "Phone with too few digits is rejected",
+    "file": "tests/helpers.test.mdl",
+    "passed": true
+   }
+  ],
+  "journeys": [
+   {
+    "name": "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+    "status": "passed"
+   },
+   {
+    "name": "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+    "status": "passed"
+   },
+   {
+    "name": "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+    "status": "passed"
+   },
+   {
+    "name": "J4 order lookup rejects an unknown order without revealing which field was wrong",
+    "status": "passed"
+   },
+   {
+    "name": "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+    "status": "passed"
+   },
+   {
+    "name": "J8 home: featured carousel pages and Configure opens the configurator",
+    "status": "passed"
+   },
+   {
+    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+    "status": "passed"
+   },
+   {
+    "name": "J10 menu grep and dietary filters (US-027, US-033)",
+    "status": "passed"
+   },
+   {
+    "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   },
+   {
+    "name": "J7 phone: bottom navigation and menu cards render at 390 px",
+    "status": "passed"
+   },
+   {
+    "name": "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+    "status": "passed"
+   }
+  ],
+  "screenshots": [
+   {
+    "lane": "m1",
+    "file": "m1-configurator.jpg",
+    "shows": "SCR-03 configurator: Inferno Payload Large + cherry tomatoes, line total $25.00",
+    "takenAt": "2026-11-19T14:34:51.202Z"
+   },
+   {
+    "lane": "m1",
+    "file": "m1-menu.jpg",
+    "shows": "SCR-02 menu: category tabs, grep search, dietary filter chips, product cards",
+    "takenAt": "2026-11-19T14:34:54.927Z"
+   },
+   {
+    "lane": "m1",
+    "file": "m1-checkout.jpg",
+    "shows": "SCR-06 checkout summary: Inferno Payload Large $25.00, fee, tax, tip, total $34.90",
+    "takenAt": "2026-11-19T14:35:10.369Z"
+   }
+  ],
+  "untested": [
+   "US-004 DEMO MODE banner",
+   "US-007 Storefront footer",
+   "US-062 Empty cart state",
+   "US-064 Remove a line (rm)",
+   "US-068 Remove or replace the coupon"
+  ]
+ },
+ "status": {
+  "requirements": 63,
+  "built": 62,
+  "partial": 1,
+  "changed": 0,
+  "notBuilt": 0,
+  "notTraceable": 0,
+  "proven": 58,
+  "gaps": [
+   {
+    "id": "86ff90",
+    "title": "US-097 Delivery preview map",
+    "status": "partial",
+    "reason": "US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and …"
+   }
+  ]
+ }
+}

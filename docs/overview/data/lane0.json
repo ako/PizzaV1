@@ -1,0 +1,372 @@
+{
+ "lane": "lane0",
+ "name": "Crosscutting",
+ "collectedAt": "2026-11-19 14:50 UTC",
+ "prd": {
+  "items": [
+   {
+    "ref": "00-README §8",
+    "text": "Delivery: commit per story \"US-xxx: <title>\", RUN/ journal, self-assessment, delivery notes, operations, start/stop scripts"
+   },
+   {
+    "ref": "00-README / LITE-SES-01",
+    "text": "No sign-in: every visitor is an anonymous guest; no demo users"
+   },
+   {
+    "ref": "07-design-system",
+    "text": "Git Pizza look: dark console theme, design tokens, prototype screens"
+   },
+   {
+    "ref": "12-acceptance",
+    "text": "Acceptance scenarios and calculated pricing examples"
+   },
+   {
+    "ref": "09-demo-data",
+    "text": "Demo catalogue, coupons and orders as JSON"
+   }
+  ]
+ },
+ "decisions": [
+  {
+   "id": "3bcac0",
+   "kind": "accepted",
+   "module": "Catalog",
+   "text": "Accepted SEC007: Catalog.Allergen and Core.StoreSettings stay readable by every guest: public reference data (allergen notice, store name and …",
+   "anchors": [
+    "@Catalog.Allergen",
+    "@Core.StoreSettings"
+   ]
+  },
+  {
+   "id": "968fd2",
+   "kind": "decision",
+   "module": "Fulfilment",
+   "text": "Security: guest read on Coupon removed (no page reads it; the code shows as text on the cart); DeliveryZone readable only for the guest's own orders. …",
+   "anchors": [
+    "@Fulfilment.Coupon",
+    "@Fulfilment.DeliveryZone"
+   ]
+  },
+  {
+   "id": "f2c8ab",
+   "kind": "decision",
+   "module": "Fulfilment",
+   "text": "Store time (BR-DATA-05): the runtime's default time zone America/Los_Angeles; order-log times are stored as server-formatted text because …",
+   "anchors": [
+    "@Fulfilment.OrderLogEntry.TimeText",
+    "@Fulfilment.SUB_Order_Log"
+   ]
+  },
+  {
+   "id": "04c414",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "Module split: Shop was cut into Simulation -> Shop -> Fulfilment -> Catalog + Core, computed from the model's reference graph; 0 domain cycles …",
+   "anchors": [
+    "@Shop",
+    "@Fulfilment",
+    "@Catalog",
+    "@Core",
+    "@Simulation"
+   ]
+  },
+  {
+   "id": "1b8578",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "Security: every visitor is the anonymous user role (no sign-in, no demo users, per the PRD); the built-in Administrator holds the same Guest module …",
+   "anchors": [
+    "@Shop.Guest",
+    "@Fulfilment.Guest",
+    "@Catalog.Guest",
+    "@Core.Guest"
+   ]
+  },
+  {
+   "id": "e95c42",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data …",
+   "anchors": [
+    "@Shop.Layout_Guest",
+    "@Shop.Layout_Minimal"
+   ]
+  },
+  {
+   "id": "071314",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "Lint conventions: the project's own prefixes (NF_, SIM_, SE_, SEED_, ASU_), SNIP_ snippets and screen-named pages are declared in …",
+   "anchors": [
+    "@Shop"
+   ]
+  },
+  {
+   "id": "2d759f",
+   "kind": "accepted",
+   "module": "Shop",
+   "text": "Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); …",
+   "anchors": [
+    "@Shop.DS_Order_Log",
+    "@Shop.DS_Product_Recipe",
+    "@Shop.SNIP_Toasts",
+    "@Shop.ItemInfo"
+   ]
+  },
+  {
+   "id": "c7be68",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "Page actions: every ACT_ flow only delegates to a SUB_ with the logic (lint CONV010), keeping the permission boundary thin.",
+   "anchors": [
+    "@Shop.ACT_Checkout_Place",
+    "@Shop.SUB_Checkout_Place"
+   ]
+  },
+  {
+   "id": "fad15d",
+   "kind": "deviation",
+   "module": "Shop",
+   "text": "Commits deviate from the PRD convention 'US-xxx: <title>' per story: stories that share documents were committed together, with all their ids in the …",
+   "anchors": [
+    "@Shop"
+   ]
+  },
+  {
+   "id": "128ecd",
+   "kind": "decision",
+   "module": "Simulation",
+   "text": "Demo data: generated from the PRD's 09-demo-data JSON by tools/seed/gen_seed.py into SEED_* flows (one per order, split into lines/history/log …",
+   "anchors": [
+    "@Simulation.SEED_Catalog",
+    "@Simulation.SEED_Orders"
+   ]
+  },
+  {
+   "id": "cb8adb",
+   "kind": "open",
+   "module": "Shop",
+   "text": "PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessment.json, RUN/operations.md, RUN/start.ps1 and RUN/stop.ps1 (00-README section …",
+   "anchors": [
+    "@Shop"
+   ]
+  }
+ ],
+ "model": {
+  "modules": [
+   {
+    "name": "Simulation",
+    "layer": 3
+   },
+   {
+    "name": "Shop",
+    "layer": 2
+   },
+   {
+    "name": "Fulfilment",
+    "layer": 1
+   },
+   {
+    "name": "Catalog",
+    "layer": 0
+   },
+   {
+    "name": "Core",
+    "layer": 0
+   }
+  ],
+  "cycles": 0,
+  "clusters": 10,
+  "userRoles": [
+   "Administrator",
+   "Anonymous"
+  ],
+  "moduleRoles": [
+   "Catalog.Guest",
+   "Core.Guest",
+   "Fulfilment.Guest",
+   "Shop.Guest"
+  ],
+  "navigation": {
+   "HomePage": "Shop.Home",
+   "NotFoundPage": "Shop.NotFound",
+   "ProfileName": "Responsive"
+  },
+  "entities": {
+   "Catalog:PERSISTENT": 7,
+   "Core:PERSISTENT": 3,
+   "Fulfilment:NON_PERSISTENT": 1,
+   "Fulfilment:PERSISTENT": 12,
+   "Shop:NON_PERSISTENT": 6,
+   "Shop:PERSISTENT": 4,
+   "Simulation:PERSISTENT": 1
+  },
+  "viewEntities": 0,
+  "integrations": {
+   "WORKFLOWS": 0,
+   "CONSUMED_REST_SERVICES": 0,
+   "CONSUMED_ODATA_SERVICES": 0,
+   "PUBLISHED_REST_SERVICES": 0,
+   "PUBLISHED_ODATA_SERVICES": 0
+  },
+  "scheduledEvents": [
+   "Simulation.SE_DailyReset",
+   "Simulation.SE_ClockWatchdog"
+  ],
+  "taskQueues": [
+   "Simulation.SimulationClock"
+  ],
+  "theme": "theme/web + themesource/shop (prototype CSS ported, scoped to .gp-app)",
+  "brain": {
+   "requirements": 111,
+   "decisions": 21,
+   "open": 1,
+   "anchors": 249,
+   "slices": 12
+  }
+ },
+ "proof": {
+  "mxbuild": {
+   "errors": 0,
+   "passed": true,
+   "checkedAt": "2026-11-19 14:42 UTC"
+  },
+  "lint": {
+   "total": 245,
+   "errors": 2,
+   "warnings": 99,
+   "infos": 144
+  },
+  "score": 47.5,
+  "categories": {
+   "Security": 50,
+   "Quality": 0,
+   "Architecture": 46,
+   "Performance": 64,
+   "Naming": 100,
+   "Design": 52,
+   "Other": 66
+  },
+  "security": {
+   "openHighMedium": [],
+   "findings": 2
+  },
+  "qualityCategory": {
+   "name": "Quality",
+   "score": 0,
+   "total": 169,
+   "errors": 0,
+   "warnings": 35,
+   "infos": 134,
+   "topActions": [
+    "Remove the container, or give it the content it was meant to hold",
+    "Extract logical sections into SUB_ microflows to keep each under 15 activities",
+    "Extract logical sections into SUB_ microflows. This improves readability, testability, and reusability.",
+    "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows.",
+    "Replace entity validation rules with a VAL_Allergen microflow for explicit, testable validation"
+   ]
+  },
+  "topRules": [
+   [
+    "MPR006",
+    94
+   ],
+   [
+    "CONV009",
+    27
+   ],
+   [
+    "QUAL003",
+    17
+   ],
+   [
+    "ARCH003",
+    16
+   ],
+   [
+    "DESIGN001",
+    15
+   ],
+   [
+    "CONV011",
+    12
+   ]
+  ],
+  "tests": {
+   "files": [
+    "tests/helpers.test.mdl",
+    "tests/pricing.test.mdl"
+   ],
+   "count": 24,
+   "failed": 0
+  },
+  "journeys": {
+   "count": 11,
+   "passed": 11
+  },
+  "visual": {
+   "screens": 12,
+   "withinBudget": 12,
+   "minMismatch": 0.91,
+   "maxMismatch": 9.45,
+   "measuredAt": "2026-11-19 12:35 UTC"
+  },
+  "coverage": {
+   "reached": 121,
+   "nonStartup": 169,
+   "byTests": 10
+  },
+  "screenshots": [
+   {
+    "lane": "lane0",
+    "file": "lane0-home-shell.jpg",
+    "shows": "SCR-01 home: header, DEMO MODE banner, bottom tabs, Git Pizza theme",
+    "takenAt": "2026-11-19T14:34:42.823Z"
+   }
+  ]
+ },
+ "status": {
+  "gaps": [
+   {
+    "id": "3bcac0",
+    "kind": "accepted",
+    "module": "Catalog",
+    "text": "Accepted SEC007: Catalog.Allergen and Core.StoreSettings stay readable by every guest: public reference data (allergen notice, store name and …",
+    "anchors": [
+     "@Catalog.Allergen",
+     "@Core.StoreSettings"
+    ]
+   },
+   {
+    "id": "2d759f",
+    "kind": "accepted",
+    "module": "Shop",
+    "text": "Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); …",
+    "anchors": [
+     "@Shop.DS_Order_Log",
+     "@Shop.DS_Product_Recipe",
+     "@Shop.SNIP_Toasts",
+     "@Shop.ItemInfo"
+    ]
+   },
+   {
+    "id": "fad15d",
+    "kind": "deviation",
+    "module": "Shop",
+    "text": "Commits deviate from the PRD convention 'US-xxx: <title>' per story: stories that share documents were committed together, with all their ids in the …",
+    "anchors": [
+     "@Shop"
+    ]
+   },
+   {
+    "id": "cb8adb",
+    "kind": "open",
+    "module": "Shop",
+    "text": "PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessment.json, RUN/operations.md, RUN/start.ps1 and RUN/stop.ps1 (00-README section …",
+    "anchors": [
+     "@Shop"
+    ]
+   }
+  ]
+ }
+}

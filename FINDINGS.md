@@ -232,3 +232,26 @@ traceability, tests, performance, security, quality and map.
 - **Annotation keys** for unused documents need the module prefix
   (`unused:Shop.FaultProbe`); otherwise the page lists them under "annotations
   that matched nothing".
+
+## 2026-11-19 — build-overview sketch deck
+
+`docs/overview/` rebuilds a Pen & Marker swimlane deck (sketch-deck skill, ako/inkscape-presenter
+114330c) from the model: `collect.py` writes one JSON per lane, `deck.py` lays out
+`build-overview.html` and `frames.json`, `capture.js` takes the phone screenshots, `render.js`
+renders every frame for checking. Published as https://claude.ai/artifact/Q6p4C4QndDTCJKuX5hks1D
+(private until shared). Its frames are fixed: do not press Tidy.
+
+- **The PRD has no milestones** and is written in English; the lanes use the brain's M1–M4
+  grouping of its 12 epics. The deck says so.
+- **Status comes from `report traceability`**: 109 of 111 built, 2 partly (US-097 in M1, US-288 in
+  M4), 0 not built; 100 reached by a test or journey. M4 is weakest on proof (3 of 8 reached).
+- **The visual comparison is not pixel-perfect**: 12 of 12 screens within budget, but mismatch is
+  0.9–9.5 % (`tests/e2e/out/visual-summary.json`, now cached in `data/visual.json`).
+- **`mxcli -c` stops at 10,000 output lines** ("output line limit exceeded"); a catalog query over
+  `CATALOG.REFS` needs `MXCLI_OUTPUT_LINE_LIMIT=0`.
+- **`brain list --json` includes open questions among the decisions** (`open: true`), so filter
+  them out or they are counted twice.
+- **Lint's "Quality 0"** is 35 warnings + 134 info; the most frequent rule overall is MPR006 (94
+  empty containers, mostly CSS-drawn dots), then CONV009 27 and QUAL003 17.
+- Layout: a 6600-wide lane only reads at about 15 px when the type is at least 60 units; the
+  first draft (52 units, one card per decision) gave a lane 0 too tall to read zoomed.

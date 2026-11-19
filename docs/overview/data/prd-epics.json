@@ -1,0 +1,165 @@
+[
+ {
+  "id": "EP-01",
+  "title": "Shell, navigation and branding",
+  "area": "FD-01 Shell, navigation and branding",
+  "screens": "SCR-16 (frame of every screen)",
+  "moscow": "Must",
+  "range": "US-001 – US-012",
+  "file": "package-lite/03-user-stories/EP-01-shell-navigation.md",
+  "stories": 9,
+  "priorities": {
+   "Must": 9
+  }
+ },
+ {
+  "id": "EP-02",
+  "title": "Menu browsing (module explorer)",
+  "area": "FD-02 Menu browsing",
+  "screens": "SCR-01, SCR-02, SCR-04",
+  "moscow": "Must",
+  "range": "US-021 – US-034",
+  "file": "package-lite/03-user-stories/EP-02-menu-browsing.md",
+  "stories": 14,
+  "priorities": {
+   "Must": 12,
+   "Could": 1,
+   "Should": 1
+  }
+ },
+ {
+  "id": "EP-03",
+  "title": "Pizza configurator (dependency manager)",
+  "area": "FD-03 Pizza configurator",
+  "screens": "SCR-03 (and SCR-05 for editing a line)",
+  "moscow": "Must",
+  "range": "US-041 – US-053",
+  "file": "package-lite/03-user-stories/EP-03-pizza-configurator.md",
+  "stories": 13,
+  "priorities": {
+   "Must": 11,
+   "Should": 2
+  }
+ },
+ {
+  "id": "EP-04",
+  "title": "Cart (manifest) and coupons",
+  "area": "FD-04 Cart and coupons",
+  "screens": "SCR-05 (and the cart summary in SCR-02, SCR-16)",
+  "moscow": "Must",
+  "range": "US-061 – US-073",
+  "file": "package-lite/03-user-stories/EP-04-cart-coupons.md",
+  "stories": 13,
+  "priorities": {
+   "Must": 13
+  }
+ },
+ {
+  "id": "EP-05",
+  "title": "Checkout (deploy config)",
+  "area": "FD-05 Checkout",
+  "screens": "SCR-06 `checkout_config.json`",
+  "moscow": "Must",
+  "range": "US-081 – US-097",
+  "file": "package-lite/03-user-stories/EP-05-checkout.md",
+  "stories": 14,
+  "priorities": {
+   "Must": 12,
+   "Should": 1,
+   "Could": 1
+  }
+ },
+ {
+  "id": "EP-06",
+  "title": "Simulated payment",
+  "area": "FD-06 Simulated payment",
+  "screens": "SCR-06 (payment block), SCR-07, SCR-08, SCR-09 (payment banners)",
+  "moscow": "Must",
+  "range": "US-101 – US-114",
+  "file": "package-lite/03-user-stories/EP-06-simulated-payment.md",
+  "stories": 14,
+  "priorities": {
+   "Must": 14
+  }
+ },
+ {
+  "id": "EP-07",
+  "title": "Order tracking (deployment status)",
+  "area": "FD-07 Order tracking",
+  "screens": "SCR-09 `DEPLOYMENT_STATUS`, SCR-10 `git log --grep`",
+  "moscow": "Must",
+  "range": "US-121 – US-137",
+  "file": "package-lite/03-user-stories/EP-07-order-tracking.md",
+  "stories": 17,
+  "priorities": {
+   "Must": 16,
+   "Should": 1
+  }
+ },
+ {
+  "id": "EP-09",
+  "title": "Order receipt",
+  "area": "FD-09 Customer profile and order history",
+  "screens": "SCR-13 `git show <hash>`",
+  "moscow": "Must (print: Should)",
+  "range": "US-166 – US-167",
+  "file": "package-lite/03-user-stories/EP-09-customer-profile.md",
+  "stories": 2,
+  "priorities": {
+   "Must": 1,
+   "Should": 1
+  }
+ },
+ {
+  "id": "EP-10",
+  "title": "Kitchen run by the simulator",
+  "area": "SIM-02 Kitchen auto-advance",
+  "screens": "SCR-09, SCR-08, SCR-01 (what the guest sees)",
+  "moscow": "Must",
+  "range": "US-194",
+  "file": "package-lite/03-user-stories/EP-10-kitchen-display.md",
+  "stories": 1,
+  "priorities": {
+   "Must": 1
+  }
+ },
+ {
+  "id": "EP-13",
+  "title": "Automatic courier dispatch",
+  "area": "FD-13 Courier management",
+  "screens": "SCR-09 (courier card and map of the guest's order)",
+  "moscow": "Must",
+  "range": "US-247",
+  "file": "package-lite/03-user-stories/EP-13-courier-management.md",
+  "stories": 1,
+  "priorities": {
+   "Must": 1
+  }
+ },
+ {
+  "id": "EP-14",
+  "title": "Simulation and demo reset (fixed configuration)",
+  "area": "FD-14 Simulation control and demo reset",
+  "screens": "— (no simulation screen in Lite)",
+  "moscow": "Must",
+  "range": "US-265 – US-273",
+  "file": "package-lite/03-user-stories/EP-14-simulation-control.md",
+  "stories": 5,
+  "priorities": {
+   "Must": 5
+  }
+ },
+ {
+  "id": "EP-15",
+  "title": "Errors and system messages",
+  "area": "FD-15 Errors and system messages",
+  "screens": "SCR-40 `ERROR 404 // CRUST_NOT_FOUND`, SCR-41 `ERROR 500 // SEG_FAULT` (plus messages on every screen)",
+  "moscow": "Must",
+  "range": "US-281 – US-289",
+  "file": "package-lite/03-user-stories/EP-15-errors-messages.md",
+  "stories": 8,
+  "priorities": {
+   "Must": 8
+  }
+ }
+]

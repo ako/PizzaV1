@@ -32,6 +32,13 @@ full mxcli reports, all HTML: architecture (layered module diagram), traceabilit
 user stories per milestone), tests and coverage, performance (per-step flame charts and
 Postgres plans), security, the scored quality report, and the interactive software map.
 
+## Build overview
+
+A sketched swimlane board of how the app was built from the PRD: lane 0 for crosscutting work,
+then one lane per milestone (M1–M4), each with PRD, decisions, model, proof and status, plus a
+summary. It is rebuilt from the model by [`docs/overview/`](docs/overview/collect.py) and
+published as a private sketch deck: https://claude.ai/artifact/Q6p4C4QndDTCJKuX5hks1D.
+
 ## Journey videos
 
 Narrated walkthroughs of the two main guest journeys, recorded against the running

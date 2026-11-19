@@ -1,0 +1,95 @@
+[
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "board",
+  "data": {
+   "x": 0,
+   "y": 0,
+   "w": 6600,
+   "h": 19971,
+   "t": 10
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "lane0",
+  "data": {
+   "x": 0,
+   "y": 900,
+   "w": 6600,
+   "h": 3647,
+   "t": 20
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "m1",
+  "data": {
+   "x": 0,
+   "y": 4637,
+   "w": 6600,
+   "h": 3500,
+   "t": 30
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "m2",
+  "data": {
+   "x": 0,
+   "y": 8227,
+   "w": 6600,
+   "h": 2734,
+   "t": 40
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "m3",
+  "data": {
+   "x": 0,
+   "y": 11051,
+   "w": 6600,
+   "h": 2734,
+   "t": 50
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "m4",
+  "data": {
+   "x": 0,
+   "y": 13875,
+   "w": 6600,
+   "h": 2134,
+   "t": 60
+  }
+ },
+ {
+  "op": "set",
+  "collection": "frames",
+  "doc_id": "summary",
+  "data": {
+   "x": 0,
+   "y": 16138,
+   "w": 6600,
+   "h": 3712,
+   "t": 80
+  }
+ },
+ {
+  "op": "set",
+  "collection": "meta",
+  "doc_id": "settings",
+  "data": {
+   "cols": 4,
+   "grid": false
+  }
+ }
+]

@@ -1,0 +1,164 @@
+{
+ "lane": "m3",
+ "name": "M3 — Simulated kitchen and couriers",
+ "collectedAt": "2026-11-19 14:50 UTC",
+ "prd": {
+  "epics": [
+   {
+    "id": "EP-10",
+    "title": "Kitchen run by the simulator",
+    "area": "SIM-02 Kitchen auto-advance",
+    "screens": "SCR-09, SCR-08, SCR-01 (what the guest sees)",
+    "moscow": "Must",
+    "range": "US-194",
+    "file": "package-lite/03-user-stories/EP-10-kitchen-display.md",
+    "stories": 1,
+    "priorities": {
+     "Must": 1
+    }
+   },
+   {
+    "id": "EP-13",
+    "title": "Automatic courier dispatch",
+    "area": "FD-13 Courier management",
+    "screens": "SCR-09 (courier card and map of the guest's order)",
+    "moscow": "Must",
+    "range": "US-247",
+    "file": "package-lite/03-user-stories/EP-13-courier-management.md",
+    "stories": 1,
+    "priorities": {
+     "Must": 1
+    }
+   },
+   {
+    "id": "EP-14",
+    "title": "Simulation and demo reset (fixed configuration)",
+    "area": "FD-14 Simulation control and demo reset",
+    "screens": "— (no simulation screen in Lite)",
+    "moscow": "Must",
+    "range": "US-265 – US-273",
+    "file": "package-lite/03-user-stories/EP-14-simulation-control.md",
+    "stories": 5,
+    "priorities": {
+     "Must": 5
+    }
+   }
+  ],
+  "note": "Milestones are the brain's grouping of the PRD epics; the PRD itself has none."
+ },
+ "decisions": [
+  {
+   "id": "1ee26b",
+   "kind": "decision",
+   "module": "Simulation",
+   "text": "Simulation clock: Mendix scheduled events run at most once a minute, so the clock is a task queue that sleeps 1.5 s, ticks and re-queues itself …",
+   "anchors": [
+    "@Simulation.SIM_ClockRun",
+    "@Simulation.SE_ClockWatchdog",
+    "@Simulation.SimulationClock"
+   ]
+  }
+ ],
+ "model": {
+  "modules": {
+   "Simulation": 10,
+   "Fulfilment": 2
+  },
+  "footprintMicroflows": 12,
+  "pages": [],
+  "snippets": [],
+  "entities": [
+   "Fulfilment.Order",
+   "Core.SimulationSettings",
+   "Fulfilment.SimulationEvent",
+   "Fulfilment.Courier",
+   "Fulfilment.Oven",
+   "Shop.CartLine",
+   "Catalog.Product",
+   "Simulation.SimCustomer",
+   "Fulfilment.DeliveryZone",
+   "Core.Toast"
+  ],
+  "jsActions": [],
+  "nanoflows": [],
+  "anchorKinds": {
+   "microflow": 9
+  }
+ },
+ "proof": {
+  "tests": [],
+  "journeys": [
+   {
+    "name": "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+    "status": "passed"
+   },
+   {
+    "name": "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+    "status": "passed"
+   },
+   {
+    "name": "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+    "status": "passed"
+   },
+   {
+    "name": "J4 order lookup rejects an unknown order without revealing which field was wrong",
+    "status": "passed"
+   },
+   {
+    "name": "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+    "status": "passed"
+   },
+   {
+    "name": "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+    "status": "passed"
+   },
+   {
+    "name": "J8 home: featured carousel pages and Configure opens the configurator",
+    "status": "passed"
+   },
+   {
+    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+    "status": "passed"
+   },
+   {
+    "name": "J10 menu grep and dietary filters (US-027, US-033)",
+    "status": "passed"
+   },
+   {
+    "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   },
+   {
+    "name": "J7 phone: bottom navigation and menu cards render at 390 px",
+    "status": "passed"
+   }
+  ],
+  "screenshots": [
+   {
+    "lane": "m3",
+    "file": "m3-kitchen-log.jpg",
+    "shows": "SCR-09 ~25 s later: still queued (all ovens busy), live map, ETA 05:27, 2.8 mi",
+    "takenAt": "2026-11-19T14:35:44.384Z"
+   },
+   {
+    "lane": "m3",
+    "file": "m3-home-kpis.jpg",
+    "shows": "SCR-01 live kitchen KPIs: deployed today 10, kitchen load 6/6 ovens (HEAVY), 4 couriers on duty",
+    "takenAt": "2026-11-19T14:35:48.253Z"
+   }
+  ],
+  "untested": [
+   "US-270 Reset the demo"
+  ]
+ },
+ "status": {
+  "requirements": 7,
+  "built": 7,
+  "partial": 0,
+  "changed": 0,
+  "notBuilt": 0,
+  "notTraceable": 0,
+  "proven": 6,
+  "gaps": []
+ }
+}

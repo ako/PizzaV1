@@ -1,0 +1,148 @@
+{
+ "lane": "m4",
+ "name": "M4 — Errors and system messages",
+ "collectedAt": "2026-11-19 14:50 UTC",
+ "prd": {
+  "epics": [
+   {
+    "id": "EP-15",
+    "title": "Errors and system messages",
+    "area": "FD-15 Errors and system messages",
+    "screens": "SCR-40 `ERROR 404 // CRUST_NOT_FOUND`, SCR-41 `ERROR 500 // SEG_FAULT` (plus messages on every screen)",
+    "moscow": "Must",
+    "range": "US-281 – US-289",
+    "file": "package-lite/03-user-stories/EP-15-errors-messages.md",
+    "stories": 8,
+    "priorities": {
+     "Must": 8
+    }
+   }
+  ],
+  "note": "Milestones are the brain's grouping of the PRD epics; the PRD itself has none."
+ },
+ "decisions": [
+  {
+   "id": "9fafa3",
+   "kind": "partial",
+   "module": "Fulfilment",
+   "text": "US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded …",
+   "anchors": [
+    "@Fulfilment.SUB_Payment_Retry",
+    "@Shop.SUB_Track_Rollback"
+   ]
+  },
+  {
+   "id": "5ae203",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "US-282 / US-289: the platform's error dialog is replaced by a client hook that opens SCR-41 with an incident id that DS_Error also writes to the …",
+   "anchors": [
+    "@Shop.DS_Error",
+    "@Shop.FaultInjection",
+    "@Shop.UnexpectedError"
+   ]
+  },
+  {
+   "id": "f52927",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. …",
+   "anchors": [
+    "@Shop.JS_LivePoller"
+   ]
+  }
+ ],
+ "model": {
+  "modules": {
+   "Shop": 12,
+   "Fulfilment": 1
+  },
+  "footprintMicroflows": 13,
+  "pages": [
+   "Shop.NotFound",
+   "Shop.UnexpectedError"
+  ],
+  "snippets": [],
+  "entities": [
+   "Shop.TrackView",
+   "Shop.CheckoutForm",
+   "Fulfilment.Order",
+   "Shop.ErrorView",
+   "Fulfilment.PaymentAttempt",
+   "Core.StoreSettings",
+   "Fulfilment.DeliveryZone",
+   "Core.SimulationSettings"
+  ],
+  "jsActions": [
+   "Shop.JS_LivePoller",
+   "Shop.JS_RetryLast"
+  ],
+  "nanoflows": [],
+  "anchorKinds": {
+   "constant": 1,
+   "javascript_action": 2,
+   "layout": 1,
+   "microflow": 6,
+   "page": 2
+  }
+ },
+ "proof": {
+  "tests": [],
+  "journeys": [
+   {
+    "name": "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+    "status": "passed"
+   },
+   {
+    "name": "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+    "status": "passed"
+   },
+   {
+    "name": "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+    "status": "passed"
+   },
+   {
+    "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   }
+  ],
+  "screenshots": [
+   {
+    "lane": "m4",
+    "file": "m4-not-found.jpg",
+    "shows": "SCR-40 ERROR 404 // CRUST_NOT_FOUND",
+    "takenAt": "2026-11-19T14:35:51.945Z"
+   },
+   {
+    "lane": "m4",
+    "file": "m4-offline.jpg",
+    "shows": "CONNECTION_LOST banner after two failed refreshes (US-287)",
+    "takenAt": "2026-11-19T14:36:02.651Z"
+   }
+  ],
+  "untested": [
+   "US-281 Page not found (404)",
+   "US-282 Unexpected error (500)",
+   "US-286 Session expiry",
+   "US-287 Connection lost or refresh failure",
+   "US-289 No technical details exposed"
+  ]
+ },
+ "status": {
+  "requirements": 8,
+  "built": 7,
+  "partial": 1,
+  "changed": 0,
+  "notBuilt": 0,
+  "notTraceable": 0,
+  "proven": 3,
+  "gaps": [
+   {
+    "id": "58f3c6",
+    "title": "US-288 Busy states and double-submit protection",
+    "status": "partial",
+    "reason": "US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded …"
+   }
+  ]
+ }
+}

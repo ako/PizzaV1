@@ -1,0 +1,62 @@
+[
+ {
+  "lane": "lane0",
+  "file": "lane0-home-shell.jpg",
+  "shows": "SCR-01 home: header, DEMO MODE banner, bottom tabs, Git Pizza theme",
+  "takenAt": "2026-11-19T14:34:42.823Z"
+ },
+ {
+  "lane": "m1",
+  "file": "m1-configurator.jpg",
+  "shows": "SCR-03 configurator: Inferno Payload Large + cherry tomatoes, line total $25.00",
+  "takenAt": "2026-11-19T14:34:51.202Z"
+ },
+ {
+  "lane": "m1",
+  "file": "m1-menu.jpg",
+  "shows": "SCR-02 menu: category tabs, grep search, dietary filter chips, product cards",
+  "takenAt": "2026-11-19T14:34:54.927Z"
+ },
+ {
+  "lane": "m1",
+  "file": "m1-checkout.jpg",
+  "shows": "SCR-06 checkout summary: Inferno Payload Large $25.00, fee, tax, tip, total $34.90",
+  "takenAt": "2026-11-19T14:35:10.369Z"
+ },
+ {
+  "lane": "m2",
+  "file": "m2-payment.jpg",
+  "shows": "SCR-07 payment sheet: simulated gateway processing the card",
+  "takenAt": "2026-11-19T14:35:12.726Z"
+ },
+ {
+  "lane": "m2",
+  "file": "m2-tracking.jpg",
+  "shows": "SCR-09 tracking: pipeline stepper, ETA, order log",
+  "takenAt": "2026-11-19T14:35:18.721Z"
+ },
+ {
+  "lane": "m3",
+  "file": "m3-kitchen-log.jpg",
+  "shows": "SCR-09 ~25 s later: still queued (all ovens busy), live map, ETA 05:27, 2.8 mi",
+  "takenAt": "2026-11-19T14:35:44.384Z"
+ },
+ {
+  "lane": "m3",
+  "file": "m3-home-kpis.jpg",
+  "shows": "SCR-01 live kitchen KPIs: deployed today 10, kitchen load 6/6 ovens (HEAVY), 4 couriers on duty",
+  "takenAt": "2026-11-19T14:35:48.253Z"
+ },
+ {
+  "lane": "m4",
+  "file": "m4-not-found.jpg",
+  "shows": "SCR-40 ERROR 404 // CRUST_NOT_FOUND",
+  "takenAt": "2026-11-19T14:35:51.945Z"
+ },
+ {
+  "lane": "m4",
+  "file": "m4-offline.jpg",
+  "shows": "CONNECTION_LOST banner after two failed refreshes (US-287)",
+  "takenAt": "2026-11-19T14:36:02.651Z"
+ }
+]

@@ -1,0 +1,113 @@
+{
+ "collectedAt": "2026-11-19 14:50 UTC",
+ "requirements": 111,
+ "built": 109,
+ "partial": 2,
+ "notBuilt": 0,
+ "changed": 0,
+ "proven": 100,
+ "milestones": [
+  {
+   "lane": "m1",
+   "name": "M1 — Browse and order",
+   "requirements": 63,
+   "built": 62,
+   "partial": 1,
+   "changed": 0,
+   "notBuilt": 0,
+   "proven": 58,
+   "epics": [
+    "EP-01",
+    "EP-02",
+    "EP-03",
+    "EP-04",
+    "EP-05"
+   ],
+   "open": [
+    "US-097"
+   ]
+  },
+  {
+   "lane": "m2",
+   "name": "M2 — Pay and track",
+   "requirements": 33,
+   "built": 33,
+   "partial": 0,
+   "changed": 0,
+   "notBuilt": 0,
+   "proven": 33,
+   "epics": [
+    "EP-06",
+    "EP-07",
+    "EP-09"
+   ],
+   "open": []
+  },
+  {
+   "lane": "m3",
+   "name": "M3 — Simulated kitchen and couriers",
+   "requirements": 7,
+   "built": 7,
+   "partial": 0,
+   "changed": 0,
+   "notBuilt": 0,
+   "proven": 6,
+   "epics": [
+    "EP-10",
+    "EP-13",
+    "EP-14"
+   ],
+   "open": []
+  },
+  {
+   "lane": "m4",
+   "name": "M4 — Errors and system messages",
+   "requirements": 8,
+   "built": 7,
+   "partial": 1,
+   "changed": 0,
+   "notBuilt": 0,
+   "proven": 3,
+   "epics": [
+    "EP-15"
+   ],
+   "open": [
+    "US-288"
+   ]
+  }
+ ],
+ "openQuestions": [
+  "PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessment.json, RUN/operations.md, RUN/start.ps1 and …"
+ ],
+ "lessons": [
+  {
+   "source": "FINDINGS.md: Home carousel never moved",
+   "text": "A list fed by a microflow refreshes only when a persistent context object is committed with refresh, so the carousel and the menu filters keep their state on the guest's cart."
+  },
+  {
+   "source": "FINDINGS.md: Caller-trusting data sources",
+   "text": "The security report found 3 high findings no test caught: data sources that trusted an object id from the browser. Each now checks ownership or PUBLISHED."
+  },
+  {
+   "source": "FINDINGS.md: Traceability needed the requirements in the brain",
+   "text": "The 111 stories were captured as brain requirements only at the end. Capture them before building: the delivery files (RUN/) and the commit convention were never captured, and slipped."
+  }
+ ],
+ "gates": {
+  "mxbuild": {
+   "errors": 0,
+   "passed": true,
+   "checkedAt": "2026-11-19 14:42 UTC"
+  },
+  "score": 47.5,
+  "lint": {
+   "total": 245,
+   "errors": 2,
+   "warnings": 99,
+   "infos": 144
+  },
+  "tests": "24/24",
+  "journeys": "11/11"
+ },
+ "mxcli": "nightly-20261118-9d764483c"
+}

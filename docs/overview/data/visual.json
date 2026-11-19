@@ -1,0 +1,65 @@
+{
+ "screens": [
+  {
+   "id": "SCR-01-home-d",
+   "mismatch": 4.83,
+   "budget": 12
+  },
+  {
+   "id": "SCR-01-home-m",
+   "mismatch": 9.45,
+   "budget": 12
+  },
+  {
+   "id": "SCR-02-menu-d",
+   "mismatch": 2.46,
+   "budget": 10
+  },
+  {
+   "id": "SCR-02-menu-m",
+   "mismatch": 4.31,
+   "budget": 10
+  },
+  {
+   "id": "SCR-03-pizza-configurator-d",
+   "mismatch": 1.06,
+   "budget": 10
+  },
+  {
+   "id": "SCR-03-pizza-configurator-m",
+   "mismatch": 2.22,
+   "budget": 10
+  },
+  {
+   "id": "SCR-10-track-order-lookup-d",
+   "mismatch": 2.91,
+   "budget": 10
+  },
+  {
+   "id": "SCR-10-track-order-lookup-m",
+   "mismatch": 2.01,
+   "budget": 10
+  },
+  {
+   "id": "SCR-40-not-found-d",
+   "mismatch": 7.02,
+   "budget": 10
+  },
+  {
+   "id": "SCR-40-not-found-m",
+   "mismatch": 7.18,
+   "budget": 10
+  },
+  {
+   "id": "SCR-41-unexpected-error-d",
+   "mismatch": 0.91,
+   "budget": 10
+  },
+  {
+   "id": "SCR-41-unexpected-error-m",
+   "mismatch": 7.86,
+   "budget": 10
+  }
+ ],
+ "measuredAt": "2026-11-19 12:35 UTC"
+}

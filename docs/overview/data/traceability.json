@@ -1,0 +1,4059 @@
+{
+  "kind": "traceability",
+  "schema": 1,
+  "project": "GitPizza",
+  "generated": "2026-11-19 14:50",
+  "mxcli": "nightly-20261118-9d764483c",
+  "method": [
+    "Requirements, decisions and open questions are read from the project brain (`docs/brain/`) with `brain list`; each requirement's anchor resolutions come from the same check `brain plan` uses, so \"built\" is defined in one place.",
+    "Status is derived, never ticked off: built when every anchor resolves in the model; not built when one does not; not traceable without anchors; partial or changed when a decision says ``Partly meets requirement `\u003cid\u003e`: …`` or ``Changes requirement `\u003cid\u003e`: …`` (validated by `brain check`).",
+    "Footprint: the microflows that implement a requirement — an anchored microflow plus its same-module callees; microflows a page, workflow, scheduled event or published service anchor calls; microflows that write an anchored entity or retrieve an anchored view entity; microflows that use an anchored attribute or association. Helpers with more than three callers are left out.",
+    "A microflow test proves a requirement when what it calls, with their call closure, touches the footprint. A journey proves it when a footprint microflow appears in its spans, or its log names an anchored page.",
+    "Decisions bear on a requirement when they share an anchor (module anchors excluded) or cite its id; open questions also when filed on its slice.",
+    "Milestones come from the plan: a slice's frontmatter (`milestone:`), or a requirement's ``Milestone: `\u003cname\u003e` `` line (`mxcli brain milestone`); without any, each slice is a milestone. They are ordered by first appearance, walking the slices in name order."
+  ],
+  "limits": [
+    "A requirement appears only once it is captured in the brain. A PRD item nobody captured is invisible here — the report pushes the brain to be complete, it does not read the PRD.",
+    "\"Built\" means its anchors exist, not that they do what was asked; that is what the tests column and the decisions are for.",
+    "Pages whose data comes only from database data sources run no microflow, so spans cannot show a journey reaching them unless the journey log names the page.",
+    "Footprints miss microflows reached only from Java actions (ako/mxcli#1819) and nanoflows."
+  ],
+  "data": {
+    "hasTests": true,
+    "hasJourneys": true,
+    "milestones": [
+      {
+        "name": "M1 — Browse and order",
+        "requirements": [
+          {
+            "id": "7121c4",
+            "slice": "01-shell-navigation",
+            "title": "US-001 Customer header and main navigation",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Nav_Checkout",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Nav_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_Header",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Nav_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Checkout",
+              "Shop.ACT_Nav_Home",
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Search",
+              "Shop.ACT_Nav_Track",
+              "Shop.ACT_Shell_Refresh",
+              "Shop.SUB_Nav_Search"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2b28e2",
+            "slice": "01-shell-navigation",
+            "title": "US-002 Project Explorer sidebar (desktop)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_Sidebar",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Home",
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Track",
+              "Shop.DS_Shell_Cart"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "1aa7f8",
+            "slice": "01-shell-navigation",
+            "title": "US-003 Phone bottom tab bar",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_BottomNav",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Track",
+              "Shop.DS_Shell_Cart"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "b0bd16",
+            "slice": "01-shell-navigation",
+            "title": "US-004 DEMO MODE banner",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_DemoBanner",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": null,
+            "footprintNote": "no microflow implements it yet (nothing writes or calls what it is anchored on)",
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "9f79cb",
+            "slice": "01-shell-navigation",
+            "title": "US-006 Official brand and logo only",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_Header",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.Layout_Guest",
+                "state": "resolved",
+                "kind": "layout"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Checkout",
+              "Shop.ACT_Nav_Home",
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Search",
+              "Shop.ACT_Nav_Track",
+              "Shop.ACT_Shell_Refresh"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work."
+            ],
+            "questions": null
+          },
+          {
+            "id": "183b6e",
+            "slice": "01-shell-navigation",
+            "title": "US-007 Storefront footer",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_Footer",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Track"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "0a96ea",
+            "slice": "01-shell-navigation",
+            "title": "US-010 Toast notifications",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Core.SUB_Toast",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Core.Toast",
+                "state": "resolved",
+                "kind": "entity"
+              },
+              {
+                "anchor": "@Shop.SNIP_Toasts",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Core.SUB_Toast",
+              "Core.SUB_Toast_Close",
+              "Shop.ACT_Toast_Close",
+              "Shop.SUB_Shell_Refresh",
+              "Simulation.SUB_Toast_Broadcast"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
+            "questions": null
+          },
+          {
+            "id": "2c42ba",
+            "slice": "01-shell-navigation",
+            "title": "US-011 Responsive layout switch",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Layout_Guest",
+                "state": "resolved",
+                "kind": "layout"
+              },
+              {
+                "anchor": "@Shop.SNIP_BottomNav",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Track",
+              "Shop.DS_Shell_Cart"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work."
+            ],
+            "questions": null
+          },
+          {
+            "id": "f8b2d5",
+            "slice": "01-shell-navigation",
+            "title": "US-012 Dev labels with plain meaning",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Fulfilment.OrderStatus",
+                "state": "resolved",
+                "kind": "enumeration"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "9e9b0c",
+            "slice": "02-menu-browsing",
+            "title": "US-021 Home hero and terminal intro",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Home",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.DS_Home",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Home_Carousel",
+              "Shop.ACT_Home_Refresh",
+              "Shop.ACT_Nav_Menu",
+              "Shop.ACT_Nav_Track",
+              "Shop.DS_Home",
+              "Shop.DS_Home_Featured",
+              "Shop.SUB_Home_CarouselPos",
+              "Shop.SUB_Home_Refresh"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "d232c9",
+            "slice": "02-menu-browsing",
+            "title": "US-022 Featured modules carousel",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.DS_Home_Featured",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_FeaturedCard",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Configure_FromHome",
+              "Shop.ACT_Product_QuickAdd",
+              "Shop.DS_Home_Featured"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "a1bb79: US-022 carousel: the position lives on the guest's cart, because a list fed by a microflow only refreshes when a persistent context object is committed."
+            ],
+            "questions": null
+          },
+          {
+            "id": "94fa95",
+            "slice": "02-menu-browsing",
+            "title": "US-023 Live demo KPIs on the home page",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Home_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Home_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Home_Refresh",
+              "Shop.SUB_Home_Refresh"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2c3985",
+            "slice": "02-menu-browsing",
+            "title": "US-024 Live build status of my active order on the home page",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.DS_Home_Active",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_HomeActiveOrder",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Track_OpenView",
+              "Shop.ACT_Track_Refresh",
+              "Shop.DS_Home_Active",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2c9ed9",
+            "slice": "02-menu-browsing",
+            "title": "US-025 Category tabs and product cards",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Menu_Tab",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.DS_Menu_Products",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_MenuCard",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Tab",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Configure_Open",
+              "Shop.ACT_Menu_Tab",
+              "Shop.ACT_Product_Info",
+              "Shop.ACT_Product_QuickAdd",
+              "Shop.DS_Menu_Products",
+              "Shop.SUB_Menu_Refresh",
+              "Shop.SUB_Menu_Tab"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "a16588",
+            "slice": "02-menu-browsing",
+            "title": "US-026 Ingredients shown as a code block",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.DS_Product_Allergens",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.DS_Product_Recipe",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_CodeBlock",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Product_Allergens",
+              "Shop.DS_Product_Recipe"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
+            "questions": null
+          },
+          {
+            "id": "0c432b",
+            "slice": "02-menu-browsing",
+            "title": "US-027 Menu search (grep)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Menu_ClearSearch",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Menu_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Nav_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_ClearSearch",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Nav_Search",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Product_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Menu_ClearSearch",
+              "Shop.ACT_Menu_Search",
+              "Shop.ACT_Nav_Search",
+              "Shop.DS_Menu_Products",
+              "Shop.SUB_Menu_ClearSearch",
+              "Shop.SUB_Menu_Refresh",
+              "Shop.SUB_Menu_Search",
+              "Shop.SUB_Nav_Search",
+              "Shop.SUB_Product_Recalculate"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2fd490",
+            "slice": "02-menu-browsing",
+            "title": "US-028 Quick add (+ import)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Product_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Product_QuickAdd",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Product_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Product_Add",
+              "Shop.ACT_Product_QuickAdd",
+              "Shop.SUB_Cart_AddLine",
+              "Shop.SUB_Product_Add"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "94d068",
+            "slice": "02-menu-browsing",
+            "title": "US-029 Item info for sides, drinks and desserts",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Info_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Product_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Product_Info",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.DS_Info_Line",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ItemInfo",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Info_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Product_Add",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Qty",
+              "Shop.ACT_Configure_Open",
+              "Shop.ACT_Info_Add",
+              "Shop.ACT_Product_Add",
+              "Shop.ACT_Product_Info",
+              "Shop.DS_Info_Line",
+              "Shop.SUB_Cart_AddLine",
+              "Shop.SUB_Info_Add",
+              "Shop.SUB_Product_Add"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
+            "questions": null
+          },
+          {
+            "id": "21e00f",
+            "slice": "02-menu-browsing",
+            "title": "US-030 Allergen and nutrition info for pizzas",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Product_Info",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ItemInfo",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Qty",
+              "Shop.ACT_Configure_Open",
+              "Shop.ACT_Info_Add",
+              "Shop.ACT_Product_Info",
+              "Shop.DS_Info_Line"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": [
+              "2d759f: Pages read other modules' data through guarded data-source flows (own cart / own orders / published only) instead of database queries (lint ARCH001); accepted where a page is about one product (ItemInfo) and for the toast list, which has no context object to refresh it."
+            ],
+            "questions": null
+          },
+          {
+            "id": "d01be4",
+            "slice": "02-menu-browsing",
+            "title": "US-031 Sold-out products",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Catalog.Product.IsSoldOut",
+                "state": "resolved",
+                "kind": "attribute"
+              },
+              {
+                "anchor": "@Shop.SNIP_MenuCard",
+                "state": "resolved",
+                "kind": "snippet"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Configure_Open",
+              "Shop.ACT_Product_Info",
+              "Shop.ACT_Product_QuickAdd",
+              "Simulation.SEED_Catalog"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "bd9c55",
+            "slice": "02-menu-browsing",
+            "title": "US-032 Terminal Debugger cart panel (desktop menu)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Menu_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Refresh_Do",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Menu_Refresh",
+              "Shop.SUB_Menu_Refresh_Do"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "dcc2ac",
+            "slice": "02-menu-browsing",
+            "title": "US-033 Dietary quick filter",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Menu_Filter",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Filter",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Menu_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Menu_Filter",
+              "Shop.DS_Menu_Products",
+              "Shop.SUB_Menu_Filter",
+              "Shop.SUB_Menu_Refresh"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "a6e68d: US-033 dietary filter chips are built although the prototype lacks them (the story requires them); hidden only in the visual comparison."
+            ],
+            "questions": null
+          },
+          {
+            "id": "9ade69",
+            "slice": "02-menu-browsing",
+            "title": "US-034 Menu loading state",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Menu",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Menu_ClearSearch",
+              "Shop.ACT_Menu_Filter",
+              "Shop.ACT_Menu_Refresh",
+              "Shop.ACT_Menu_Search",
+              "Shop.ACT_Menu_ShowAll",
+              "Shop.ACT_Menu_Tab",
+              "Shop.ACT_Nav_Checkout",
+              "Shop.DS_Menu",
+              "Shop.DS_Menu_Products"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "2bfb84: US-034 loading state: skeleton cards drawn by CSS on the empty list the client renders while loading."
+            ],
+            "questions": null
+          },
+          {
+            "id": "957b93",
+            "slice": "03-pizza-configurator",
+            "title": "US-041 Open the configurator with the default configuration",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Configure_Open",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Configure_Open",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Configure_Open",
+              "Shop.SUB_Configure_Open"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "5e6184",
+            "slice": "03-pizza-configurator",
+            "title": "US-042 Choose the size (scale_factor)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "bceb73",
+            "slice": "03-pizza-configurator",
+            "title": "US-043 Choose the crust (core_kernel)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "98f196",
+            "slice": "03-pizza-configurator",
+            "title": "US-044 Choose sauce and cheese (base_layer, cheese_driver)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "90abe1",
+            "slice": "03-pizza-configurator",
+            "title": "US-045 Add extra toppings (inject dependencies)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "98868a",
+            "slice": "03-pizza-configurator",
+            "title": "US-046 Remove default ingredients (unlink)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "459b76",
+            "slice": "03-pizza-configurator",
+            "title": "US-047 Live allergens and diet flags",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Line_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.DS_Line_Allergens",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Line_Allergens",
+              "Shop.SUB_Line_Recalculate"
+            ],
+            "tests": [
+              "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+              "P7: stuffed crust makes a vegetarian pizza non-vegan",
+              "P8: gluten-free crust on Small removes GLUTEN",
+              "Example C: Boolean Pepperoni Large fully configured"
+            ],
+            "testResults": [
+              {
+                "name": "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P7: stuffed crust makes a vegetarian pizza non-vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P8: gluten-free crust on Small removes GLUTEN",
+                "status": "passed"
+              },
+              {
+                "name": "Example C: Boolean Pepperoni Large fully configured",
+                "status": "passed"
+              }
+            ],
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "0fde4e",
+            "slice": "03-pizza-configurator",
+            "title": "US-048 Live manifest.json preview",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Configurator",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Line_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Back",
+              "Shop.ACT_Config_Choose",
+              "Shop.ACT_Config_Commit",
+              "Shop.ACT_Config_Qty",
+              "Shop.DS_Config_Choices",
+              "Shop.DS_Line_Allergens",
+              "Shop.DS_Line_Extras",
+              "Shop.DS_Line_Removed",
+              "Shop.SUB_Line_Recalculate"
+            ],
+            "tests": [
+              "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+              "P7: stuffed crust makes a vegetarian pizza non-vegan",
+              "P8: gluten-free crust on Small removes GLUTEN",
+              "Example C: Boolean Pepperoni Large fully configured"
+            ],
+            "testResults": [
+              {
+                "name": "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P7: stuffed crust makes a vegetarian pizza non-vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P8: gluten-free crust on Small removes GLUTEN",
+                "status": "passed"
+              },
+              {
+                "name": "Example C: Boolean Pepperoni Large fully configured",
+                "status": "passed"
+              }
+            ],
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "596e9a",
+            "slice": "03-pizza-configurator",
+            "title": "US-049 Set quantity and add to cart (Build \u0026 Deploy)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Commit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Config_Qty",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Commit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Qty",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Return",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Commit",
+              "Shop.ACT_Config_Qty",
+              "Shop.SUB_Cart_AddLine",
+              "Shop.SUB_Config_Commit",
+              "Shop.SUB_Config_Qty",
+              "Shop.SUB_Config_Return"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "629dee",
+            "slice": "03-pizza-configurator",
+            "title": "US-050 Edit a cart line in the configurator",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Cart_Edit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Config_Back",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Config_Commit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Configure_Edit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Back",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Commit",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Configure_Edit",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Cart_Edit",
+              "Shop.ACT_Config_Back",
+              "Shop.ACT_Config_Commit",
+              "Shop.ACT_Configure_Edit",
+              "Shop.SUB_Cart_AddLine",
+              "Shop.SUB_Config_Back",
+              "Shop.SUB_Config_Commit",
+              "Shop.SUB_Config_Return",
+              "Shop.SUB_Configure_Edit"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "fe99a6",
+            "slice": "03-pizza-configurator",
+            "title": "US-051 Unavailable options and ingredients",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Config_Choose",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Choose",
+              "Shop.SUB_Config_Choose"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "4a26bb",
+            "slice": "03-pizza-configurator",
+            "title": "US-052 Price breakdown",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.DS_Config_Choices",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Config_Choices"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "c62548",
+            "slice": "03-pizza-configurator",
+            "title": "US-053 Phone layout with sticky price bar",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Configurator",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Config_Back",
+              "Shop.ACT_Config_Choose",
+              "Shop.ACT_Config_Commit",
+              "Shop.ACT_Config_Qty",
+              "Shop.DS_Config_Choices",
+              "Shop.DS_Line_Allergens",
+              "Shop.DS_Line_Extras",
+              "Shop.DS_Line_Removed"
+            ],
+            "tests": null,
+            "journeys": [
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "96be5c",
+            "slice": "04-cart-coupons",
+            "title": "US-061 Review the cart (MANIFEST.LOCK)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Nav_Cart",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Cart"
+            ],
+            "tests": null,
+            "journeys": [
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "7e7074",
+            "slice": "04-cart-coupons",
+            "title": "US-062 Empty cart state",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Cart_ToMenu",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Cart_ToMenu",
+              "Shop.ACT_Nav_Menu",
+              "Shop.SUB_Nav_Menu"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "977de4",
+            "slice": "04-cart-coupons",
+            "title": "US-063 Change the quantity of a line",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Line_Decrease",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Line_Increase",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Line_Decrease",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Line_Increase",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Line_Decrease",
+              "Shop.ACT_Line_Increase",
+              "Shop.SUB_Line_Decrease",
+              "Shop.SUB_Line_Increase"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "838c34",
+            "slice": "04-cart-coupons",
+            "title": "US-064 Remove a line (rm)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Line_Remove",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Line_Remove",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Line_Remove",
+              "Shop.SUB_Line_Remove"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "8ea340",
+            "slice": "04-cart-coupons",
+            "title": "US-065 Clear the cart (rm -rf)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Cart_Clear",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Cart_Clear",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Cart_Clear",
+              "Shop.SUB_Cart_Clear"
+            ],
+            "tests": null,
+            "journeys": [
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "b76fbc",
+            "slice": "04-cart-coupons",
+            "title": "US-066 Apply a coupon",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Coupon_Apply",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Coupon_Apply",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Coupon_Apply",
+              "Shop.SUB_Coupon_Apply"
+            ],
+            "tests": null,
+            "journeys": [
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "28aee2",
+            "slice": "04-cart-coupons",
+            "title": "US-067 Coupon validation messages",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Fulfilment.SUB_Coupon_Evaluate",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Coupon_Apply",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Fulfilment.SUB_Coupon_Evaluate",
+              "Shop.SUB_Coupon_Apply"
+            ],
+            "tests": [
+              "Example A: delivery over the free-delivery threshold, tip 15 %",
+              "Example A20: tip 20 %",
+              "Example A0: no tip",
+              "Example B: GITHUB_STUDENT 15 % on delivery under the threshold",
+              "Example D: pickup has no fee and no tip",
+              "P1: percentage discount rounded half-up (4.425 to 4.43)",
+              "P2: FREE_DISPATCH waives the delivery fee",
+              "P2-pickup: a delivery-only coupon is not applied to pickup",
+              "P3: below the coupon minimum names the missing amount",
+              "P4: percentage discount capped at the coupon maximum",
+              "P10: pickup under the delivery minimum",
+              "P11: tax rounded half-up (1.7457 to 1.75)"
+            ],
+            "testResults": [
+              {
+                "name": "Example A: delivery over the free-delivery threshold, tip 15 %",
+                "status": "passed"
+              },
+              {
+                "name": "Example A20: tip 20 %",
+                "status": "passed"
+              },
+              {
+                "name": "Example A0: no tip",
+                "status": "passed"
+              },
+              {
+                "name": "Example B: GITHUB_STUDENT 15 % on delivery under the threshold",
+                "status": "passed"
+              },
+              {
+                "name": "Example D: pickup has no fee and no tip",
+                "status": "passed"
+              },
+              {
+                "name": "P1: percentage discount rounded half-up (4.425 to 4.43)",
+                "status": "passed"
+              },
+              {
+                "name": "P2: FREE_DISPATCH waives the delivery fee",
+                "status": "passed"
+              },
+              {
+                "name": "P2-pickup: a delivery-only coupon is not applied to pickup",
+                "status": "passed"
+              },
+              {
+                "name": "P3: below the coupon minimum names the missing amount",
+                "status": "passed"
+              },
+              {
+                "name": "P4: percentage discount capped at the coupon maximum",
+                "status": "passed"
+              },
+              {
+                "name": "P10: pickup under the delivery minimum",
+                "status": "passed"
+              },
+              {
+                "name": "P11: tax rounded half-up (1.7457 to 1.75)",
+                "status": "passed"
+              }
+            ],
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "34798b",
+            "slice": "04-cart-coupons",
+            "title": "US-068 Remove or replace the coupon",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Coupon_Remove",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Coupon_Remove",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Coupon_Remove",
+              "Shop.SUB_Coupon_Remove"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "7f8332",
+            "slice": "04-cart-coupons",
+            "title": "US-069 Totals in the cart",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Cart_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.Cart_Drawer",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Cart_Checkout",
+              "Shop.ACT_Cart_Clear",
+              "Shop.ACT_Cart_Edit",
+              "Shop.ACT_Cart_ToMenu",
+              "Shop.ACT_Coupon_Apply",
+              "Shop.ACT_Coupon_Remove",
+              "Shop.ACT_Line_Decrease",
+              "Shop.ACT_Line_Increase",
+              "Shop.ACT_Line_Remove",
+              "Shop.SUB_Cart_Recalculate"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "a644fe",
+            "slice": "04-cart-coupons",
+            "title": "US-070 Delivery minimum and free-delivery hints",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Cart_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Cart_Recalculate"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "01ff8e",
+            "slice": "04-cart-coupons",
+            "title": "US-071 Unavailable lines in the cart",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Cart_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Cart_Recalculate"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "b95de0",
+            "slice": "04-cart-coupons",
+            "title": "US-072 Cart persistence in the guest session",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Cart_Current",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.Cart",
+                "state": "resolved",
+                "kind": "entity"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Cart_Clear",
+              "Shop.SUB_Cart_Current",
+              "Shop.SUB_Coupon_Apply",
+              "Shop.SUB_Coupon_Remove",
+              "Shop.SUB_Home_Carousel",
+              "Shop.SUB_Line_Remove",
+              "Shop.SUB_Menu_ClearSearch",
+              "Shop.SUB_Menu_Filter",
+              "Shop.SUB_Menu_Refresh_Do",
+              "Shop.SUB_Menu_Search",
+              "Shop.SUB_Menu_ShowAll",
+              "Shop.SUB_Menu_Tab",
+              "Shop.SUB_Nav_Search",
+              "Shop.SUB_Payment_Resolve",
+              "Shop.SUB_Shell_Refresh",
+              "Simulation.SUB_Reset"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "cd0e26",
+            "slice": "04-cart-coupons",
+            "title": "US-073 Proceed to checkout",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Cart_Checkout",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Cart_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Cart_Checkout",
+              "Shop.SUB_Cart_Recalculate"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "53e40b",
+            "slice": "05-checkout",
+            "title": "US-081 Choose delivery or pickup",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Type",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Type",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Type",
+              "Shop.SUB_Checkout_Compute",
+              "Shop.SUB_Checkout_Type"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "4ec814",
+            "slice": "05-checkout",
+            "title": "US-082 Enter a delivery address (.env variables)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Checkout",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Changed",
+              "Shop.ACT_Checkout_Pickup",
+              "Shop.ACT_Checkout_Place",
+              "Shop.ACT_Checkout_Tip",
+              "Shop.ACT_Checkout_Type",
+              "Shop.ACT_Nav_Menu",
+              "Shop.DS_Checkout",
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts.",
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
+            "questions": null
+          },
+          {
+            "id": "c14a4f",
+            "slice": "05-checkout",
+            "title": "US-083 Delivery-zone check",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Pickup",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Pickup",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Pickup",
+              "Shop.SUB_Checkout_Compute",
+              "Shop.SUB_Checkout_Pickup"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "40e006",
+            "slice": "05-checkout",
+            "title": "US-085 Contact details",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Checkout",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Core.SUB_FormatPhone",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Core.SUB_FormatPhone",
+              "Shop.ACT_Checkout_Changed",
+              "Shop.ACT_Checkout_Pickup",
+              "Shop.ACT_Checkout_Place",
+              "Shop.ACT_Checkout_Tip",
+              "Shop.ACT_Checkout_Type",
+              "Shop.ACT_Nav_Menu",
+              "Shop.DS_Checkout"
+            ],
+            "tests": [
+              "Phone with spaces is normalised",
+              "Phone with country code +1 is normalised",
+              "Phone with letters is rejected",
+              "Phone with too few digits is rejected"
+            ],
+            "testResults": [
+              {
+                "name": "Phone with spaces is normalised",
+                "status": "passed"
+              },
+              {
+                "name": "Phone with country code +1 is normalised",
+                "status": "passed"
+              },
+              {
+                "name": "Phone with letters is rejected",
+                "status": "passed"
+              },
+              {
+                "name": "Phone with too few digits is rejected",
+                "status": "passed"
+              }
+            ],
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
+            "questions": null
+          },
+          {
+            "id": "509ab6",
+            "slice": "05-checkout",
+            "title": "US-086 Courier tip",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Tip",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Tip",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Tip",
+              "Shop.SUB_Checkout_Compute",
+              "Shop.SUB_Checkout_Tip"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "955b2d",
+            "slice": "05-checkout",
+            "title": "US-087 Order summary and total",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "405be3",
+            "slice": "05-checkout",
+            "title": "US-088 Delivery fee",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "a3d93b",
+            "slice": "05-checkout",
+            "title": "US-089 Minimum delivery order",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "e7a74e",
+            "slice": "05-checkout",
+            "title": "US-091 Place the order (Execute Order --force)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Place",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Place",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Place",
+              "Shop.SUB_Checkout_Compute",
+              "Shop.SUB_Checkout_Place",
+              "Shop.SUB_OrderLine_SnapshotModifiers",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Order_Place"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "c7be68: Page actions: every ACT_ flow only delegates to a SUB_ with the logic (lint CONV010), keeping the permission boundary thin."
+            ],
+            "questions": null
+          },
+          {
+            "id": "926382",
+            "slice": "05-checkout",
+            "title": "US-092 Empty-cart redirect",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.Checkout",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.CheckoutForm.IsEmptyCart",
+                "state": "resolved",
+                "kind": "attribute"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Changed",
+              "Shop.ACT_Checkout_Pickup",
+              "Shop.ACT_Checkout_Place",
+              "Shop.ACT_Checkout_Tip",
+              "Shop.ACT_Checkout_Type",
+              "Shop.ACT_Nav_Menu",
+              "Shop.DS_Checkout",
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
+            "questions": null
+          },
+          {
+            "id": "fb616b",
+            "slice": "05-checkout",
+            "title": "US-093 Pickup details",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "fb1dee",
+            "slice": "05-checkout",
+            "title": "US-094 Coupon re-check for the order type",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Compute",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts."
+            ],
+            "questions": null
+          },
+          {
+            "id": "34df5f",
+            "slice": "05-checkout",
+            "title": "US-095 Item became unavailable during checkout",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Checkout_Place",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Line_Recalculate",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Checkout_Compute",
+              "Shop.SUB_Checkout_Place",
+              "Shop.SUB_Line_Recalculate",
+              "Shop.SUB_OrderLine_SnapshotModifiers",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Order_Place"
+            ],
+            "tests": [
+              "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+              "P7: stuffed crust makes a vegetarian pizza non-vegan",
+              "P8: gluten-free crust on Small removes GLUTEN",
+              "Example C: Boolean Pepperoni Large fully configured"
+            ],
+            "testResults": [
+              {
+                "name": "P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P7: stuffed crust makes a vegetarian pizza non-vegan",
+                "status": "passed"
+              },
+              {
+                "name": "P8: gluten-free crust on Small removes GLUTEN",
+                "status": "passed"
+              },
+              {
+                "name": "Example C: Boolean Pepperoni Large fully configured",
+                "status": "passed"
+              }
+            ],
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "c7be68: Page actions: every ACT_ flow only delegates to a SUB_ with the logic (lint CONV010), keeping the permission boundary thin."
+            ],
+            "questions": null
+          },
+          {
+            "id": "86ff90",
+            "slice": "05-checkout",
+            "title": "US-097 Delivery preview map",
+            "status": "partial",
+            "statusReason": "decision 13ee26: no distance label; fixed destination pin",
+            "anchors": [
+              {
+                "anchor": "@Shop.Checkout",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Fulfilment.DeliveryZone",
+                "state": "resolved",
+                "kind": "entity"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Changed",
+              "Shop.ACT_Checkout_Pickup",
+              "Shop.ACT_Checkout_Place",
+              "Shop.ACT_Checkout_Tip",
+              "Shop.ACT_Checkout_Type",
+              "Shop.ACT_Nav_Menu",
+              "Shop.DS_Checkout",
+              "Simulation.SEED_Catalog",
+              "Simulation.SUB_Reset"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "968fd2: Security: guest read on Coupon removed (no page reads it; the code shows as text on the cart); DeliveryZone readable only for the guest's own orders. This also closed the one Fulfilment\u003c-\u003eShop cycle.",
+              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+            ],
+            "questions": null
+          }
+        ]
+      },
+      {
+        "name": "M2 — Pay and track",
+        "requirements": [
+          {
+            "id": "674aab",
+            "slice": "06-simulated-payment",
+            "title": "US-101 Choose a payment method and demo test card",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Pay",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SNIP_PaymentChoice",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Checkout_Pay",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Pay",
+              "Shop.SUB_Checkout_Pay"
+            ],
+            "tests": null,
+            "journeys": [
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "97ac05",
+            "slice": "06-simulated-payment",
+            "title": "US-102 Payment processing sheet",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "f635a6",
+            "slice": "06-simulated-payment",
+            "title": "US-103 Successful payment",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Pay_Refresh",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.ACT_Track_Refresh",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Pay_Refresh",
+              "Shop.SUB_Track_Fill",
+              "Shop.SUB_Track_Refresh"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "ce323d",
+            "slice": "06-simulated-payment",
+            "title": "US-104 Declined card or insufficient funds",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "49311b",
+            "slice": "06-simulated-payment",
+            "title": "US-105 Gateway timeout",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "ff52e1",
+            "slice": "06-simulated-payment",
+            "title": "US-106 Retry payment with another method",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Pay_Retry",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "a7fee5",
+            "slice": "06-simulated-payment",
+            "title": "US-107 Third failure rolls the order back",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_ToCart",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "72aded",
+            "slice": "06-simulated-payment",
+            "title": "US-108 Cancel the order before payment",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_Cancel",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Pay_CancelAndCart",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.PaymentSheet",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.SUB_Pay_Cancel",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_Cancel",
+              "Shop.ACT_Pay_CancelAndCart",
+              "Shop.ACT_Pay_Refresh",
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Pay_ToCart",
+              "Shop.DS_Track",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Pay_Cancel",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "ff6670",
+            "slice": "06-simulated-payment",
+            "title": "US-109 Abandoned failed payment expires",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "329f49",
+            "slice": "06-simulated-payment",
+            "title": "US-110 Order confirmation (DEPLOYMENT SUCCESSFUL // 200 OK)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.AppUrl",
+                "state": "resolved",
+                "kind": "constant"
+              },
+              {
+                "anchor": "@Shop.Confirmation",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.JS_CopyText",
+                "state": "resolved",
+                "kind": "javascript_action"
+              },
+              {
+                "anchor": "@Shop.NF_CopyHash",
+                "state": "resolved",
+                "kind": "nanoflow"
+              },
+              {
+                "anchor": "@Shop.NF_CopyLink",
+                "state": "resolved",
+                "kind": "nanoflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Receipt_Open",
+              "Shop.ACT_Track_Open",
+              "Shop.ACT_Track_Refresh",
+              "Shop.DS_Track",
+              "Shop.NF_CopyHash",
+              "Shop.NF_CopyLink",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "5b0193",
+            "slice": "06-simulated-payment",
+            "title": "US-111 Simulated refund on cancellation",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Fulfilment.SUB_Order_Refund",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Fulfilment.SUB_Order_Refund"
+            ],
+            "tests": null,
+            "journeys": [
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "afaea9",
+            "slice": "06-simulated-payment",
+            "title": "US-112 Random payment failure rate",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Payments",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Payment_Resolve",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Payment_Resolve",
+              "Simulation.SIM_Payments"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "70fb35",
+            "slice": "06-simulated-payment",
+            "title": "US-113 Retry or cancel from the tracking page",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Track_RetryOpen",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Track_RetryOpen",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Pay_Retry"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "bdcc79",
+            "slice": "06-simulated-payment",
+            "title": "US-114 Simulated customers pay through the same gateway",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Payments",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Simulation.SUB_Traffic_Spawn",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Payments",
+              "Simulation.SUB_Traffic_Spawn"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "691cee",
+            "slice": "07-order-tracking",
+            "title": "US-121 Open the tracking page",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Track_Token",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Token",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Track_Token",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Track_Fill",
+              "Shop.SUB_Track_Token"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "697ae4",
+            "slice": "07-order-tracking",
+            "title": "US-122 Pipeline stepper",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_Stepper",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "be55aa",
+            "slice": "07-order-tracking",
+            "title": "US-123 Live order log (bash — track.log)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SNIP_OrderLog",
+                "state": "resolved",
+                "kind": "snippet"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Order_Log",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "dfb800",
+            "slice": "07-order-tracking",
+            "title": "US-124 Automatic refresh",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2ef681",
+            "slice": "07-order-tracking",
+            "title": "US-125 ETA countdown",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "503ba6",
+            "slice": "07-order-tracking",
+            "title": "US-126 Simulated map with the courier",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "3353ef",
+            "slice": "07-order-tracking",
+            "title": "US-127 Courier and oven information",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "152bc8",
+            "slice": "07-order-tracking",
+            "title": "US-128 Order summary and receipt link",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Receipt_Open",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Receipt_Open",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "2a87af",
+            "slice": "07-order-tracking",
+            "title": "US-129 Roll back (cancel) a queued order",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Track_Rollback",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Rollback",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Track_Rollback",
+              "Shop.SUB_Track_Fill",
+              "Shop.SUB_Track_Rollback"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "9fafa3: US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded twice; buttons show no explicit busy state of their own."
+            ],
+            "questions": null
+          },
+          {
+            "id": "55019e",
+            "slice": "07-order-tracking",
+            "title": "US-130 Rollback rejected after baking starts",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "87d99b",
+            "slice": "07-order-tracking",
+            "title": "US-131 Cancelled order display",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "6547bc",
+            "slice": "07-order-tracking",
+            "title": "US-132 Pickup tracking",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "bf71ba",
+            "slice": "07-order-tracking",
+            "title": "US-133 Look up an order by number and email",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Lookup",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.LookupForm",
+                "state": "resolved",
+                "kind": "entity"
+              },
+              {
+                "anchor": "@Shop.SUB_Lookup",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.TrackLookup",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Lookup",
+              "Shop.DS_Lookup",
+              "Shop.SUB_Lookup",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "d58a51",
+            "slice": "07-order-tracking",
+            "title": "US-134 Invalid tracking link",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Track_Token",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Token",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.TrackInvalid",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Home",
+              "Shop.ACT_Track_Token",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Track_Fill",
+              "Shop.SUB_Track_Token"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "bf9414",
+            "slice": "07-order-tracking",
+            "title": "US-135 ./track.log navigation target",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Nav_Track",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Nav_Track",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Track",
+              "Shop.SUB_Nav_Track",
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "714236",
+            "slice": "07-order-tracking",
+            "title": "US-136 Lookup abuse protection",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Lookup",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.LookupAttempt",
+                "state": "resolved",
+                "kind": "entity"
+              },
+              {
+                "anchor": "@Shop.SUB_Lookup",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Lookup",
+              "Shop.SUB_Lookup",
+              "Shop.SUB_Order_Grant",
+              "Shop.SUB_Track_Fill",
+              "Simulation.SUB_Reset"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "01e571",
+            "slice": "07-order-tracking",
+            "title": "US-137 Completed order view",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.SUB_Track_Fill",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.SUB_Track_Fill"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "f56681",
+            "slice": "09-customer-profile",
+            "title": "US-166 Order detail and receipt (git show \u003chash\u003e)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Receipt_Open",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.Receipt",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Receipt_Open",
+              "Shop.DS_OrderLine_Modifiers",
+              "Shop.DS_Order_History",
+              "Shop.DS_Order_Lines",
+              "Shop.DS_Order_Payments",
+              "Shop.DS_Track"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "17fbc5",
+            "slice": "09-customer-profile",
+            "title": "US-167 Print the receipt",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.JS_Print",
+                "state": "resolved",
+                "kind": "javascript_action"
+              },
+              {
+                "anchor": "@Shop.NF_Print",
+                "state": "resolved",
+                "kind": "nanoflow"
+              },
+              {
+                "anchor": "@Shop.Receipt",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_OrderLine_Modifiers",
+              "Shop.DS_Order_History",
+              "Shop.DS_Order_Lines",
+              "Shop.DS_Order_Payments",
+              "Shop.DS_Track",
+              "Shop.NF_Print"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          }
+        ]
+      },
+      {
+        "name": "M3 — Simulated kitchen and couriers",
+        "requirements": [
+          {
+            "id": "4def29",
+            "slice": "10-kitchen-display",
+            "title": "US-194 Automatic kitchen run by the simulator",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Kitchen",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Kitchen",
+              "Simulation.SUB_Order_SliceSummary",
+              "Simulation.SUB_Oven_FirstFree"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "ce60f6",
+            "slice": "13-courier-management",
+            "title": "US-247 Automatic dispatch and courier trips",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Couriers",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Couriers",
+              "Simulation.SUB_Courier_SetStatus"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "51fbc1",
+            "slice": "14-simulation-control",
+            "title": "US-265 Order traffic generator",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Traffic",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Simulation.SUB_Traffic_Spawn",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Traffic",
+              "Simulation.SUB_Traffic_Spawn"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "e07c78",
+            "slice": "14-simulation-control",
+            "title": "US-270 Reset the demo",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SUB_Toast_Broadcast",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SUB_Toast_Broadcast"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "44dd09",
+            "slice": "14-simulation-control",
+            "title": "US-271 Live log lines for every step",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Fulfilment.SUB_Order_Log",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Fulfilment.SUB_Order_Transition",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Fulfilment.SUB_Order_Log",
+              "Fulfilment.SUB_Order_Transition"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": [
+              "f2c8ab: Store time (BR-DATA-05): the runtime's default time zone America/Los_Angeles; order-log times are stored as server-formatted text because client-formatted dates follow the browser's zone."
+            ],
+            "questions": null
+          },
+          {
+            "id": "8469a6",
+            "slice": "14-simulation-control",
+            "title": "US-272 Simulated pickup arrival",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Pickups",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Pickups"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "65937a",
+            "slice": "14-simulation-control",
+            "title": "US-273 Housekeeping of old simulated orders",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Simulation.SIM_Housekeeping",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Simulation.SIM_Housekeeping"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
+              "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
+              "J8 home: featured carousel pages and Configure opens the configurator",
+              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+              "J10 menu grep and dietary filters (US-027, US-033)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
+            ],
+            "decisions": null,
+            "questions": null
+          }
+        ]
+      },
+      {
+        "name": "M4 — Errors and system messages",
+        "requirements": [
+          {
+            "id": "5ef3aa",
+            "slice": "15-errors-messages",
+            "title": "US-281 Page not found (404)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.NotFound",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Home",
+              "Shop.ACT_Nav_Track"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "c73f47",
+            "slice": "15-errors-messages",
+            "title": "US-282 Unexpected error (500)",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.FaultInjection",
+                "state": "resolved",
+                "kind": "constant"
+              },
+              {
+                "anchor": "@Shop.JS_RetryLast",
+                "state": "resolved",
+                "kind": "javascript_action"
+              },
+              {
+                "anchor": "@Shop.UnexpectedError",
+                "state": "resolved",
+                "kind": "page"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Home",
+              "Shop.DS_Error",
+              "Shop.NF_RetryLast"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": [
+              "5ae203: US-282 / US-289: the platform's error dialog is replaced by a client hook that opens SCR-41 with an incident id that DS_Error also writes to the server log; an opt-in constant FaultInjection triggers it for the acceptance test."
+            ],
+            "questions": null
+          },
+          {
+            "id": "a308a6",
+            "slice": "15-errors-messages",
+            "title": "US-284 Field validation messages",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Checkout_Changed",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Checkout_Changed",
+              "Shop.SUB_Checkout_Compute"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": null,
+            "questions": null
+          },
+          {
+            "id": "db9b58",
+            "slice": "15-errors-messages",
+            "title": "US-285 Conflicting change by someone else",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.ACT_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.ACT_Track_Rollback",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Pay_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Rollback",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Pay_Retry",
+              "Shop.ACT_Track_Rollback",
+              "Shop.SUB_Checkout_Current",
+              "Shop.SUB_Pay_Retry",
+              "Shop.SUB_Track_Rollback"
+            ],
+            "tests": null,
+            "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
+              "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "9fafa3: US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded twice; buttons show no explicit busy state of their own."
+            ],
+            "questions": null
+          },
+          {
+            "id": "4af807",
+            "slice": "15-errors-messages",
+            "title": "US-286 Session expiry",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.JS_LivePoller",
+                "state": "resolved",
+                "kind": "javascript_action"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Shell_Live"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": [
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
+            "questions": null
+          },
+          {
+            "id": "21f8a4",
+            "slice": "15-errors-messages",
+            "title": "US-287 Connection lost or refresh failure",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.JS_LivePoller",
+                "state": "resolved",
+                "kind": "javascript_action"
+              },
+              {
+                "anchor": "@Shop.Layout_Guest",
+                "state": "resolved",
+                "kind": "layout"
+              }
+            ],
+            "footprint": [
+              "Shop.DS_Shell_Live"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": [
+              "e95c42: Theme: the prototype's CSS is ported into the Mendix theme scoped to .gp-app, with hand-written adapters for Mendix DOM (list views, pop-ups, data views); Atlas data-view overflow neutralised so sticky panels work.",
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
+            "questions": null
+          },
+          {
+            "id": "58f3c6",
+            "slice": "15-errors-messages",
+            "title": "US-288 Busy states and double-submit protection",
+            "status": "partial",
+            "statusReason": "decision 9fafa3: no explicit busy indicator on buttons; server-side guards only",
+            "anchors": [
+              {
+                "anchor": "@Fulfilment.SUB_Payment_Retry",
+                "state": "resolved",
+                "kind": "microflow"
+              },
+              {
+                "anchor": "@Shop.SUB_Track_Rollback",
+                "state": "resolved",
+                "kind": "microflow"
+              }
+            ],
+            "footprint": [
+              "Fulfilment.SUB_Payment_Retry",
+              "Shop.SUB_Track_Rollback"
+            ],
+            "tests": null,
+            "journeys": [
+              "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
+            ],
+            "decisions": [
+              "9fafa3: US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded twice; buttons show no explicit busy state of their own."
+            ],
+            "questions": null
+          },
+          {
+            "id": "4200b1",
+            "slice": "15-errors-messages",
+            "title": "US-289 No technical details exposed",
+            "status": "built",
+            "anchors": [
+              {
+                "anchor": "@Shop.UnexpectedError",
+                "state": "resolved",
+                "kind": "page"
+              },
+              {
+                "anchor": "@Shop.JS_LivePoller",
+                "state": "resolved",
+                "kind": "javascript_action"
+              }
+            ],
+            "footprint": [
+              "Shop.ACT_Nav_Home",
+              "Shop.DS_Error",
+              "Shop.DS_Shell_Live"
+            ],
+            "tests": null,
+            "journeys": null,
+            "decisions": [
+              "2be98e: US-121..US-137 live updates: a JavaScript poller clicks each page's hidden refresh container every 2 s (BR-ORD-20: within 5 s); the same hook shows CONNECTION_LOST after two failures.",
+              "5ae203: US-282 / US-289: the platform's error dialog is replaced by a client hook that opens SCR-41 with an incident id that DS_Error also writes to the server log; an opt-in constant FaultInjection triggers it for the acceptance test.",
+              "f52927: US-286 session expiry: the browser remembers the last session id and cart count; a new session after a non-empty cart was lost shows TXT-ERR-20. Session timeout is the Mendix default of 10 minutes (stated in RUN/delivery-notes.md)."
+            ],
+            "questions": null
+          }
+        ]
+      }
+    ],
+    "questions": null
+  }
+}
