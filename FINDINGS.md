@@ -452,3 +452,11 @@ Not verified:
   without a project did not promote.
 - **Test-runner leftover:** the `mxtest` line the test runner leaves in
   `UserActionsRegistrar.java` is still there with the new binary.
+
+## mxcli verify (main build, tried 2026-11-19)
+
+`mxcli verify` (main only, not in the project binary) runs check → lint → mx check in ~16 s and compares against a baseline.
+- First run with no baseline: check PASSED, mxcheck PASSED, lint FAILED (exit 18). The only errors were the two SEC007 guest-readable entities (`Catalog.Allergen`, `Core.StoreSettings`). Both are already triaged as intended in `docs/reports/security-annotations.yaml`, but verify doesn't read that file.
+- mxcheck counted 0 findings, while a direct `mx check` gives 53 warnings, so it seems to track errors only.
+- After `--update-baseline` (kept in the scratchpad, not committed), a rerun passed with 0 new findings and exit 0.
+- It covers only static gates; unit tests, journeys and the running app are still separate steps.
