@@ -52,7 +52,7 @@ create or modify persistent entity Shop."Product" (
   "IsVegan": Boolean default false,
   "IsOrderable": Boolean default true,
   "CardPrice": Decimal default 0,
-  "CardSizeLabel": String(20),
+  "CardSizeLabel": String(60),
   "ServingLabel": String(60),
   "CaloriesLabel": String(40),
   "AllergenText": String(300),
