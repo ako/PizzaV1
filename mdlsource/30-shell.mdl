@@ -1,0 +1,280 @@
+mdl 1;
+-- SCR-16 customer shell (EP-01): DEMO MODE banner, header, Project Explorer
+-- sidebar, footer, phone bottom tabs and toasts, built once in the layout.
+
+/**
+ * Data source of the shell: the current guest's cart (created on first visit),
+ * which also carries the guest's active order for the sidebar and ./track.log.
+ *
+ * @returns The guest's cart
+ */
+create or modify microflow Shop.DS_Shell_Cart ()
+returns Shop.Cart as $Cart
+folder 'Shell'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  return $Cart;
+end;
+
+/**
+ * Opens the menu on a category tab (sidebar category files, New Branch).
+ *
+ * @param $Category Category code, e.g. PIZZAS
+ */
+create or modify microflow Shop.ACT_Nav_Menu ($Category: String)
+folder 'Shell'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  change $Cart (MenuCategory = $Category, SearchQuery = '', SearchInput = '');
+  commit $Cart without events refresh;
+  show page Shop.Menu();
+end;
+
+/**
+ * ./checkout.yml: opens checkout, or explains that the manifest is empty
+ * and stays (US-001 AC4).
+ */
+create or modify microflow Shop.ACT_Nav_Checkout ()
+folder 'Shell'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  if $Cart/ItemCount = 0 then
+    call microflow Shop.SUB_Toast(Message = 'Your manifest is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    return;
+  end if;
+  show page Shop.Checkout();
+end;
+
+/**
+ * Header search (grep --pizza): runs the search on the menu (US-001 AC6, US-027).
+ *
+ * @param $Cart The guest's cart holding the typed text
+ */
+create or modify microflow Shop.ACT_Nav_Search ($Cart: Shop.Cart)
+folder 'Shell'
+begin
+  declare $Query String = '';
+  if $Cart/SearchInput != empty then
+    set $Query = trim($Cart/SearchInput);
+  end if;
+  change $Cart (SearchQuery = $Query);
+  commit $Cart without events refresh;
+  show page Shop.Menu();
+end;
+
+/**
+ * Opens the cart drawer (desktop/tablet) or full page (phone), US-061.
+ */
+create or modify microflow Shop.ACT_Nav_Cart ()
+folder 'Shell'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  show page Shop.Cart_Drawer(Cart = $Cart);
+end;
+
+/**
+ * ./track.log and the phone tab Trace: the most recent order of this
+ * session in any status, otherwise the lookup (US-135, BR-NAV-06).
+ */
+create or modify microflow Shop.ACT_Nav_Track ()
+folder 'Shell'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  retrieve $Latest from Shop.OrderAccess where [Shop.OrderAccess_User = '[%CurrentUser%]'] sort by GrantedAt desc first;
+  if $Latest = empty then
+    show page Shop.TrackLookup();
+    return;
+  end if;
+  retrieve $Order from $Latest/Shop.OrderAccess_Order;
+  show page Shop.Tracking(TheOrder = $Order);
+end;
+
+/**
+ * Home: opens the home page.
+ */
+create or modify microflow Shop.ACT_Nav_Home ()
+folder 'Shell'
+begin
+  show page Shop.Home();
+end;
+
+-- ───────────────────────── snippets ─────────────────────────
+
+/** DEMO MODE banner (US-004): always visible, never dismissible, no controls. */
+create or modify snippet Shop.SNIP_DemoBanner {
+  container banner (Class: 'demo-banner') {
+    container bannerTxt (Class: 'txt') {
+      dynamictext bannerKey (Content: 'DEMO MODE //', Class: 'b-key')
+      dynamictext bannerLong (Content: ' Payments, kitchen and delivery are simulated. No real orders, no real charges.', Class: 'hide-phone')
+      dynamictext bannerShort (Content: ' Simulated orders & payments', Class: 'only-phone')
+    }
+  }
+};
+
+/** Header (US-001): logo, main navigation, grep search and the cart button. */
+create or modify snippet Shop.SNIP_Header {
+  dataview dvHeader (DataSource: NANOFLOW Shop.DS_Shell_Live, Class: 'app-header-dv') {
+    container header (Class: 'app-header') {
+      container brand (Class: 'brand', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) {
+        image logoH (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-horizontal.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'logo-h')
+        image logoM (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-mark.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'logo-m')
+      }
+      container mainNav (Class: 'main-nav') {
+        linkbutton navHome (Caption: './main.js', Action: CALL MICROFLOW Shop.ACT_Nav_Home, Class: 'nav-home')
+        linkbutton navMenu (Caption: './menu.ts', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS'), Class: 'nav-menu')
+        linkbutton navCheckout (Caption: './checkout.yml', Action: CALL MICROFLOW Shop.ACT_Nav_Checkout, Class: 'nav-checkout', DynamicClasses: if $currentObject/ItemCount = 0 then 'disabled' else '')
+        linkbutton navTrack (Caption: './track.log', Action: CALL MICROFLOW Shop.ACT_Nav_Track, Class: 'nav-track')
+      }
+      container tools (Class: 'header-tools') {
+        container grep (Class: 'grep') {
+          dynamictext grepIcon (Content: 'search', Class: 'ms md c-muted')
+          textbox grepInput (Attribute: SearchInput, Placeholder: 'grep --pizza ''…''', OnEnterKeyPress: CALL MICROFLOW Shop.ACT_Nav_Search(Cart = $currentObject), Class: 'grep-input')
+        }
+        container cartBtn (Class: 'icon-btn', OnClick: CALL MICROFLOW Shop.ACT_Nav_Cart) {
+          dynamictext cartIcon (Content: 'shopping_cart', Class: 'ms')
+          dynamictext cartCount (Content: '{1}', ContentParams: ({1} = ItemCount), Class: 'count-bubble', Visible: $currentObject/ItemCount > 0)
+        }
+      }
+      container shellPoll (Class: 'gp-poll', OnClick: CALL MICROFLOW Shop.ACT_Shell_Refresh(Cart = $currentObject)) { }
+    }
+  }
+};
+
+/** Project Explorer sidebar (US-002): desktop only. */
+create or modify snippet Shop.SNIP_Sidebar {
+  dataview dvSidebar (DataSource: MICROFLOW Shop.DS_Shell_Cart, Class: 'sidebar-dv') {
+    container sidebar (Class: 'sidebar') {
+      container sbHead (Class: 'sb-head') {
+        dynamictext sbTitle (Content: 'Project Explorer', Class: 't-label c-primary')
+        dynamictext sbPath (Content: 'src/pizza-mxdev/', Class: 't-small c-muted mt-8')
+      }
+      container sbNav (Class: 'sb-nav') {
+        container sbRoot (Class: 'sb-item nav-home', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) {
+          dynamictext sbRootIcon (Content: 'folder', Class: 'ms md')
+          dynamictext sbRootTxt (Content: 'Root')
+        }
+        container sbCats (Class: 'sb-item nav-menu', OnClick: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS')) {
+          dynamictext sbCatsIcon (Content: 'list', Class: 'ms md')
+          dynamictext sbCatsTxt (Content: 'Categories')
+        }
+        container sbSub (Class: 'sub') {
+          linkbutton sbPizzas (Caption: 'pizzas.json', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS'))
+          linkbutton sbSides (Caption: 'sides.yml', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'SIDES'))
+          linkbutton sbDrinks (Caption: 'drinks.env', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'DRINKS'))
+          linkbutton sbDesserts (Caption: 'desserts.md', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'DESSERTS'))
+        }
+        container sbActive (Class: 'sb-item nav-track', OnClick: CALL MICROFLOW Shop.ACT_Nav_Track, Visible: $currentObject/Shop.Cart_ActiveOrder != empty) {
+          dynamictext sbActiveIcon (Content: 'rocket_launch', Class: 'ms md')
+          dynamictext sbActiveTxt (Content: 'Active_Deployments')
+        }
+      }
+      container sbFoot (Class: 'sb-foot') {
+        actionbutton sbNewBranch (Caption: 'New Branch', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS'), Class: 'btn btn-secondary btn-block nb')
+      }
+    }
+  }
+};
+
+/** Footer (US-007): store line, version, menu.ts / track.log / allergens.md. */
+create or modify snippet Shop.SNIP_Footer {
+  container footer (Class: 'app-footer') {
+    container fBrand (Class: 'f-brand') {
+      image fLogo (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-mark.svg', AlternativeText: '', Class: 'f-logo')
+      container fText {
+        dynamictext fStore (Content: '© {1} Git Pizza MxDev — Mission Kitchen · 2140 Folsom Street, San Francisco, CA 94110 · (415) 555-0142', ContentParams: ({1} = formatDateTime([%CurrentDateTime%], 'yyyy')), Class: 'f-line')
+        dynamictext fVersion (Content: './git-pizza-mxdev --version 1.0.0', Class: 't-micro c-muted f-line')
+      }
+    }
+    container fNav (Class: 'f-nav') {
+      linkbutton fMenu (Caption: 'menu.ts', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS'))
+      linkbutton fTrack (Caption: 'track.log', Action: CALL MICROFLOW Shop.ACT_Nav_Track)
+      linkbutton fAllergens (Caption: 'allergens.md', Action: SHOW PAGE Shop.AllergenNotice)
+    }
+  }
+};
+
+/** Phone bottom tab bar (US-003): Source, Deploy, Trace. */
+create or modify snippet Shop.SNIP_BottomNav {
+  dataview dvBottom (DataSource: MICROFLOW Shop.DS_Shell_Cart, Class: 'bottom-nav-dv') {
+    container bottomNav (Class: 'bottom-nav') {
+      container bnSource (Class: 'bn-tab nav-menu', OnClick: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS')) {
+        dynamictext bnSourceIcon (Content: 'code', Class: 'ms')
+        dynamictext bnSourceTxt (Content: 'Source')
+      }
+      container bnDeploy (Class: 'bn-tab nav-cart', OnClick: CALL MICROFLOW Shop.ACT_Nav_Cart) {
+        dynamictext bnDeployIcon (Content: 'rocket_launch', Class: 'ms')
+        dynamictext bnDeployTxt (Content: 'Deploy')
+        dynamictext bnDeployCount (Content: '{1}', ContentParams: ({1} = ItemCount), Class: 'count-bubble', Visible: $currentObject/ItemCount > 0)
+      }
+      container bnTrace (Class: 'bn-tab nav-track', OnClick: CALL MICROFLOW Shop.ACT_Nav_Track) {
+        dynamictext bnTraceIcon (Content: 'terminal', Class: 'ms')
+        dynamictext bnTraceTxt (Content: 'Trace')
+      }
+    }
+  }
+};
+
+/** Toasts (US-010): top-right, max three, close button. */
+create or modify snippet Shop.SNIP_Toasts {
+  container toasts (Class: 'toasts') {
+    listview lvToasts (DataSource: DATABASE Shop.Toast WHERE [Shop.Toast_Owner = '[%CurrentUser%]'] SORT BY CreatedAt ASC, Class: 'toast-list') {
+      container toast (Class: 'toast', DynamicClasses: if $currentObject/Level = Shop.ToastLevel.ERROR then 'error' else if $currentObject/Level = Shop.ToastLevel.INFO then 'info' else if $currentObject/Level = Shop.ToastLevel.WARNING then 'warn' else '') {
+        dynamictext toastIcon (Content: '{1}', ContentParams: ({1} = if $currentObject/Level = Shop.ToastLevel.ERROR then 'error' else if $currentObject/Level = Shop.ToastLevel.SUCCESS then 'check_circle' else 'info'), Class: 'ms md')
+        dynamictext toastMsg (Content: '{1}', ContentParams: ({1} = Message), Class: 'toast-msg')
+        linkbutton toastView (Caption: 'View manifest', Action: CALL MICROFLOW Shop.ACT_Nav_Cart, Visible: $currentObject/ShowCartAction, Class: 'toast-action')
+        actionbutton toastClose (Caption: 'close', Action: CALL MICROFLOW Shop.ACT_Toast_Close(Toast = $currentObject), Class: 'toast-x ms sm')
+      }
+    }
+  }
+};
+
+-- ───────────────────────── layouts ─────────────────────────
+
+/** Guest layout: the IDE-style shell around every customer page. */
+create or modify layout Shop.Layout_Guest (
+  layouttype: 'Responsive',
+  class: 'gp-app grid-bg has-bottom-nav'
+) {
+  scrollcontainer gpScroll {
+    region center (Class: 'gp-region') {
+      snippetcall scBanner (Snippet: Shop.SNIP_DemoBanner)
+      snippetcall scHeader (Snippet: Shop.SNIP_Header)
+      container layout (Class: 'layout') {
+        snippetcall scSidebar (Snippet: Shop.SNIP_Sidebar)
+        container content (Class: 'content') {
+          placeholder Main
+        }
+      }
+      snippetcall scFooter (Snippet: Shop.SNIP_Footer)
+      snippetcall scBottom (Snippet: Shop.SNIP_BottomNav)
+      snippetcall scToasts (Snippet: Shop.SNIP_Toasts)
+    }
+  }
+};
+
+/** Minimal frame of the error pages (SCR-40/41): DEMO MODE banner and the page. */
+create or modify layout Shop.Layout_Minimal (
+  layouttype: 'Responsive',
+  class: 'gp-app grid-bg gp-minimal'
+) {
+  scrollcontainer gpScrollMin {
+    region center (Class: 'gp-region') {
+      snippetcall scBannerMin (Snippet: Shop.SNIP_DemoBanner)
+      placeholder Main
+      snippetcall scToastsMin (Snippet: Shop.SNIP_Toasts)
+    }
+  }
+};
+
+/** Modal / bottom sheet (SCR-04, SCR-07, SCR-08, dialogs). */
+create or modify layout Shop.Layout_Modal (
+  layouttype: 'ModalPopup',
+  class: 'gp-app gp-modal-layout'
+) {
+  scrollcontainer gpScrollModal {
+    region center (Class: 'gp-region') {
+      placeholder Main
+    }
+  }
+};

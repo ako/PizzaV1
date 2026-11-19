@@ -25,6 +25,7 @@ grant read *, write (AddressLine1, AddressLine2, City, StateCode, Zip, DeliveryN
 grant read * on entity Shop.Toast to Shop.Guest where [Shop.Toast_Owner = '[%CurrentUser%]'];
 grant read * on entity Shop.Coupon to Shop.Guest where [Shop.Cart_Coupon/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'];
 grant read * on entity Shop.PriceResult to Shop.Guest;
+grant read * on entity Shop.HomeView to Shop.Guest;
 
 -- ── Orders the guest holds a token for (LITE-SES-03): placed, looked up or opened by tracking link
 grant read * on entity Shop.OrderAccess to Shop.Guest where [Shop.OrderAccess_User = '[%CurrentUser%]'];
@@ -39,3 +40,31 @@ grant read (LoggedAt, Level, Tag, Message, Seq) on entity Shop.OrderLogEntry to 
 -- courier and oven of a token order: display fields only
 grant read (Name, NodeHandle, Vehicle) on entity Shop.Courier to Shop.Guest where [Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
 grant read (Code, DisplayName) on entity Shop.Oven to Shop.Guest where [Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+
+-- ── Built-in administrator: same screens as a guest (there are no admin screens),
+-- unrestricted reads so the runtime checks pass for this role too.
+grant read * on entity Shop.Allergen to Shop.Administrator;
+grant read * on entity Shop.Category to Shop.Administrator;
+grant read * on entity Shop.Product to Shop.Administrator;
+grant read * on entity Shop.ProductSize to Shop.Administrator;
+grant read * on entity Shop.RecipeItem to Shop.Administrator;
+grant read * on entity Shop.Ingredient to Shop.Administrator;
+grant read * on entity Shop.Option to Shop.Administrator;
+grant read * on entity Shop.DeliveryZone to Shop.Administrator;
+grant read * on entity Shop.StoreSettings to Shop.Administrator;
+grant read *, write (CouponInput, SearchInput, SearchQuery) on entity Shop.Cart to Shop.Administrator;
+grant read * on entity Shop.CartLine to Shop.Administrator;
+grant read *, write (AddressLine1, AddressLine2, City, StateCode, Zip, DeliveryNotes, ContactName, ContactEmail, ContactPhone) on entity Shop.CheckoutForm to Shop.Administrator;
+grant read * on entity Shop.Toast to Shop.Administrator;
+grant read * on entity Shop.Coupon to Shop.Administrator;
+grant read * on entity Shop.PriceResult to Shop.Administrator;
+grant read * on entity Shop.HomeView to Shop.Administrator;
+grant read * on entity Shop.OrderAccess to Shop.Administrator;
+grant read * on entity Shop.Order to Shop.Administrator;
+grant read * on entity Shop.OrderLine to Shop.Administrator;
+grant read * on entity Shop.OrderLineModifier to Shop.Administrator;
+grant read * on entity Shop.PaymentAttempt to Shop.Administrator;
+grant read * on entity Shop.OrderStatusChange to Shop.Administrator;
+grant read * on entity Shop.OrderLogEntry to Shop.Administrator;
+grant read * on entity Shop.Courier to Shop.Administrator;
+grant read * on entity Shop.Oven to Shop.Administrator;

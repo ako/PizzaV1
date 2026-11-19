@@ -20,3 +20,8 @@ $mxcli-theme-variant: dark;
 @import "mxcli-recipes";
 @import "mxcli-widgets";
 // mxcli:theme:end gitpizza 4a76913d6b1502ff
+
+// Git Pizza MxDev component layer (outside the generated theme block)
+@import "gitpizza-proto";
+@import "gitpizza-screens";
+@import "gitpizza-app";

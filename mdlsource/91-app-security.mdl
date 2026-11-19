@@ -1,0 +1,20 @@
+mdl 1;
+-- App security (information model section 10): production level; every visitor
+-- is an anonymous user with user role Anonymous; only the built-in
+-- administrator has another role. No sign-in page, no demo users.
+
+create or modify user role Anonymous (ModuleRoles: (Shop.Guest, Atlas_Core.User, Atlas_Web_Content.Anonymous, NanoflowCommons.User, DataWidgets.User, System.User), Description: 'Every visitor: an anonymous guest (LITE-SES-01)');
+alter user role Administrator add module roles (Shop.Administrator);
+
+create or modify navigation Responsive
+  app title 'Git Pizza MxDev'
+  home page Shop.Home
+  not found page Shop.NotFound
+{
+};
+
+drop demo user if exists 'demo_user';
+drop demo user if exists 'demo_administrator';
+drop user role if exists User;
+
+alter app security (SecurityLevel: PRODUCTION, EnableDemoUsers: FALSE, EnableGuestAccess: TRUE, GuestUserRole: Anonymous);

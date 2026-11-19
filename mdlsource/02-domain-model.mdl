@@ -57,7 +57,10 @@ create or modify persistent entity Shop."Product" (
   "CaloriesLabel": String(40),
   "AllergenText": String(300),
   "ToppingsCode": String(600),
-  "SearchText": String(1000)
+  "SearchText": String(1000),
+  "ModulePath": String(80),
+  "CardPriceLabel": String(40),
+  "SpiceLabel": String(30)
 ) index ("Code") index ("SortOrder");
 
 /** A price point of a product (Small/Medium/Large or Regular). */
@@ -511,3 +514,24 @@ create or modify association Shop."Order_PlacedBy" from Shop."Order" to System."
 -- Guest UI state lives on the Cart (one per guest).
 create or modify association Shop."CartLine_EditOf" from Shop."CartLine" to Shop."CartLine";
 create or modify association Shop."Cart_ActiveOrder" from Shop."Cart" to Shop."Order";
+
+/** Home page view (SCR-01): the four KPIs as numbers only (LITE-SEC-02) and the carousel position. */
+create or modify non-persistent entity Shop."HomeView" (
+  "DeployedToday": Integer default 0,
+  "PxPer": Integer default 1,
+  "PxLit": Integer default 0,
+  "ScaleText": String(40),
+  "AvgText": String(10),
+  "HasAvg": Boolean default false,
+  "Busy": Integer default 0,
+  "Slots": Integer default 0,
+  "LoadPct": Integer default 0,
+  "Heavy": Boolean default false,
+  "CouriersOn": Integer default 0,
+  "CouriersTotal": Integer default 0,
+  "TermModules": String(80),
+  "TermVulns": String(80),
+  "CarouselStart": Integer default 0,
+  "FeaturedCount": Integer default 0,
+  "CarouselPos": String(20)
+);

@@ -37,3 +37,14 @@ Mendix 11.16.1 · mxcli nightly-20261118-9d764483c · MDL scripts `mdl 1`.
   runtime log: seed timers resolve within 1–2 s of their due time.
 - Optimistic locking is enabled so a guest action and a simulator transition on
   the same order cannot both win (lifecycle section 1, US-285).
+- A DYNAMICTEXT literal shaped like `word.word` (e.g. `'allergens.md'`) is stored
+  as an attribute binding with an unbound `{1}` → mxbuild CE0402. `mxcli check`
+  does not flag it. Workaround: `Content: '{1}', ContentParams: ({1} = 'allergens.md')`.
+- The live poller keeps the network busy, so Playwright must wait for `load`
+  plus a delay, not `networkidle`.
+- Mendix applies `display:grid` from a class on a list view to the list view's own
+  div, which has one child (`ul`); grids/carousels must target `.cls > ul`.
+- The local runtime's trial licence caps concurrent sessions ("The current
+  licence does not allow more users to sign in"). Every Playwright context is a
+  new anonymous session; scripts and tests call `mx.logout()` at the end, and
+  test runs restart the runtime first.

@@ -1,0 +1,201 @@
+// Git Pizza MxDev — adapters between the prototype's component classes
+// (_gitpizza-proto.scss, generated) and the DOM Mendix widgets render.
+// Hand-written; keep every rule scoped under .gp-app (the layout root) or a
+// popup/drawer class so Atlas stays untouched elsewhere.
+
+html, body { background: var(--surface-base); color: var(--text-primary); }
+body { font: 400 14px/1.5 var(--font-mono); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+#content, .mx-page, .mx-scrollcontainer, .mx-scrollcontainer-wrapper, .mx-placeholder { background: transparent; }
+
+.gp-app {
+  min-height: 100vh;
+  // Mendix wraps text in spans and widgets in divs; make them neutral.
+  .form-group { margin: 0; }
+  .mx-listview { padding: 0; margin: 0; background: transparent; border: 0; }
+  .mx-listview > ul { margin: 0; padding: 0; list-style: none; }
+  .mx-listview > ul > li, .mx-listview .mx-listview-item { padding: 0; margin: 0; border: 0; background: transparent; cursor: default; }
+  .mx-listview > ul > li:hover, .mx-listview > ul > li:focus, .mx-listview .mx-listview-item.selected { background: transparent; }
+  .mx-listview-empty { display: none; }
+  .mx-dataview, .mx-dataview-content { padding: 0; margin: 0; }
+  .mx-dataview-controls { display: none; }
+  .mx-button, .mx-link { font-family: var(--font-mono); }
+  .btn { margin: 0; line-height: 1.2; text-shadow: none; }
+  .btn:focus, .btn:active { box-shadow: none; }
+  .btn .glyphicon, .btn .mx-icon-lined, .btn .mx-icon-filled { display: none; }
+  a.mx-link { color: inherit; text-decoration: none; }
+  a.mx-link:hover { text-decoration: none; }
+  // Material Symbols are rendered by DYNAMICTEXT widgets carrying the icon name.
+  .ms { overflow: hidden; }
+  h1, h2, h3, h4 { font-family: var(--font-mono); margin: 0; }
+  p { margin: 0; }
+}
+
+// ── Structure: let the document scroll (the prototype has no inner scroll
+// container), so sticky banner/header and full-page screenshots behave.
+#root:has(.gp-app) { height: auto; min-height: 100vh; }
+.mx-page.gp-app { display: block; height: auto; overflow: visible; }
+.gp-app > .mx-scrollcontainer,
+.gp-app .gp-region,
+.gp-app .gp-region > .mx-scrollcontainer-wrapper { display: block; height: auto; overflow: visible; position: static; }
+.gp-app .gp-region > .mx-scrollcontainer-wrapper { padding: 0; }
+
+// Data views that wrap shell parts are transparent boxes.
+.gp-app .app-header-dv { position: sticky; top: var(--banner-h); z-index: 100; display: block; }
+.gp-app .app-header-dv .app-header { position: static; }
+.gp-app .layout > .sidebar-dv { display: flex; flex-direction: column; flex: none; align-self: stretch; }
+.gp-app .layout > .sidebar-dv > .mx-dataview-content { flex: 1; display: flex; flex-direction: column; }
+.gp-app .layout > .sidebar-dv .sidebar { flex: 1; }
+@media (max-width: 1199px) { .gp-app .layout > .sidebar-dv { display: none; } }
+.gp-app .page-dv, .gp-app .page-dv > .mx-dataview-content { display: block; }
+
+// Text: the prototype's text elements are mostly blocks (div/p); Mendix renders
+// spans. Make text a block by default; flex rows still lay them out inline.
+:where(.gp-app) .mx-text { display: block; }
+:where(.gp-app) .ms.mx-text { display: inline-block; }
+.gp-app .demo-banner .mx-text { display: inline; white-space: pre; }
+.gp-app .demo-banner .only-phone { display: none; }
+@media (max-width: 767px) { .gp-app .demo-banner .only-phone { display: inline; } .gp-app .demo-banner .hide-phone { display: none; } }
+
+// Images: Mendix wraps <img> in a viewer div; size the wrapper, not just the img.
+.gp-app .mx-image-viewer { flex: none; width: auto; max-width: 100%; }
+.gp-app .mx-image-viewer > img { display: block; max-width: 100%; }
+.gp-app .brand .logo-h img { height: 32px; width: auto; }
+.gp-app .brand .logo-m img { width: 32px; height: 32px; }
+.gp-app .brand .logo-m { display: none; }
+@media (max-width: 767px) { .gp-app .brand .logo-h { display: none; } .gp-app .brand .logo-m { display: block; } }
+.gp-app .brand { cursor: pointer; }
+.gp-app [role="button"]:focus:not(:focus-visible) { outline: none; }
+
+// Header search box: the textbox is a form-group wrapper around the input.
+.gp-app .grep .grep-input { flex: 1; min-width: 0; }
+.gp-app .grep .grep-input input.form-control { background: transparent; border: 0; outline: none; width: 100%; font-size: 13px; height: auto; min-height: 0; padding: 0; box-shadow: none; color: var(--text-primary); font-family: var(--font-mono); }
+.gp-app .grep .grep-input input::placeholder { color: var(--text-muted); }
+.gp-app .main-nav a.mx-link { color: var(--text-secondary); font-size: 14px; padding: 6px 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+.gp-app .main-nav a.mx-link:hover { color: var(--primary-light); }
+.gp-app .main-nav a.mx-link.disabled { color: var(--text-disabled); cursor: not-allowed; }
+.gp-app .icon-btn { cursor: pointer; }
+
+// Active navigation item follows the open page (pages carry .scr-NN).
+.gp-app:has(.scr-01) .main-nav .nav-home,
+.gp-app:has(.scr-02) .main-nav .nav-menu, .gp-app:has(.scr-03) .main-nav .nav-menu,
+.gp-app:has(.scr-06) .main-nav .nav-checkout,
+.gp-app:has(.scr-09) .main-nav .nav-track, .gp-app:has(.scr-10) .main-nav .nav-track, .gp-app:has(.scr-13) .main-nav .nav-track {
+  color: var(--success-text); border-bottom-color: var(--success-text);
+}
+.gp-app:has(.scr-01) .sidebar .sb-item.nav-home,
+.gp-app:has(.scr-02) .sidebar .sb-item.nav-menu,
+.gp-app:has(.scr-09) .sidebar .sb-item.nav-track {
+  background: var(--surface-highest); color: var(--success-text); border-left-color: var(--success-text);
+}
+.gp-app:has(.scr-02) .bottom-nav .nav-menu, .gp-app:has(.scr-03) .bottom-nav .nav-menu,
+.gp-app:has(.scr-05) .bottom-nav .nav-cart, .gp-app:has(.scr-06) .bottom-nav .nav-cart,
+.gp-app:has(.scr-09) .bottom-nav .nav-track, .gp-app:has(.scr-10) .bottom-nav .nav-track { color: var(--primary-light); background: var(--surface-high); }
+
+// Sidebar: the prototype uses <nav><a>; we use .sb-nav with clickable items.
+.gp-app .sidebar .sb-item, .gp-app .sidebar .sub a.mx-link {
+  display: flex; align-items: center; gap: 12px; padding: 9px 24px; color: var(--text-secondary); text-decoration: none;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border-left: 4px solid transparent; cursor: pointer; width: 100%;
+}
+.gp-app .sidebar .sb-item:hover, .gp-app .sidebar .sub a.mx-link:hover { background: var(--surface-high); color: var(--primary-light); }
+.gp-app .sidebar .sub a.mx-link { padding-left: 52px; text-transform: none; font-weight: 500; letter-spacing: 0; font-size: 13px; }
+.gp-app .sidebar .sb-head .mx-text + .mx-text { margin-top: 8px; }
+.gp-app .sidebar .sb-foot .btn { width: 100%; }
+.gp-app .sidebar .sb-foot .nb::before { content: 'add'; font-family: 'Material Symbols Outlined'; font-size: 20px; font-weight: normal; letter-spacing: 0; text-transform: none; line-height: 1; }
+
+// Footer nav and phone tabs.
+.gp-app .app-footer .f-nav { display: flex; flex-wrap: wrap; gap: 20px; }
+.gp-app .app-footer .f-nav a.mx-link { color: var(--text-secondary); }
+.gp-app .app-footer .f-brand .mx-image-viewer img { width: 32px; height: 32px; }
+@media (max-width: 767px) {
+  .gp-app .bottom-nav .bn-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--text-secondary); font-size: 11px; font-weight: 700; position: relative; cursor: pointer; }
+  .gp-app .bottom-nav .bn-tab .count-bubble { top: 6px; right: calc(50% - 22px); }
+}
+
+// Terminal window dots (prototype: <span class="dots"><i>…).
+.gp-app .dots .dot { width: 11px; height: 11px; border-radius: 9999px; display: block; }
+.gp-app .dots .dot:nth-child(1) { background: #ef4444; } .gp-app .dots .dot:nth-child(2) { background: #eab308; } .gp-app .dots .dot:nth-child(3) { background: #22c55e; }
+.gp-app .term-line { display: flex; align-items: center; gap: 0; white-space: pre; }
+.gp-app .term-line .mx-text { display: inline; }
+.gp-app .term-lines { margin-top: 6px; }
+
+// Buttons built as clickable containers with an icon and a caption.
+.gp-app div.btn { display: inline-flex; }
+.gp-app .btn .mx-text { display: inline; }
+.gp-app .btn.is-disabled, .gp-app .btn[disabled] { opacity: 0.38; cursor: not-allowed; box-shadow: none; }
+
+// Toasts: Mendix list items are the toast rows.
+.gp-app .toast-list > ul { display: grid; gap: 8px; }
+.gp-app .toast .toast-msg { flex: 1; }
+.gp-app .toast .toast-action { font-weight: 700; white-space: nowrap; color: var(--primary-light); }
+.gp-app .toast .toast-x { margin-left: auto; background: none; border: 0; color: var(--text-muted); cursor: pointer; padding: 0 2px; min-height: 0; font-size: 16px; }
+
+// Connection lost (US-287, TXT-NAV-30): set by the live poller.
+html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
+  content: 'CONNECTION_LOST // Live updates paused. Reconnecting…'; position: sticky; top: 0; z-index: 120; display: flex; align-items: center; justify-content: center;
+  height: 32px; background: var(--error-container); color: var(--error-on-container); font-size: 12px; font-weight: 700;
+}
+.gp-app .gp-poll { display: none; }
+
+// ── SCR-01 Home
+.gp-app .scr-01 .hero-title { display: block; }
+.gp-app .scr-01 .hero-title .mx-text, .gp-app .scr-01 .hero-title h1 { display: inline; font: inherit; letter-spacing: inherit; color: inherit; margin: 0; }
+.gp-app .scr-01 .hero-title .hl { color: var(--primary-light); }
+.gp-app .scr-01 .hero-p { max-width: 620px; margin-top: 20px; }
+.gp-app .scr-01 .hero-term { max-width: 560px; }
+.gp-app .scr-01 .hero-logo { justify-self: center; }
+.gp-app .scr-01 .hero-logo img { width: 240px; height: 240px; }
+@media (max-width: 1023px) { .gp-app .scr-01 .hero-logo { justify-self: start; grid-row: 1; } .gp-app .scr-01 .hero-logo img { width: 128px; height: 128px; } }
+@media (max-width: 767px) { .gp-app .scr-01 .hero-logo img { width: 96px; height: 96px; } }
+.gp-app .scr-01 .env-chip .live-dot { flex: none; }
+.gp-app .scr-01 .env-chip .mx-text { display: inline; white-space: pre; }
+.gp-app .scr-01 .pipe-strip > .ps { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--surface-low); border: 1px solid var(--border); border-radius: var(--r-md); }
+.gp-app .scr-01 .pipe-strip .ps-img img { width: 40px; height: 40px; }
+.gp-app .scr-01 .feat-sub { margin: 6px 0 0; }
+.gp-app .scr-01 .car-pos-txt { color: var(--primary-light); font-weight: 700; }
+.gp-app .scr-01 .car-btn.is-disabled { border-color: var(--border); background: transparent; color: var(--text-disabled); cursor: not-allowed; }
+.gp-app .scr-01 .carousel > ul { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 40px) / 2.25); gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+@media (min-width: 1200px) { .gp-app .scr-01 .carousel > ul { grid-auto-columns: calc((100% - 60px) / 3.25); } }
+@media (max-width: 767px) { .gp-app .scr-01 .carousel > ul { grid-auto-columns: 82%; gap: 12px; } }
+.gp-app .scr-01 .carousel > ul > li { min-width: 0; scroll-snap-align: start; display: flex; }
+.gp-app .scr-01 .carousel > ul > li > .pcard { flex: 1; }
+.gp-app .scr-01 .kpi .px .px-cell { aspect-ratio: 1; background: var(--surface-highest); border-radius: 1px; }
+.gp-app .scr-01 .kpi .px .px-cell.on { background: var(--primary); }
+.gp-app .scr-01 .kpi .px .px-cell.new { background: var(--primary-light); }
+.gp-app .scr-01 .kpi .pipe .pb { height: 10px; background: var(--primary); border-radius: 1px; }
+.gp-app .scr-01 .kpi .pipe .pb:nth-child(1) { opacity: .35; } .gp-app .scr-01 .kpi .pipe .pb:nth-child(2) { opacity: .55; }
+.gp-app .scr-01 .kpi .pipe .pb:nth-child(3) { opacity: .7; } .gp-app .scr-01 .kpi .pipe .pb:nth-child(4) { opacity: .85; }
+.gp-app .scr-01 .kpi .pipe.off .pb { background: var(--surface-highest); opacity: 1; }
+.gp-app .scr-01 .kpi .v { display: flex; align-items: baseline; }
+.gp-app .scr-01 .kpi .v .small { font-size: 16px; color: var(--text-muted); font-weight: 500; margin-left: 4px; white-space: nowrap; }
+.gp-app .scr-01 .kpi .units .unit { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--r-sm); background: var(--surface-highest); color: var(--text-disabled); border: 1px solid transparent; }
+.gp-app .scr-01 .kpi .units .unit .ms { font-size: 18px; }
+.gp-app .scr-01 .kpi .units .unit.on { background: var(--primary-subtle); color: var(--primary); border-color: var(--primary-border); }
+.gp-app .scr-01 .kpi .units.green .unit.on { background: var(--success-subtle); color: var(--success-text); border-color: rgba(114,255,112,.3); }
+.gp-app .scr-01 .kpi .h .heavy { margin-left: auto; }
+.gp-app .scr-01 .kpi-note { margin-top: 8px; }
+
+// ── Product card (home carousel and menu)
+.gp-app .pcard .pimg-wrap { position: relative; }
+.gp-app .pcard .img-frame { border-radius: 0; aspect-ratio: 4 / 3; }
+.gp-app .pcard .img-frame .pimg, .gp-app .pcard .img-frame .pimg img { width: 100%; height: 100%; object-fit: cover; }
+.gp-app .pcard .p-short { font-size: 14px; margin: 0; }
+.gp-app .pcard .badges { gap: 6px; }
+.gp-app .pcard .chip .mx-text { display: inline; }
+.gp-app .pcard-title h3 { color: var(--primary-light); }
+.gp-app .pcard-foot > .btn-primary { flex: 1; }
+.gp-app .scr-01 .carousel.mx-listview { display: block; }
+.gp-app .scr-01 .carousel.mx-listview > ul { width: 100%; }
+.gp-app [role="button"]:focus:not(:focus-visible), .gp-app .brand:focus:not(:focus-visible) { box-shadow: none; outline: none; }
+.gp-app .scr-01 .term-line { display: block; }
+.gp-app .brand:focus { outline: none; box-shadow: none; }
+
+// ── Mendix pop-ups styled as the prototype's modal / bottom sheet / drawer.
+.modal-dialog.mx-window { background: var(--surface-low); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-modal); color: var(--text-primary); font-family: var(--font-mono); overflow: hidden; }
+.mx-window .modal-content, .mx-window .mx-window-content { background: transparent; border: 0; box-shadow: none; }
+.mx-window .mx-window-header { display: none; }
+.mx-window .mx-window-body, .mx-window .modal-body.mx-window-body { padding: 0; background: transparent; }
+.mx-underlay, .modal-backdrop { background: var(--scrim) !important; backdrop-filter: blur(12px); opacity: 1 !important; }
+.mx-window .gp-app { min-height: 0; background: transparent; }
+.mx-window:has(.gp-dialog) { width: min(440px, calc(100vw - 32px)) !important; }
+.modal-dialog.mx-window { height: auto !important; max-height: calc(100vh - 64px); }
+.mx-window .modal-content { height: auto !important; }
