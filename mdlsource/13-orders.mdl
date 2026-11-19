@@ -127,10 +127,10 @@ begin
     retrieve $Product from $Line/Shop.CartLine_Product;
     retrieve $Size from $Line/Shop.CartLine_Size;
     retrieve $LineAllergens from $Line/Shop.CartLine_Allergen;
-    $AllergenText = call microflow Shop.SUB_AllergenText(Allergens = $LineAllergens);
+    $AllergenText = call microflow Catalog.SUB_AllergenText(Allergens = $LineAllergens);
     set $Sort = $Sort + 1;
     declare $SizeLabel String = getCaption($Size/Size);
-    if $Product/Kind != Shop.ProductKind.PIZZA then
+    if $Product/Kind != Catalog.ProductKind.PIZZA then
       set $SizeLabel = $Size/ServingDescription;
     end if;
     $OLine = create Shop.OrderLine (ProductCode = $Product/Code, ProductName = $Product/Name, RealWorldName = $Product/RealWorldName, ModuleKey = $Product/ModuleKey,
@@ -139,7 +139,7 @@ begin
       Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $Product) commit without events;
     set $Subtotal = $Subtotal + $Line/LineTotal;
     set $Items = $Items + $Line/Quantity;
-    if $Product/Kind = Shop.ProductKind.PIZZA then
+    if $Product/Kind = Catalog.ProductKind.PIZZA then
       set $Pizzas = $Pizzas + $Line/Quantity;
       call microflow Shop.SUB_OrderLine_SnapshotModifiers(OLine = $OLine, Line = $Line);
     end if;
@@ -178,9 +178,9 @@ folder 'Orders'
 begin
   retrieve $Product from $Line/Shop.CartLine_Product;
   retrieve $Size from $Line/Shop.CartLine_Size;
-  retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
-  retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
-  retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+  retrieve $DefCrust from $Product/Catalog.Product_DefaultCrust;
+  retrieve $DefSauce from $Product/Catalog.Product_DefaultSauce;
+  retrieve $DefCheese from $Product/Catalog.Product_DefaultCheese;
   retrieve $Crust from $Line/Shop.CartLine_Crust;
   retrieve $Sauce from $Line/Shop.CartLine_Sauce;
   retrieve $Cheese from $Line/Shop.CartLine_Cheese;
@@ -196,7 +196,7 @@ begin
   declare $Sort Integer = 3;
   loop $Extra in $SortedExtras
   begin
-    $ExtraPrice = call microflow Shop.SUB_Option_PriceFor(Option = $Extra, Size = $Size/Size);
+    $ExtraPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $Extra, Size = $Size/Size);
     set $Sort = $Sort + 1;
     $MAdd = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = $Extra/OptionKey, Name = $Extra/Name, Price = $ExtraPrice, IsDefault = false, SortOrder = $Sort, Shop.OrderLineModifier_OrderLine = $OLine);
     add $MAdd to $Mods;

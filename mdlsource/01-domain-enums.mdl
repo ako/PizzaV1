@@ -5,20 +5,24 @@ mdl 1;
 /** Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages. */
 create or modify module Shop;
 
+/** Product catalog: pizzas, sides, drinks and desserts with sizes, options, recipes, ingredients and allergens (the menu's data). */
+create or modify module Catalog;
+create or modify module role Catalog.Guest description 'Every visitor: reads the published catalog';
+
 /** Menu category kind of a product (pizzas.json, sides.yml, drinks.env, desserts.md). */
-create or modify enumeration Shop."ProductKind" ( "PIZZA" 'Pizza', "SIDE" 'Side', "DRINK" 'Drink', "DESSERT" 'Dessert' );
+create or modify enumeration Catalog."ProductKind" ( "PIZZA" 'Pizza', "SIDE" 'Side', "DRINK" 'Drink', "DESSERT" 'Dessert' );
 /** Catalog lifecycle of a product; only PUBLISHED products are orderable (BR-DATA-12). */
-create or modify enumeration Shop."ProductStatus" ( "DRAFT" 'STAGING', "PUBLISHED" 'PRODUCTION', "ARCHIVED" 'DEPRECATED' );
+create or modify enumeration Catalog."ProductStatus" ( "DRAFT" 'STAGING', "PUBLISHED" 'PRODUCTION', "ARCHIVED" 'DEPRECATED' );
 /** Pizza size; REGULAR is the single size of sides, drinks and desserts. */
-create or modify enumeration Shop."SizeCode" ( "SMALL" 'Small 10"', "MEDIUM" 'Medium 12"', "LARGE" 'Large 14"', "REGULAR" 'Regular' );
+create or modify enumeration Catalog."SizeCode" ( "SMALL" 'Small 10"', "MEDIUM" 'Medium 12"', "LARGE" 'Large 14"', "REGULAR" 'Regular' );
 /** Spice level shown on a product card (HOTFIX_SPICY n/3). */
-create or modify enumeration Shop."SpiceLevel" ( "NONE" 'Not spicy', "MILD" 'MILD', "MEDIUM" 'MEDIUM', "HOT" 'HOT' );
+create or modify enumeration Catalog."SpiceLevel" ( "NONE" 'Not spicy', "MILD" 'MILD', "MEDIUM" 'MEDIUM', "HOT" 'HOT' );
 /** Configurator group of an option: crust, sauce, cheese or extra topping. */
-create or modify enumeration Shop."OptionGroup" ( "CRUST" 'core_kernel', "SAUCE" 'base_layer', "CHEESE" 'cheese_driver', "EXTRA" 'dependencies' );
+create or modify enumeration Catalog."OptionGroup" ( "CRUST" 'core_kernel', "SAUCE" 'base_layer', "CHEESE" 'cheese_driver', "EXTRA" 'dependencies' );
 /** How an option is priced: flat surcharge or a per-size standard/premium price (BR-PRICE-03). */
-create or modify enumeration Shop."PriceClass" ( "FLAT" 'FLAT', "STANDARD" 'STANDARD', "PREMIUM" 'PREMIUM' );
+create or modify enumeration Catalog."PriceClass" ( "FLAT" 'FLAT', "STANDARD" 'STANDARD', "PREMIUM" 'PREMIUM' );
 /** Role of an ingredient in a recipe: topping or finish. */
-create or modify enumeration Shop."RecipeRole" ( "TOPPING" 'Topping', "FINISH" 'Finish' );
+create or modify enumeration Catalog."RecipeRole" ( "TOPPING" 'Topping', "FINISH" 'Finish' );
 /** Outcome of evaluating the cart coupon (BR-PRICE-06). */
 create or modify enumeration Shop."CouponState" ( "NONE" 'NONE', "APPLIED" 'APPLIED', "NOT_APPLIED" 'NOT_APPLIED', "INVALID" 'INVALID' );
 /** What a coupon gives: a percentage, a fixed amount or free delivery. */

@@ -8,13 +8,13 @@ create or modify module role Shop.Guest description 'Every visitor: an anonymous
 
 -- ── Catalog: published menu only
 -- public reference data (the allergen notice lists them all); accepted SEC007, see FINDINGS.md
-grant read * on entity Shop.Allergen to Shop.Guest;
-grant read * on entity Shop.Category to Shop.Guest where [Shop.Product_Category/Shop.Product/ProductStatus = 'PUBLISHED'];
-grant read * on entity Shop.Product to Shop.Guest where [ProductStatus = 'PUBLISHED'];
-grant read * on entity Shop.ProductSize to Shop.Guest where [Shop.ProductSize_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
-grant read * on entity Shop.RecipeItem to Shop.Guest where [Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
-grant read * on entity Shop.Ingredient to Shop.Guest where [Shop.RecipeItem_Ingredient/Shop.RecipeItem/Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED' or Shop.Option_Ingredient/Shop.Option/IsActive = true];
-grant read * on entity Shop.Option to Shop.Guest where [IsActive = true];
+grant read * on entity Catalog.Allergen to Catalog.Guest;
+grant read * on entity Catalog.Category to Catalog.Guest where [Catalog.Product_Category/Catalog.Product/ProductStatus = 'PUBLISHED'];
+grant read * on entity Catalog.Product to Catalog.Guest where [ProductStatus = 'PUBLISHED'];
+grant read * on entity Catalog.ProductSize to Catalog.Guest where [Catalog.ProductSize_Product/Catalog.Product/ProductStatus = 'PUBLISHED'];
+grant read * on entity Catalog.RecipeItem to Catalog.Guest where [Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED'];
+grant read * on entity Catalog.Ingredient to Catalog.Guest where [Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED' or Catalog.Option_Ingredient/Catalog.Option/IsActive = true];
+grant read * on entity Catalog.Option to Catalog.Guest where [IsActive = true];
 -- only the zone of the guest's own checkout or orders (the zone table itself is checked server-side)
 grant read * on entity Shop.DeliveryZone to Shop.Guest where [Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]' or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
 grant read (StoreName, AddressLine, Phone, TaxRatePercent, DeliveryFee, FreeDeliveryThreshold, MinDeliverySubtotal, MaxQuantityPerLine, MaxItemsPerOrder, MaxPaymentAttempts) on entity Shop.StoreSettings to Shop.Guest;

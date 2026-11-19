@@ -58,8 +58,12 @@ def at(ts):
     return 'empty' if off is None else f'addSeconds($T, -{off})'
 
 
+CATALOG_ENUMS = {'ProductKind', 'ProductStatus', 'SizeCode', 'SpiceLevel', 'OptionGroup', 'PriceClass', 'RecipeRole'}
+
+
 def enum(e, v):
-    return 'empty' if v is None else f'Shop.{e}.{v}'
+    mod = 'Catalog' if e in CATALOG_ENUMS else 'Shop'
+    return 'empty' if v is None else f'{mod}.{e}.{v}'
 
 
 def b(v):
@@ -103,54 +107,54 @@ def gen_catalog():
     w("folder 'Seed'")
     w('begin')
     for a in allergens:
-        w(f"  $al_{var(a['key'])} = create Shop.Allergen (Code = {q(a['key'])}, ShortCode = {q(a['shortCode'])}, Caption = {q(a['caption'])}, SortOrder = {a['sortOrder']});")
+        w(f"  $al_{var(a['key'])} = create Catalog.Allergen (Code = {q(a['key'])}, ShortCode = {q(a['shortCode'])}, Caption = {q(a['caption'])}, SortOrder = {a['sortOrder']});")
         w(f"  commit $al_{var(a['key'])} without events;")
     for c in cats:
-        w(f"  $cat_{var(c['code'])} = create Shop.Category (Code = {q(c['code'])}, FileName = {q(c['fileName'])}, DisplayName = {q(c['displayName'])}, Kind = {enum('ProductKind', c['productKind'])}, SortOrder = {c['sortOrder']});")
+        w(f"  $cat_{var(c['code'])} = create Catalog.Category (Code = {q(c['code'])}, FileName = {q(c['fileName'])}, DisplayName = {q(c['displayName'])}, Kind = {enum('ProductKind', c['productKind'])}, SortOrder = {c['sortOrder']});")
         w(f"  commit $cat_{var(c['code'])} without events;")
     for i in ings:
         v = 'ing_' + var(i['code'])
-        w(f"  ${v} = create Shop.Ingredient (Code = {q(i['code'])}, Name = {q(i['name'])}, IsVegetarian = {b(i['isVegetarian'])}, IsVegan = {b(i['isVegan'])}, IsInStock = {b(i['isInStock'])}, SortOrder = {i['sortOrder']});")
+        w(f"  ${v} = create Catalog.Ingredient (Code = {q(i['code'])}, Name = {q(i['name'])}, IsVegetarian = {b(i['isVegetarian'])}, IsVegan = {b(i['isVegan'])}, IsInStock = {b(i['isInStock'])}, SortOrder = {i['sortOrder']});")
         for a in i['allergens']:
-            w(f"  add $al_{var(a)} to ${v}/Shop.Ingredient_Allergen;")
+            w(f"  add $al_{var(a)} to ${v}/Catalog.Ingredient_Allergen;")
         w(f"  commit ${v} without events;")
     for o in opts:
         v = 'opt_' + var(o['code'])
         av = o['availableSizes']
-        w(f"  ${v} = create Shop.Option (Code = {q(o['code'])}, OptionKey = {q(o['key'])}, Name = {q(o['name'])}, Description = {q(o['description'])}, "
+        w(f"  ${v} = create Catalog.Option (Code = {q(o['code'])}, OptionKey = {q(o['key'])}, Name = {q(o['name'])}, Description = {q(o['description'])}, "
           f"OptionGroup = {enum('OptionGroup', o['group'])}, PriceClass = {enum('PriceClass', o['priceClass'])}, Surcharge = {dec(o['surcharge'])}, "
           f"PriceSmall = {dec(o['priceSmall'])}, PriceMedium = {dec(o['priceMedium'])}, PriceLarge = {dec(o['priceLarge'])}, "
           f"IsForSmall = {b('SMALL' in av)}, IsForMedium = {b('MEDIUM' in av)}, IsForLarge = {b('LARGE' in av)}, IsActive = {b(o['isActive'])}, "
           f"VersionTag = {q(o['versionTag'])}, SortOrder = {o['sortOrder']});")
         if o.get('ingredientCode'):
-            w(f"  change ${v} (Shop.Option_Ingredient = $ing_{var(o['ingredientCode'])});")
+            w(f"  change ${v} (Catalog.Option_Ingredient = $ing_{var(o['ingredientCode'])});")
         w(f"  commit ${v} without events;")
     for p in items:
         v = 'p_' + var(p['code'])
         badges = p.get('badges') or []
         img = os.path.basename(p['imageFile']) if p.get('imageAvailable') and p.get('imageFile') else ''
-        w(f"  ${v} = create Shop.Product (Code = {q(p['code'])}, Name = {q(p['name'])}, ModuleKey = {q(p['moduleKey'])}, RealWorldName = {q(p['realWorldName'])}, "
+        w(f"  ${v} = create Catalog.Product (Code = {q(p['code'])}, Name = {q(p['name'])}, ModuleKey = {q(p['moduleKey'])}, RealWorldName = {q(p['realWorldName'])}, "
           f"ShortDescription = {q(p['shortDescription'])}, Description = {q(p['description'])}, VersionTag = {q(p['versionTag'])}, "
           f"Kind = {enum('ProductKind', p['kind'])}, ProductStatus = {enum('ProductStatus', p['status'])}, IsSoldOut = {b(p['isSoldOut'])}, IsFeatured = {b(p['isFeatured'])}, "
           f"HasBadgeClassic = {b('CLASSIC' in badges)}, HasBadgeBestSeller = {b('BEST_SELLER' in badges)}, HasBadgeNew = {b('NEW' in badges)}, HasBadgeChefPick = {b('CHEF_PICK' in badges)}, "
           f"Spice = {enum('SpiceLevel', p['spiceLevel'])}, IsDeclaredVegetarian = {b(p['declaredVegetarian'])}, IsDeclaredVegan = {b(p['declaredVegan'])}, "
           f"IsCrustSelectable = {b(p['crustSelectable'])}, MaxExtras = {p['maxExtras'] or 0}, ImageFile = {q(img)}, ImageAlt = {q(p['imageAlt'])}, "
-          f"CaffeineMg = {p['caffeineMg'] or 0}, SortOrder = {p['sortOrder']}, Shop.Product_Category = $cat_{var(p['categoryCode'])});")
+          f"CaffeineMg = {p['caffeineMg'] or 0}, SortOrder = {p['sortOrder']}, Catalog.Product_Category = $cat_{var(p['categoryCode'])});")
         for k, a in (('defaultCrust', 'DefaultCrust'), ('defaultSauce', 'DefaultSauce'), ('defaultCheese', 'DefaultCheese')):
             if p.get(k):
-                w(f"  change ${v} (Shop.Product_{a} = $opt_{var(p[k])});")
+                w(f"  change ${v} (Catalog.Product_{a} = $opt_{var(p[k])});")
         for a in p.get('declaredAllergens') or []:
-            w(f"  add $al_{var(a)} to ${v}/Shop.Product_Allergen;")
+            w(f"  add $al_{var(a)} to ${v}/Catalog.Product_Allergen;")
         w(f"  commit ${v} without events;")
     order = {'SMALL': 1, 'MEDIUM': 2, 'LARGE': 3, 'REGULAR': 1}
     for n, s in enumerate(sizes):
-        w(f"  $sz{n} = create Shop.ProductSize (Size = {enum('SizeCode', s['sizeCode'])}, DiameterInches = {s.get('diameterInches') or 0}, "
+        w(f"  $sz{n} = create Catalog.ProductSize (Size = {enum('SizeCode', s['sizeCode'])}, DiameterInches = {s.get('diameterInches') or 0}, "
           f"ServingDescription = {q(s['servingDescription'])}, Price = {dec(s['price'])}, Calories = {s.get('calories') or 0}, Slices = {s.get('slices') or 0}, "
-          f"IsDefault = {b(s['isDefault'])}, SortOrder = {order[s['sizeCode']]}, Shop.ProductSize_Product = $p_{var(s['productCode'])});")
+          f"IsDefault = {b(s['isDefault'])}, SortOrder = {order[s['sizeCode']]}, Catalog.ProductSize_Product = $p_{var(s['productCode'])});")
         w(f"  commit $sz{n} without events;")
     for n, r in enumerate(recipes):
-        w(f"  $ri{n} = create Shop.RecipeItem (Role = {enum('RecipeRole', r['role'])}, IsRemovable = {b(r['isRemovable'])}, SortOrder = {r['sortOrder']}, "
-          f"Shop.RecipeItem_Product = $p_{var(r['productCode'])}, Shop.RecipeItem_Ingredient = $ing_{var(r['ingredientCode'])});")
+        w(f"  $ri{n} = create Catalog.RecipeItem (Role = {enum('RecipeRole', r['role'])}, IsRemovable = {b(r['isRemovable'])}, SortOrder = {r['sortOrder']}, "
+          f"Catalog.RecipeItem_Product = $p_{var(r['productCode'])}, Catalog.RecipeItem_Ingredient = $ing_{var(r['ingredientCode'])});")
         w(f"  commit $ri{n} without events;")
     for z in zones:
         w(f"  $z_{z['zip']} = create Shop.DeliveryZone (Zip = {q(z['zip'])}, Neighborhood = {q(z['neighborhood'])}, DistanceMiles = {dec(z['distanceMiles'])}, IsActive = {b(z['isActive'])});")
@@ -279,7 +283,7 @@ def gen_orders():
                     diff.append('+ ' + m['name'])
                 elif m['type'] == 'REMOVE':
                     diff.append('− ' + m['name'])
-            P('Lines', f"  retrieve $prod{li} from Shop.Product where Code = {q(l['productCode'])} first;")
+            P('Lines', f"  retrieve $prod{li} from Catalog.Product where Code = {q(l['productCode'])} first;")
             P('Lines', f"  $l{li} = create Shop.OrderLine (ProductCode = {q(l['productCode'])}, ProductName = {q(l['productName'])}, RealWorldName = {q(l['realWorldName'])}, "
               f"ModuleKey = {q(l['moduleKey'])}, Kind = {enum('ProductKind', kind)}, Size = {enum('SizeCode', l['sizeCode'])}, SizeLabel = {q(l['sizeLabel'])}, "
               f"Quantity = {l['quantity']}, UnitPrice = {dec(l['unitPrice'])}, LineTotal = {dec(l['lineTotal'])}, "

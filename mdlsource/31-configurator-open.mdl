@@ -9,10 +9,10 @@ mdl 1;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.SUB_Configure_Open ($Product: Shop.Product)
+create or modify microflow Shop.SUB_Configure_Open ($Product: Catalog.Product)
 folder 'Configurator'
 begin
-  if $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+  if $Product/ProductStatus != Catalog.ProductStatus.PUBLISHED then
     show page Shop.NotFound();
     return;
   end if;
@@ -34,7 +34,7 @@ end;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Configure_Open ($Product: Shop.Product)
+create or modify microflow Shop.ACT_Configure_Open ($Product: Catalog.Product)
 folder 'Configurator'
 begin
   call microflow Shop.SUB_Configure_Open(Product = $Product);

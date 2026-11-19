@@ -158,7 +158,7 @@ begin
   if $Pizza/ModuleKey = 'calzone-container' then
     return 'calzone not cut';
   end if;
-  if $Pizza/Size = Shop.SizeCode.SMALL then
+  if $Pizza/Size = Catalog.SizeCode.SMALL then
     return '6 slices';
   end if;
   return '8 slices';
@@ -342,7 +342,7 @@ begin
   end if;
   $PickedList = range $Customers offset floor(random() * $CustomerCount) limit 1;
   $Customer = head $PickedList;
-  retrieve $Products from Shop.Product where [ProductStatus = 'PUBLISHED' and IsOrderable = true];
+  retrieve $Products from Catalog.Product where [ProductStatus = 'PUBLISHED' and IsOrderable = true];
   $ProductCount = count $Products;
   declare $LineCount Integer = 1 + floor(random() * 4);
   $Lines = create list of Shop.CartLine;

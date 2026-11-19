@@ -1,6 +1,6 @@
 # Security review
 
-What protects the data, what does not, and what to fix · GitPizza · generated 2026-11-19 10:25 · mxcli nightly-20261118-9d764483c
+What protects the data, what does not, and what to fix · GitPizza · generated 2026-11-19 12:04 · mxcli nightly-20261118-9d764483c
 
 | | |
 |---|---|
@@ -32,16 +32,19 @@ User role × persistent app entity. R read, W write; then the widest read: own r
 
 | Entity | Administrator | Anonymous |
 |---|---|---|
-| `Shop.Allergen` | R all | R all |
+| `Catalog.Allergen` | R all | R all |
+| `Catalog.Category` | R filtered | R filtered |
+| `Catalog.Ingredient` | R filtered | R filtered |
+| `Catalog.Option` | R filtered | R filtered |
+| `Catalog.Product` | R filtered | R filtered |
+| `Catalog.ProductSize` | R filtered | R filtered |
+| `Catalog.RecipeItem` | R filtered | R filtered |
 | `Shop.Cart` | RW via user | RW via user |
 | `Shop.CartLine` | R via user | R via user |
-| `Shop.Category` | R filtered | R filtered |
 | `Shop.CheckoutForm` | RW via user | RW via user |
 | `Shop.Coupon` | R via user | R via user |
 | `Shop.Courier` | R via user | R via user |
 | `Shop.DeliveryZone` | R via user | R via user |
-| `Shop.Ingredient` | R filtered | R filtered |
-| `Shop.Option` | R filtered | R filtered |
 | `Shop.Order` | R via user | R via user |
 | `Shop.OrderAccess` | R via user | R via user |
 | `Shop.OrderLine` | R via user | R via user |
@@ -50,9 +53,6 @@ User role × persistent app entity. R read, W write; then the widest read: own r
 | `Shop.OrderStatusChange` | R via user | R via user |
 | `Shop.Oven` | R via user | R via user |
 | `Shop.PaymentAttempt` | R via user | R via user |
-| `Shop.Product` | R filtered | R filtered |
-| `Shop.ProductSize` | R filtered | R filtered |
-| `Shop.RecipeItem` | R filtered | R filtered |
 | `Shop.StoreSettings` | R all | R all |
 | `Shop.Toast` | R via user | R via user |
 
@@ -60,15 +60,18 @@ User role × persistent app entity. R read, W write; then the widest read: own r
 
 | Entity | XPath | Class | Module roles |
 |---|---|---|---|
+| `Catalog.Category` | `[Catalog.Product_Category/Catalog.Product/ProductStatus = 'PUBLISHED']` | filtered | Catalog.Guest |
+| `Catalog.Ingredient` | `[   Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED'   or Catalog.Option_Ingredient/Catalog.Option/IsActive = true ]` | filtered | Catalog.Guest |
+| `Catalog.Option` | `[IsActive = true]` | filtered | Catalog.Guest |
+| `Catalog.Product` | `[ProductStatus = 'PUBLISHED']` | filtered | Catalog.Guest |
+| `Catalog.ProductSize` | `[Catalog.ProductSize_Product/Catalog.Product/ProductStatus = 'PUBLISHED']` | filtered | Catalog.Guest |
+| `Catalog.RecipeItem` | `[Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED']` | filtered | Catalog.Guest |
 | `Shop.Cart` | `[Shop.Cart_Owner = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.CartLine` | `[Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]']` | via user | Shop.Guest |
-| `Shop.Category` | `[Shop.Product_Category/Shop.Product/ProductStatus = 'PUBLISHED']` | filtered | Shop.Guest |
 | `Shop.CheckoutForm` | `[Shop.CheckoutForm_Owner = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.Coupon` | `[Shop.Cart_Coupon/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.Courier` | `[Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.DeliveryZone` | `[   Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]'   or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]' ]` | via user | Shop.Guest |
-| `Shop.Ingredient` | `[   Shop.RecipeItem_Ingredient/Shop.RecipeItem/Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED'   or Shop.Option_Ingredient/Shop.Option/IsActive = true ]` | filtered | Shop.Guest |
-| `Shop.Option` | `[IsActive = true]` | filtered | Shop.Guest |
 | `Shop.Order` | `[Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.OrderAccess` | `[Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.OrderLine` | `[Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
@@ -77,9 +80,6 @@ User role × persistent app entity. R read, W write; then the widest read: own r
 | `Shop.OrderStatusChange` | `[Shop.OrderStatusChange_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.Oven` | `[Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
 | `Shop.PaymentAttempt` | `[Shop.PaymentAttempt_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']` | via user | Shop.Guest |
-| `Shop.Product` | `[ProductStatus = 'PUBLISHED']` | filtered | Shop.Guest |
-| `Shop.ProductSize` | `[Shop.ProductSize_Product/Shop.Product/ProductStatus = 'PUBLISHED']` | filtered | Shop.Guest |
-| `Shop.RecipeItem` | `[Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED']` | filtered | Shop.Guest |
 | `Shop.Toast` | `[Shop.Toast_Owner = '[%CurrentUser%]']` | via user | Shop.Guest |
 
 ## Client-callable flows
@@ -101,8 +101,8 @@ Microflows a user role may call that take a persistent object. The page passes t
 | `Shop.ACT_Config_Commit` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Config_Commit` |
 | `Shop.ACT_Config_Qty` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Config_Qty` |
 | `Shop.ACT_Configure_Edit` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Configure_Edit` |
-| `Shop.ACT_Configure_FromHome` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Configure_FromHome` |
-| `Shop.ACT_Configure_Open` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Configure_Open` |
+| `Shop.ACT_Configure_FromHome` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Configure_FromHome` |
+| `Shop.ACT_Configure_Open` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Configure_Open` |
 | `Shop.ACT_Coupon_Apply` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Coupon_Apply` |
 | `Shop.ACT_Coupon_Remove` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Coupon_Remove` |
 | `Shop.ACT_Info_Add` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Info_Add` |
@@ -110,9 +110,9 @@ Microflows a user role may call that take a persistent object. The page passes t
 | `Shop.ACT_Line_Increase` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Line_Increase` |
 | `Shop.ACT_Line_Remove` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Line_Remove` |
 | `Shop.ACT_Nav_Search` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Nav_Search` |
-| `Shop.ACT_Product_Add` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_Add` |
-| `Shop.ACT_Product_Info` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_Info` |
-| `Shop.ACT_Product_QuickAdd` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_QuickAdd` |
+| `Shop.ACT_Product_Add` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_Add` |
+| `Shop.ACT_Product_Info` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_Info` |
+| `Shop.ACT_Product_QuickAdd` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Product_QuickAdd` |
 | `Shop.ACT_Receipt_Open` | Administrator, Anonymous | `$TheOrder: Object:Shop.Order` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Receipt_Open` |
 | `Shop.ACT_Shell_Refresh` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Shell_Refresh` |
 | `Shop.ACT_Toast_Close` | Administrator, Anonymous | `$Toast: Object:Shop.Toast` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Toast_Close` |
@@ -120,7 +120,7 @@ Microflows a user role may call that take a persistent object. The page passes t
 | `Shop.ACT_Track_RetryOpen` | Administrator, Anonymous | `$TheOrder: Object:Shop.Order` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.ACT_Track_RetryOpen` |
 | `Shop.DS_Config_Choices` | Administrator, Anonymous | `$Line: Object:Shop.CartLine` | off | ok | checks the caller in its own body ($currentUser / [%CurrentUser%]) |  |
 | `Shop.DS_Home_Featured` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.DS_Home_Featured` |
-| `Shop.DS_Info_Line` | Administrator, Anonymous | `$Product: Object:Shop.Product` | off | high | changes an object the client chose, with entity access off: no access rule stops a substituted id | `flow:Shop.DS_Info_Line` |
+| `Shop.DS_Info_Line` | Administrator, Anonymous | `$Product: Object:Catalog.Product` | off | high | changes an object the client chose, with entity access off: no access rule stops a substituted id | `flow:Shop.DS_Info_Line` |
 | `Shop.DS_Menu_Products` | Administrator, Anonymous | `$Cart: Object:Shop.Cart` | off | medium | reads an object the client chose, with entity access off | `flow:Shop.DS_Menu_Products` |
 | `Shop.DS_Track` | Administrator, Anonymous | `$TheOrder: Object:Shop.Order` | off | ok | checks the caller in its own body ($currentUser / [%CurrentUser%]) |  |
 
@@ -130,13 +130,13 @@ Each security rule with a verdict: `intended` (the design wants it), `accepted` 
 
 | Rule | Severity | Findings | Examples | Verdict |
 |---|---|---|---|---|
-| CONV007 | info | 2 | Shop.Shop.Allergen: Entity 'Shop.Allergen' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible · Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible | accepted: same two public reference entities |
-| CONV008 | info | 1 | ProjectSecurity: Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role. | unreviewed |
-| SEC001 | warning | 4 | Shop.LookupAttempt: Persistent entity 'Shop.LookupAttempt' has no access rules · Shop.SimCustomer: Persistent entity 'Shop.SimCustomer' has no access rules · Shop.SimulationEvent: Persistent entity 'Shop.SimulationEvent' has no access rules | intended: LookupAttempt, SimCustomer, SimulationEvent, SimulationSettings are server-only; no access rule = no client access |
+| CONV007 | info | 2 | Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' has unconstrained READ access for role 'Catalog.Guest' - all rows are accessible · Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible | accepted: same two public reference entities |
+| CONV008 | info | 2 | ProjectSecurity: Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role. · ProjectSecurity: Module role 'Catalog.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role. | unreviewed |
+| SEC001 | warning | 4 | Shop.LookupAttempt: Persistent entity 'Shop.LookupAttempt' has no access rules · Shop.SimulationEvent: Persistent entity 'Shop.SimulationEvent' has no access rules · Shop.SimulationSettings: Persistent entity 'Shop.SimulationSettings' has no access rules | intended: LookupAttempt, SimCustomer, SimulationEvent, SimulationSettings are server-only; no access rule = no client access |
 | SEC004 | warning | 1 | ProjectSecurity: Guest access is enabled. Review entity access rules granted to the anonymous user role - any unconstrained READ exposes data to unauthenticated users (DIVD-2022-00019). | intended: guest app; every guest read is row-scoped except public catalog reference data (Allergen, StoreSettings display fields) |
-| SEC006 | warning | 1 | Shop.Shop.SimCustomer: Entity 'Shop.SimCustomer' has PII-sounding attributes (Email) but no access rules. | intended: SimCustomer (simulated people) is server-only, no client access |
-| SEC007 | error | 2 | Shop.Shop.Allergen: Entity 'Shop.Allergen' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019) · Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019) | accepted: Allergen (public allergen list on the notice) and StoreSettings (store name, address, phone, prices) are public by design |
-| SEC010 | info | 10 | Shop.Cart_Drawer: List view 'lvLines' on page Shop.Cart_Drawer lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows · Shop.Checkout: List view 'lvSum' on page Shop.Checkout lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows · Shop.Configurator: List view 'lvDeps' on page Shop.Configurator lists Shop.Option, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows | intended: list views show only the rows the guest's XPath allows: own cart, own orders |
+| SEC006 | warning | 1 | Simulation.Simulation.SimCustomer: Entity 'Simulation.SimCustomer' has PII-sounding attributes (Email) but no access rules. | intended: SimCustomer (simulated people) is server-only, no client access |
+| SEC007 | error | 2 | Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' is readable by anonymous users (via role 'Catalog.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019) · Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019) | accepted: Allergen (public allergen list on the notice) and StoreSettings (store name, address, phone, prices) are public by design |
+| SEC010 | info | 10 | Shop.Cart_Drawer: List view 'lvLines' on page Shop.Cart_Drawer lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows · Shop.Checkout: List view 'lvSum' on page Shop.Checkout lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows · Shop.Configurator: List view 'lvDeps' on page Shop.Configurator lists Catalog.Option, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows | intended: list views show only the rows the guest's XPath allows: own cart, own orders |
 
 ## How this was measured
 

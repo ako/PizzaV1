@@ -5,7 +5,7 @@ mdl 1;
 create page if not exists Shop.Home (Title: 'Home', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Menu (Title: 'Menu', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Configurator (Title: 'Configurator', Layout: Atlas_Core.Atlas_Default, Params: ($Line: Shop.CartLine)) { dynamictext ph (Content: '…') };
-create page if not exists Shop.ItemInfo (Title: 'ItemInfo', Layout: Atlas_Core.PopupLayout, Params: ($Product: Shop.Product)) { dynamictext ph (Content: '…') };
+create page if not exists Shop.ItemInfo (Title: 'ItemInfo', Layout: Atlas_Core.PopupLayout, Params: ($Product: Catalog.Product)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Cart_Drawer (Title: 'Cart_Drawer', Layout: Atlas_Core.PopupLayout, Params: ($Cart: Shop.Cart)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Checkout (Title: 'Checkout', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.PaymentSheet (Title: 'PaymentSheet', Layout: Atlas_Core.PopupLayout, Params: ($TheOrder: Shop.Order)) { dynamictext ph (Content: '…') };

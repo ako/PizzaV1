@@ -128,10 +128,10 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 20.24, OrderType = Shop.Or
  * @expect $L/IsVegan = true
  * @expect count($A) = 2
  */
-retrieve $P from Shop.Product where [Name = 'The Root Pizza'] first;
+retrieve $P from Catalog.Product where [Name = 'The Root Pizza'] first;
 $L = create Shop.CartLine (Quantity = 1);
 call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
-retrieve $Cheese from Shop.Option where [Code = 'CH-03'] first;
+retrieve $Cheese from Catalog.Option where [Code = 'CH-03'] first;
 change $L (Shop.CartLine_Cheese = $Cheese);
 call microflow Shop.SUB_Line_Recalculate(Line = $L);
 retrieve $A from $L/Shop.CartLine_Allergen;
@@ -144,10 +144,10 @@ retrieve $A from $L/Shop.CartLine_Allergen;
  * @expect $L/IsVegan = false
  * @expect count($A) = 3
  */
-retrieve $P from Shop.Product where [Name = 'Low-Mem Garden'] first;
+retrieve $P from Catalog.Product where [Name = 'Low-Mem Garden'] first;
 $L = create Shop.CartLine (Quantity = 1);
 call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
-retrieve $Crust from Shop.Option where [Code = 'CR-04'] first;
+retrieve $Crust from Catalog.Option where [Code = 'CR-04'] first;
 change $L (Shop.CartLine_Crust = $Crust);
 call microflow Shop.SUB_Line_Recalculate(Line = $L);
 retrieve $A from $L/Shop.CartLine_Allergen;
@@ -158,11 +158,11 @@ retrieve $A from $L/Shop.CartLine_Allergen;
  * @expect $L/UnitPrice = 14.99
  * @expect count($A) = 1
  */
-retrieve $P from Shop.Product where [Name = 'The Root Pizza'] first;
+retrieve $P from Catalog.Product where [Name = 'The Root Pizza'] first;
 $L = create Shop.CartLine (Quantity = 1);
 call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
-retrieve $Small from Shop.ProductSize where [Shop.ProductSize_Product = $P and Size = 'SMALL'] first;
-retrieve $Crust from Shop.Option where [Code = 'CR-05'] first;
+retrieve $Small from Catalog.ProductSize where [Catalog.ProductSize_Product = $P and Size = 'SMALL'] first;
+retrieve $Crust from Catalog.Option where [Code = 'CR-05'] first;
 change $L (Shop.CartLine_Size = $Small, Shop.CartLine_Crust = $Crust);
 call microflow Shop.SUB_Line_Recalculate(Line = $L);
 retrieve $A from $L/Shop.CartLine_Allergen;
@@ -172,14 +172,14 @@ retrieve $A from $L/Shop.CartLine_Allergen;
  * @test Example C: Boolean Pepperoni Large fully configured
  * @expect $L/UnitPrice = 30.99
  */
-retrieve $P from Shop.Product where [Name = 'Boolean Pepperoni'] first;
+retrieve $P from Catalog.Product where [Name = 'Boolean Pepperoni'] first;
 $L = create Shop.CartLine (Quantity = 1);
 call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
-retrieve $Large from Shop.ProductSize where [Shop.ProductSize_Product = $P and Size = 'LARGE'] first;
-retrieve $Crust from Shop.Option where [Code = 'CR-04'] first;
-retrieve $Cheese from Shop.Option where [Code = 'CH-02'] first;
-retrieve $Extras from Shop.Option where [Code = 'EX-11' or Code = 'EX-21'];
-retrieve $Removed from Shop.Ingredient where [Code = 'oregano'];
+retrieve $Large from Catalog.ProductSize where [Catalog.ProductSize_Product = $P and Size = 'LARGE'] first;
+retrieve $Crust from Catalog.Option where [Code = 'CR-04'] first;
+retrieve $Cheese from Catalog.Option where [Code = 'CH-02'] first;
+retrieve $Extras from Catalog.Option where [Code = 'EX-11' or Code = 'EX-21'];
+retrieve $Removed from Catalog.Ingredient where [Code = 'oregano'];
 change $L (Shop.CartLine_Size = $Large, Shop.CartLine_Crust = $Crust, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $Extras, Shop.CartLine_Removed = $Removed);
 call microflow Shop.SUB_Line_Recalculate(Line = $L);
 /

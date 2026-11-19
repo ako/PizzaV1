@@ -12,11 +12,11 @@ create or modify microflow Shop.SUB_Menu_Refresh ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  retrieve $Published from Shop.Product where [ProductStatus = 'PUBLISHED'];
-  $Pizzas = filter $Published where $currentObject/Kind = Shop.ProductKind.PIZZA;
-  $Sides = filter $Published where $currentObject/Kind = Shop.ProductKind.SIDE;
-  $Drinks = filter $Published where $currentObject/Kind = Shop.ProductKind.DRINK;
-  $Desserts = filter $Published where $currentObject/Kind = Shop.ProductKind.DESSERT;
+  retrieve $Published from Catalog.Product where [ProductStatus = 'PUBLISHED'];
+  $Pizzas = filter $Published where $currentObject/Kind = Catalog.ProductKind.PIZZA;
+  $Sides = filter $Published where $currentObject/Kind = Catalog.ProductKind.SIDE;
+  $Drinks = filter $Published where $currentObject/Kind = Catalog.ProductKind.DRINK;
+  $Desserts = filter $Published where $currentObject/Kind = Catalog.ProductKind.DESSERT;
   $NP = count $Pizzas;
   $NS = count $Sides;
   $ND = count $Drinks;
@@ -28,7 +28,7 @@ begin
   if $Cart/SearchQuery != empty then
     set $Query = $Cart/SearchQuery;
   end if;
-  retrieve $Cat from Shop.Category where [Code = $Cart/MenuCategory] first;
+  retrieve $Cat from Catalog.Category where [Code = $Cart/MenuCategory] first;
   declare $File String = 'pizzas.json';
   if $Cat != empty then
     set $File = $Cat/FileName;
@@ -80,7 +80,7 @@ grant execute on microflow Shop.DS_Menu to Shop.Guest; -- auto
  * @returns Products in display order
  */
 create or modify microflow Shop.DS_Menu_Products ($Cart: Shop.Cart)
-returns List of Shop.Product as $Result
+returns List of Catalog.Product as $Result
 folder 'Menu'
 begin
   declare $Query String = '';
@@ -93,8 +93,8 @@ begin
   end if;
   declare $IsSearch Boolean = length($Query) >= 2;
   declare $SearchFor String = if $IsSearch then $Query else '';
-  retrieve $Found from Shop.Product where [ProductStatus = 'PUBLISHED' and contains(SearchText, $SearchFor)] sort by Shop.Product_Category/Shop.Category.SortOrder asc, SortOrder asc;
-  $Result = filter $Found where $IsSearch or $currentObject/Shop.Product_Category/Code = $Cat;
+  retrieve $Found from Catalog.Product where [ProductStatus = 'PUBLISHED' and contains(SearchText, $SearchFor)] sort by Catalog.Product_Category/Catalog.Category.SortOrder asc, SortOrder asc;
+  $Result = filter $Found where $IsSearch or $currentObject/Catalog.Product_Category/Code = $Cat;
   if $Cart/IsFilterVegetarian then
     $Veg = filter $Result where $currentObject/IsVegetarian;
     set $Result = $Veg;
@@ -104,7 +104,7 @@ begin
     set $Result = $Vegan;
   end if;
   if $Cart/IsFilterSpicy then
-    $Spicy = filter $Result where $currentObject/Spice != Shop.SpiceLevel.NONE;
+    $Spicy = filter $Result where $currentObject/Spice != Catalog.SpiceLevel.NONE;
     set $Result = $Spicy;
   end if;
   return $Result;
@@ -263,7 +263,7 @@ grant execute on microflow Shop.ACT_Menu_ShowAll to Shop.Guest; -- auto
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Product_Info ($Product: Shop.Product)
+create or modify microflow Shop.ACT_Product_Info ($Product: Catalog.Product)
 folder 'Menu'
 begin
   show page Shop.ItemInfo(Product = $Product);
@@ -271,15 +271,46 @@ end;
 grant execute on microflow Shop.ACT_Product_Info to Shop.Guest; -- auto
 
 
+/**
+ * Recipe of a product for its code block (US-026), read through the catalog rather
+ * than queried from the page. Only published products (BR-DATA-12).
+ *
+ * @param $Product The product
+ * @returns Its recipe items in menu order
+ */
+create or modify microflow Shop.DS_Product_Recipe ($Product: Catalog.Product)
+returns List of Catalog.RecipeItem as $Items
+folder 'Menu'
+begin
+  retrieve $Items from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product and Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
+  return $Items;
+end;
+grant execute on microflow Shop.DS_Product_Recipe to Shop.Guest;
+
+/**
+ * Declared allergens of a product for its code block (US-026). Only published products.
+ *
+ * @param $Product The product
+ * @returns Its allergens in catalog order
+ */
+create or modify microflow Shop.DS_Product_Allergens ($Product: Catalog.Product)
+returns List of Catalog.Allergen as $Allergens
+folder 'Menu'
+begin
+  retrieve $Allergens from Catalog.Allergen where [Catalog.Product_Allergen = $Product and Catalog.Product_Allergen/Catalog.Product/ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
+  return $Allergens;
+end;
+grant execute on microflow Shop.DS_Product_Allergens to Shop.Guest;
+
 /** The default build as a code snippet (US-026): generated from the data, never hard-coded. */
-create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) {
+create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Catalog.Product)) {
   container code (Class: 'code') {
     container cl1 (Class: 'cl') {
       dynamictext c1k (Content: 'const', Class: 'k')
       dynamictext c1v (Content: ' {1} ', ContentParams: ({1} = $Product/CodeVar))
       dynamictext c1p (Content: '= {', Class: 'p')
     }
-    container clPizza (Class: 'cl-group', Visible: $Product/Kind = Shop.ProductKind.PIZZA) {
+    container clPizza (Class: 'cl-group', Visible: $Product/Kind = Catalog.ProductKind.PIZZA) {
       container cl2 (Class: 'cl') {
         dynamictext c2k (Content: '  crust: ')
         dynamictext c2v (Content: '''{1}''', ContentParams: ({1} = $Product/CodeCrust), Class: 's')
@@ -300,13 +331,13 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) 
       container cl5 (Class: 'cl') {
         dynamictext c5k (Content: '  toppings: ')
         dynamictext c5o (Content: '[', Class: 'p')
-        listview lvTop (DataSource: DATABASE Shop.RecipeItem WHERE [Shop.RecipeItem_Product = $Product] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') {
-          dynamictext c5v (Content: '''{1}''', ContentParams: ({1} = Shop.RecipeItem_Ingredient/Name), Class: 's')
+        listview lvTop (DataSource: MICROFLOW Shop.DS_Product_Recipe(Product = $Product), PageSize: 200, Class: 'code-list') {
+          dynamictext c5v (Content: '''{1}''', ContentParams: ({1} = Catalog.RecipeItem_Ingredient/Name), Class: 's')
         }
         dynamictext c5c (Content: ']', Class: 'p')
       }
     }
-    container clOther (Class: 'cl-group', Visible: $Product/Kind != Shop.ProductKind.PIZZA) {
+    container clOther (Class: 'cl-group', Visible: $Product/Kind != Catalog.ProductKind.PIZZA) {
       container cl6 (Class: 'cl') {
         dynamictext c6k (Content: '  serving: ')
         dynamictext c6v (Content: '''{1}''', ContentParams: ({1} = $Product/ServingLabel), Class: 's')
@@ -320,7 +351,7 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) 
       container cl8 (Class: 'cl') {
         dynamictext c8k (Content: '  allergens: ')
         dynamictext c8o (Content: '[', Class: 'p')
-        listview lvAll (DataSource: DATABASE Shop.Allergen WHERE [Shop.Product_Allergen = $Product] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') {
+        listview lvAll (DataSource: MICROFLOW Shop.DS_Product_Allergens(Product = $Product), PageSize: 200, Class: 'code-list') {
           dynamictext c8v (Content: '''{1}''', ContentParams: ({1} = Caption), Class: 's')
         }
         dynamictext c8c (Content: '],', Class: 'p')
@@ -335,7 +366,7 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Shop.Product)) 
 };
 
 /** Menu card (US-025): photo, names, module path, code block, badges, + import, Configure, module.info. */
-create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Shop.Product)) {
+create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Catalog.Product)) {
   container pcard (Class: 'pcard', DynamicClasses: if $Product/IsOrderable then '' else 'sold-out') {
     container pHead (Class: 'pcard-head') {
       dynamictext pHeadIcon (Content: '{1}', ContentParams: ({1} = $Product/CardIcon), Class: 'ms sm c-orange')
@@ -374,7 +405,7 @@ create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Shop.Product)) {
         dynamictext pImportTxt (Content: '+ import')
       }
       actionbutton pSoldBtn (Caption: 'SOLD_OUT', Action: NOTHING, Class: 'btn btn-primary is-disabled', Visible: not($Product/IsOrderable))
-      container pConfigure (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Shop.ProductKind.PIZZA) {
+      container pConfigure (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Catalog.ProductKind.PIZZA) {
         dynamictext pTune (Content: 'tune', Class: 'ms md')
       }
       container pInfo (Class: 'btn btn-ghost', OnClick: CALL MICROFLOW Shop.ACT_Product_Info(Product = $Product)) {

@@ -23,9 +23,9 @@ begin
   end if;
   retrieve $Product from $Line/Shop.CartLine_Product;
   retrieve $Size from $Line/Shop.CartLine_Size;
-  declare $SizeCode Enumeration(Shop.SizeCode) = $Size/Size;
+  declare $SizeCode Enumeration(Catalog.SizeCode) = $Size/Size;
   if $Kind = 'SIZE' then
-    retrieve $Sizes from Shop.ProductSize where [Shop.ProductSize_Product = $Product] sort by SortOrder asc;
+    retrieve $Sizes from Catalog.ProductSize where [Catalog.ProductSize_Product = $Product] sort by SortOrder asc;
     loop $S in $Sizes
     begin
       $SPrice = call microflow Shop.SUB_Money(Amount = $S/Price);
@@ -35,15 +35,15 @@ begin
     return $Choices;
   end if;
   if $Kind = 'CRUST' or $Kind = 'SAUCE' or $Kind = 'CHEESE' then
-    retrieve $AllOptions from Shop.Option where [IsActive = true and OptionGroup != 'EXTRA'] sort by SortOrder asc;
+    retrieve $AllOptions from Catalog.Option where [IsActive = true and OptionGroup != 'EXTRA'] sort by SortOrder asc;
     $Options = filter $AllOptions where getKey($currentObject/OptionGroup) = $Kind;
     retrieve $LCrust from $Line/Shop.CartLine_Crust;
     retrieve $LSauce from $Line/Shop.CartLine_Sauce;
     retrieve $LCheese from $Line/Shop.CartLine_Cheese;
-    retrieve $PCrust from $Product/Shop.Product_DefaultCrust;
-    retrieve $PSauce from $Product/Shop.Product_DefaultSauce;
-    retrieve $PCheese from $Product/Shop.Product_DefaultCheese;
-    $Pick = create list of Shop.Option;
+    retrieve $PCrust from $Product/Catalog.Product_DefaultCrust;
+    retrieve $PSauce from $Product/Catalog.Product_DefaultSauce;
+    retrieve $PCheese from $Product/Catalog.Product_DefaultCheese;
+    $Pick = create list of Catalog.Option;
     if $Kind = 'CRUST' then
       add $LCrust to $Pick;
       add $PCrust to $Pick;
@@ -61,8 +61,8 @@ begin
     $Default = head $Rest;
     loop $O in $Options
     begin
-      $OAvail = call microflow Shop.SUB_Option_AvailableFor(Option = $O, Size = $SizeCode);
-      retrieve $OIng from $O/Shop.Option_Ingredient;
+      $OAvail = call microflow Catalog.SUB_Option_AvailableFor(Option = $O, Size = $SizeCode);
+      retrieve $OIng from $O/Catalog.Option_Ingredient;
       declare $InStock Boolean = $OIng = empty or $OIng/IsInStock;
       declare $Sub String = '';
       if not($InStock) then
@@ -89,28 +89,28 @@ begin
     return $Choices;
   end if;
   if $Kind = 'RECIPE' then
-    retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+    retrieve $Recipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
     retrieve $Removed from $Line/Shop.CartLine_Removed;
     loop $R in $Recipe
     begin
-      retrieve $RIng from $R/Shop.RecipeItem_Ingredient;
+      retrieve $RIng from $R/Catalog.RecipeItem_Ingredient;
       $IsRemoved = contains $RIng in $Removed;
-      $RC = create Shop.Choice (Kind = 'RECIPE', Title = $RIng/Name, Sub = if $R/Role = Shop.RecipeRole.FINISH then 'finish' else 'topping',
+      $RC = create Shop.Choice (Kind = 'RECIPE', Title = $RIng/Name, Sub = if $R/Role = Catalog.RecipeRole.FINISH then 'finish' else 'topping',
         IsRemoved = $IsRemoved, IsFixed = not($R/IsRemovable), IsUnavailable = not($RIng/IsInStock), SortOrder = $R/SortOrder, Shop.Choice_Ingredient = $RIng, Shop.Choice_Line = $Line);
       add $RC to $Choices;
     end loop;
     return $Choices;
   end if;
   if $Kind = 'EXTRA' then
-    retrieve $Extras from Shop.Option where [OptionGroup = 'EXTRA' and IsActive = true] sort by SortOrder asc;
+    retrieve $Extras from Catalog.Option where [OptionGroup = 'EXTRA' and IsActive = true] sort by SortOrder asc;
     retrieve $Chosen from $Line/Shop.CartLine_Extra;
     $ChosenCount = count $Chosen;
     declare $Full Boolean = $ChosenCount >= $Product/MaxExtras;
     loop $X in $Extras
     begin
       $XOn = contains $X in $Chosen;
-      $XAvail = call microflow Shop.SUB_Option_AvailableFor(Option = $X, Size = $SizeCode);
-      $XPrice = call microflow Shop.SUB_Option_PriceFor(Option = $X, Size = $SizeCode);
+      $XAvail = call microflow Catalog.SUB_Option_AvailableFor(Option = $X, Size = $SizeCode);
+      $XPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $X, Size = $SizeCode);
       $XPriceText = call microflow Shop.SUB_Money(Amount = $XPrice);
       $XC = create Shop.Choice (Kind = 'EXTRA', Title = $X/OptionKey, Sub = $X/Name + ' · ' + (if $XAvail then $X/VersionTag else 'unavailable today'), PriceLabel = '+' + $XPriceText,
         IsSelected = $XOn, IsDisabled = not($XOn) and ($Full or not($XAvail)), SortOrder = $X/SortOrder, Shop.Choice_Option = $X, Shop.Choice_Line = $Line);
@@ -119,16 +119,16 @@ begin
     return $Choices;
   end if;
   -- ROW: price breakdown (US-052)
-  retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
-  retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
-  retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+  retrieve $DefCrust from $Product/Catalog.Product_DefaultCrust;
+  retrieve $DefSauce from $Product/Catalog.Product_DefaultSauce;
+  retrieve $DefCheese from $Product/Catalog.Product_DefaultCheese;
   retrieve $Crust from $Line/Shop.CartLine_Crust;
   retrieve $Sauce from $Line/Shop.CartLine_Sauce;
   retrieve $Cheese from $Line/Shop.CartLine_Cheese;
   $BasePrice = call microflow Shop.SUB_Money(Amount = $Size/Price);
   $Row0 = create Shop.Choice (Kind = 'ROW', Title = getCaption($SizeCode), PriceLabel = $BasePrice, SortOrder = 0);
   add $Row0 to $Choices;
-  $Base = create list of Shop.Option;
+  $Base = create list of Catalog.Option;
   add $Crust to $Base;
   add $Sauce to $Base;
   add $Cheese to $Base;
@@ -144,7 +144,7 @@ begin
   $SortedLineExtras = sort $LineExtras by SortOrder asc;
   loop $E in $SortedLineExtras
   begin
-    $EPrice = call microflow Shop.SUB_Option_PriceFor(Option = $E, Size = $SizeCode);
+    $EPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $E, Size = $SizeCode);
     $EText = call microflow Shop.SUB_Money(Amount = $EPrice);
     $RowE = create Shop.Choice (Kind = 'ROW', Title = '+ ' + $E/Name, PriceLabel = '+' + $EText, SortOrder = 2);
     add $RowE to $Choices;
@@ -180,16 +180,16 @@ begin
     retrieve $NewSize from $Choice/Shop.Choice_Size;
     change $Line (Shop.CartLine_Size = $NewSize);
     retrieve $Crust from $Line/Shop.CartLine_Crust;
-    $CrustOk = call microflow Shop.SUB_Option_AvailableFor(Option = $Crust, Size = $NewSize/Size);
+    $CrustOk = call microflow Catalog.SUB_Option_AvailableFor(Option = $Crust, Size = $NewSize/Size);
     if not($CrustOk) then
-      retrieve $Neapolitan from Shop.Option where [Code = 'CR-01'] first;
+      retrieve $Neapolitan from Catalog.Option where [Code = 'CR-01'] first;
       change $Line (Shop.CartLine_Crust = $Neapolitan);
       set $Notice = 'core_kernel reset to neapolitan_core: ' + $Crust/Name + ' is not available in ' + getCaption($NewSize/Size) + '.';
     end if;
     retrieve $Extras from $Line/Shop.CartLine_Extra;
     loop $X in $Extras
     begin
-      $XOk = call microflow Shop.SUB_Option_AvailableFor(Option = $X, Size = $NewSize/Size);
+      $XOk = call microflow Catalog.SUB_Option_AvailableFor(Option = $X, Size = $NewSize/Size);
       if not($XOk) then
         remove $X from $Line/Shop.CartLine_Extra;
         set $Notice = $Notice + ' ' + $X/Name + ' is not available in ' + getCaption($NewSize/Size) + ' and was removed.';
@@ -471,12 +471,12 @@ grant execute on microflow Shop.ACT_Info_Add to Shop.Guest; -- auto
  * @param $Product The product shown
  * @returns A draft line with quantity 1
  */
-create or modify microflow Shop.DS_Info_Line ($Product: Shop.Product)
+create or modify microflow Shop.DS_Info_Line ($Product: Catalog.Product)
 returns Shop.CartLine as $Line
 folder 'Configurator'
 begin
   -- the product id comes from the client: only published products can be configured (BR-DATA-12)
-  if $Product = empty or $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+  if $Product = empty or $Product/ProductStatus != Catalog.ProductStatus.PUBLISHED then
     return empty;
   end if;
   -- the draft line goes into the current guest's own cart
@@ -491,7 +491,7 @@ grant execute on microflow Shop.DS_Info_Line to Shop.Guest; -- auto
  *
  * @param $Product The product
  */
-create or modify microflow Shop.SUB_Configure_FromHome ($Product: Shop.Product)
+create or modify microflow Shop.SUB_Configure_FromHome ($Product: Catalog.Product)
 folder 'Configurator'
 begin
   call microflow Shop.ACT_Configure_Open(Product = $Product);
@@ -508,7 +508,7 @@ end;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Configure_FromHome ($Product: Shop.Product)
+create or modify microflow Shop.ACT_Configure_FromHome ($Product: Catalog.Product)
 folder 'Configurator'
 begin
   call microflow Shop.SUB_Configure_FromHome(Product = $Product);
@@ -522,6 +522,54 @@ create or modify snippet Shop.SNIP_OptTile (Params: ($Choice: Shop.Choice)) {
     dynamictext oSub (Content: '{1}', ContentParams: ({1} = $Choice/Sub), Class: 'o-sub')
   }
 };
+
+/**
+ * Chosen extras of a configured line for the manifest preview, read through a flow rather
+ * than queried from the page; only lines in the caller's own cart.
+ *
+ * @param $Line The cart line
+ * @returns Chosen extras, in catalog order
+ */
+create or modify microflow Shop.DS_Line_Extras ($Line: Shop.CartLine)
+returns List of Catalog.Option as $Extras
+folder 'Configurator'
+begin
+  retrieve $Extras from Catalog.Option where [Shop.CartLine_Extra = $Line and Shop.CartLine_Extra/Shop.CartLine/Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'] sort by SortOrder asc;
+  return $Extras;
+end;
+grant execute on microflow Shop.DS_Line_Extras to Shop.Guest;
+
+/**
+ * Removed (unlinked) ingredients of a configured line for the manifest preview, read through a flow rather
+ * than queried from the page; only lines in the caller's own cart.
+ *
+ * @param $Line The cart line
+ * @returns Removed (unlinked) ingredients, in catalog order
+ */
+create or modify microflow Shop.DS_Line_Removed ($Line: Shop.CartLine)
+returns List of Catalog.Ingredient as $Removed
+folder 'Configurator'
+begin
+  retrieve $Removed from Catalog.Ingredient where [Shop.CartLine_Removed = $Line and Shop.CartLine_Removed/Shop.CartLine/Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'] sort by SortOrder asc;
+  return $Removed;
+end;
+grant execute on microflow Shop.DS_Line_Removed to Shop.Guest;
+
+/**
+ * Allergens of a configured line for the manifest preview, read through a flow rather
+ * than queried from the page; only lines in the caller's own cart.
+ *
+ * @param $Line The cart line
+ * @returns Allergens, in catalog order
+ */
+create or modify microflow Shop.DS_Line_Allergens ($Line: Shop.CartLine)
+returns List of Catalog.Allergen as $Allergens
+folder 'Configurator'
+begin
+  retrieve $Allergens from Catalog.Allergen where [Shop.CartLine_Allergen = $Line and Shop.CartLine_Allergen/Shop.CartLine/Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'] sort by SortOrder asc;
+  return $Allergens;
+end;
+grant execute on microflow Shop.DS_Line_Allergens to Shop.Guest;
 
 /** SCR-03 configure_module.ts. */
 create or modify page Shop.Configurator (
@@ -580,13 +628,13 @@ create or modify page Shop.Configurator (
                 container m7 (Class: 'cl') {
                   dynamictext m7k (Content: '  "dependencies": ')
                   dynamictext m7o (Content: '[', Class: 'p')
-                  listview lvDeps (DataSource: DATABASE Shop.Option WHERE [Shop.CartLine_Extra = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m7v (Content: '"{1}"', ContentParams: ({1} = OptionKey), Class: 's') }
+                  listview lvDeps (DataSource: MICROFLOW Shop.DS_Line_Extras(Line = $Line), PageSize: 200, Class: 'code-list') { dynamictext m7v (Content: '"{1}"', ContentParams: ({1} = OptionKey), Class: 's') }
                   dynamictext m7c (Content: '],', Class: 'p')
                 }
                 container m8 (Class: 'cl') {
                   dynamictext m8k (Content: '  "unlinked": ')
                   dynamictext m8o (Content: '[', Class: 'p')
-                  listview lvUnl (DataSource: DATABASE Shop.Ingredient WHERE [Shop.CartLine_Removed = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m8v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
+                  listview lvUnl (DataSource: MICROFLOW Shop.DS_Line_Removed(Line = $Line), PageSize: 200, Class: 'code-list') { dynamictext m8v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
                   dynamictext m8c (Content: '],', Class: 'p')
                 }
                 container m9 (Class: 'cl') { dynamictext m9k (Content: '  "instances": ') dynamictext m9v (Content: '{1}', ContentParams: ({1} = toString($Line/Quantity)), Class: 'n') dynamictext m9p (Content: ',', Class: 'p') }
@@ -594,7 +642,7 @@ create or modify page Shop.Configurator (
                 container m11 (Class: 'cl') {
                   dynamictext m11k (Content: '  "allergens": ')
                   dynamictext m11o (Content: '[', Class: 'p')
-                  listview lvAl (DataSource: DATABASE Shop.Allergen WHERE [Shop.CartLine_Allergen = $Line] SORT BY SortOrder ASC, PageSize: 200, Class: 'code-list') { dynamictext m11v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
+                  listview lvAl (DataSource: MICROFLOW Shop.DS_Line_Allergens(Line = $Line), PageSize: 200, Class: 'code-list') { dynamictext m11v (Content: '"{1}"', ContentParams: ({1} = Code), Class: 's') }
                   dynamictext m11c (Content: '],', Class: 'p')
                 }
                 container m12 (Class: 'cl') { dynamictext m12k (Content: '  "vegetarian": ') dynamictext m12v (Content: '{1}', ContentParams: ({1} = if $Line/IsVegetarian then 'true' else 'false'), Class: 'b') dynamictext m12p (Content: ',', Class: 'p') }
@@ -734,7 +782,7 @@ create or modify page Shop.Configurator (
 create or modify page Shop.ItemInfo (
   Title: 'module.info',
   Layout: Shop.Layout_Modal,
-  Params: ($Product: Shop.Product)
+  Params: ($Product: Catalog.Product)
 ) {
   dataview dvInfo (DataSource: $Product, Class: 'gp-info scr-04') {
     container head (Class: 'modal-head') {
@@ -754,14 +802,14 @@ create or modify page Shop.ItemInfo (
         dynamictext iDesc (Content: '{1}', ContentParams: ({1} = Description), Class: 't-body-long mt-8')
         container facts (Class: 'facts mt-16') {
           container fServing (Class: 'sum-row') { dynamictext fsL (Content: 'SERVING', Class: 'lbl') dynamictext fsV (Content: '{1}', ContentParams: ({1} = ServingLabel)) }
-          container fPrice (Class: 'sum-row') { dynamictext fpL (Content: 'PRICE', Class: 'lbl') dynamictext fpV (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/Kind = Shop.ProductKind.PIZZA then 'from ' else '', {2} = CardPriceLabel), Class: 'price') }
-          container fCal (Class: 'sum-row') { dynamictext fcL (Content: 'CALORIES', Class: 'lbl') dynamictext fcV (Content: '{1}{2}', ContentParams: ({1} = CaloriesLabel, {2} = if $currentObject/Kind = Shop.ProductKind.PIZZA then ' (whole pizza, by size)' else '')) }
-          container fSpice (Class: 'sum-row') { dynamictext fspL (Content: 'SPICE', Class: 'lbl') dynamictext fspV (Content: '{1}', ContentParams: ({1} = if $currentObject/Spice = Shop.SpiceLevel.NONE then 'Not spicy' else getKey($currentObject/Spice))) }
+          container fPrice (Class: 'sum-row') { dynamictext fpL (Content: 'PRICE', Class: 'lbl') dynamictext fpV (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/Kind = Catalog.ProductKind.PIZZA then 'from ' else '', {2} = CardPriceLabel), Class: 'price') }
+          container fCal (Class: 'sum-row') { dynamictext fcL (Content: 'CALORIES', Class: 'lbl') dynamictext fcV (Content: '{1}{2}', ContentParams: ({1} = CaloriesLabel, {2} = if $currentObject/Kind = Catalog.ProductKind.PIZZA then ' (whole pizza, by size)' else '')) }
+          container fSpice (Class: 'sum-row') { dynamictext fspL (Content: 'SPICE', Class: 'lbl') dynamictext fspV (Content: '{1}', ContentParams: ({1} = if $currentObject/Spice = Catalog.SpiceLevel.NONE then 'Not spicy' else getKey($currentObject/Spice))) }
           container fCaf (Class: 'sum-row', Visible: $currentObject/CaffeineMg > 0) { dynamictext fcfL (Content: 'CAFFEINE', Class: 'lbl') dynamictext fcfV (Content: '{1} mg', ContentParams: ({1} = CaffeineMg)) }
           container fDiet (Class: 'sum-row') { dynamictext fdL (Content: 'DIET', Class: 'lbl') dynamictext fdV (Content: '{1}', ContentParams: ({1} = if $currentObject/IsVegan then '<Vegan />' else if $currentObject/IsVegetarian then '<Vegetarian />' else 'Not vegetarian'), Class: 'c-green') }
           container fAll (Class: 'sum-row') { dynamictext faL (Content: 'ALLERGENS', Class: 'lbl') dynamictext faV (Content: '{1}', ContentParams: ({1} = if $currentObject/AllergenText = '' then 'No major allergens' else $currentObject/AllergenText)) }
         }
-        dynamictext iDefault (Content: 'Default build. Changes in the configurator update allergens.', Class: 't-micro c-muted mt-8', Visible: $currentObject/Kind = Shop.ProductKind.PIZZA)
+        dynamictext iDefault (Content: 'Default build. Changes in the configurator update allergens.', Class: 't-micro c-muted mt-8', Visible: $currentObject/Kind = Catalog.ProductKind.PIZZA)
         container notice (Class: 'notice info mt-16') {
           dynamictext nI (Content: 'info', Class: 'ms')
           dynamictext nT (Content: 'All items are prepared in a kitchen that handles gluten, milk, eggs, tree nuts, mustard, fish and other allergens. Cross-contact is possible. The Gluten-Free Fork crust is made without gluten ingredients but is not certified gluten-free.')
@@ -776,7 +824,7 @@ create or modify page Shop.ItemInfo (
           dynamictext stVal (Content: '{1}', ContentParams: ({1} = Quantity), Class: 'val')
           actionbutton stPlus (Caption: '+', Action: CALL MICROFLOW Shop.ACT_Config_Qty(Line = $currentObject, Delta = 1), Class: 'st-btn', DynamicClasses: if $currentObject/Quantity >= 10 then 'is-disabled' else '')
         }
-        container cfg (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Shop.ProductKind.PIZZA and $Product/IsOrderable) {
+        container cfg (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Configure_Open(Product = $Product), Visible: $Product/Kind = Catalog.ProductKind.PIZZA and $Product/IsOrderable) {
           dynamictext cfgT (Content: 'Configure this module →')
         }
         container add (Class: 'btn btn-primary', DynamicClasses: if $Product/IsOrderable then '' else 'is-disabled', OnClick: CALL MICROFLOW Shop.ACT_Info_Add(Line = $currentObject)) {

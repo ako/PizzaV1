@@ -9,16 +9,16 @@ mdl 1;
  * @param $Size The chosen size
  * @returns Price in dollars
  */
-create or modify microflow Shop.SUB_Option_PriceFor ($Option: Shop.Option, $Size: Enumeration(Shop.SizeCode))
+create or modify microflow Catalog.SUB_Option_PriceFor ($Option: Catalog.Option, $Size: Enumeration(Catalog.SizeCode))
 returns Decimal as $Price
 folder 'Catalog'
 begin
   declare $Price Decimal = $Option/Surcharge;
-  if $Option/OptionGroup = Shop.OptionGroup.EXTRA then
-    if $Size = Shop.SizeCode.SMALL then
+  if $Option/OptionGroup = Catalog.OptionGroup.EXTRA then
+    if $Size = Catalog.SizeCode.SMALL then
       set $Price = $Option/PriceSmall;
     else
-      if $Size = Shop.SizeCode.LARGE then
+      if $Size = Catalog.SizeCode.LARGE then
         set $Price = $Option/PriceLarge;
       else
         set $Price = $Option/PriceMedium;
@@ -36,18 +36,18 @@ end;
  * @param $Size The chosen size
  * @returns True when selectable
  */
-create or modify microflow Shop.SUB_Option_AvailableFor ($Option: Shop.Option, $Size: Enumeration(Shop.SizeCode))
+create or modify microflow Catalog.SUB_Option_AvailableFor ($Option: Catalog.Option, $Size: Enumeration(Catalog.SizeCode))
 returns Boolean as $Ok
 folder 'Catalog'
 begin
   declare $Ok Boolean = $Option/IsActive;
-  retrieve $Ing from $Option/Shop.Option_Ingredient;
+  retrieve $Ing from $Option/Catalog.Option_Ingredient;
   if $Ing != empty then
     if not($Ing/IsInStock) then
       set $Ok = false;
     end if;
   end if;
-  if ($Size = Shop.SizeCode.SMALL and not($Option/IsForSmall)) or ($Size = Shop.SizeCode.MEDIUM and not($Option/IsForMedium)) or ($Size = Shop.SizeCode.LARGE and not($Option/IsForLarge)) then
+  if ($Size = Catalog.SizeCode.SMALL and not($Option/IsForSmall)) or ($Size = Catalog.SizeCode.MEDIUM and not($Option/IsForMedium)) or ($Size = Catalog.SizeCode.LARGE and not($Option/IsForLarge)) then
     set $Ok = false;
   end if;
   return $Ok;
@@ -61,15 +61,15 @@ end;
  * @param $Line The line to fill (not committed)
  * @param $Product The product
  */
-create or modify microflow Shop.SUB_Line_ApplyDefaults ($Line: Shop.CartLine, $Product: Shop.Product)
+create or modify microflow Shop.SUB_Line_ApplyDefaults ($Line: Shop.CartLine, $Product: Catalog.Product)
 folder 'Catalog'
 begin
-  retrieve $Size from Shop.ProductSize where [Shop.ProductSize_Product = $Product and IsDefault = true] first;
-  retrieve $Crust from $Product/Shop.Product_DefaultCrust;
-  retrieve $Sauce from $Product/Shop.Product_DefaultSauce;
-  retrieve $Cheese from $Product/Shop.Product_DefaultCheese;
-  $NoOptions = create list of Shop.Option;
-  retrieve $SoldOut from Shop.Ingredient where [IsInStock = false and Shop.RecipeItem_Ingredient/Shop.RecipeItem[Shop.RecipeItem_Product = $Product and IsRemovable = true]];
+  retrieve $Size from Catalog.ProductSize where [Catalog.ProductSize_Product = $Product and IsDefault = true] first;
+  retrieve $Crust from $Product/Catalog.Product_DefaultCrust;
+  retrieve $Sauce from $Product/Catalog.Product_DefaultSauce;
+  retrieve $Cheese from $Product/Catalog.Product_DefaultCheese;
+  $NoOptions = create list of Catalog.Option;
+  retrieve $SoldOut from Catalog.Ingredient where [IsInStock = false and Catalog.RecipeItem_Ingredient/Catalog.RecipeItem[Catalog.RecipeItem_Product = $Product and IsRemovable = true]];
   change $Line (Shop.CartLine_Product = $Product, Shop.CartLine_Size = $Size, Shop.CartLine_Crust = $Crust, Shop.CartLine_Sauce = $Sauce, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $NoOptions, Shop.CartLine_Removed = $SoldOut);
 end;
 
@@ -87,29 +87,29 @@ folder 'Catalog'
 begin
   retrieve $Product from $Line/Shop.CartLine_Product;
   retrieve $Size from $Line/Shop.CartLine_Size;
-  declare $SizeCode Enumeration(Shop.SizeCode) = $Size/Size;
+  declare $SizeCode Enumeration(Catalog.SizeCode) = $Size/Size;
   declare $Unit Decimal = $Size/Price;
   declare $Veg Boolean = true;
   declare $Vegan Boolean = true;
-  declare $Available Boolean = $Product/ProductStatus = Shop.ProductStatus.PUBLISHED and not($Product/IsSoldOut);
+  declare $Available Boolean = $Product/ProductStatus = Catalog.ProductStatus.PUBLISHED and not($Product/IsSoldOut);
   declare $Key String = $Product/Code + '|' + getKey($SizeCode);
   declare $Text String = '';
-  $Allergens = create list of Shop.Allergen;
-  if $Product/Kind != Shop.ProductKind.PIZZA then
-    retrieve $Declared from $Product/Shop.Product_Allergen;
+  $Allergens = create list of Catalog.Allergen;
+  if $Product/Kind != Catalog.ProductKind.PIZZA then
+    retrieve $Declared from $Product/Catalog.Product_Allergen;
     add $Declared to $Allergens;
     set $Veg = $Product/IsDeclaredVegetarian;
     set $Vegan = $Product/IsDeclaredVegan;
   else
-    retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
-    retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
-    retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+    retrieve $DefCrust from $Product/Catalog.Product_DefaultCrust;
+    retrieve $DefSauce from $Product/Catalog.Product_DefaultSauce;
+    retrieve $DefCheese from $Product/Catalog.Product_DefaultCheese;
     retrieve $Crust from $Line/Shop.CartLine_Crust;
     retrieve $Sauce from $Line/Shop.CartLine_Sauce;
     retrieve $Cheese from $Line/Shop.CartLine_Cheese;
     retrieve $Extras from $Line/Shop.CartLine_Extra;
     retrieve $Removed from $Line/Shop.CartLine_Removed;
-    $Base = create list of Shop.Option;
+    $Base = create list of Catalog.Option;
     add $Crust to $Base;
     add $Sauce to $Base;
     add $Cheese to $Base;
@@ -130,7 +130,7 @@ begin
     declare $ExtraKey String = '';
     loop $Extra in $SortedExtras
     begin
-      $ExtraPrice = call microflow Shop.SUB_Option_PriceFor(Option = $Extra, Size = $SizeCode);
+      $ExtraPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $Extra, Size = $SizeCode);
       set $Unit = $Unit + $ExtraPrice;
       set $ExtraKey = $ExtraKey + ',' + $Extra/Code;
       set $Text = $Text + ', + ' + $Extra/Name;
@@ -139,13 +139,13 @@ begin
     -- availability of every chosen option
     loop $Opt in $Base
     begin
-      $OptOk = call microflow Shop.SUB_Option_AvailableFor(Option = $Opt, Size = $SizeCode);
+      $OptOk = call microflow Catalog.SUB_Option_AvailableFor(Option = $Opt, Size = $SizeCode);
       if not($OptOk) then
         set $Available = false;
       end if;
-      retrieve $OptIng from $Opt/Shop.Option_Ingredient;
+      retrieve $OptIng from $Opt/Catalog.Option_Ingredient;
       if $OptIng != empty then
-        retrieve $OptAll from $OptIng/Shop.Ingredient_Allergen;
+        retrieve $OptAll from $OptIng/Catalog.Ingredient_Allergen;
         add $OptAll to $Allergens;
         if not($OptIng/IsVegetarian) then
           set $Veg = false;
@@ -156,11 +156,11 @@ begin
       end if;
     end loop;
     -- remaining default recipe items
-    retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+    retrieve $Recipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
     declare $RemovedKey String = '';
     loop $Item in $Recipe
     begin
-      retrieve $Ing from $Item/Shop.RecipeItem_Ingredient;
+      retrieve $Ing from $Item/Catalog.RecipeItem_Ingredient;
       $IsRemoved = contains $Ing in $Removed;
       if $IsRemoved then
         set $RemovedKey = $RemovedKey + ',' + $Ing/Code;
@@ -169,7 +169,7 @@ begin
         if not($Ing/IsInStock) then
           set $Available = false;
         end if;
-        retrieve $IngAll from $Ing/Shop.Ingredient_Allergen;
+        retrieve $IngAll from $Ing/Catalog.Ingredient_Allergen;
         add $IngAll to $Allergens;
         if not($Ing/IsVegetarian) then
           set $Veg = false;
@@ -189,11 +189,11 @@ begin
   end if;
   declare $SizeText String = $Size/ServingDescription;
   declare $Display String = $Product/Name;
-  if $Product/Kind = Shop.ProductKind.PIZZA then
+  if $Product/Kind = Catalog.ProductKind.PIZZA then
     set $SizeText = getCaption($SizeCode);
     set $Display = $Product/Name + ' (' + $SizeText + ')';
   end if;
-  $LineAllergenText = call microflow Shop.SUB_AllergenText(Allergens = $Allergens);
+  $LineAllergenText = call microflow Catalog.SUB_AllergenText(Allergens = $Allergens);
   retrieve $CountExtras from $Line/Shop.CartLine_Extra;
   $ExtrasCount = count $CountExtras;
   $UnitText = call microflow Shop.SUB_Money(Amount = $Unit);
@@ -208,7 +208,7 @@ end;
  * @param $Allergens The allergens (duplicates allowed)
  * @returns Comma-separated captions; empty text when none
  */
-create or modify microflow Shop.SUB_AllergenText ($Allergens: List of Shop.Allergen)
+create or modify microflow Catalog.SUB_AllergenText ($Allergens: List of Catalog.Allergen)
 returns String as $Text
 folder 'Catalog'
 begin
@@ -238,16 +238,16 @@ end;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.SUB_Product_Recalculate ($Product: Shop.Product)
+create or modify microflow Shop.SUB_Product_Recalculate ($Product: Catalog.Product)
 folder 'Catalog'
 begin
-  retrieve $Sizes from Shop.ProductSize where [Shop.ProductSize_Product = $Product] sort by SortOrder asc;
+  retrieve $Sizes from Catalog.ProductSize where [Catalog.ProductSize_Product = $Product] sort by SortOrder asc;
   $Default = find $Sizes where $currentObject/IsDefault;
   $Lowest = minimum $Sizes by Calories;
   $Highest = maximum $Sizes by Calories;
   declare $SizeLabel String = $Default/ServingDescription;
   declare $Calories String = formatDecimal($Highest, '#,##0') + ' kcal';
-  if $Product/Kind = Shop.ProductKind.PIZZA then
+  if $Product/Kind = Catalog.ProductKind.PIZZA then
     set $SizeLabel = toString($Default/DiameterInches) + '"';
     if $Lowest != $Highest then
       set $Calories = formatDecimal($Lowest, '#,##0') + '–' + formatDecimal($Highest, '#,##0') + ' kcal';
@@ -257,56 +257,56 @@ begin
   call microflow Shop.SUB_Line_ApplyDefaults(Line = $Probe, Product = $Product);
   call microflow Shop.SUB_Line_Recalculate(Line = $Probe);
   retrieve $Allergens from $Probe/Shop.CartLine_Allergen;
-  $AllergenText = call microflow Shop.SUB_AllergenText(Allergens = $Allergens);
+  $AllergenText = call microflow Catalog.SUB_AllergenText(Allergens = $Allergens);
   -- orderable: published, not sold out and every non-removable recipe ingredient and default option available
   declare $Orderable Boolean = $Probe/IsAvailable;
   -- search text
   declare $Search String = $Product/Name + ' ' + $Product/RealWorldName + ' ' + $Product/ShortDescription;
-  retrieve $Recipe from Shop.RecipeItem where [Shop.RecipeItem_Product = $Product] sort by SortOrder asc;
+  retrieve $Recipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
   loop $Item in $Recipe
   begin
-    retrieve $Ing from $Item/Shop.RecipeItem_Ingredient;
+    retrieve $Ing from $Item/Catalog.RecipeItem_Ingredient;
     set $Search = $Search + ' ' + $Ing/Name;
   end loop;
-  if $Product/Kind = Shop.ProductKind.PIZZA then
-    change $Product (Shop.Product_Allergen = $Allergens);
+  if $Product/Kind = Catalog.ProductKind.PIZZA then
+    change $Product (Catalog.Product_Allergen = $Allergens);
   end if;
-  retrieve $Category from $Product/Shop.Product_Category;
+  retrieve $Category from $Product/Catalog.Product_Category;
   declare $Folder String = substring($Category/FileName, 0, find($Category/FileName, '.'));
   $PriceText = call microflow Shop.SUB_Money(Amount = $Default/Price);
   declare $PriceLabel String = $PriceText;
-  if $Product/Kind = Shop.ProductKind.PIZZA then
+  if $Product/Kind = Catalog.ProductKind.PIZZA then
     set $PriceLabel = $PriceText + ' · ' + $SizeLabel;
   end if;
   declare $Spice String = '';
-  if $Product/Spice = Shop.SpiceLevel.MILD then
+  if $Product/Spice = Catalog.SpiceLevel.MILD then
     set $Spice = 'HOTFIX_SPICY 1/3';
   end if;
-  if $Product/Spice = Shop.SpiceLevel.MEDIUM then
+  if $Product/Spice = Catalog.SpiceLevel.MEDIUM then
     set $Spice = 'HOTFIX_SPICY 2/3';
   end if;
-  if $Product/Spice = Shop.SpiceLevel.HOT then
+  if $Product/Spice = Catalog.SpiceLevel.HOT then
     set $Spice = 'HOTFIX_SPICY 3/3';
   end if;
-  retrieve $DefCrustC from $Product/Shop.Product_DefaultCrust;
-  retrieve $DefSauceC from $Product/Shop.Product_DefaultSauce;
-  retrieve $DefCheeseC from $Product/Shop.Product_DefaultCheese;
+  retrieve $DefCrustC from $Product/Catalog.Product_DefaultCrust;
+  retrieve $DefSauceC from $Product/Catalog.Product_DefaultSauce;
+  retrieve $DefCheeseC from $Product/Catalog.Product_DefaultCheese;
   declare $Ext String = '.ts';
   declare $Var String = 'pizza';
-  if $Product/Kind = Shop.ProductKind.SIDE then
+  if $Product/Kind = Catalog.ProductKind.SIDE then
     set $Ext = '.yml';
     set $Var = 'side';
   end if;
-  if $Product/Kind = Shop.ProductKind.DRINK then
+  if $Product/Kind = Catalog.ProductKind.DRINK then
     set $Ext = '.env';
     set $Var = 'drink';
   end if;
-  if $Product/Kind = Shop.ProductKind.DESSERT then
+  if $Product/Kind = Catalog.ProductKind.DESSERT then
     set $Ext = '.md';
     set $Var = 'dessert';
   end if;
-  change $Product (Kcal = $Default/Calories, FileLabel = $Product/ModuleKey + $Ext, CardIcon = if $Product/Kind = Shop.ProductKind.PIZZA then 'data_object' else 'description', CodeVar = $Var,
-    RealLine = if $Product/Kind = Shop.ProductKind.PIZZA then $Product/RealWorldName else $Product/RealWorldName + ' · ' + $Default/ServingDescription,
+  change $Product (Kcal = $Default/Calories, FileLabel = $Product/ModuleKey + $Ext, CardIcon = if $Product/Kind = Catalog.ProductKind.PIZZA then 'data_object' else 'description', CodeVar = $Var,
+    RealLine = if $Product/Kind = Catalog.ProductKind.PIZZA then $Product/RealWorldName else $Product/RealWorldName + ' · ' + $Default/ServingDescription,
     CodeCrust = if $DefCrustC = empty then '' else $DefCrustC/Name,
     CodeSauce = if $DefSauceC = empty then '' else if $DefSauceC/Code = 'SA-06' then 'null' else $DefSauceC/Name,
     CodeCheese = if $DefCheeseC = empty then '' else if $DefCheeseC/Code = 'CH-04' then 'null' else $DefCheeseC/Name, ModulePath = './' + $Folder + '/' + $Product/ModuleKey + '.ts', CardPriceLabel = $PriceLabel, SpiceLabel = $Spice, CardPrice = $Default/Price, CardSizeLabel = $SizeLabel, ServingLabel = $Default/ServingDescription, CaloriesLabel = $Calories,
@@ -321,7 +321,7 @@ end;
 create or modify microflow Shop.SUB_Catalog_RecalculateAll ()
 folder 'Catalog'
 begin
-  retrieve $Products from Shop.Product;
+  retrieve $Products from Catalog.Product;
   loop $Product in $Products
   begin
     call microflow Shop.SUB_Product_Recalculate(Product = $Product);

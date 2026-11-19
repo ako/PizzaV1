@@ -48,14 +48,14 @@ begin
       if $Product/IsSoldOut then
         set $Reason = 'Sold out today.';
       else
-        if $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+        if $Product/ProductStatus != Catalog.ProductStatus.PUBLISHED then
           set $Reason = 'This module was withdrawn from the menu.';
         else
           set $Reason = 'An option or ingredient of this build is no longer available. Edit or remove this line.';
         end if;
       end if;
     end if;
-    if $Product/Kind != Shop.ProductKind.DRINK then
+    if $Product/Kind != Catalog.ProductKind.DRINK then
       set $NonDrink = true;
     end if;
     change $Line (UnavailableReason = $Reason) commit without events;
@@ -137,7 +137,7 @@ begin
     return false;
   end if;
   declare $SizeText String = '';
-  if $Product/Kind = Shop.ProductKind.PIZZA then
+  if $Product/Kind = Catalog.ProductKind.PIZZA then
     set $SizeText = ' (' + getCaption($Size/Size) + ')';
   end if;
   declare $Key String = $Line/ConfigurationKey;
@@ -181,7 +181,7 @@ end;
  *
  * @param $Product The product
  */
-create or modify microflow Shop.ACT_Product_QuickAdd ($Product: Shop.Product)
+create or modify microflow Shop.ACT_Product_QuickAdd ($Product: Catalog.Product)
 folder 'Cart'
 begin
   call microflow Shop.ACT_Product_Add(Product = $Product, Quantity = 1);
@@ -194,7 +194,7 @@ end;
  * @param $Product The product
  * @param $Quantity Instances to add (1–10)
  */
-create or modify microflow Shop.SUB_Product_Add ($Product: Shop.Product, $Quantity: Integer)
+create or modify microflow Shop.SUB_Product_Add ($Product: Catalog.Product, $Quantity: Integer)
 folder 'Cart'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
@@ -221,7 +221,7 @@ end;
  * @param $Product The product
  * @param $Quantity Instances to add (1–10)
  */
-create or modify microflow Shop.ACT_Product_Add ($Product: Shop.Product, $Quantity: Integer)
+create or modify microflow Shop.ACT_Product_Add ($Product: Catalog.Product, $Quantity: Integer)
 folder 'Cart'
 begin
   call microflow Shop.SUB_Product_Add(Product = $Product, Quantity = $Quantity);

@@ -33,13 +33,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1001_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
@@ -119,13 +119,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1002_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-09' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-09' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -202,14 +202,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1003_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-05' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 25.0, LineTotal = 25.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-05' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 25.0, LineTotal = 25.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'buffalo_mozzarella', Name = 'Buffalo Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'jalapenos', Name = 'Jalapeños', Price = 2.5, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -282,13 +282,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1004_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 17.99, LineTotal = 17.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 17.99, LineTotal = 17.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -361,15 +361,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1005_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-06' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-06' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-03' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-03' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -446,14 +446,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1006_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Thin Client, + Wild arugula', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Thin Client, + Wild arugula', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'thin_client', Name = 'Thin Client', Price = 0.0, IsDefault = false, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'arugula', Name = 'Wild arugula', Price = 2.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-05' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.95, LineTotal = 2.95, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-05' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.95, LineTotal = 2.95, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -530,13 +530,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1007_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-07' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-07' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'truffle_cream', Name = 'Black Truffle Cream', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DS-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DS-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -613,14 +613,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1008_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-02' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 26.49, LineTotal = 26.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = 'Cheese-Stuffed v2, + ''Nduja', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-02' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 26.49, LineTotal = 26.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = 'Cheese-Stuffed v2, + ''Nduja', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'cheese_stuffed_v2', Name = 'Cheese-Stuffed v2', Price = 2.5, IsDefault = false, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'nduja', Name = '''Nduja', Price = 3.5, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -694,13 +694,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1009_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-03' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-03' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -765,13 +765,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1010_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-03' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-03' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -845,13 +845,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1011_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-08' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 13.99, LineTotal = 13.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-08' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 13.99, LineTotal = 13.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'no_sauce', Name = 'No Sauce (bianca)', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -924,20 +924,20 @@ end;
 create or modify microflow Simulation.SEED_Order_1012_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'smoked_bbq', Name = 'Smoked BBQ', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
-  retrieve $prod3 from Shop.Product where Code = 'DS-03' first;
-  $l3 = create Shop.OrderLine (ProductCode = 'DS-03', ProductName = 'Lava Exception Cake', RealWorldName = 'Molten chocolate lava cake', ModuleKey = 'lava-exception-cake', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.25, LineTotal = 7.25, AllergenText = 'Cereals containing gluten, Eggs, Soybeans, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod3 from Catalog.Product where Code = 'DS-03' first;
+  $l3 = create Shop.OrderLine (ProductCode = 'DS-03', ProductName = 'Lava Exception Cake', RealWorldName = 'Molten chocolate lava cake', ModuleKey = 'lava-exception-cake', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.25, LineTotal = 7.25, AllergenText = 'Cereals containing gluten, Eggs, Soybeans, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
 end;
 
 /**
@@ -1014,13 +1014,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1013_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-10' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-10' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'yellow_tomato', Name = 'Yellow Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'vegan_cashew_mozz', Name = 'Vegan Cashew Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -1098,18 +1098,18 @@ end;
 create or modify microflow Simulation.SEED_Order_1014_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-05' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.5, LineTotal = 22.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-05' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.5, LineTotal = 22.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'buffalo_mozzarella', Name = 'Buffalo Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'smoked_bbq', Name = 'Smoked BBQ', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -1182,13 +1182,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1015_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DS-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DS-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -1261,21 +1261,21 @@ end;
 create or modify microflow Simulation.SEED_Order_1016_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-11' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '− Fresh jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-11' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '− Fresh jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.REMOVE, OptionKey = 'jalapeno', Name = 'Fresh jalapeños', Price = 0.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'SD-05' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'SD-05', ProductName = 'Jalapeño Patch Dip', RealWorldName = 'Creamy jalapeño ranch dip', ModuleKey = 'jalapeno-patch-dip', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 1.5, LineTotal = 3.0, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
-  retrieve $prod3 from Shop.Product where Code = 'DR-03' first;
-  $l3 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'SD-05' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'SD-05', ProductName = 'Jalapeño Patch Dip', RealWorldName = 'Creamy jalapeño ranch dip', ModuleKey = 'jalapeno-patch-dip', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 1.5, LineTotal = 3.0, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod3 from Catalog.Product where Code = 'DR-03' first;
+  $l3 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
 end;
 
 /**
@@ -1353,25 +1353,25 @@ end;
 create or modify microflow Simulation.SEED_Order_1017_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 2, UnitPrice = 17.99, LineTotal = 35.98, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 2, UnitPrice = 17.99, LineTotal = 35.98, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-06' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.49, LineTotal = 24.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-06' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.49, LineTotal = 24.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'PZ-10' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'PZ-10' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
   $m2_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l2) commit without events;
   $m2_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'yellow_tomato', Name = 'Yellow Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l2) commit without events;
   $m2_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'vegan_cashew_mozz', Name = 'Vegan Cashew Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l2) commit without events;
-  retrieve $prod3 from Shop.Product where Code = 'SD-01' first;
-  $l3 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 6.5, LineTotal = 13.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
-  retrieve $prod4 from Shop.Product where Code = 'DR-05' first;
-  $l4 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 4, UnitPrice = 2.95, LineTotal = 11.8, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 5, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod4) commit without events;
+  retrieve $prod3 from Catalog.Product where Code = 'SD-01' first;
+  $l3 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 6.5, LineTotal = 13.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
+  retrieve $prod4 from Catalog.Product where Code = 'DR-05' first;
+  $l4 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 4, UnitPrice = 2.95, LineTotal = 11.8, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 5, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod4) commit without events;
 end;
 
 /**
@@ -1448,16 +1448,16 @@ end;
 create or modify microflow Simulation.SEED_Order_1018_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-02' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 18.99, LineTotal = 18.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Hot honey drizzle', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-02' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 18.99, LineTotal = 18.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Hot honey drizzle', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'hot_honey', Name = 'Hot honey drizzle', Price = 2.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-02' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-02' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -1534,15 +1534,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1019_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-02' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-02' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-03' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-03' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -1615,13 +1615,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1020_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -1691,15 +1691,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1021_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-06' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.49, LineTotal = 24.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-06' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.49, LineTotal = 24.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-03' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-03' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -1772,18 +1772,18 @@ end;
 create or modify microflow Simulation.SEED_Order_1022_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-07' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 22.99, LineTotal = 22.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Cheese-Stuffed v2', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-07' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 22.99, LineTotal = 22.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Cheese-Stuffed v2', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'cheese_stuffed_v2', Name = 'Cheese-Stuffed v2', Price = 2.5, IsDefault = false, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'truffle_cream', Name = 'Black Truffle Cream', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-09' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-09' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-05' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.95, LineTotal = 5.9, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-05' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.95, LineTotal = 5.9, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -1863,13 +1863,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1023_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-04' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-04' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'smoked_bbq', Name = 'Smoked BBQ', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -1932,15 +1932,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1024_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-10' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-10' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'yellow_tomato', Name = 'Yellow Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'vegan_cashew_mozz', Name = 'Vegan Cashew Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-04' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-04' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2012,18 +2012,18 @@ end;
 create or modify microflow Simulation.SEED_Order_1025_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-03' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-03' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DS-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DS-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2092,17 +2092,17 @@ end;
 create or modify microflow Simulation.SEED_Order_1026_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-05' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 21.49, LineTotal = 21.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Stracciatella, − Crushed red pepper', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-05' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 21.49, LineTotal = 21.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Stracciatella, − Crushed red pepper', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'buffalo_mozzarella', Name = 'Buffalo Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'stracciatella', Name = 'Stracciatella', Price = 3.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_4 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.REMOVE, OptionKey = 'chili_flakes', Name = 'Crushed red pepper', Price = 0.0, IsDefault = false, SortOrder = 5, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.5, LineTotal = 4.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.5, LineTotal = 4.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2179,13 +2179,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1027_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-08' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 21.49, LineTotal = 21.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-08' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 21.49, LineTotal = 21.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'no_sauce', Name = 'No Sauce (bianca)', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DS-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DS-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -2251,13 +2251,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1028_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-11' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-11' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -2337,19 +2337,19 @@ end;
 create or modify microflow Simulation.SEED_Order_1029_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Thin Client, + Cremini mushrooms', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = 'Thin Client, + Cremini mushrooms', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'thin_client', Name = 'Thin Client', Price = 0.0, IsDefault = false, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'mushrooms', Name = 'Cremini mushrooms', Price = 2.5, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'smoked_bbq', Name = 'Smoked BBQ', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DS-03' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DS-03', ProductName = 'Lava Exception Cake', RealWorldName = 'Molten chocolate lava cake', ModuleKey = 'lava-exception-cake', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.25, LineTotal = 7.25, AllergenText = 'Cereals containing gluten, Eggs, Soybeans, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DS-03' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DS-03', ProductName = 'Lava Exception Cake', RealWorldName = 'Molten chocolate lava cake', ModuleKey = 'lava-exception-cake', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.25, LineTotal = 7.25, AllergenText = 'Cereals containing gluten, Eggs, Soybeans, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2429,20 +2429,20 @@ end;
 create or modify microflow Simulation.SEED_Order_1030_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-02' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 2, UnitPrice = 20.49, LineTotal = 40.98, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-02' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 2, UnitPrice = 20.49, LineTotal = 40.98, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'SD-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 6.5, LineTotal = 13.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
-  retrieve $prod3 from Shop.Product where Code = 'DR-05' first;
-  $l3 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 4, UnitPrice = 2.95, LineTotal = 11.8, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'SD-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 6.5, LineTotal = 13.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod3 from Catalog.Product where Code = 'DR-05' first;
+  $l3 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 4, UnitPrice = 2.95, LineTotal = 11.8, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 4, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod3) commit without events;
 end;
 
 /**
@@ -2520,13 +2520,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1031_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-05' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 18.49, LineTotal = 18.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-05' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 18.49, LineTotal = 18.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'buffalo_mozzarella', Name = 'Buffalo Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -2598,18 +2598,18 @@ end;
 create or modify microflow Simulation.SEED_Order_1032_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-07' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-07' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'truffle_cream', Name = 'Black Truffle Cream', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-04' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 3.25, LineTotal = 6.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-04' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 3.25, LineTotal = 6.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2677,14 +2677,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1033_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-03' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-03' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'jalapenos', Name = 'Jalapeños', Price = 2.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -2753,15 +2753,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1034_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-06' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-06' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-06', ProductName = 'Kernel Panic Meat', RealWorldName = 'Meat lovers', ModuleKey = 'kernel-panic-meat', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.99, LineTotal = 19.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'SD-05' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'SD-05', ProductName = 'Jalapeño Patch Dip', RealWorldName = 'Creamy jalapeño ranch dip', ModuleKey = 'jalapeno-patch-dip', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-03', ProductName = 'Hot Wings Webhook', RealWorldName = 'Chicken wings, Calabrian chili glaze', ModuleKey = 'hot-wings-webhook', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 11.95, LineTotal = 11.95, AllergenText = 'Eggs, Milk, Celery', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'SD-05' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'SD-05', ProductName = 'Jalapeño Patch Dip', RealWorldName = 'Creamy jalapeño ranch dip', ModuleKey = 'jalapeno-patch-dip', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2835,14 +2835,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1035_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-09' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 23.49, LineTotal = 23.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '+ Stracciatella', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-09' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-09', ProductName = 'The Clean Code', RealWorldName = 'Ortolana (grilled vegetables)', ModuleKey = 'clean-code', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 23.49, LineTotal = 23.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '+ Stracciatella', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'stracciatella', Name = 'Stracciatella', Price = 3.5, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-02', ProductName = 'Caesar Cipher Salad', RealWorldName = 'Caesar salad', ModuleKey = 'caesar-cipher-salad', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 8.95, LineTotal = 8.95, AllergenText = 'Cereals containing gluten, Eggs, Fish, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -2913,15 +2913,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1036_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-04' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-04' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-04', ProductName = 'Binary BBQ', RealWorldName = 'BBQ pulled pork', ModuleKey = 'binary-bbq', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 24.0, LineTotal = 24.0, AllergenText = 'Cereals containing gluten, Milk, Mustard', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'smoked_bbq', Name = 'Smoked BBQ', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-02' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-02' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -2986,13 +2986,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1037_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-12' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-12', ProductName = 'Calzone Container', RealWorldName = 'Calzone', ModuleKey = 'calzone-container', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-12' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-12', ProductName = 'Calzone Container', RealWorldName = 'Calzone', ModuleKey = 'calzone-container', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.49, LineTotal = 16.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-03' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-03' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.75, LineTotal = 2.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3058,16 +3058,16 @@ end;
 create or modify microflow Simulation.SEED_Order_1038_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-08' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.49, LineTotal = 19.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '+ Hot honey drizzle', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-08' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-08', ProductName = 'Quad-Core Formaggi', RealWorldName = 'Quattro formaggi', ModuleKey = 'quad-core-formaggi', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 19.49, LineTotal = 19.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '+ Hot honey drizzle', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'no_sauce', Name = 'No Sauce (bianca)', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'hot_honey', Name = 'Hot honey drizzle', Price = 2.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DS-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-04' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DS-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DS-01', ProductName = 'Tiramisu Stack', RealWorldName = 'Tiramisu', ModuleKey = 'tiramisu-stack', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 7.5, LineTotal = 7.5, AllergenText = 'Cereals containing gluten, Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-04' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-04', ProductName = 'Lemon Lint Soda', RealWorldName = 'Italian sparkling lemon soda', ModuleKey = 'lemon-lint-soda', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 3.25, LineTotal = 3.25, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -3129,13 +3129,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1039_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 14.99, LineTotal = 14.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.5, LineTotal = 4.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.5, LineTotal = 4.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3195,19 +3195,19 @@ end;
 create or modify microflow Simulation.SEED_Order_1040_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-05' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 25.0, LineTotal = 25.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-05' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-05', ProductName = 'Inferno Payload', RealWorldName = 'Diavola', ModuleKey = 'inferno-payload', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 25.0, LineTotal = 25.0, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '+ Jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'buffalo_mozzarella', Name = 'Buffalo Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = 'jalapenos', Name = 'Jalapeños', Price = 2.5, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'PZ-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'PZ-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 16.99, LineTotal = 16.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
   $m1_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
   $m1_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-01' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-01' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-01', ProductName = 'Mate Compiler Tonic', RealWorldName = 'Sparkling yerba mate', ModuleKey = 'mate-compiler-tonic', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 4.5, LineTotal = 9.0, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -3269,13 +3269,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1041_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-10' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-10' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-10', ProductName = 'Low-Mem Garden', RealWorldName = 'Vegan garden pizza', ModuleKey = 'low-mem-garden', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Tree nuts', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'yellow_tomato', Name = 'Yellow Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'vegan_cashew_mozz', Name = 'Vegan Cashew Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-05' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.95, LineTotal = 2.95, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-05' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-05', ProductName = 'Sparkling Stream Water', RealWorldName = 'Sparkling mineral water', ModuleKey = 'sparkling-stream-water', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 2.95, LineTotal = 2.95, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3337,15 +3337,15 @@ end;
 create or modify microflow Simulation.SEED_Order_1042_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-03' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-03' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-03', ProductName = 'SQL Supreme', RealWorldName = 'Supreme', ModuleKey = 'sql-supreme', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 22.49, LineTotal = 22.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
-  retrieve $prod2 from Shop.Product where Code = 'DR-03' first;
-  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod2 from Catalog.Product where Code = 'DR-03' first;
+  $l2 = create Shop.OrderLine (ProductCode = 'DR-03', ProductName = 'Cola Cache', RealWorldName = 'Classic cola', ModuleKey = 'cola-cache', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 2, UnitPrice = 2.75, LineTotal = 5.5, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 3, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod2) commit without events;
 end;
 
 /**
@@ -3403,13 +3403,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1043_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-01' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 11.99, LineTotal = 11.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-01' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-01', ProductName = 'The Root Pizza', RealWorldName = 'Margherita', ModuleKey = 'root-pizza', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 11.99, LineTotal = 11.99, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-01' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-01' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-01', ProductName = 'Garlic Knot Loop', RealWorldName = 'Garlic knots with marinara', ModuleKey = 'garlic-knot-loop', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.5, LineTotal = 6.5, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3466,13 +3466,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1044_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-02' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 13.49, LineTotal = 13.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-02' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-02', ProductName = 'Boolean Pepperoni', RealWorldName = 'Pepperoni with hot honey', ModuleKey = 'boolean-pepperoni', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.SMALL, SizeLabel = 'Small 10"', Quantity = 1, UnitPrice = 13.49, LineTotal = 13.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'SD-04' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Shop.ProductKind.SIDE, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'SD-04' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'SD-04', ProductName = 'Garlic Driver Dip', RealWorldName = 'Roasted garlic & herb dip', ModuleKey = 'garlic-driver-dip', Kind = Catalog.ProductKind.SIDE, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 1.5, LineTotal = 1.5, AllergenText = 'Eggs, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3529,14 +3529,14 @@ end;
 create or modify microflow Simulation.SEED_Order_1045_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-11' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '− Fresh jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-11' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-11', ProductName = 'Hawaiian Legacy Fix', RealWorldName = 'Hawaiian (ham & pineapple)', ModuleKey = 'hawaiian-legacy-fix', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.LARGE, SizeLabel = 'Large 14"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = false, IsVegan = false, ConfigText = '− Fresh jalapeños', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'san_marzano', Name = 'San Marzano Tomato', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_3 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.REMOVE, OptionKey = 'jalapeno', Name = 'Fresh jalapeños', Price = 0.0, IsDefault = false, SortOrder = 4, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DS-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Shop.ProductKind.DESSERT, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DS-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DS-02', ProductName = 'Cannoli Callback', RealWorldName = 'Sicilian cannoli', ModuleKey = 'cannoli-callback', Kind = Catalog.ProductKind.DESSERT, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 6.95, LineTotal = 6.95, AllergenText = 'Cereals containing gluten, Eggs, Milk, Tree nuts', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**
@@ -3593,13 +3593,13 @@ end;
 create or modify microflow Simulation.SEED_Order_1046_Lines ($TheOrder: Shop.Order)
 folder 'Seed/Orders'
 begin
-  retrieve $prod0 from Shop.Product where Code = 'PZ-07' first;
-  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Shop.ProductKind.PIZZA, Size = Shop.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
+  retrieve $prod0 from Catalog.Product where Code = 'PZ-07' first;
+  $l0 = create Shop.OrderLine (ProductCode = 'PZ-07', ProductName = 'Truffle Kernel', RealWorldName = 'Truffle & wild mushroom bianca', ModuleKey = 'truffle-kernel', Kind = Catalog.ProductKind.PIZZA, Size = Catalog.SizeCode.MEDIUM, SizeLabel = 'Medium 12"', Quantity = 1, UnitPrice = 20.49, LineTotal = 20.49, AllergenText = 'Cereals containing gluten, Milk', IsVegetarian = true, IsVegan = false, ConfigText = '', SortOrder = 1, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod0) commit without events;
   $m0_0 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = 'neapolitan_core', Name = 'Neapolitan Core', Price = 0.0, IsDefault = true, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_1 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = 'truffle_cream', Name = 'Black Truffle Cream', Price = 0.0, IsDefault = true, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
   $m0_2 = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = 'fior_di_latte', Name = 'Fior di Latte Mozzarella', Price = 0.0, IsDefault = true, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $l0) commit without events;
-  retrieve $prod1 from Shop.Product where Code = 'DR-02' first;
-  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Shop.ProductKind.DRINK, Size = Shop.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
+  retrieve $prod1 from Catalog.Product where Code = 'DR-02' first;
+  $l1 = create Shop.OrderLine (ProductCode = 'DR-02', ProductName = 'Cold Brew Commit', RealWorldName = 'Cold brew coffee', ModuleKey = 'cold-brew-commit', Kind = Catalog.ProductKind.DRINK, Size = Catalog.SizeCode.REGULAR, SizeLabel = 'Regular', Quantity = 1, UnitPrice = 4.75, LineTotal = 4.75, AllergenText = '', IsVegetarian = true, IsVegan = true, ConfigText = '', SortOrder = 2, Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $prod1) commit without events;
 end;
 
 /**

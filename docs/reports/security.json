@@ -2,7 +2,7 @@
   "kind": "security",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 10:25",
+  "generated": "2026-11-19 12:04",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "A review of the model, read from the mxcli catalog (`refresh catalog full` and `source`) and the project security settings. Nothing ran against the app.",
@@ -21,6 +21,7 @@
   "data": {
     "scope": {
       "app": [
+        "Catalog",
         "Shop",
         "Simulation"
       ],
@@ -78,10 +79,52 @@
     ],
     "grid": [
       {
-        "entity": "Shop.Allergen",
+        "entity": "Catalog.Allergen",
         "access": {
           "Administrator": "R all",
           "Anonymous": "R all"
+        }
+      },
+      {
+        "entity": "Catalog.Category",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
+        }
+      },
+      {
+        "entity": "Catalog.Ingredient",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
+        }
+      },
+      {
+        "entity": "Catalog.Option",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
+        }
+      },
+      {
+        "entity": "Catalog.Product",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
+        }
+      },
+      {
+        "entity": "Catalog.ProductSize",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
+        }
+      },
+      {
+        "entity": "Catalog.RecipeItem",
+        "access": {
+          "Administrator": "R filtered",
+          "Anonymous": "R filtered"
         }
       },
       {
@@ -96,13 +139,6 @@
         "access": {
           "Administrator": "R via user",
           "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.Category",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
         }
       },
       {
@@ -131,20 +167,6 @@
         "access": {
           "Administrator": "R via user",
           "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.Ingredient",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
-        }
-      },
-      {
-        "entity": "Shop.Option",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
         }
       },
       {
@@ -204,27 +226,6 @@
         }
       },
       {
-        "entity": "Shop.Product",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
-        }
-      },
-      {
-        "entity": "Shop.ProductSize",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
-        }
-      },
-      {
-        "entity": "Shop.RecipeItem",
-        "access": {
-          "Administrator": "R filtered",
-          "Anonymous": "R filtered"
-        }
-      },
-      {
         "entity": "Shop.StoreSettings",
         "access": {
           "Administrator": "R all",
@@ -241,6 +242,54 @@
     ],
     "xpaths": [
       {
+        "entity": "Catalog.Category",
+        "xpath": "[Catalog.Product_Category/Catalog.Product/ProductStatus = 'PUBLISHED']",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
+        "entity": "Catalog.Ingredient",
+        "xpath": "[\n  Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED'\n  or Catalog.Option_Ingredient/Catalog.Option/IsActive = true\n]",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
+        "entity": "Catalog.Option",
+        "xpath": "[IsActive = true]",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
+        "entity": "Catalog.Product",
+        "xpath": "[ProductStatus = 'PUBLISHED']",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
+        "entity": "Catalog.ProductSize",
+        "xpath": "[Catalog.ProductSize_Product/Catalog.Product/ProductStatus = 'PUBLISHED']",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
+        "entity": "Catalog.RecipeItem",
+        "xpath": "[Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED']",
+        "class": "filtered",
+        "roles": [
+          "Catalog.Guest"
+        ]
+      },
+      {
         "entity": "Shop.Cart",
         "xpath": "[Shop.Cart_Owner = '[%CurrentUser%]']",
         "class": "via user",
@@ -252,14 +301,6 @@
         "entity": "Shop.CartLine",
         "xpath": "[Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]']",
         "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Category",
-        "xpath": "[Shop.Product_Category/Shop.Product/ProductStatus = 'PUBLISHED']",
-        "class": "filtered",
         "roles": [
           "Shop.Guest"
         ]
@@ -292,22 +333,6 @@
         "entity": "Shop.DeliveryZone",
         "xpath": "[\n  Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]'\n  or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'\n]",
         "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Ingredient",
-        "xpath": "[\n  Shop.RecipeItem_Ingredient/Shop.RecipeItem/Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED'\n  or Shop.Option_Ingredient/Shop.Option/IsActive = true\n]",
-        "class": "filtered",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Option",
-        "xpath": "[IsActive = true]",
-        "class": "filtered",
         "roles": [
           "Shop.Guest"
         ]
@@ -372,30 +397,6 @@
         "entity": "Shop.PaymentAttempt",
         "xpath": "[Shop.PaymentAttempt_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
         "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Product",
-        "xpath": "[ProductStatus = 'PUBLISHED']",
-        "class": "filtered",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.ProductSize",
-        "xpath": "[Shop.ProductSize_Product/Shop.Product/ProductStatus = 'PUBLISHED']",
-        "class": "filtered",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.RecipeItem",
-        "xpath": "[Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED']",
-        "class": "filtered",
         "roles": [
           "Shop.Guest"
         ]
@@ -625,7 +626,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -641,7 +642,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -769,7 +770,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -785,7 +786,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -801,7 +802,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -929,7 +930,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Product: Object:Shop.Product"
+          "$Product: Object:Catalog.Product"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -978,7 +979,7 @@
         "severity": "info",
         "count": 2,
         "examples": [
-          "Shop.Shop.Allergen: Entity 'Shop.Allergen' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible",
+          "Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' has unconstrained READ access for role 'Catalog.Guest' - all rows are accessible",
           "Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible"
         ],
         "hint": "Fires on every unconstrained rule, including the intended ones (an admin role, reference data). Judge each entity, do not count them."
@@ -986,9 +987,10 @@
       {
         "rule": "CONV008",
         "severity": "info",
-        "count": 1,
+        "count": 2,
         "examples": [
-          "ProjectSecurity: Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+          "ProjectSecurity: Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role.",
+          "ProjectSecurity: Module role 'Catalog.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
         ]
       },
       {
@@ -997,8 +999,8 @@
         "count": 4,
         "examples": [
           "Shop.LookupAttempt: Persistent entity 'Shop.LookupAttempt' has no access rules",
-          "Shop.SimCustomer: Persistent entity 'Shop.SimCustomer' has no access rules",
-          "Shop.SimulationEvent: Persistent entity 'Shop.SimulationEvent' has no access rules"
+          "Shop.SimulationEvent: Persistent entity 'Shop.SimulationEvent' has no access rules",
+          "Shop.SimulationSettings: Persistent entity 'Shop.SimulationSettings' has no access rules"
         ]
       },
       {
@@ -1014,7 +1016,7 @@
         "severity": "warning",
         "count": 1,
         "examples": [
-          "Shop.Shop.SimCustomer: Entity 'Shop.SimCustomer' has PII-sounding attributes (Email) but no access rules."
+          "Simulation.Simulation.SimCustomer: Entity 'Simulation.SimCustomer' has PII-sounding attributes (Email) but no access rules."
         ]
       },
       {
@@ -1022,7 +1024,7 @@
         "severity": "error",
         "count": 2,
         "examples": [
-          "Shop.Shop.Allergen: Entity 'Shop.Allergen' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)",
+          "Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' is readable by anonymous users (via role 'Catalog.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)",
           "Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)"
         ]
       },
@@ -1033,7 +1035,7 @@
         "examples": [
           "Shop.Cart_Drawer: List view 'lvLines' on page Shop.Cart_Drawer lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows",
           "Shop.Checkout: List view 'lvSum' on page Shop.Checkout lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows",
-          "Shop.Configurator: List view 'lvDeps' on page Shop.Configurator lists Shop.Option, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
+          "Shop.Configurator: List view 'lvDeps' on page Shop.Configurator lists Catalog.Option, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
         ],
         "hint": "Fires when a page's role may not read a listed entity. Often intended when access is row-level by design; real when a role sees an empty page."
       }

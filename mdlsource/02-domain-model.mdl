@@ -6,7 +6,7 @@ mdl 1;
 -- ───────────────────────── Catalog ─────────────────────────
 
 /** EU-14 allergen. Seeded; referenced by ingredients, products and lines. */
-create or modify persistent entity Shop."Allergen" (
+create or modify persistent entity Catalog."Allergen" (
   "Code": String(20) not null unique,
   "ShortCode": String(5),
   "Caption": String(60),
@@ -14,16 +14,16 @@ create or modify persistent entity Shop."Allergen" (
 ) index ("Code");
 
 /** Menu category shown as a file tab (pizzas.json, sides.yml, …). */
-create or modify persistent entity Shop."Category" (
+create or modify persistent entity Catalog."Category" (
   "Code": String(20) not null unique,
   "FileName": String(30),
   "DisplayName": String(30),
-  "Kind": Enumeration(Shop."ProductKind"),
+  "Kind": Enumeration(Catalog."ProductKind"),
   "SortOrder": Integer default 0
 );
 
 /** A menu item ("module"). Derived values (card price, flags, orderable, code block) are stored by SUB_Product_Recalculate. */
-create or modify persistent entity Shop."Product" (
+create or modify persistent entity Catalog."Product" (
   "Code": String(5) not null unique,
   "Name": String(40),
   "ModuleKey": String(40),
@@ -31,15 +31,15 @@ create or modify persistent entity Shop."Product" (
   "ShortDescription": String(200),
   "Description": String(800),
   "VersionTag": String(12),
-  "Kind": Enumeration(Shop."ProductKind"),
-  "ProductStatus": Enumeration(Shop."ProductStatus"),
+  "Kind": Enumeration(Catalog."ProductKind"),
+  "ProductStatus": Enumeration(Catalog."ProductStatus"),
   "IsSoldOut": Boolean default false,
   "IsFeatured": Boolean default false,
   "HasBadgeClassic": Boolean default false,
   "HasBadgeBestSeller": Boolean default false,
   "HasBadgeNew": Boolean default false,
   "HasBadgeChefPick": Boolean default false,
-  "Spice": Enumeration(Shop."SpiceLevel"),
+  "Spice": Enumeration(Catalog."SpiceLevel"),
   "IsDeclaredVegetarian": Boolean default false,
   "IsDeclaredVegan": Boolean default false,
   "IsCrustSelectable": Boolean default true,
@@ -72,8 +72,8 @@ create or modify persistent entity Shop."Product" (
 ) index ("Code") index ("SortOrder");
 
 /** A price point of a product (Small/Medium/Large or Regular). */
-create or modify persistent entity Shop."ProductSize" (
-  "Size": Enumeration(Shop."SizeCode"),
+create or modify persistent entity Catalog."ProductSize" (
+  "Size": Enumeration(Catalog."SizeCode"),
   "DiameterInches": Integer default 0,
   "ServingDescription": String(40),
   "Price": Decimal default 0,
@@ -84,7 +84,7 @@ create or modify persistent entity Shop."ProductSize" (
 );
 
 /** A raw ingredient with allergens, diet flags and stock. */
-create or modify persistent entity Shop."Ingredient" (
+create or modify persistent entity Catalog."Ingredient" (
   "Code": String(30) not null unique,
   "Name": String(60),
   "IsVegetarian": Boolean default true,
@@ -94,20 +94,20 @@ create or modify persistent entity Shop."Ingredient" (
 ) index ("Code");
 
 /** A default ingredient of a pizza besides crust, sauce and cheese. */
-create or modify persistent entity Shop."RecipeItem" (
-  "Role": Enumeration(Shop."RecipeRole"),
+create or modify persistent entity Catalog."RecipeItem" (
+  "Role": Enumeration(Catalog."RecipeRole"),
   "IsRemovable": Boolean default true,
   "SortOrder": Integer default 0
 );
 
 /** A configurator choice: crust, sauce, cheese or extra topping. */
-create or modify persistent entity Shop."Option" (
+create or modify persistent entity Catalog."Option" (
   "Code": String(5) not null unique,
   "OptionKey": String(30),
   "Name": String(60),
   "Description": String(200),
-  "OptionGroup": Enumeration(Shop."OptionGroup"),
-  "PriceClass": Enumeration(Shop."PriceClass"),
+  "OptionGroup": Enumeration(Catalog."OptionGroup"),
+  "PriceClass": Enumeration(Catalog."PriceClass"),
   "Surcharge": Decimal default 0,
   "PriceSmall": Decimal default 0,
   "PriceMedium": Decimal default 0,
@@ -120,16 +120,16 @@ create or modify persistent entity Shop."Option" (
   "SortOrder": Integer default 0
 ) index ("Code");
 
-create or modify association Shop."Product_Category" from Shop."Product" to Shop."Category";
-create or modify association Shop."ProductSize_Product" from Shop."ProductSize" to Shop."Product" on delete cascade;
-create or modify association Shop."RecipeItem_Product" from Shop."RecipeItem" to Shop."Product" on delete cascade;
-create or modify association Shop."RecipeItem_Ingredient" from Shop."RecipeItem" to Shop."Ingredient";
-create or modify association Shop."Option_Ingredient" from Shop."Option" to Shop."Ingredient";
-create or modify association Shop."Product_DefaultCrust" from Shop."Product" to Shop."Option";
-create or modify association Shop."Product_DefaultSauce" from Shop."Product" to Shop."Option";
-create or modify association Shop."Product_DefaultCheese" from Shop."Product" to Shop."Option";
-create or modify association Shop."Ingredient_Allergen" from Shop."Ingredient" to Shop."Allergen" type ReferenceSet;
-create or modify association Shop."Product_Allergen" from Shop."Product" to Shop."Allergen" type ReferenceSet;
+create or modify association Catalog."Product_Category" from Catalog."Product" to Catalog."Category";
+create or modify association Catalog."ProductSize_Product" from Catalog."ProductSize" to Catalog."Product" on delete cascade;
+create or modify association Catalog."RecipeItem_Product" from Catalog."RecipeItem" to Catalog."Product" on delete cascade;
+create or modify association Catalog."RecipeItem_Ingredient" from Catalog."RecipeItem" to Catalog."Ingredient";
+create or modify association Catalog."Option_Ingredient" from Catalog."Option" to Catalog."Ingredient";
+create or modify association Catalog."Product_DefaultCrust" from Catalog."Product" to Catalog."Option";
+create or modify association Catalog."Product_DefaultSauce" from Catalog."Product" to Catalog."Option";
+create or modify association Catalog."Product_DefaultCheese" from Catalog."Product" to Catalog."Option";
+create or modify association Catalog."Ingredient_Allergen" from Catalog."Ingredient" to Catalog."Allergen" type ReferenceSet;
+create or modify association Catalog."Product_Allergen" from Catalog."Product" to Catalog."Allergen" type ReferenceSet;
 
 -- ───────────────────────── Store / reference ─────────────────────────
 
@@ -287,14 +287,14 @@ create or modify persistent entity Shop."CartLine" (
 create or modify association Shop."Cart_Owner" from Shop."Cart" to System."User" on delete cascade;
 create or modify association Shop."Cart_Coupon" from Shop."Cart" to Shop."Coupon";
 create or modify association Shop."CartLine_Cart" from Shop."CartLine" to Shop."Cart" on delete cascade;
-create or modify association Shop."CartLine_Product" from Shop."CartLine" to Shop."Product";
-create or modify association Shop."CartLine_Size" from Shop."CartLine" to Shop."ProductSize";
-create or modify association Shop."CartLine_Crust" from Shop."CartLine" to Shop."Option";
-create or modify association Shop."CartLine_Sauce" from Shop."CartLine" to Shop."Option";
-create or modify association Shop."CartLine_Cheese" from Shop."CartLine" to Shop."Option";
-create or modify association Shop."CartLine_Extra" from Shop."CartLine" to Shop."Option" type ReferenceSet;
-create or modify association Shop."CartLine_Removed" from Shop."CartLine" to Shop."Ingredient" type ReferenceSet;
-create or modify association Shop."CartLine_Allergen" from Shop."CartLine" to Shop."Allergen" type ReferenceSet;
+create or modify association Shop."CartLine_Product" from Shop."CartLine" to Catalog."Product";
+create or modify association Shop."CartLine_Size" from Shop."CartLine" to Catalog."ProductSize";
+create or modify association Shop."CartLine_Crust" from Shop."CartLine" to Catalog."Option";
+create or modify association Shop."CartLine_Sauce" from Shop."CartLine" to Catalog."Option";
+create or modify association Shop."CartLine_Cheese" from Shop."CartLine" to Catalog."Option";
+create or modify association Shop."CartLine_Extra" from Shop."CartLine" to Catalog."Option" type ReferenceSet;
+create or modify association Shop."CartLine_Removed" from Shop."CartLine" to Catalog."Ingredient" type ReferenceSet;
+create or modify association Shop."CartLine_Allergen" from Shop."CartLine" to Catalog."Allergen" type ReferenceSet;
 
 /** Checkout form of a guest; kept per user so switching delivery/pickup never loses data. */
 create or modify persistent entity Shop."CheckoutForm" (
@@ -421,8 +421,8 @@ create or modify persistent entity Shop."OrderLine" (
   "ProductName": String(40),
   "RealWorldName": String(40),
   "ModuleKey": String(40),
-  "Kind": Enumeration(Shop."ProductKind"),
-  "Size": Enumeration(Shop."SizeCode"),
+  "Kind": Enumeration(Catalog."ProductKind"),
+  "Size": Enumeration(Catalog."SizeCode"),
   "SizeLabel": String(40),
   "Quantity": Integer default 1,
   "UnitPrice": Decimal default 0,
@@ -506,7 +506,7 @@ create or modify association Shop."Order_Oven" from Shop."Order" to Shop."Oven";
 create or modify association Shop."Order_Courier" from Shop."Order" to Shop."Courier";
 create or modify association Shop."Courier_CurrentOrder" from Shop."Courier" to Shop."Order";
 create or modify association Shop."OrderLine_Order" from Shop."OrderLine" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderLine_Product" from Shop."OrderLine" to Shop."Product";
+create or modify association Shop."OrderLine_Product" from Shop."OrderLine" to Catalog."Product";
 create or modify association Shop."OrderLineModifier_OrderLine" from Shop."OrderLineModifier" to Shop."OrderLine" on delete cascade;
 create or modify association Shop."PaymentAttempt_Order" from Shop."PaymentAttempt" to Shop."Order" on delete cascade;
 create or modify association Shop."OrderStatusChange_Order" from Shop."OrderStatusChange" to Shop."Order" on delete cascade;
@@ -592,9 +592,9 @@ create or modify non-persistent entity Shop."Choice" (
   "SortOrder": Integer default 0
 );
 create or modify association Shop."Choice_Line" from Shop."Choice" to Shop."CartLine";
-create or modify association Shop."Choice_Option" from Shop."Choice" to Shop."Option";
-create or modify association Shop."Choice_Size" from Shop."Choice" to Shop."ProductSize";
-create or modify association Shop."Choice_Ingredient" from Shop."Choice" to Shop."Ingredient";
+create or modify association Shop."Choice_Option" from Shop."Choice" to Catalog."Option";
+create or modify association Shop."Choice_Size" from Shop."Choice" to Catalog."ProductSize";
+create or modify association Shop."Choice_Ingredient" from Shop."Choice" to Catalog."Ingredient";
 
 /** Everything SCR-07/08/09 and the home build panel show about one order, calculated on the server per refresh (LITE-SEC-02). */
 create or modify non-persistent entity Shop."TrackView" (

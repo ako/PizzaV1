@@ -44,9 +44,9 @@ begin
   $CourierTotal = count $AllCouriers;
   retrieve $OnDuty from Shop.Courier where [CourierStatus != 'OFF_DUTY'];
   $OnDutyCount = count $OnDuty;
-  retrieve $Published from Shop.Product where [ProductStatus = 'PUBLISHED'];
+  retrieve $Published from Catalog.Product where [ProductStatus = 'PUBLISHED'];
   $PublishedCount = count $Published;
-  retrieve $NotOrderable from Shop.Product where [ProductStatus = 'PUBLISHED' and IsOrderable = false];
+  retrieve $NotOrderable from Catalog.Product where [ProductStatus = 'PUBLISHED' and IsOrderable = false];
   $SoldOutCount = count $NotOrderable;
   declare $Vulns String = 'found 0 vulnerabilities';
   if $SoldOutCount = 1 then
@@ -85,7 +85,7 @@ end;
 create or modify microflow Shop.SUB_Home_CarouselPos ($View: Shop.HomeView)
 folder 'Home'
 begin
-  retrieve $Featured from Shop.Product where [IsFeatured = true and ProductStatus = 'PUBLISHED'];
+  retrieve $Featured from Catalog.Product where [IsFeatured = true and ProductStatus = 'PUBLISHED'];
   $N = count $Featured;
   declare $First Integer = $View/CarouselStart + 1;
   declare $Last Integer = min($View/CarouselStart + 3, $N);
@@ -100,10 +100,10 @@ end;
  * @returns The products from the carousel position on
  */
 create or modify microflow Shop.DS_Home_Featured ($Cart: Shop.Cart)
-returns List of Shop.Product as $Visible
+returns List of Catalog.Product as $Visible
 folder 'Home'
 begin
-  retrieve $Featured from Shop.Product where [IsFeatured = true and ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
+  retrieve $Featured from Catalog.Product where [IsFeatured = true and ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
   $Visible = range $Featured offset $Cart/CarouselStart;
   return $Visible;
 end;
@@ -152,7 +152,7 @@ begin
 end;
 
 /** Card of a featured module in the home carousel (US-022). */
-create or modify snippet Shop.SNIP_FeaturedCard (Params: ($Product: Shop.Product)) {
+create or modify snippet Shop.SNIP_FeaturedCard (Params: ($Product: Catalog.Product)) {
   container pcard (Class: 'pcard', DynamicClasses: if $Product/IsOrderable then '' else 'sold-out') {
     container pHead (Class: 'pcard-head') {
       dynamictext pHeadIcon (Content: 'data_object', Class: 'ms sm c-orange')
