@@ -1,0 +1,340 @@
+mdl 1;
+-- Cart (MANIFEST.LOCK): BR-CART-*, coupons (US-066..068), totals and hints (US-069/070).
+
+/**
+ * Returns the current guest's cart, creating it (and the checkout form) on
+ * the first visit (LITE-SES-02). The cart also holds the guest's menu tab,
+ * search and filters, so it doubles as the session's UI state.
+ *
+ * @returns The guest's cart
+ */
+create or modify microflow Shop.SUB_Cart_Current ()
+returns Shop.Cart as $Cart
+folder 'Cart'
+begin
+  retrieve $Existing from Shop.Cart where [Shop.Cart_Owner = '[%CurrentUser%]'] first;
+  if $Existing != empty then
+    return $Existing;
+  end if;
+  $Cart = create Shop.Cart (MenuCategory = 'PIZZAS', CouponState = Shop.CouponState.NONE, ItemCount = 0, Subtotal = 0, UpdatedAt = [%CurrentDateTime%], Shop.Cart_Owner = [%CurrentUser%]);
+  commit $Cart without events;
+  return $Cart;
+end;
+
+/**
+ * Recalculates the cart: every line's price and availability, item count,
+ * subtotal, coupon state and message (BR-PRICE-06, as for a delivery),
+ * discount, EXEC_TOTAL_OUTPUT (subtotal − discount), the free-delivery and
+ * delivery-minimum hints (US-070) and the reason checkout is blocked
+ * (US-071, US-073, BR-ORD-03). Commits the cart and its lines.
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.SUB_Cart_Recalculate ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  retrieve $Store from Shop.StoreSettings first;
+  retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false];
+  declare $Count Integer = 0;
+  declare $Subtotal Decimal = 0;
+  declare $Unavailable Boolean = false;
+  declare $NonDrink Boolean = false;
+  loop $Line in $Lines
+  begin
+    call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+    retrieve $Product from $Line/Shop.CartLine_Product;
+    declare $Reason String = '';
+    if not($Line/IsAvailable) then
+      set $Unavailable = true;
+      if $Product/IsSoldOut then
+        set $Reason = 'Sold out today.';
+      else
+        if $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+          set $Reason = 'This module was withdrawn from the menu.';
+        else
+          set $Reason = 'An option or ingredient of this build is no longer available. Edit or remove this line.';
+        end if;
+      end if;
+    end if;
+    if $Product/Kind != Shop.ProductKind.DRINK then
+      set $NonDrink = true;
+    end if;
+    change $Line (UnavailableReason = $Reason);
+    commit $Line without events;
+    set $Count = $Count + $Line/Quantity;
+    set $Subtotal = $Subtotal + $Line/LineTotal;
+  end loop;
+  retrieve $Coupon from $Cart/Shop.Cart_Coupon;
+  $Price = call microflow Shop.SUB_Price_Compute(Subtotal = $Subtotal, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.NONE);
+  declare $Free String = '';
+  declare $Minimum String = '';
+  if $Count > 0 then
+    if $Subtotal >= $Store/FreeDeliveryThreshold then
+      set $Free = 'FREE_DISPATCH unlocked: delivery is free for this order.';
+    else
+      $Missing = call microflow Shop.SUB_Money(Amount = $Store/FreeDeliveryThreshold - $Subtotal);
+      $Threshold = call microflow Shop.SUB_Money(Amount = $Store/FreeDeliveryThreshold);
+      set $Free = 'Add ' + $Missing + ' more for FREE_DISPATCH (free delivery from ' + $Threshold + ').';
+    end if;
+    if $Subtotal < $Store/MinDeliverySubtotal then
+      $MinMissing = call microflow Shop.SUB_Money(Amount = $Store/MinDeliverySubtotal - $Subtotal);
+      $MinText = call microflow Shop.SUB_Money(Amount = $Store/MinDeliverySubtotal);
+      set $Minimum = 'Delivery minimum is ' + $MinText + '. Add ' + $MinMissing + ' more, or choose pickup at checkout.';
+    end if;
+  end if;
+  declare $Block String = '';
+  if $Count = 0 then
+    set $Block = 'The manifest is empty.';
+  else
+    if $Unavailable then
+      set $Block = 'Remove unavailable items from your manifest first.';
+    else
+      if not($NonDrink) then
+        set $Block = 'Add at least one pizza, side or dessert. Drinks-only orders can''t be deployed.';
+      else
+        if $Count > $Store/MaxItemsPerOrder then
+          set $Block = 'Max 30 items per order. Remove ' + toString($Count - $Store/MaxItemsPerOrder) + ' to continue.';
+        end if;
+      end if;
+    end if;
+  end if;
+  change $Cart (ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
+    DiscountPreview = $Price/Discount, Total = $Subtotal - $Price/Discount, HasUnavailable = $Unavailable, OnlyDrinks = $Count > 0 and not($NonDrink),
+    FreeDeliveryHint = $Free, MinimumHint = $Minimum, CheckoutBlock = $Block, UpdatedAt = [%CurrentDateTime%]);
+  commit $Cart without events refresh;
+end;
+
+/**
+ * Adds a configured line to the cart (BR-CART-04..06): an identical
+ * configuration is merged into the existing line, a line never exceeds 10
+ * and the cart never exceeds 30 items. Shows the matching toast.
+ *
+ * @param $Cart The guest's cart
+ * @param $Line The configured line (draft or new, not yet in the cart)
+ * @param $Quantity Number of instances to add
+ * @param $Kind "import" (quick add/item info) or "build" (configurator) — selects the toast wording
+ * @returns True when anything was added
+ */
+create or modify microflow Shop.SUB_Cart_AddLine ($Cart: Shop.Cart, $Line: Shop.CartLine, $Quantity: Integer, $Kind: String)
+returns Boolean as $Added
+folder 'Cart'
+begin
+  retrieve $Store from Shop.StoreSettings first;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+  if not($Line/IsAvailable) then
+    call microflow Shop.SUB_Toast(Message = $Product/Name + ' is sold out and can''t be imported.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    return false;
+  end if;
+  if $Cart/ItemCount + $Quantity > $Store/MaxItemsPerOrder then
+    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    return false;
+  end if;
+  declare $SizeText String = '';
+  if $Product/Kind = Shop.ProductKind.PIZZA then
+    set $SizeText = ' (' + getCaption($Size/Size) + ')';
+  end if;
+  declare $Key String = $Line/ConfigurationKey;
+  retrieve $Same from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false and ConfigurationKey = $Key] first;
+  if $Same != empty and $Same != $Line then
+    declare $Before Integer = $Same/Quantity;
+    if $Before >= $Store/MaxQuantityPerLine then
+      call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+      return false;
+    end if;
+    declare $New Integer = min($Before + $Quantity, $Store/MaxQuantityPerLine);
+    change $Same (Quantity = $New);
+    commit $Same without events;
+    call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+    if $Before + $Quantity > $Store/MaxQuantityPerLine then
+      call microflow Shop.SUB_Toast(Message = 'Only ' + toString($New - $Before) + ' more could be added — max 10 of the same item per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = true);
+    else
+      if $Kind = 'build' then
+        call microflow Shop.SUB_Toast(Message = 'Same build already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = true);
+      else
+        call microflow Shop.SUB_Toast(Message = $Product/Name + ' is already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = true);
+      end if;
+    end if;
+    return true;
+  end if;
+  declare $Qty Integer = min($Quantity, $Store/MaxQuantityPerLine);
+  change $Line (Quantity = $Qty, IsDraft = false, Notice = '', CreatedAt = [%CurrentDateTime%], Shop.CartLine_Cart = $Cart);
+  call microflow Shop.SUB_Line_Recalculate(Line = $Line);
+  commit $Line without events;
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  if $Kind = 'build' then
+    call microflow Shop.SUB_Toast(Message = 'Built ' + $Product/Name + $SizeText + ' and deployed to MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+  else
+    call microflow Shop.SUB_Toast(Message = 'Imported ' + $Product/Name + $SizeText + ' into MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+  end if;
+  return true;
+end;
+
+/**
+ * Quick add (+ import, US-028): adds the product's default configuration
+ * with quantity 1. Sold-out removable ingredients are left out with a note.
+ *
+ * @param $Product The product
+ */
+create or modify microflow Shop.ACT_Product_QuickAdd ($Product: Shop.Product)
+folder 'Cart'
+begin
+  call microflow Shop.ACT_Product_Add(Product = $Product, Quantity = 1);
+end;
+
+/**
+ * Adds a product's default configuration in a quantity (quick add and the
+ * item info modal, US-028, US-029).
+ *
+ * @param $Product The product
+ * @param $Quantity Instances to add (1–10)
+ */
+create or modify microflow Shop.ACT_Product_Add ($Product: Shop.Product, $Quantity: Integer)
+folder 'Cart'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  $Line = create Shop.CartLine (Quantity = 1, IsDraft = false);
+  call microflow Shop.SUB_Line_ApplyDefaults(Line = $Line, Product = $Product);
+  retrieve $Removed from $Line/Shop.CartLine_Removed;
+  $Added = call microflow Shop.SUB_Cart_AddLine(Cart = $Cart, Line = $Line, Quantity = $Quantity, Kind = 'import');
+  if $Added then
+    loop $Ing in $Removed
+    begin
+      call microflow Shop.SUB_Toast(Message = $Ing/Name + ' are unavailable today and were left out.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    end loop;
+  end if;
+  if isNew($Line) then
+    delete $Line;
+  end if;
+end;
+
+/**
+ * Increases a line's quantity by one (US-063): max 10 per line, 30 per cart.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Increase ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  retrieve $Cart from $Line/Shop.CartLine_Cart;
+  retrieve $Store from Shop.StoreSettings first;
+  if $Line/Quantity >= $Store/MaxQuantityPerLine then
+    call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    return;
+  end if;
+  if $Cart/ItemCount >= $Store/MaxItemsPerOrder then
+    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    return;
+  end if;
+  change $Line (Quantity = $Line/Quantity + 1);
+  commit $Line without events refresh;
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+end;
+
+/**
+ * Decreases a line's quantity by one; never below 1 (removal is rm, US-063).
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Decrease ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  if $Line/Quantity <= 1 then
+    return;
+  end if;
+  retrieve $Cart from $Line/Shop.CartLine_Cart;
+  change $Line (Quantity = $Line/Quantity - 1);
+  commit $Line without events refresh;
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+end;
+
+/**
+ * Removes a line (rm, US-064). Removing the last line also removes the coupon.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Line_Remove ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  retrieve $Cart from $Line/Shop.CartLine_Cart;
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  declare $Name String = $Product/Name;
+  delete $Line refresh;
+  retrieve $Rest from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false];
+  $Left = count $Rest;
+  if $Left = 0 then
+    change $Cart (Shop.Cart_Coupon = empty, CouponInput = '', CouponFieldError = '');
+  end if;
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  call microflow Shop.SUB_Toast(Message = 'Removed ' + $Name + ' from MANIFEST.LOCK.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+end;
+
+/**
+ * Empties the cart: all lines and the coupon (CLEAR (rm -rf), US-065).
+ * The confirmation is asked by the button.
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Cart_Clear ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false];
+  delete $Lines refresh;
+  change $Cart (Shop.Cart_Coupon = empty, CouponInput = '', CouponFieldError = '');
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK cleared.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+end;
+
+/**
+ * Applies the typed coupon code (US-066..068): case-insensitive; an unknown
+ * or expired code shows its message and never removes a valid coupon; a
+ * valid code replaces the current one (one coupon per cart).
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Coupon_Apply ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  declare $Code String = toUpperCase(trim($Cart/CouponInput));
+  if $Cart/CouponInput = empty or $Code = '' then
+    change $Cart (CouponFieldError = 'Enter a coupon code.');
+    commit $Cart without events refresh;
+    return;
+  end if;
+  retrieve $Coupon from Shop.Coupon where [Code = $Code] first;
+  if $Coupon = empty then
+    change $Cart (CouponFieldError = 'Coupon not found: ' + $Code, CouponInput = $Code);
+    commit $Cart without events refresh;
+    return;
+  end if;
+  $Probe = create Shop.PriceResult ();
+  call microflow Shop.SUB_Coupon_Evaluate(Coupon = $Coupon, Subtotal = $Cart/Subtotal, OrderType = Shop.OrderType.DELIVERY, Result = $Probe);
+  if $Probe/CouponState = Shop.CouponState.INVALID then
+    change $Cart (CouponFieldError = $Probe/CouponMessage, CouponInput = $Code);
+    commit $Cart without events refresh;
+    return;
+  end if;
+  retrieve $Old from $Cart/Shop.Cart_Coupon;
+  change $Cart (Shop.Cart_Coupon = $Coupon, CouponInput = '', CouponFieldError = '');
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  if $Old != empty and $Old != $Coupon then
+    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' replaced by ' + $Code + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  end if;
+end;
+
+/**
+ * Removes the coupon from the cart (rm coupon, US-068).
+ *
+ * @param $Cart The cart
+ */
+create or modify microflow Shop.ACT_Coupon_Remove ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  retrieve $Old from $Cart/Shop.Cart_Coupon;
+  change $Cart (Shop.Cart_Coupon = empty, CouponFieldError = '');
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  if $Old != empty then
+    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' removed.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  end if;
+end;

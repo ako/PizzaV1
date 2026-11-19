@@ -1,0 +1,117 @@
+mdl 1;
+-- Price rules BR-PRICE-05..10 and coupon validation BR-PRICE-06. Server-side only (LITE-SEC-04).
+
+/**
+ * Validates a coupon for a subtotal and order type in the order of
+ * BR-PRICE-06 and returns the state and the message of the first failing
+ * check, or APPLIED with the coupon's description.
+ *
+ * @param $Coupon The coupon attached to the cart (may be empty)
+ * @param $Subtotal Cart subtotal before discount
+ * @param $OrderType DELIVERY or PICKUP
+ * @param $Result The price result whose CouponState/CouponMessage are set
+ */
+create or modify microflow Shop.SUB_Coupon_Evaluate ($Coupon: Shop.Coupon, $Subtotal: Decimal, $OrderType: Enumeration(Shop.OrderType), $Result: Shop.PriceResult)
+folder 'Pricing'
+begin
+  if $Coupon = empty then
+    change $Result (CouponState = Shop.CouponState.NONE, CouponMessage = '');
+    return;
+  end if;
+  declare $Now DateTime = [%CurrentDateTime%];
+  declare $Expired Boolean = not($Coupon/IsActive);
+  if $Coupon/ValidFrom != empty then
+    if $Coupon/ValidFrom > $Now then
+      set $Expired = true;
+    end if;
+  end if;
+  if $Coupon/ValidUntil != empty then
+    if $Coupon/ValidUntil < $Now then
+      set $Expired = true;
+    end if;
+  end if;
+  if $Expired then
+    change $Result (CouponState = Shop.CouponState.INVALID, CouponMessage = 'Coupon ' + $Coupon/Code + ' has expired');
+    return;
+  end if;
+  if $Coupon/DeliveryOnly and $OrderType = Shop.OrderType.PICKUP then
+    change $Result (CouponState = Shop.CouponState.NOT_APPLIED, CouponMessage = $Coupon/Code + ' is valid for delivery orders only');
+    return;
+  end if;
+  if $Subtotal < $Coupon/MinSubtotal then
+    $Missing = call microflow Shop.SUB_Money(Amount = $Coupon/MinSubtotal - $Subtotal);
+    change $Result (CouponState = Shop.CouponState.NOT_APPLIED, CouponMessage = 'Add ' + $Missing + ' more to use ' + $Coupon/Code);
+    return;
+  end if;
+  change $Result (CouponState = Shop.CouponState.APPLIED, CouponMessage = $Coupon/Description);
+end;
+
+/**
+ * Calculates every amount of an order from its subtotal (BR-PRICE-05..10):
+ * coupon discount (rounded half-up, capped), delivery fee with the
+ * threshold measured before discount, sales tax and tip on
+ * subtotal − discount, and the total. Decimal arithmetic only.
+ *
+ * @param $Subtotal Σ line totals
+ * @param $OrderType DELIVERY or PICKUP
+ * @param $Coupon Coupon attached to the cart (may be empty)
+ * @param $Tip Tip option (ignored for pickup)
+ * @returns A non-persistent PriceResult
+ */
+create or modify microflow Shop.SUB_Price_Compute ($Subtotal: Decimal, $OrderType: Enumeration(Shop.OrderType), $Coupon: Shop.Coupon, $Tip: Enumeration(Shop.TipOption))
+returns Shop.PriceResult as $Result
+folder 'Pricing'
+begin
+  retrieve $Store from Shop.StoreSettings first;
+  $Result = create Shop.PriceResult (Subtotal = $Subtotal, Discount = 0, DeliveryFee = 0, Tax = 0, TipAmount = 0, TipPercent = 0, Total = 0);
+  call microflow Shop.SUB_Coupon_Evaluate(Coupon = $Coupon, Subtotal = $Subtotal, OrderType = $OrderType, Result = $Result);
+  declare $Discount Decimal = 0;
+  declare $FreeByCoupon Boolean = false;
+  if $Result/CouponState = Shop.CouponState.APPLIED then
+    if $Coupon/Discount = Shop.DiscountType.PERCENT then
+      set $Discount = round($Subtotal * $Coupon/DiscountValue div 100, 2);
+      if $Coupon/MaxDiscount > 0 and $Discount > $Coupon/MaxDiscount then
+        set $Discount = $Coupon/MaxDiscount;
+      end if;
+    else
+      if $Coupon/Discount = Shop.DiscountType.FIXED_AMOUNT then
+        set $Discount = min($Coupon/DiscountValue, $Subtotal);
+      else
+        set $FreeByCoupon = true;
+      end if;
+    end if;
+  end if;
+  if $Discount > $Subtotal then
+    set $Discount = $Subtotal;
+  end if;
+  declare $Fee Decimal = 0;
+  declare $Net Decimal = $Subtotal - $Discount;
+  declare $TipPercent Integer = 0;
+  if $OrderType = Shop.OrderType.DELIVERY then
+    set $Fee = $Store/DeliveryFee;
+    if $Subtotal >= $Store/FreeDeliveryThreshold then
+      set $Fee = 0;
+      change $Result (FeeWaivedBy = Shop.FeeWaiver.THRESHOLD);
+    else
+      if $FreeByCoupon then
+        set $Fee = 0;
+        change $Result (FeeWaivedBy = Shop.FeeWaiver.COUPON);
+      end if;
+    end if;
+    if $Tip = Shop.TipOption.TEN then
+      set $TipPercent = 10;
+    else
+      if $Tip = Shop.TipOption.FIFTEEN then
+        set $TipPercent = 15;
+      else
+        if $Tip = Shop.TipOption.TWENTY then
+          set $TipPercent = 20;
+        end if;
+      end if;
+    end if;
+  end if;
+  declare $Tax Decimal = round($Net * $Store/TaxRatePercent div 100, 2);
+  declare $TipAmount Decimal = round($Net * $TipPercent div 100, 2);
+  change $Result (Discount = $Discount, DeliveryFee = $Fee, Tax = $Tax, TipPercent = $TipPercent, TipAmount = $TipAmount, Total = $Net + $Fee + $Tax + $TipAmount);
+  return $Result;
+end;
