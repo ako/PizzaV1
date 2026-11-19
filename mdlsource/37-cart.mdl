@@ -11,7 +11,7 @@ folder 'Cart'
 begin
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   if $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' then
-    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = false);
     return;
   end if;
   close page;
@@ -135,7 +135,7 @@ create or modify page Shop.Cart_Drawer (
           dynamictext cpErrT (Content: '{1}', ContentParams: ({1} = CouponFieldError))
         }
       }
-      container drinks (Class: 'field-error', Visible: $currentObject/OnlyDrinks) {
+      container drinks (Class: 'field-error', Visible: $currentObject/HasOnlyDrinks) {
         dynamictext drI (Content: 'error', Class: 'ms sm')
         dynamictext drT (Content: 'Add at least one pizza, side or dessert. Drinks-only orders can''t be deployed.')
       }
@@ -143,7 +143,7 @@ create or modify page Shop.Cart_Drawer (
         dynamictext mhI (Content: 'warning', Class: 'ms')
         dynamictext mhT (Content: '{1}', ContentParams: ({1} = MinimumHint))
       }
-      container freeHint (Class: 'notice', DynamicClasses: if $currentObject/FreeUnlocked then 'success' else 'info', Visible: $currentObject/MinimumHint = empty or $currentObject/MinimumHint = '') {
+      container freeHint (Class: 'notice', DynamicClasses: if $currentObject/IsFreeUnlocked then 'success' else 'info', Visible: $currentObject/MinimumHint = empty or $currentObject/MinimumHint = '') {
         dynamictext fhI (Content: 'local_shipping', Class: 'ms')
         dynamictext fhT (Content: '{1}', ContentParams: ({1} = FreeDeliveryHint))
       }

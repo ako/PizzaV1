@@ -120,7 +120,7 @@ def gen_catalog():
         w(f"  ${v} = create Shop.Option (Code = {q(o['code'])}, OptionKey = {q(o['key'])}, Name = {q(o['name'])}, Description = {q(o['description'])}, "
           f"OptionGroup = {enum('OptionGroup', o['group'])}, PriceClass = {enum('PriceClass', o['priceClass'])}, Surcharge = {dec(o['surcharge'])}, "
           f"PriceSmall = {dec(o['priceSmall'])}, PriceMedium = {dec(o['priceMedium'])}, PriceLarge = {dec(o['priceLarge'])}, "
-          f"ForSmall = {b('SMALL' in av)}, ForMedium = {b('MEDIUM' in av)}, ForLarge = {b('LARGE' in av)}, IsActive = {b(o['isActive'])}, "
+          f"IsForSmall = {b('SMALL' in av)}, IsForMedium = {b('MEDIUM' in av)}, IsForLarge = {b('LARGE' in av)}, IsActive = {b(o['isActive'])}, "
           f"VersionTag = {q(o['versionTag'])}, SortOrder = {o['sortOrder']});")
         if o.get('ingredientCode'):
             w(f"  change ${v} (Shop.Option_Ingredient = $ing_{var(o['ingredientCode'])});")
@@ -132,9 +132,9 @@ def gen_catalog():
         w(f"  ${v} = create Shop.Product (Code = {q(p['code'])}, Name = {q(p['name'])}, ModuleKey = {q(p['moduleKey'])}, RealWorldName = {q(p['realWorldName'])}, "
           f"ShortDescription = {q(p['shortDescription'])}, Description = {q(p['description'])}, VersionTag = {q(p['versionTag'])}, "
           f"Kind = {enum('ProductKind', p['kind'])}, ProductStatus = {enum('ProductStatus', p['status'])}, IsSoldOut = {b(p['isSoldOut'])}, IsFeatured = {b(p['isFeatured'])}, "
-          f"BadgeClassic = {b('CLASSIC' in badges)}, BadgeBestSeller = {b('BEST_SELLER' in badges)}, BadgeNew = {b('NEW' in badges)}, BadgeChefPick = {b('CHEF_PICK' in badges)}, "
-          f"Spice = {enum('SpiceLevel', p['spiceLevel'])}, DeclaredVegetarian = {b(p['declaredVegetarian'])}, DeclaredVegan = {b(p['declaredVegan'])}, "
-          f"CrustSelectable = {b(p['crustSelectable'])}, MaxExtras = {p['maxExtras'] or 0}, ImageFile = {q(img)}, ImageAlt = {q(p['imageAlt'])}, "
+          f"HasBadgeClassic = {b('CLASSIC' in badges)}, HasBadgeBestSeller = {b('BEST_SELLER' in badges)}, HasBadgeNew = {b('NEW' in badges)}, HasBadgeChefPick = {b('CHEF_PICK' in badges)}, "
+          f"Spice = {enum('SpiceLevel', p['spiceLevel'])}, IsDeclaredVegetarian = {b(p['declaredVegetarian'])}, IsDeclaredVegan = {b(p['declaredVegan'])}, "
+          f"IsCrustSelectable = {b(p['crustSelectable'])}, MaxExtras = {p['maxExtras'] or 0}, ImageFile = {q(img)}, ImageAlt = {q(p['imageAlt'])}, "
           f"CaffeineMg = {p['caffeineMg'] or 0}, SortOrder = {p['sortOrder']}, Shop.Product_Category = $cat_{var(p['categoryCode'])});")
         for k, a in (('defaultCrust', 'DefaultCrust'), ('defaultSauce', 'DefaultSauce'), ('defaultCheese', 'DefaultCheese')):
             if p.get(k):
@@ -163,7 +163,7 @@ def gen_catalog():
             return f"parseDateTimeUTC({q(d.astimezone(ZoneInfo('UTC')).strftime('%Y-%m-%dT%H:%M:%S'))}, 'yyyy-MM-dd''T''HH:mm:ss')"
         w(f"  $cp_{var(c['code'])} = create Shop.Coupon (Code = {q(c['code'])}, Description = {q(c['description'])}, Discount = {enum('DiscountType', c['discountType'])}, "
           f"DiscountValue = {dec(c.get('value'))}, MaxDiscount = {dec(c.get('maxDiscount'))}, MinSubtotal = {dec(c.get('minSubtotal'))}, "
-          f"ValidFrom = {dt(c.get('validFrom'))}, ValidUntil = {dt(c.get('validUntil'))}, IsActive = {b(c['isActive'])}, DeliveryOnly = {b(c['deliveryOnly'])});")
+          f"ValidFrom = {dt(c.get('validFrom'))}, ValidUntil = {dt(c.get('validUntil'))}, IsActive = {b(c['isActive'])}, IsDeliveryOnly = {b(c['deliveryOnly'])});")
         w(f"  commit $cp_{var(c['code'])} without events;")
     for o in ovens:
         w(f"  $ov_{var(o['code'])} = create Shop.Oven (Code = {q(o['code'])}, DisplayName = {q(o['displayName'])}, OvenType = {q(o['ovenType'])}, "
@@ -180,7 +180,7 @@ def gen_catalog():
     for c in custs:
         w(f"  $sc_{var(c['code'])} = create Shop.SimCustomer (Code = {q(c['code'])}, FirstName = {q(c['firstName'])}, LastName = {q(c['lastName'])}, Email = {q(c['email'])}, "
           f"Phone = {q(c['phone'])}, Line1 = {q(c.get('line1'))}, Line2 = {q(c.get('line2'))}, City = {q(c.get('city'))}, StateCode = {q(c.get('state'))}, "
-          f"Zip = {q(c.get('zip'))}, DeliveryNotes = {q(c.get('deliveryNotes'))}, InZone = {b(c.get('inDeliveryZone'))});")
+          f"Zip = {q(c.get('zip'))}, DeliveryNotes = {q(c.get('deliveryNotes'))}, IsInZone = {b(c.get('inDeliveryZone'))});")
         w(f"  commit $sc_{var(c['code'])} without events;")
     d = sim['durations']
     w(f"  $sim = create Shop.SimulationSettings (PaymentProcessing = {d['paymentProcessing']}, PaymentTimeout = {d['paymentTimeout']}, "
@@ -240,7 +240,7 @@ def gen_orders():
             f"BakingStartedAt = {at(o.get('bakingStartedAt'))}", f"QaStartedAt = {at(o.get('qaStartedAt'))}", f"ReadyAt = {at(o.get('readyAt'))}",
             f"DispatchedAt = {at(o.get('dispatchedAt'))}", f"CompletedAt = {at(o.get('completedAt'))}", f"CancelledAt = {at(o.get('cancelledAt'))}",
             f"RouteProgressPercent = {o.get('routeProgressPercent') or 0}", f"TimerProgress = {(o.get('routeProgressPercent') or 0) / 100.0 if o['status'] == 'OUT_FOR_DELIVERY' else 0}", "TimerAnchorAt = $T",
-            f"QaSlicedDone = {b(o.get('qaSlicedDone'))}", f"QaExtrasDone = {b(o.get('qaExtrasDone'))}", f"QaSealedDone = {b(o.get('qaSealedDone'))}",
+            f"IsQaSlicedDone = {b(o.get('qaSlicedDone'))}", f"IsQaExtrasDone = {b(o.get('qaExtrasDone'))}", f"IsQaSealedDone = {b(o.get('qaSealedDone'))}",
             f"RemakeCount = {o.get('remakeCount') or 0}", f"IsPriority = {b(o.get('isPriority'))}", f"CancelReason = {q(o.get('cancelReason'))}",
             f"CancelledBy = {enum('ActorType', o.get('cancelledBy'))}",
             f"PizzaCount = {sum(l['quantity'] for l in o['lines'] if l['productCode'].startswith('PZ'))}",
@@ -266,6 +266,8 @@ def gen_orders():
                 w(f"  retrieve $cur from Shop.Courier where Code = {q(c['code'])} first;")
                 w('  change $cur (Shop.Courier_CurrentOrder = $o);')
                 w('  commit $cur without events;')
+        parts = {'Lines': [], 'History': [], 'Log': []}
+        P = lambda k, t: parts[k].append(t)
         for li, l in enumerate(o['lines']):
             kind = {'PZ': 'PIZZA', 'SD': 'SIDE', 'DR': 'DRINK', 'DS': 'DESSERT'}[l['productCode'][:2]]
             mods = l['modifiers']
@@ -277,35 +279,59 @@ def gen_orders():
                     diff.append('+ ' + m['name'])
                 elif m['type'] == 'REMOVE':
                     diff.append('− ' + m['name'])
-            w(f"  retrieve $prod{li} from Shop.Product where Code = {q(l['productCode'])} first;")
-            w(f"  $l{li} = create Shop.OrderLine (ProductCode = {q(l['productCode'])}, ProductName = {q(l['productName'])}, RealWorldName = {q(l['realWorldName'])}, "
+            P('Lines', f"  retrieve $prod{li} from Shop.Product where Code = {q(l['productCode'])} first;")
+            P('Lines', f"  $l{li} = create Shop.OrderLine (ProductCode = {q(l['productCode'])}, ProductName = {q(l['productName'])}, RealWorldName = {q(l['realWorldName'])}, "
               f"ModuleKey = {q(l['moduleKey'])}, Kind = {enum('ProductKind', kind)}, Size = {enum('SizeCode', l['sizeCode'])}, SizeLabel = {q(l['sizeLabel'])}, "
               f"Quantity = {l['quantity']}, UnitPrice = {dec(l['unitPrice'])}, LineTotal = {dec(l['lineTotal'])}, "
               f"AllergenText = {q(', '.join(cap[a] for a in l['allergens']))}, IsVegetarian = {b(l['isVegetarian'])}, IsVegan = {b(l['isVegan'])}, "
               f"ConfigText = {q(', '.join(diff))}, SortOrder = {l['sortOrder']}, Shop.OrderLine_Order = $o, Shop.OrderLine_Product = $prod{li});")
-            w(f"  commit $l{li} without events;")
+            P('Lines', f"  commit $l{li} without events;")
             for mi, m in enumerate(mods):
-                w(f"  $m{li}_{mi} = create Shop.OrderLineModifier (ModifierType = {enum('ModifierType', m['type'])}, OptionKey = {q(m['key'])}, Name = {q(m['name'])}, "
+                P('Lines', f"  $m{li}_{mi} = create Shop.OrderLineModifier (ModifierType = {enum('ModifierType', m['type'])}, OptionKey = {q(m['key'])}, Name = {q(m['name'])}, "
                   f"Price = {dec(m['price'])}, IsDefault = {b(m['isDefault'])}, SortOrder = {mi + 1}, Shop.OrderLineModifier_OrderLine = $l{li});")
-                w(f"  commit $m{li}_{mi} without events;")
+                P('Lines', f"  commit $m{li}_{mi} without events;")
         for ai, a in enumerate(o['paymentAttempts']):
-            w(f"  $a{ai} = create Shop.PaymentAttempt (AttemptNumber = {a['attemptNumber']}, Method = {enum('PaymentMethod', a['method'])}, Card = {enum('TestCard', a.get('testCard'))}, "
+            P('History', f"  $a{ai} = create Shop.PaymentAttempt (AttemptNumber = {a['attemptNumber']}, Method = {enum('PaymentMethod', a['method'])}, Card = {enum('TestCard', a.get('testCard'))}, "
               f"Amount = {dec(a['amount'])}, AttemptStatus = {enum('PaymentAttemptStatus', a['status'])}, FailureCode = {enum('PaymentFailureCode', a.get('failureCode'))}, "
               f"TransactionId = {q(a.get('transactionId'))}, StartedAt = {at(a.get('startedAt'))}, FinishedAt = {at(a.get('finishedAt'))}, "
               f"RefundedAt = {at(a.get('refundedAt'))}, RefundId = {q(a.get('refundId'))}, Shop.PaymentAttempt_Order = $o);")
-            w(f"  commit $a{ai} without events;")
+            P('History', f"  commit $a{ai} without events;")
         for si, s in enumerate(o['statusChanges']):
-            w(f"  $s{si} = create Shop.OrderStatusChange (FromStatus = {enum('OrderStatus', s.get('fromStatus'))}, ToStatus = {enum('OrderStatus', s['toStatus'])}, "
+            P('History', f"  $s{si} = create Shop.OrderStatusChange (FromStatus = {enum('OrderStatus', s.get('fromStatus'))}, ToStatus = {enum('OrderStatus', s['toStatus'])}, "
               f"ChangedAt = {at(s['changedAt'])}, Actor = {enum('ActorType', s['actorType'])}, ActorName = {q(s['actorName'])}, Reason = {q(s.get('reason'))}, "
               f"Seq = {s['seq']}, Shop.OrderStatusChange_Order = $o);")
-            w(f"  commit $s{si} without events;")
+            P('History', f"  commit $s{si} without events;")
         for gi, g in enumerate(o['logEntries']):
-            w(f"  $g{gi} = create Shop.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, TimeText = formatDateTime({at(g['loggedAt'])}, 'HH:mm:ss'), Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
+            P('Log', f"  $g{gi} = create Shop.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, TimeText = formatDateTime({at(g['loggedAt'])}, 'HH:mm:ss'), Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
               f"Message = {q(g['message'])}, IsCustomerVisible = {b(g['isCustomerVisible'])}, Seq = {g['seq']}, Shop.OrderLogEntry_Order = $o);")
-            w(f"  commit $g{gi} without events;")
+            P('Log', f"  commit $g{gi} without events;")
+        what = {'Lines': 'lines and their modifiers', 'History': 'payment attempts and status history', 'Log': 'terminal log lines'}
+        for k, stmts in parts.items():
+            if stmts:
+                uses_t = any('$T' in t for t in stmts)
+                w(f"  call microflow Shop.{name}_{k}(TheOrder = $o{', T = $T' if uses_t else ''});")
         w('  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $o);')
         w('end;')
         w('')
+        # one small flow per part of the order (keeps every seed flow short)
+        for k, stmts in parts.items():
+            if not stmts:
+                continue
+            w('/**')
+            w(f" * Seed order {o['displayNumber']}: {what[k]}.")
+            w(' *')
+            w(' * @param $TheOrder The seed order')
+            uses_t = any('$T' in t for t in stmts)
+            if uses_t:
+                w(' * @param $T Demo start time: relative seed timestamps resolve against it')
+            w(' */')
+            w(f"create or modify microflow Shop.{name}_{k} ($TheOrder: Shop.Order{', $T: DateTime' if uses_t else ''})")
+            w("folder 'Seed/Orders'")
+            w('begin')
+            for t in stmts:
+                w(t.replace('$o)', '$TheOrder)').replace('$o,', '$TheOrder,').replace('= $o;', '= $TheOrder;'))
+            w('end;')
+            w('')
     w('/**')
     w(' * Creates all 46 seed orders (every status, guest and simulated) with their')
     w(' * lines, modifiers, payment attempts, status history and log (BR-DATA-09).')

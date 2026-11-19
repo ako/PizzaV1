@@ -70,16 +70,16 @@ begin
   loop $QaOrder in $InQa
   begin
     $QaP = call microflow Shop.SUB_Order_Progress(TheOrder = $QaOrder);
-    if $QaP >= 0.3333 and not($QaOrder/QaSlicedDone) then
-      change $QaOrder (QaSlicedDone = true) commit without events;
+    if $QaP >= 0.3333 and not($QaOrder/IsQaSlicedDone) then
+      change $QaOrder (IsQaSlicedDone = true) commit without events;
       call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Slice matrix done ✓ by sim/kitchen-auto.', Visible = false);
     end if;
-    if $QaP >= 0.6667 and not($QaOrder/QaExtrasDone) then
-      change $QaOrder (QaExtrasDone = true) commit without events;
+    if $QaP >= 0.6667 and not($QaOrder/IsQaExtrasDone) then
+      change $QaOrder (IsQaExtrasDone = true) commit without events;
       call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Dips and sides packed ✓ by sim/kitchen-auto.', Visible = false);
     end if;
     if $QaP >= 1 then
-      change $QaOrder (QaSlicedDone = true, QaExtrasDone = true, QaSealedDone = true, ReadyAt = $Now);
+      change $QaOrder (IsQaSlicedDone = true, IsQaExtrasDone = true, IsQaSealedDone = true, ReadyAt = $Now);
       call microflow Shop.SUB_Order_Log(TheOrder = $QaOrder, Level = Shop.LogLevel.DEBUG, Tag = 'QA', Message = 'Box sealed ✓ by sim/kitchen-auto.', Visible = false);
       if $QaOrder/OrderType = Shop.OrderType.DELIVERY then
         call microflow Shop.SUB_Order_Transition(TheOrder = $QaOrder, ToStatus = Shop.OrderStatus.READY_FOR_DISPATCH, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
@@ -105,7 +105,7 @@ begin
         set $BakeSeconds = round(secondsBetween($BakeOrder/BakingStartedAt, $Now));
       end if;
       $BakeText = call microflow Shop.SUB_MmSs(Seconds = $BakeSeconds);
-      change $BakeOrder (QaStartedAt = $Now, QaSlicedDone = false, QaExtrasDone = false, QaSealedDone = false);
+      change $BakeOrder (QaStartedAt = $Now, IsQaSlicedDone = false, IsQaExtrasDone = false, IsQaSealedDone = false);
       call microflow Shop.SUB_Order_Transition(TheOrder = $BakeOrder, ToStatus = Shop.OrderStatus.QA_CHECK, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
       call microflow Shop.SUB_Order_Log(TheOrder = $BakeOrder, Level = Shop.LogLevel.INFO, Tag = 'OVEN', Message = 'Pulled from ' + $UsedOven/Code + ' after ' + $BakeText + '.', Visible = true);
       call microflow Shop.SUB_Order_Log(TheOrder = $BakeOrder, Level = Shop.LogLevel.INFO, Tag = 'QA', Message = 'Quality check started.', Visible = true);

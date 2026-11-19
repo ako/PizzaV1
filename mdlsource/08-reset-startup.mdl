@@ -231,7 +231,7 @@ begin
   begin
     retrieve $User from $Session/System.Session_User;
     if $User != empty then
-      $T = create Shop.Toast (Message = $Message, Level = Shop.ToastLevel.INFO, CreatedAt = $Now, ExpiresAt = addSeconds($Now, 6), ShowCartAction = false, Shop.Toast_Owner = $User);
+      $T = create Shop.Toast (Message = $Message, Level = Shop.ToastLevel.INFO, CreatedAt = $Now, ExpiresAt = addSeconds($Now, 6), ShouldShowCartAction = false, Shop.Toast_Owner = $User);
       add $T to $Toasts;
     end if;
   end loop;

@@ -52,7 +52,7 @@ folder 'Shell'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
   if $Cart/ItemCount = 0 then
-    call microflow Shop.SUB_Toast(Message = 'Your manifest is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Your manifest is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
     return;
   end if;
   show page Shop.Checkout();
@@ -262,7 +262,7 @@ create or modify snippet Shop.SNIP_Toasts {
       container toast (Class: 'toast', DynamicClasses: if $currentObject/Level = Shop.ToastLevel.ERROR then 'error' else if $currentObject/Level = Shop.ToastLevel.INFO then 'info' else if $currentObject/Level = Shop.ToastLevel.WARNING then 'warn' else '') {
         dynamictext toastIcon (Content: '{1}', ContentParams: ({1} = if $currentObject/Level = Shop.ToastLevel.ERROR then 'error' else if $currentObject/Level = Shop.ToastLevel.SUCCESS then 'check_circle' else 'info'), Class: 'ms md')
         dynamictext toastMsg (Content: '{1}', ContentParams: ({1} = Message), Class: 'toast-msg')
-        linkbutton toastView (Caption: 'View manifest', Action: CALL MICROFLOW Shop.ACT_Nav_Cart, Visible: $currentObject/ShowCartAction, Class: 'toast-action')
+        linkbutton toastView (Caption: 'View manifest', Action: CALL MICROFLOW Shop.ACT_Nav_Cart, Visible: $currentObject/ShouldShowCartAction, Class: 'toast-action')
         actionbutton toastClose (Caption: 'close', Action: CALL MICROFLOW Shop.ACT_Toast_Close(Toast = $currentObject), Class: 'toast-x ms sm')
       }
     }

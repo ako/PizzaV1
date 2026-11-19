@@ -39,13 +39,13 @@ begin
   -- zone check
   declare $Zip String = if $Form/Zip = empty then '' else trim($Form/Zip);
   declare $ZoneMsg String = '';
-  declare $ZoneOk Boolean = false;
+  declare $IsZoneOk Boolean = false;
   declare $Outside Boolean = false;
   declare $Trip Integer = 0;
   if isMatch($Zip, '[0-9]{5}') then
     retrieve $Zone from Shop.DeliveryZone where [Zip = $Zip and IsActive = true] first;
     if $Zone != empty then
-      set $ZoneOk = true;
+      set $IsZoneOk = true;
       set $ZoneMsg = 'ZONE_OK // ZIP ' + $Zip + ' · ' + $Zone/Neighborhood + ' · ' + formatDecimal($Zone/DistanceMiles, '0.0') + ' mi';
       set $Trip = round($Sim/TravelBase + $Sim/TravelPerMile * $Zone/DistanceMiles);
       change $Form (Shop.CheckoutForm_Zone = $Zone);
@@ -91,13 +91,13 @@ begin
   declare $AvgTrip Integer = if $Trip > 0 then $Trip else 140;
   $DeliveryEff = call microflow Shop.SUB_Eff(Base = $Sim/QueueWait + $Sim/Bake + $Sim/Qa + $Sim/CourierToStore + $Sim/Handover + $AvgTrip);
   declare $Minutes Integer = max(1, round($DeliveryEff div 60));
-  change $Form (ZoneMessage = $ZoneMsg, ZoneOk = $ZoneOk, ZoneOutside = $Outside, Subtotal = $Cart/Subtotal, Discount = $Price/Discount,
+  change $Form (ZoneMessage = $ZoneMsg, IsZoneOk = $IsZoneOk, IsZoneOutside = $Outside, Subtotal = $Cart/Subtotal, Discount = $Price/Discount,
     DeliveryFee = $Price/DeliveryFee, FeeNote = $FeeNote, Tax = $Price/Tax, TipAmount = $Price/TipAmount, TipPercent = $Price/TipPercent, Total = $Price/Total,
     Tip0Label = $T0, Tip10Label = $T10, Tip15Label = $T15, Tip20Label = $T20, MinimumMessage = $MinMsg,
     SubtotalText = $SubText, DiscountText = $DiscText, FeeText = if $Delivery then $FeeMoney else 'FREE', TaxText = $TaxText, TipText = $TipText, TotalText = $TotalText,
     CouponLine = $CouponLine, CouponCode = if $Coupon = empty then '' else $Coupon/Code, HasDiscount = $Price/Discount > 0,
     ReadyEstimate = formatDateTime($ReadyAt, 'HH:mm'), EtaText = '~' + toString($Minutes) + ' min after payment',
-    CartBlocked = $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' and $Cart/ItemCount > 0, IsEmptyCart = $Cart/ItemCount = 0);
+    IsCartBlocked = $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' and $Cart/ItemCount > 0, IsEmptyCart = $Cart/ItemCount = 0);
 end;
 
 /**
@@ -295,11 +295,11 @@ begin
   $Cart = call microflow Shop.SUB_Cart_Current();
   if $Cart/ItemCount = 0 then
     show page Shop.Menu();
-    call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
     return;
   end if;
   if $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' then
-    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.ERROR, ShowCartAction = true);
+    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = true);
     return;
   end if;
   declare $Delivery Boolean = $Form/OrderType = Shop.OrderType.DELIVERY;
@@ -333,7 +333,7 @@ begin
       set $Errors = $Errors + 1;
       set $Summary = $Summary + 'ZIP_CODE · ';
     else
-      if not($Form/ZoneOk) then
+      if not($Form/IsZoneOk) then
         validation feedback $Form/Zip message $Zip + ' is outside the delivery zone.';
         set $Errors = $Errors + 1;
         set $Summary = $Summary + 'ZIP_CODE · ';

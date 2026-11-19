@@ -34,7 +34,7 @@ begin
     set $File = $Cat/FileName;
   end if;
   declare $IsSearch Boolean = length($Query) >= 2;
-  declare $Filtered Boolean = $Cart/FilterVegetarian or $Cart/FilterVegan or $Cart/FilterSpicy;
+  declare $Filtered Boolean = $Cart/IsFilterVegetarian or $Cart/IsFilterVegan or $Cart/IsFilterSpicy;
   declare $Result String = toString($NShown) + ' modules in ' + $File;
   if $IsSearch then
     set $Result = 'grep: ' + toString($NShown) + (if $NShown = 1 then ' module matches ''' + $Query + '''' else ' modules match ''' + $Query + '''');
@@ -51,7 +51,7 @@ begin
     end if;
   end if;
   change $View (CountPizzas = $NP, CountSides = $NS, CountDrinks = $ND, CountDesserts = $NE, PublishedCount = $All, ResultText = $Result,
-    NoResults = $NShown = 0 and $IsSearch and not($Filtered), EmptyByFilter = $NShown = 0 and $Filtered, IsSearch = $IsSearch, EmptyText = $Empty);
+    HasNoResults = $NShown = 0 and $IsSearch and not($Filtered), IsEmptyByFilter = $NShown = 0 and $Filtered, IsSearch = $IsSearch, EmptyText = $Empty);
 end;
 
 /**
@@ -95,15 +95,15 @@ begin
   declare $SearchFor String = if $IsSearch then $Query else '';
   retrieve $Found from Shop.Product where [ProductStatus = 'PUBLISHED' and contains(SearchText, $SearchFor)] sort by Shop.Product_Category/Shop.Category.SortOrder asc, SortOrder asc;
   $Result = filter $Found where $IsSearch or $currentObject/Shop.Product_Category/Code = $Cat;
-  if $Cart/FilterVegetarian then
+  if $Cart/IsFilterVegetarian then
     $Veg = filter $Result where $currentObject/IsVegetarian;
     set $Result = $Veg;
   end if;
-  if $Cart/FilterVegan then
+  if $Cart/IsFilterVegan then
     $Vegan = filter $Result where $currentObject/IsVegan;
     set $Result = $Vegan;
   end if;
-  if $Cart/FilterSpicy then
+  if $Cart/IsFilterSpicy then
     $Spicy = filter $Result where $currentObject/Spice != Shop.SpiceLevel.NONE;
     set $Result = $Spicy;
   end if;
@@ -178,7 +178,7 @@ create or modify microflow Shop.SUB_Menu_ClearSearch ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  change $Cart (SearchQuery = '', SearchInput = '', FilterVegetarian = false, FilterVegan = false, FilterSpicy = false) commit without events refresh;
+  change $Cart (SearchQuery = '', SearchInput = '', IsFilterVegetarian = false, IsFilterVegan = false, IsFilterSpicy = false) commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
 
@@ -206,13 +206,13 @@ folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
   if $Filter = 'veg' then
-    change $Cart (FilterVegetarian = not($Cart/FilterVegetarian));
+    change $Cart (IsFilterVegetarian = not($Cart/IsFilterVegetarian));
   end if;
   if $Filter = 'vegan' then
-    change $Cart (FilterVegan = not($Cart/FilterVegan));
+    change $Cart (IsFilterVegan = not($Cart/IsFilterVegan));
   end if;
   if $Filter = 'spicy' then
-    change $Cart (FilterSpicy = not($Cart/FilterSpicy));
+    change $Cart (IsFilterSpicy = not($Cart/IsFilterSpicy));
   end if;
   commit $Cart without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
@@ -241,7 +241,7 @@ create or modify microflow Shop.SUB_Menu_ShowAll ($View: Shop.MenuView)
 folder 'Menu'
 begin
   retrieve $Cart from $View/Shop.MenuView_Cart;
-  change $Cart (FilterVegetarian = false, FilterVegan = false, FilterSpicy = false) commit without events refresh;
+  change $Cart (IsFilterVegetarian = false, IsFilterVegan = false, IsFilterSpicy = false) commit without events refresh;
   call microflow Shop.SUB_Menu_Refresh(View = $View);
 end;
 
@@ -358,10 +358,10 @@ create or modify snippet Shop.SNIP_MenuCard (Params: ($Product: Shop.Product)) {
       container pBadges (Class: 'row badges') {
         dynamictext bVegan (Content: '<Vegan />', Class: 'chip tag-badge', Visible: $Product/IsVegan)
         dynamictext bVeg (Content: '<Vegetarian />', Class: 'chip tag-badge', Visible: $Product/IsVegetarian and not($Product/IsVegan))
-        dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $Product/BadgeClassic)
-        dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $Product/BadgeBestSeller)
-        dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $Product/BadgeNew)
-        dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $Product/BadgeChefPick)
+        dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $Product/HasBadgeClassic)
+        dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $Product/HasBadgeBestSeller)
+        dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $Product/HasBadgeNew)
+        dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $Product/HasBadgeChefPick)
         container bSpice (Class: 'chip tag-spice', Visible: $Product/SpiceLabel != '') {
           dynamictext bSpiceIcon (Content: 'local_fire_department', Class: 'ms sm')
           dynamictext bSpiceTxt (Content: '{1}', ContentParams: ({1} = $Product/SpiceLabel))
@@ -456,20 +456,20 @@ create or modify page Shop.Menu (
                 dynamictext count (Content: '{1}', ContentParams: ({1} = $dvMenu/ResultText), Class: 't-small c-muted')
               }
               container chips (Class: 'row filter-chips') {
-                container fVeg (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegetarian then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'veg')) { dynamictext fVegT (Content: '--vegetarian') }
-                container fVegan (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegan then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'vegan')) { dynamictext fVeganT (Content: '--vegan') }
-                container fSpicy (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterSpicy then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'spicy')) { dynamictext fSpicyT (Content: '--spicy') }
+                container fVeg (Class: 'chip filter-chip', DynamicClasses: if $currentObject/IsFilterVegetarian then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'veg')) { dynamictext fVegT (Content: '--vegetarian') }
+                container fVegan (Class: 'chip filter-chip', DynamicClasses: if $currentObject/IsFilterVegan then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'vegan')) { dynamictext fVeganT (Content: '--vegan') }
+                container fSpicy (Class: 'chip filter-chip', DynamicClasses: if $currentObject/IsFilterSpicy then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'spicy')) { dynamictext fSpicyT (Content: '--spicy') }
               }
               listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(Cart = $currentObject), PageSize: 200, Class: 'cards mt-16') {
                 snippetcall card (Snippet: Shop.SNIP_MenuCard, Params: (Product = $currentObject))
               }
-              container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/NoResults) {
+              container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/HasNoResults) {
                 image noResImg (ImageType: imageUrl, ImageUrl: '/assets/illustrations/no-results.png', AlternativeText: '', Class: 'no-res-img')
                 dynamictext noResH (Content: '{1}', ContentParams: ({1} = $dvMenu/EmptyText), RenderMode: H2, Class: 't-h3 mt-16')
                 dynamictext noResP (Content: 'Try another dish, ingredient or module name, or clear the search.', Class: 't-small c-muted')
                 actionbutton noResClear (Caption: 'Clear search', Action: CALL MICROFLOW Shop.ACT_Menu_ClearSearch(View = $dvMenu), Class: 'btn btn-secondary mt-8')
               }
-              container noFilter (Class: 'panel panel-pad no-results', Visible: $dvMenu/EmptyByFilter) {
+              container noFilter (Class: 'panel panel-pad no-results', Visible: $dvMenu/IsEmptyByFilter) {
                 dynamictext noFilterH (Content: '{1}', ContentParams: ({1} = $dvMenu/EmptyText), Class: 't-small c-secondary')
                 actionbutton noFilterAll (Caption: 'Show all', Action: CALL MICROFLOW Shop.ACT_Menu_ShowAll(View = $dvMenu), Class: 'btn btn-secondary mt-8')
               }

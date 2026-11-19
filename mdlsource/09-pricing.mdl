@@ -34,7 +34,7 @@ begin
     change $Result (CouponState = Shop.CouponState.INVALID, CouponMessage = 'Coupon ' + $Coupon/Code + ' has expired');
     return;
   end if;
-  if $Coupon/DeliveryOnly and $OrderType = Shop.OrderType.PICKUP then
+  if $Coupon/IsDeliveryOnly and $OrderType = Shop.OrderType.PICKUP then
     change $Result (CouponState = Shop.CouponState.NOT_APPLIED, CouponMessage = $Coupon/Code + ' is valid for delivery orders only');
     return;
   end if;

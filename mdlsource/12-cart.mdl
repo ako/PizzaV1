@@ -104,8 +104,8 @@ begin
     set $Badge = 'VALIDATED (' + (if $Price/Discount > 0 then $DiscText else 'FREE_DISPATCH') + ')';
   end if;
   change $Cart (SubtotalText = $SubText, DiscountText = $DiscText, TotalText = $TotText, CouponCode = if $Coupon = empty then '' else $Coupon/Code, CouponBadge = $Badge,
-    FreeUnlocked = $Subtotal >= $Store/FreeDeliveryThreshold, CountText = toString($Count) + (if $Count = 1 then ' DEPENDENCY INSTALLED' else ' DEPENDENCIES INSTALLED'), ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
-    DiscountPreview = $Price/Discount, Total = $Subtotal - $Price/Discount, HasUnavailable = $Unavailable, OnlyDrinks = $Count > 0 and not($NonDrink),
+    IsFreeUnlocked = $Subtotal >= $Store/FreeDeliveryThreshold, CountText = toString($Count) + (if $Count = 1 then ' DEPENDENCY INSTALLED' else ' DEPENDENCIES INSTALLED'), ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
+    DiscountPreview = $Price/Discount, Total = $Subtotal - $Price/Discount, HasUnavailable = $Unavailable, HasOnlyDrinks = $Count > 0 and not($NonDrink),
     FreeDeliveryHint = $Free, MinimumHint = $Minimum, CheckoutBlock = $Block, UpdatedAt = [%CurrentDateTime%]) commit without events refresh;
 end;
 
@@ -129,11 +129,11 @@ begin
   retrieve $Size from $Line/Shop.CartLine_Size;
   call microflow Shop.SUB_Line_Recalculate(Line = $Line);
   if not($Line/IsAvailable) then
-    call microflow Shop.SUB_Toast(Message = $Product/Name + ' is sold out and can''t be imported.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = $Product/Name + ' is sold out and can''t be imported.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     return false;
   end if;
   if $Cart/ItemCount + $Quantity > $Store/MaxItemsPerOrder then
-    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     return false;
   end if;
   declare $SizeText String = '';
@@ -145,19 +145,19 @@ begin
   if $Same != empty and $Same != $Line then
     declare $Before Integer = $Same/Quantity;
     if $Before >= $Store/MaxQuantityPerLine then
-      call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+      call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = false);
       return false;
     end if;
     declare $New Integer = min($Before + $Quantity, $Store/MaxQuantityPerLine);
     change $Same (Quantity = $New) commit without events;
     call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
     if $Before + $Quantity > $Store/MaxQuantityPerLine then
-      call microflow Shop.SUB_Toast(Message = 'Only ' + toString($New - $Before) + ' more could be added — max 10 of the same item per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = true);
+      call microflow Shop.SUB_Toast(Message = 'Only ' + toString($New - $Before) + ' more could be added — max 10 of the same item per line.', Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = true);
     else
       if $Kind = 'build' then
-        call microflow Shop.SUB_Toast(Message = 'Same build already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = true);
+        call microflow Shop.SUB_Toast(Message = 'Same build already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = true);
       else
-        call microflow Shop.SUB_Toast(Message = $Product/Name + ' is already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = true);
+        call microflow Shop.SUB_Toast(Message = $Product/Name + ' is already in MANIFEST.LOCK — instances: ' + toString($New) + '.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = true);
       end if;
     end if;
     return true;
@@ -168,9 +168,9 @@ begin
   commit $Line without events;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   if $Kind = 'build' then
-    call microflow Shop.SUB_Toast(Message = 'Built ' + $Product/Name + $SizeText + ' and deployed to MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+    call microflow Shop.SUB_Toast(Message = 'Built ' + $Product/Name + $SizeText + ' and deployed to MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = true);
   else
-    call microflow Shop.SUB_Toast(Message = 'Imported ' + $Product/Name + $SizeText + ' into MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+    call microflow Shop.SUB_Toast(Message = 'Imported ' + $Product/Name + $SizeText + ' into MANIFEST.LOCK.', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = true);
   end if;
   return true;
 end;
@@ -205,7 +205,7 @@ begin
   if $Added then
     loop $Ing in $Removed
     begin
-      call microflow Shop.SUB_Toast(Message = $Ing/Name + ' are unavailable today and were left out.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+      call microflow Shop.SUB_Toast(Message = $Ing/Name + ' are unavailable today and were left out.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
     end loop;
   end if;
   if isNew($Line) then
@@ -238,11 +238,11 @@ begin
   retrieve $Cart from $Line/Shop.CartLine_Cart;
   retrieve $Store from Shop.StoreSettings first;
   if $Line/Quantity >= $Store/MaxQuantityPerLine then
-    call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Max 10 instances per line.', Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = false);
     return;
   end if;
   if $Cart/ItemCount >= $Store/MaxItemsPerOrder then
-    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Max 30 items per order. Nothing was added.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     return;
   end if;
   change $Line (Quantity = $Line/Quantity + 1) commit without events refresh;
@@ -307,7 +307,7 @@ begin
     change $Cart (Shop.Cart_Coupon = empty, CouponInput = '', CouponFieldError = '');
   end if;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
-  call microflow Shop.SUB_Toast(Message = 'Removed ' + $Name + ' from MANIFEST.LOCK.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  call microflow Shop.SUB_Toast(Message = 'Removed ' + $Name + ' from MANIFEST.LOCK.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
 end;
 
 /**
@@ -335,7 +335,7 @@ begin
   delete $Lines refresh;
   change $Cart (Shop.Cart_Coupon = empty, CouponInput = '', CouponFieldError = '');
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
-  call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK cleared.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK cleared.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
 end;
 
 /**
@@ -381,7 +381,7 @@ begin
   change $Cart (Shop.Cart_Coupon = $Coupon, CouponInput = '', CouponFieldError = '');
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   if $Old != empty and $Old != $Coupon then
-    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' replaced by ' + $Code + '.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' replaced by ' + $Code + '.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
   end if;
 end;
 
@@ -411,7 +411,7 @@ begin
   change $Cart (Shop.Cart_Coupon = empty, CouponFieldError = '');
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   if $Old != empty then
-    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' removed.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'Coupon ' + $Old/Code + ' removed.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
   end if;
 end;
 

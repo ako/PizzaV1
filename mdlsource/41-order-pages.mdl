@@ -59,7 +59,7 @@ grant execute on nanoflow Shop.NF_Print to Shop.Guest; -- auto
 create or modify microflow Shop.ACT_Toast_Copied ()
 folder 'Tracking'
 begin
-  call microflow Shop.SUB_Toast(Message = 'Copied to clipboard.', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = false);
+  call microflow Shop.SUB_Toast(Message = 'Copied to clipboard.', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = false);
 end;
 grant execute on microflow Shop.ACT_Toast_Copied to Shop.Guest; -- auto
 
@@ -409,7 +409,7 @@ create or modify page Shop.Tracking (
           container pipePanel (Class: 'panel panel-pad') {
             dynamictext ppH (Content: 'PIPELINE WORKFLOW', Class: 't-label c-secondary pp-h')
             snippetcall stepper (Snippet: Shop.SNIP_Stepper, Params: (View = $currentObject))
-            container detail (Class: 'stage-detail mt-16', Visible: $currentObject/ShowProgress) {
+            container detail (Class: 'stage-detail mt-16', Visible: $currentObject/ShouldShowProgress) {
               dynamictext dT (Content: '{1}', ContentParams: ({1} = ProgressText))
               container dBar (Class: 'progress orange') { container dFill (Class: 'pfill', DynamicClasses: 'pw-' + toString($currentObject/ProgressBucket)) { } }
             }
@@ -436,7 +436,7 @@ create or modify page Shop.Tracking (
               container pinCourier (Class: 'map-pin courier', DynamicClasses: 'cpos-' + toString($currentObject/CourierBucket), Visible: $currentObject/MapMode != 'STANDBY') { container pcMk (Class: 'mk') { dynamictext pcI (Content: 'electric_moped', Class: 'ms sm') } }
               dynamictext mapHelper (Content: '{1}', ContentParams: ({1} = MapHelper), Class: 'map-helper', Visible: $currentObject/MapHelper != '')
             }
-            container etaRow (Class: 'eta-row', Visible: $currentObject/ShowEta) {
+            container etaRow (Class: 'eta-row', Visible: $currentObject/ShouldShowEta) {
               container etaL {
                 dynamictext etaLbl (Content: '{1}', ContentParams: ({1} = EtaLabel), Class: 't-label')
                 dynamictext etaV (Content: '{1}', ContentParams: ({1} = EtaCountdown), Class: 'eta-big c-green')
@@ -447,7 +447,7 @@ create or modify page Shop.Tracking (
                 dynamictext distV (Content: '{1}', ContentParams: ({1} = DistanceText))
               }
             }
-            container courier (Class: 'courier', Visible: $currentObject/ShowCourier) {
+            container courier (Class: 'courier', Visible: $currentObject/ShouldShowCourier) {
               container av (Class: 'av') { dynamictext avI (Content: 'electric_moped', Class: 'ms') }
               container cText {
                 dynamictext cName (Content: '{1}', ContentParams: ({1} = CourierText), Class: 'c-primary')
@@ -458,7 +458,7 @@ create or modify page Shop.Tracking (
           container pickupPanel (Class: 'panel panel-pad', Visible: not($currentObject/IsDelivery)) {
             container puH (Class: 'section-label') { dynamictext puI (Content: 'storefront', Class: 'ms') dynamictext puT (Content: 'Pickup') }
             dynamictext puTxt (Content: '{1}', ContentParams: ({1} = PickupText), Class: 't-small c-secondary')
-            dynamictext puReady (Content: '{1}', ContentParams: ({1} = ReadyText), Class: 't-small c-green mt-8', Visible: $currentObject/ShowEta)
+            dynamictext puReady (Content: '{1}', ContentParams: ({1} = ReadyText), Class: 't-small c-green mt-8', Visible: $currentObject/ShouldShowEta)
           }
           container cfg (Class: 'panel panel-pad') {
             container cfgH (Class: 'section-label') { dynamictext cfgI (Content: 'inventory_2', Class: 'ms') dynamictext cfgT (Content: 'Order configuration') }
@@ -482,7 +482,7 @@ create or modify page Shop.Tracking (
             }
             container cost (Class: 'sum-total') { dynamictext costL (Content: 'DEPLOYMENT_COST', Class: 't-label') dynamictext costV (Content: '{1}', ContentParams: ({1} = TotalText), Class: 't-price-lg c-primary') }
             container receipt (Class: 'btn btn-ghost btn-sm mt-16', OnClick: CALL MICROFLOW Shop.ACT_Receipt_Open(TheOrder = $TheOrder)) { dynamictext rcI (Content: 'receipt_long', Class: 'ms sm') dynamictext rcT (Content: 'View receipt') }
-            container rollback (Class: 'rollback mt-16', Visible: $currentObject/ShowRollback) {
+            container rollback (Class: 'rollback mt-16', Visible: $currentObject/ShouldShowRollback) {
               container rbBtn (Class: 'btn btn-danger btn-block', DynamicClasses: if $currentObject/CanRollback then '' else 'is-disabled', OnClick: CALL MICROFLOW Shop.ACT_Track_Rollback(View = $currentObject) with (Confirmation: 'Roll back this order? It will be cancelled and the full amount refunded (simulated).', ProceedCaption: 'Rollback order', CancelCaption: 'Keep order')) { dynamictext rbT (Content: 'Rollback order') }
               dynamictext rbMsg (Content: '{1}', ContentParams: ({1} = RollbackMsg), Class: 't-small c-error mt-8', Visible: not($currentObject/CanRollback))
             }

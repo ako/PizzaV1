@@ -47,7 +47,7 @@ create or modify page Shop.Checkout (
         dynamictext path (Content: 'src/pizza-mxdev/checkout_config.json', Class: 't-micro c-muted')
         dynamictext title (Content: '{1}', ContentParams: ({1} = 'checkout_config.json'), RenderMode: H1, Class: 't-display c-primary mt-8')
         dynamictext intro (Content: 'Configure your deployment parameters, then execute the order. Payment, kitchen and delivery are simulated.', Class: 't-body-long')
-        container blocked (Class: 'notice error mt-16', Visible: $currentObject/CartBlocked) {
+        container blocked (Class: 'notice error mt-16', Visible: $currentObject/IsCartBlocked) {
           dynamictext blI (Content: 'block', Class: 'ms')
           dynamictext blT (Content: 'Remove unavailable items from your manifest first.')
         }
@@ -107,11 +107,11 @@ create or modify page Shop.Checkout (
                   textbox tNotes (Attribute: DeliveryNotes, Placeholder: 'Gate code, floor … (optional)', Class: 'gp-input')
                 }
               }
-              container zoneOk (Class: 'field-ok mt-16', Visible: $currentObject/ZoneOk) {
+              container zoneOk (Class: 'field-ok mt-16', Visible: $currentObject/IsZoneOk) {
                 dynamictext zoI (Content: 'check_circle', Class: 'ms sm')
                 dynamictext zoT (Content: '{1}', ContentParams: ({1} = ZoneMessage))
               }
-              container zoneBad (Class: 'notice error mt-16', Visible: $currentObject/ZoneOutside) {
+              container zoneBad (Class: 'notice error mt-16', Visible: $currentObject/IsZoneOutside) {
                 dynamictext zbI (Content: 'wrong_location', Class: 'ms')
                 container zbBody {
                   dynamictext zbT (Content: '{1}', ContentParams: ({1} = ZoneMessage))
@@ -174,7 +174,7 @@ create or modify page Shop.Checkout (
               container mapWell (Class: 'map-well') {
                 image mapBase (ImageType: imageUrl, ImageUrl: '/assets/illustrations/map-sf-dark.jpg', AlternativeText: 'Simulated map of San Francisco', Class: 'map-base')
                 container pinStore (Class: 'map-pin store') { container pinStoreMk (Class: 'mk') { dynamictext pinStoreI (Content: 'local_pizza', Class: 'ms sm') } dynamictext pinStoreN (Content: 'MISSION_KITCHEN', Class: 'nm') }
-                container pinDest (Class: 'map-pin dest', Visible: $currentObject/ZoneOk) { container pinDestMk (Class: 'mk') { dynamictext pinDestI (Content: 'location_on', Class: 'ms sm') } dynamictext pinDestN (Content: 'DESTINATION_LOCK', Class: 'nm') }
+                container pinDest (Class: 'map-pin dest', Visible: $currentObject/IsZoneOk) { container pinDestMk (Class: 'mk') { dynamictext pinDestI (Content: 'location_on', Class: 'ms sm') } dynamictext pinDestN (Content: 'DESTINATION_LOCK', Class: 'nm') }
               }
               container mapEta (Class: 'between map-eta') {
                 dynamictext meL (Content: 'ESTIMATED_ETA', Class: 't-label')
@@ -211,7 +211,7 @@ create or modify page Shop.Checkout (
                 dynamictext totL (Content: 'EXEC_TOTAL', Class: 't-label')
                 dynamictext totV (Content: '{1}', ContentParams: ({1} = TotalText), Class: 't-price-lg c-primary')
               }
-              container exec (Class: 'btn btn-primary btn-lg btn-block mt-16', DynamicClasses: if $currentObject/CartBlocked then 'is-disabled' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Place(Form = $currentObject) with (ProgressBar: NonBlocking)) {
+              container exec (Class: 'btn btn-primary btn-lg btn-block mt-16', DynamicClasses: if $currentObject/IsCartBlocked then 'is-disabled' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Place(Form = $currentObject) with (ProgressBar: NonBlocking)) {
                 dynamictext exI (Content: 'bolt', Class: 'ms')
                 dynamictext exT (Content: 'Execute Order --force')
               }

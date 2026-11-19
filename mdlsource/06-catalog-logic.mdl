@@ -47,7 +47,7 @@ begin
       set $Ok = false;
     end if;
   end if;
-  if ($Size = Shop.SizeCode.SMALL and not($Option/ForSmall)) or ($Size = Shop.SizeCode.MEDIUM and not($Option/ForMedium)) or ($Size = Shop.SizeCode.LARGE and not($Option/ForLarge)) then
+  if ($Size = Shop.SizeCode.SMALL and not($Option/IsForSmall)) or ($Size = Shop.SizeCode.MEDIUM and not($Option/IsForMedium)) or ($Size = Shop.SizeCode.LARGE and not($Option/IsForLarge)) then
     set $Ok = false;
   end if;
   return $Ok;
@@ -98,8 +98,8 @@ begin
   if $Product/Kind != Shop.ProductKind.PIZZA then
     retrieve $Declared from $Product/Shop.Product_Allergen;
     add $Declared to $Allergens;
-    set $Veg = $Product/DeclaredVegetarian;
-    set $Vegan = $Product/DeclaredVegan;
+    set $Veg = $Product/IsDeclaredVegetarian;
+    set $Vegan = $Product/IsDeclaredVegan;
   else
     retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
     retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;

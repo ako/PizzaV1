@@ -267,13 +267,13 @@ begin
     T5 = if $O/CompletedAt = empty then '' else formatDateTime($O/CompletedAt, 'HH:mm'),
     S4Label = if $Delivery then 'DISPATCH' else 'READY_TO_PULL', S5Label = if $Delivery then 'DEPLOYED' else 'PULLED', S4Sub = $S4Sub, S5Sub = if $Delivery then 'Delivered' else 'Picked up',
     FillBucket = min(4, max(0, $Reached - 1)),
-    ProgressText = $Progress, ProgressBucket = $Bucket, ShowProgress = $Progress != '',
-    EtaLabel = if $Delivery then 'ESTIMATED_ETA' else 'READY_AT', EtaCountdown = $Countdown, EtaClock = '~' + formatDateTime($EtaAt, 'HH:mm'), ShowEta = not($Final),
+    ProgressText = $Progress, ProgressBucket = $Bucket, ShouldShowProgress = $Progress != '',
+    EtaLabel = if $Delivery then 'ESTIMATED_ETA' else 'READY_AT', EtaCountdown = $Countdown, EtaClock = '~' + formatDateTime($EtaAt, 'HH:mm'), ShouldShowEta = not($Final),
     DistanceText = formatDecimal(round($O/DistanceMiles * (100 - $O/RouteProgressPercent) div 100, 1), '0.0') + ' mi',
-    CourierText = $CourierText, CourierStatus = $CourierStatus, ShowCourier = $Courier != empty and $Delivery,
+    CourierText = $CourierText, CourierStatus = $CourierStatus, ShouldShowCourier = $Courier != empty and $Delivery,
     MapMode = $MapMode, CourierBucket = $CourierBucket, MapHelper = $MapHelper, IsDelivery = $Delivery,
     BannerKind = $BannerKind, BannerTitle = $BannerTitle, BannerText = $BannerText, RefundLine = $Refund,
-    CanRollback = $St = Shop.OrderStatus.QUEUED, RollbackMsg = $RollbackMsg, ShowRollback = not($Final) and $St != Shop.OrderStatus.PAYMENT_PENDING and $St != Shop.OrderStatus.PAYMENT_FAILED,
+    CanRollback = $St = Shop.OrderStatus.QUEUED, RollbackMsg = $RollbackMsg, ShouldShowRollback = not($Final) and $St != Shop.OrderStatus.PAYMENT_PENDING and $St != Shop.OrderStatus.PAYMENT_FAILED,
     CanRetry = $St = Shop.OrderStatus.PAYMENT_FAILED, IsFinal = $Final,
     PayState = $PayState, AttemptText = 'Attempt ' + toString($AttemptNo) + ' of 3', AmountText = $TotalText, MethodLabel = $O/PaymentLabel, FailureText = $FailureLine,
     TxnText = if $LastAttempt = empty or $LastAttempt/TransactionId = empty then '' else $LastAttempt/TransactionId,
@@ -373,7 +373,7 @@ begin
   $Form = call microflow Shop.SUB_Checkout_Current();
   $Ok = call microflow Shop.SUB_Payment_Retry(TheOrder = $O, Method = $Form/Method, Card = $Form/Card, Actor = Shop.ActorType.GUEST, ActorName = 'guest');
   if not($Ok) then
-    call microflow Shop.SUB_Toast(Message = 'A payment is already being processed for this order.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'A payment is already being processed for this order.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
   end if;
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
@@ -403,12 +403,12 @@ folder 'Tracking'
 begin
   retrieve $O from $View/Shop.TrackView_Order;
   if $O/OrderStatus != Shop.OrderStatus.PAYMENT_FAILED then
-    call microflow Shop.SUB_Toast(Message = 'This order changed in the meantime. The page now shows its latest state.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'This order changed in the meantime. The page now shows its latest state.', Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = false);
     call microflow Shop.SUB_Track_Fill(View = $View);
     return;
   end if;
   call microflow Shop.SUB_Order_Cancel(TheOrder = $O, Actor = Shop.ActorType.GUEST, ActorName = 'guest', Reason = 'Cancelled by customer before payment', LogMessage = 'Order rolled back by customer before payment.');
-  call microflow Shop.SUB_Toast(Message = 'Order MX-' + toString($O/OrderNumber) + ' cancelled. Nothing was charged.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  call microflow Shop.SUB_Toast(Message = 'Order MX-' + toString($O/OrderNumber) + ' cancelled. Nothing was charged.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
   call microflow Shop.SUB_Track_Fill(View = $View);
 end;
 
@@ -453,12 +453,12 @@ begin
   retrieve $O from $View/Shop.TrackView_Order;
   retrieve $Fresh from Shop.Order where [id = $O] first;
   if $Fresh/OrderStatus = Shop.OrderStatus.CANCELLED then
-    call microflow Shop.SUB_Toast(Message = 'This order is already ROLLED_BACK.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'This order is already ROLLED_BACK.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
     call microflow Shop.SUB_Track_Fill(View = $View);
     return;
   end if;
   if $Fresh/OrderStatus != Shop.OrderStatus.QUEUED then
-    call microflow Shop.SUB_Toast(Message = 'ROLLBACK REJECTED — your order is already in the oven.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'ROLLBACK REJECTED — your order is already in the oven.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     call microflow Shop.SUB_Track_Fill(View = $View);
     return;
   end if;

@@ -64,7 +64,7 @@ begin
         set $Sub = 'unavailable today';
       else
         if not($OAvail) then
-          set $Sub = if $O/ForSmall and not($O/ForMedium) then 'Small 10" only' else 'Medium & Large only';
+          set $Sub = if $O/IsForSmall and not($O/IsForMedium) then 'Small 10" only' else 'Medium & Large only';
         else
           if $O = $Default or $O/Surcharge = 0 then
             set $Sub = 'included';
@@ -192,7 +192,7 @@ begin
     end loop;
   end if;
   retrieve $Option from $Choice/Shop.Choice_Option;
-  if $Choice/Kind = 'CRUST' and $Product/CrustSelectable then
+  if $Choice/Kind = 'CRUST' and $Product/IsCrustSelectable then
     change $Line (Shop.CartLine_Crust = $Option);
   end if;
   if $Choice/Kind = 'SAUCE' then
@@ -306,7 +306,7 @@ begin
   declare $ReturnTo String = $Line/ReturnTo;
   call microflow Shop.SUB_Line_Recalculate(Line = $Line);
   if not($Line/IsAvailable) then
-    call microflow Shop.SUB_Toast(Message = 'This build is no longer available: ' + $Product/Name + ' cannot be made today.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'This build is no longer available: ' + $Product/Name + ' cannot be made today.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     return;
   end if;
   retrieve $Original from $Line/Shop.CartLine_EditOf;
@@ -320,7 +320,7 @@ begin
   -- edit mode: the original keeps its identity, takes the new configuration
   retrieve $Still from Shop.CartLine where [id = $Original] first;
   if $Still = empty then
-    call microflow Shop.SUB_Toast(Message = 'This manifest line no longer exists.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Toast(Message = 'This manifest line no longer exists.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
     call microflow Shop.ACT_Nav_Cart();
     return;
   end if;
@@ -344,7 +344,7 @@ begin
   end if;
   delete $Line;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
-  call microflow Shop.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Shop.ToastLevel.SUCCESS, ShowCartAction = true);
+  call microflow Shop.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = true);
   call microflow Shop.ACT_Nav_Cart();
 end;
 
@@ -601,10 +601,10 @@ create or modify page Shop.Configurator (
             container badges (Class: 'row mt-16 badges') {
               dynamictext bVegan (Content: '<Vegan />', Class: 'chip tag-badge', Visible: $Line/IsVegan)
               dynamictext bVeg (Content: '<Vegetarian />', Class: 'chip tag-badge', Visible: $Line/IsVegetarian and not($Line/IsVegan))
-              dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $currentObject/BadgeClassic)
-              dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $currentObject/BadgeBestSeller)
-              dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $currentObject/BadgeNew)
-              dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $currentObject/BadgeChefPick)
+              dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $currentObject/HasBadgeClassic)
+              dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $currentObject/HasBadgeBestSeller)
+              dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $currentObject/HasBadgeNew)
+              dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $currentObject/HasBadgeChefPick)
               container bSpice (Class: 'chip tag-spice', Visible: $currentObject/SpiceLabel != '') {
                 dynamictext bSpiceIcon (Content: 'local_fire_department', Class: 'ms sm')
                 dynamictext bSpiceTxt (Content: '{1}', ContentParams: ({1} = SpiceLabel))
@@ -620,8 +620,8 @@ create or modify page Shop.Configurator (
             }
             container gCrust (Class: 'group') {
               container gCrustH (Class: 'section-label') { dynamictext gCrustI (Content: 'layers', Class: 'ms') dynamictext gCrustT (Content: 'core_kernel') dynamictext gCrustS (Content: ' // crust', Class: 'c-muted sl-sub') }
-              listview lvCrust (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'CRUST'), PageSize: 200, Class: 'opts-lv', Visible: $currentObject/CrustSelectable) { snippetcall tCrust (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
-              container crustFixed (Class: 'notice info', Visible: not($currentObject/CrustSelectable)) {
+              listview lvCrust (DataSource: MICROFLOW Shop.DS_Config_Choices(Line = $Line, Kind = 'CRUST'), PageSize: 200, Class: 'opts-lv', Visible: $currentObject/IsCrustSelectable) { snippetcall tCrust (Snippet: Shop.SNIP_OptTile, Params: (Choice = $currentObject)) }
+              container crustFixed (Class: 'notice info', Visible: not($currentObject/IsCrustSelectable)) {
                 dynamictext cfIcon (Content: 'lock', Class: 'ms')
                 dynamictext cfTxt (Content: 'Crust is fixed for this module: Neapolitan Core. A calzone is folded from our Neapolitan dough.')
               }

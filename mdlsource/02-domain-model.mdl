@@ -35,14 +35,14 @@ create or modify persistent entity Shop."Product" (
   "ProductStatus": Enumeration(Shop."ProductStatus"),
   "IsSoldOut": Boolean default false,
   "IsFeatured": Boolean default false,
-  "BadgeClassic": Boolean default false,
-  "BadgeBestSeller": Boolean default false,
-  "BadgeNew": Boolean default false,
-  "BadgeChefPick": Boolean default false,
+  "HasBadgeClassic": Boolean default false,
+  "HasBadgeBestSeller": Boolean default false,
+  "HasBadgeNew": Boolean default false,
+  "HasBadgeChefPick": Boolean default false,
   "Spice": Enumeration(Shop."SpiceLevel"),
-  "DeclaredVegetarian": Boolean default false,
-  "DeclaredVegan": Boolean default false,
-  "CrustSelectable": Boolean default true,
+  "IsDeclaredVegetarian": Boolean default false,
+  "IsDeclaredVegan": Boolean default false,
+  "IsCrustSelectable": Boolean default true,
   "MaxExtras": Integer default 0,
   "ImageFile": String(80),
   "ImageAlt": String(200),
@@ -112,9 +112,9 @@ create or modify persistent entity Shop."Option" (
   "PriceSmall": Decimal default 0,
   "PriceMedium": Decimal default 0,
   "PriceLarge": Decimal default 0,
-  "ForSmall": Boolean default true,
-  "ForMedium": Boolean default true,
-  "ForLarge": Boolean default true,
+  "IsForSmall": Boolean default true,
+  "IsForMedium": Boolean default true,
+  "IsForLarge": Boolean default true,
   "IsActive": Boolean default true,
   "VersionTag": String(20),
   "SortOrder": Integer default 0
@@ -152,7 +152,7 @@ create or modify persistent entity Shop."Coupon" (
   "ValidFrom": DateTime,
   "ValidUntil": DateTime,
   "IsActive": Boolean default true,
-  "DeliveryOnly": Boolean default false
+  "IsDeliveryOnly": Boolean default false
 ) index ("Code");
 
 /** Store-wide settings (singleton). */
@@ -236,14 +236,14 @@ create or modify persistent entity Shop."Cart" (
   "Subtotal": Decimal default 0,
   "DiscountPreview": Decimal default 0,
   "HasUnavailable": Boolean default false,
-  "OnlyDrinks": Boolean default false,
+  "HasOnlyDrinks": Boolean default false,
   "UpdatedAt": DateTime,
   "MenuCategory": String(20),
   "SearchInput": String(80),
   "SearchQuery": String(80),
-  "FilterVegetarian": Boolean default false,
-  "FilterVegan": Boolean default false,
-  "FilterSpicy": Boolean default false,
+  "IsFilterVegetarian": Boolean default false,
+  "IsFilterVegan": Boolean default false,
+  "IsFilterSpicy": Boolean default false,
   "CheckoutBlock": String(200),
   "FreeDeliveryHint": String(200),
   "MinimumHint": String(200),
@@ -253,7 +253,7 @@ create or modify persistent entity Shop."Cart" (
   "TotalText": String(20),
   "CouponCode": String(30),
   "CouponBadge": String(60),
-  "FreeUnlocked": Boolean default false,
+  "IsFreeUnlocked": Boolean default false,
   "CountText": String(40)
 );
 
@@ -310,8 +310,8 @@ create or modify persistent entity Shop."CheckoutForm" (
   "Method": Enumeration(Shop."PaymentMethod"),
   "Card": Enumeration(Shop."TestCard"),
   "ZoneMessage": String(300),
-  "ZoneOk": Boolean default false,
-  "ZoneOutside": Boolean default false,
+  "IsZoneOk": Boolean default false,
+  "IsZoneOutside": Boolean default false,
   "Subtotal": Decimal default 0,
   "Discount": Decimal default 0,
   "CouponLabel": String(200),
@@ -339,7 +339,7 @@ create or modify persistent entity Shop."CheckoutForm" (
   "CouponCode": String(30),
   "HasDiscount": Boolean default false,
   "EtaText": String(40),
-  "CartBlocked": Boolean default false,
+  "IsCartBlocked": Boolean default false,
   "IsEmptyCart": Boolean default false,
   "FieldErrors": String(1000)
 );
@@ -352,7 +352,7 @@ create or modify persistent entity Shop."Toast" (
   "Level": Enumeration(Shop."ToastLevel"),
   "CreatedAt": DateTime,
   "ExpiresAt": DateTime,
-  "ShowCartAction": Boolean default false
+  "ShouldShowCartAction": Boolean default false
 );
 create or modify association Shop."Toast_Owner" from Shop."Toast" to System."User" on delete cascade;
 
@@ -400,9 +400,9 @@ create or modify persistent entity Shop."Order" (
   "RouteProgressPercent": Integer default 0,
   "TimerProgress": Decimal default 0,
   "TimerAnchorAt": DateTime,
-  "QaSlicedDone": Boolean default false,
-  "QaExtrasDone": Boolean default false,
-  "QaSealedDone": Boolean default false,
+  "IsQaSlicedDone": Boolean default false,
+  "IsQaExtrasDone": Boolean default false,
+  "IsQaSealedDone": Boolean default false,
   "RemakeCount": Integer default 0,
   "IsPriority": Boolean default false,
   "CancelReason": String(200),
@@ -529,7 +529,7 @@ create or modify persistent entity Shop."SimCustomer" (
   "StateCode": String(2),
   "Zip": String(5),
   "DeliveryNotes": String(140),
-  "InZone": Boolean default true
+  "IsInZone": Boolean default true
 );
 
 /** Result of the price rules for a subtotal, order type, coupon and tip (BR-PRICE-05..10). */
@@ -564,7 +564,7 @@ create or modify non-persistent entity Shop."HomeView" (
   "Busy": Integer default 0,
   "Slots": Integer default 0,
   "LoadPct": Integer default 0,
-  "Heavy": Boolean default false,
+  "IsHeavy": Boolean default false,
   "CouriersOn": Integer default 0,
   "CouriersTotal": Integer default 0,
   "TermModules": String(80),
@@ -581,8 +581,8 @@ create or modify non-persistent entity Shop."MenuView" (
   "CountDrinks": Integer default 0,
   "CountDesserts": Integer default 0,
   "ResultText": String(200),
-  "NoResults": Boolean default false,
-  "EmptyByFilter": Boolean default false,
+  "HasNoResults": Boolean default false,
+  "IsEmptyByFilter": Boolean default false,
   "IsSearch": Boolean default false,
   "EmptyText": String(200),
   "PublishedCount": Integer default 0
@@ -616,13 +616,13 @@ create or modify non-persistent entity Shop."TrackView" (
   "T1": String(10), "T2": String(10), "T3": String(10), "T4": String(10), "T5": String(10),
   "S4Label": String(20), "S5Label": String(20), "S4Sub": String(40), "S5Sub": String(40),
   "FillBucket": Integer default 0,
-  "ProgressText": String(120), "ProgressBucket": Integer default 0, "ShowProgress": Boolean default false,
-  "EtaLabel": String(20), "EtaCountdown": String(10), "EtaClock": String(10), "ShowEta": Boolean default false,
+  "ProgressText": String(120), "ProgressBucket": Integer default 0, "ShouldShowProgress": Boolean default false,
+  "EtaLabel": String(20), "EtaCountdown": String(10), "EtaClock": String(10), "ShouldShowEta": Boolean default false,
   "DistanceText": String(20),
-  "CourierText": String(80), "CourierStatus": String(40), "ShowCourier": Boolean default false,
+  "CourierText": String(80), "CourierStatus": String(40), "ShouldShowCourier": Boolean default false,
   "MapMode": String(10), "CourierBucket": Integer default 0, "MapHelper": String(120), "IsDelivery": Boolean default true,
   "BannerKind": String(20), "BannerTitle": String(80), "BannerText": String(300), "RefundLine": String(160),
-  "CanRollback": Boolean default false, "RollbackMsg": String(120), "ShowRollback": Boolean default false,
+  "CanRollback": Boolean default false, "RollbackMsg": String(120), "ShouldShowRollback": Boolean default false,
   "CanRetry": Boolean default false, "IsFinal": Boolean default false,
   "PayState": String(12), "AttemptText": String(40), "AmountText": String(20), "MethodLabel": String(60), "FailureText": String(200),
   "TxnText": String(60), "QueueText": String(80), "OvenSummary": String(120), "TrackingUrl": String(300),

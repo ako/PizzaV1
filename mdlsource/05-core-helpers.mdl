@@ -114,9 +114,9 @@ end;
  *
  * @param $Message Toast text (never technical details)
  * @param $Level Toast level
- * @param $ShowCartAction Offer "View manifest"
+ * @param $ShouldShowCartAction Offer "View manifest"
  */
-create or modify microflow Shop.SUB_Toast ($Message: String, $Level: Enumeration(Shop.ToastLevel), $ShowCartAction: Boolean)
+create or modify microflow Shop.SUB_Toast ($Message: String, $Level: Enumeration(Shop.ToastLevel), $ShouldShowCartAction: Boolean)
 folder 'Core'
 begin
   declare $Now DateTime = [%CurrentDateTime%];
@@ -133,7 +133,7 @@ begin
     $Oldest = head $Existing;
     delete $Oldest;
   end if;
-  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShowCartAction = $ShowCartAction, Shop.Toast_Owner = [%CurrentUser%]) commit without events refresh;
+  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShouldShowCartAction = $ShouldShowCartAction, Shop.Toast_Owner = [%CurrentUser%]) commit without events refresh;
 end;
 
 /**

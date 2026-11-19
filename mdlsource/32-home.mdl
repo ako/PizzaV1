@@ -56,7 +56,7 @@ begin
     set $Vulns = 'found ' + toString($SoldOutCount) + ' sold-out modules';
   end if;
   change $View (DeployedToday = $DoneCount, PxPer = $Per, PxLit = $Lit, ScaleText = if $Per = 1 then '1 px = 1 order' else '1 px = ' + toString($Per) + ' orders',
-    AvgText = $AvgText, HasAvg = $Timed > 0, Busy = $Busy, Slots = round($Slots), LoadPct = $Pct, Heavy = $Pct >= 85,
+    AvgText = $AvgText, HasAvg = $Timed > 0, Busy = $Busy, Slots = round($Slots), LoadPct = $Pct, IsHeavy = $Pct >= 85,
     CouriersOn = $OnDutyCount, CouriersTotal = $CourierTotal,
     TermModules = 'added ' + toString($PublishedCount) + ' modules from 4 registries in 2s', TermVulns = $Vulns);
 end;
@@ -169,10 +169,10 @@ create or modify snippet Shop.SNIP_FeaturedCard (Params: ($Product: Shop.Product
       container pBadges (Class: 'row badges') {
         dynamictext bVegan (Content: '<Vegan />', Class: 'chip tag-badge', Visible: $Product/IsVegan)
         dynamictext bVeg (Content: '<Vegetarian />', Class: 'chip tag-badge', Visible: $Product/IsVegetarian and not($Product/IsVegan))
-        dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $Product/BadgeClassic)
-        dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $Product/BadgeBestSeller)
-        dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $Product/BadgeNew)
-        dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $Product/BadgeChefPick)
+        dynamictext bClassic (Content: '<Classic />', Class: 'chip', Visible: $Product/HasBadgeClassic)
+        dynamictext bBest (Content: '<BestSeller />', Class: 'chip tag-badge', Visible: $Product/HasBadgeBestSeller)
+        dynamictext bNew (Content: '<NewRelease />', Class: 'chip tag-new', Visible: $Product/HasBadgeNew)
+        dynamictext bChef (Content: '<ChefPick />', Class: 'chip tag-chef', Visible: $Product/HasBadgeChefPick)
         container bSpice (Class: 'chip tag-spice', Visible: $Product/SpiceLabel != '') {
           dynamictext bSpiceIcon (Content: 'local_fire_department', Class: 'ms sm')
           dynamictext bSpiceTxt (Content: '{1}', ContentParams: ({1} = $Product/SpiceLabel))
@@ -375,7 +375,7 @@ create or modify page Shop.Home (
           container kpi3H (Class: 'h') {
             dynamictext kpi3Icon (Content: 'local_fire_department', Class: 'ms')
             dynamictext kpi3L (Content: 'KITCHEN_LOAD', Class: 'lbl')
-            dynamictext kpi3Heavy (Content: 'HEAVY', Class: 'chip tag-spice heavy', Visible: $currentObject/Heavy)
+            dynamictext kpi3Heavy (Content: 'HEAVY', Class: 'chip tag-spice heavy', Visible: $currentObject/IsHeavy)
           }
           container kpi3V (Class: 'v') {
             dynamictext kpi3Val (Content: '{1}/{2}', ContentParams: ({1} = Busy, {2} = Slots))

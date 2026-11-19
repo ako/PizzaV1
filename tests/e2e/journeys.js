@@ -10,7 +10,9 @@ const shot = (page, name) => page.screenshot({ path: path.join(OUT, `journey-${n
 const text = async (page, sel) => (await page.locator(sel).first().innerText()).replace(/\s+/g, ' ').trim();
 
 async function addFromMenu(page, product) {
-  await page.locator('.pcard', { hasText: product }).locator('.btn-primary').first().click();
+  const card = page.locator('.pcard', { hasText: product });
+  await card.first().waitFor({ state: 'visible', timeout: 30000 });   // cold start: the list renders late
+  await card.locator('.btn-primary').first().click();
   await page.waitForTimeout(1200);
 }
 
@@ -36,7 +38,8 @@ async function fillDelivery(page) {
       await addFromMenu(page, 'The Root Pizza');
       await addFromMenu(page, 'Binary BBQ');
       expectEqual(await text(page, '.app-header-dv .count-bubble'), '2', 'cart badge');
-      await page.locator('.main-nav .nav-checkout').click(); await page.waitForTimeout(3000);
+      await page.locator('.main-nav .nav-checkout').click();
+      await page.locator('.mx-name-tA1 input').waitFor({ state: 'visible', timeout: 30000 });
       await fillDelivery(page);
       expectEqual((await text(page, '.co-right .sum-total')).match(/\$[\d,.]+$/)[0], '$47.24', 'checkout total');
       await shot(page, 'checkout');
