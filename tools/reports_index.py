@@ -186,8 +186,8 @@ cards = [
      'Status is derived from each requirement’s anchors in the model, never ticked off by hand.'),
     ('tests.html', 'Tests and coverage', f'{tests_total} microflow tests, {j_total} browser journeys, measured microflow reach per module.', cov_svg,
      'Reach = microflows entered by a test (call graph) or a journey (runtime spans).'),
-    ('performance.html', 'Performance', 'Per-step flame charts, top microflows, SQL statements and Postgres plans (auto_explain).', perf_svg,
-     'Median browser time of 5 warm runs per step. “Place order and pay” includes the simulated gateway’s deliberate delay.'),
+    ('../perf/report.html', 'Performance under load', 'Two journeys on 400,000 orders, before and after the fixes: findings grouped by improvement, flame-chart pairs, statements.', perf_svg,
+     'Median browser time of 5 warm runs per step, after the fixes. The built-in rendering of the same data is in performance.html.'),
     ('quality.html', 'Quality score', 'Scored best-practice report: every lint finding by category.', quality_svg,
      'Scores fall 10 per error, 3 per warning and 1 per info, per category.'),
 ]

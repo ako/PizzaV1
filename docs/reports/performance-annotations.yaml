@@ -1,18 +1,22 @@
-title: GitPizza performance
-summary: "One guest walk (home -> menu -> configure -> cart -> checkout -> pay -> tracking), 6 runs per step with run 0 as warm-up, against a fresh demo reset with the simulation running. auto_explain was on for the measurement only (restored afterwards). Every guest-facing step answers in well under a second of server time; 'place order and pay' is dominated by the simulated payment gateway's deliberate processing delay (SIM-01), not by app work."
+title: GitPizza performance under load
+summary: "Two guest journeys (order a pizza, find a past order) on a volume seed of 400,000 orders (~10M rows, docs/perf/tools/seed.sql), 6 runs per step with run 0 as warm-up, before and after the fixes; pg_stat_statements and auto_explain on for the runs only (restored afterwards). This page is mxcli's built-in rendering: its server time counts every span in a step's window, including the simulator's 1.5 s background clock. The report with guest-only figures, findings and flame-chart pairs is docs/perf/report.html."
 items:
-  "step:Guest orders a pizza / 8 place order and pay": {note: "includes the simulated gateway's processing time (lite-configuration: payment processing seconds) and the 2 s payment-sheet poll"}
-  "step:Guest orders a pizza / 5 add to cart": {note: "~550 queries: the line and cart recalculation walk options, recipe and allergens per line (see candidates); bounded by 30 items per cart"}
-  "step:Guest orders a pizza / 3 open configurator": {note: "~300 queries: DS_Config_Choices builds one tile per option; bounded by ~30 options per pizza"}
-  "candidate:Shop.DS_Config_Choices": {status: accepted, note: "loops over the options of one pizza (~30): bounded"}
-  "candidate:Shop.SUB_Line_Recalculate": {status: accepted, note: "loops over the chosen options and recipe of one line: bounded"}
-  "candidate:Shop.SUB_Cart_Recalculate": {status: accepted, note: "loops over cart lines, max 30 items per cart (BR-CART-03)"}
+  "step:Guest orders a pizza / 8 place order and pay": {note: "two plateaus (3.8 / 5.8 s): the simulated gateway's 3 s plus waiting for the next simulator tick and the 2 s payment-sheet poll"}
+  "step:Guest orders a pizza / 9 open tracking": {note: "two plateaus, following the payment step; not a regression"}
+  "step:Guest orders a pizza / 2 open menu": {note: "F4: the per-card recipe data source is gone (toppings stored on the product): 199 -> 75 queries"}
+  "step:Guest orders a pizza / 5 add to cart": {note: "F5: stock decided once, recipe ingredients read in one query: database 259 -> 89 ms; still recalculates every line 2-4 times (F6)"}
+  "step:Guest orders a pizza / 3 open configurator": {note: "F5: 305 -> 195 queries; DS_Config_Choices still runs once per tile group (F6)"}
+  "step:Guest orders a pizza / 1 open home": {note: "F2: index on Order.CompletedAt for the KPIs: 63 -> 5 ms per call"}
+  "candidate:Shop.DS_Config_Choices": {status: accepted, note: "loops over the options of one pizza (~30); stock now decided in one query"}
+  "candidate:Shop.SUB_Line_Recalculate": {status: accepted, note: "loops over the chosen options and recipe of one line; recipe ingredients now in one query"}
+  "candidate:Shop.SUB_Cart_Recalculate": {status: accepted, note: "loops over cart lines, max 30 items per cart (BR-CART-03); see F6"}
   "candidate:Shop.SUB_Order_Place": {status: accepted, note: "snapshot of the cart lines once per order (max 30)"}
-  "candidate:Shop.SUB_Product_Recalculate": {status: accepted, note: "runs at reset / catalog change only, not per request"}
-  "candidate:Simulation.SIM_Kitchen": {status: accepted, note: "background: orders in the kitchen (a handful); settings read once since the earlier fix"}
+  "candidate:Shop.SUB_Product_Recalculate": {status: accepted, note: "runs at start and reset only, not per request"}
+  "candidate:Simulation.SIM_Kitchen": {status: accepted, note: "background: orders in the kitchen (a handful)"}
   "candidate:Simulation.SIM_Couriers": {status: accepted, note: "background simulation over 5 couriers"}
-  "candidate:Simulation.SUB_Oven_FirstFree": {status: accepted, note: "background simulation over 3 ovens"}
+  "candidate:Simulation.SUB_Oven_FirstFree": {status: accepted, note: "background simulation over 2 ovens"}
   "candidate:Simulation.SUB_Toast_Broadcast": {status: accepted, note: "runs once per demo reset"}
 recommendations:
-  - "Cache the per-option tiles of the configurator (or build them in one retrieve) to cut ~300 queries per open."
-  - "Before real volume, give the simulation clock its own cadence instead of a 1.5 s self-requeueing task, or switch it off outside demos."
+  - "F6: recalculate only the changed cart line on add, and build all configurator tile groups in one data source."
+  - "F7: compute the home KPIs with a view entity (OQL COUNT/AVG) instead of loading the day's orders."
+  - "Keep housekeeping batched (F1): any job that deletes by age must bound its batch and continue on the next run."

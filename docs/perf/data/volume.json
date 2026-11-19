@@ -1,0 +1,5 @@
+{"seeded": "2026-11-19", "script": "docs/perf/tools/seed.sql",
+ "rows": [["Orders (guest, finished, over 365 days)", 400059], ["Order lines", 1000149], ["Order log lines", 3200860], ["Status changes", 2400385],
+          ["Payment attempts", 440000], ["Session grants (OrderAccess)", 400000], ["Abandoned carts", 150000], ["Cart lines", 300000],
+          ["Expired toasts", 200000], ["Lookup attempts", 50000], ["Simulation events (last 24 h)", 2279], ["Housekeeping backlog for F1 (backlog.sql)", 797810]],
+ "note": "Counts as printed by seed.sql and backlog.sql (orders and lines include the 59 demo orders). About 1,100 orders a day; every order guest-placed and finished."}

@@ -1,0 +1,15 @@
+{
+ "source": "runtime log .mxcli/runtime.log and pg_stat_activity during the first volume run, 2026-11-19 (UTC); committed model before the fix",
+ "backlogEvents": 800089,
+ "blockedFrom": "16:03:00",
+ "abortedAt": "16:13:02",
+ "blockedMinutes": 10,
+ "observations": [
+  "16:03:00 the first simulator tick after start runs housekeeping: it loads every simulation event older than 24 h (800,089) and deletes them in its own transaction",
+  "pg_stat_activity: that transaction 'idle in transaction' for minutes, holding the core$storesettings row lock it took to number a spawned order (MX-1060)",
+  "a guest's 'Execute Order --force' waited on that lock (UPDATE core$storesettings SET nextordernumber, wait event Lock/transactionid); the browser step timed out after 30 s in every run",
+  "16:04 to 16:13 the watchdog logged 'Simulation clock restarted by watchdog' every minute; no tick completed",
+  "16:13:02 'ConnectionBus: Transaction … aborted due to timeout': everything rolled back, including LastHousekeepingAt, so the next tick started the same delete again"
+ ],
+ "after": {"source": "docs/perf/data/drain-spans.jsonl.gz: 57 ticks while the same 800,000-event backlog drained", "housekeepingMedianMs": 28, "housekeepingMaxMs": 76, "tickMedianMs": 75, "tickMaxMs": 171, "eventsPerTick": 1000, "ordersPerTick": 50}
+}
