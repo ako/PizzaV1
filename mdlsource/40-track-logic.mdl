@@ -1,0 +1,479 @@
+mdl 1;
+-- Order view for SCR-07 payment sheet, SCR-08 confirmation, SCR-09 tracking and
+-- the home build panel (EP-06, EP-07), plus the guest actions on an order.
+
+/** Public base URL of the app, used in the personal tracking link (US-110 AC5). Set per environment. */
+create or modify constant Shop."AppUrl" ( Type: String, DefaultValue: 'http://localhost:8080/', ExposedToClient: false );
+
+/**
+ * Fills a track view from the order on the server (US-121..US-137, US-102..US-110,
+ * US-024): status badge, 5-stage stepper with times, bake/queue progress, ETA
+ * (order-lifecycle 7.3), courier and map state, banners, refund line, which
+ * guest actions are allowed (BR-ORD-08), and the payment sheet state.
+ *
+ * @param $View The track view (bound to its order)
+ */
+create or modify microflow Shop.SUB_Track_Fill ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Now DateTime = [%CurrentDateTime%];
+  declare $St Enumeration(Shop.OrderStatus) = $O/OrderStatus;
+  declare $Delivery Boolean = $O/OrderType = Shop.OrderType.DELIVERY;
+  declare $Plain String = '';
+  declare $Cls String = 'st-queued';
+  case $St
+    when PAYMENT_PENDING then
+      set $Plain = 'Awaiting payment';
+      set $Cls = 'st-staged';
+    when PAYMENT_FAILED then
+      set $Plain = 'Payment failed';
+      set $Cls = 'st-failed';
+    when QUEUED then
+      set $Plain = 'Order received';
+      set $Cls = 'st-queued';
+    when BAKING then
+      set $Plain = 'In the oven';
+      set $Cls = 'st-baking';
+    when QA_CHECK then
+      set $Plain = 'Quality check & packing';
+      set $Cls = 'st-qa';
+    when READY_FOR_DISPATCH then
+      set $Plain = 'Waiting for courier';
+      set $Cls = 'st-dispatch';
+    when READY_FOR_PICKUP then
+      set $Plain = 'Ready for pickup';
+      set $Cls = 'st-dispatch';
+    when OUT_FOR_DELIVERY then
+      set $Plain = 'On the way';
+      set $Cls = 'st-dispatch';
+    when DELIVERED then
+      set $Plain = 'Delivered';
+      set $Cls = 'st-deployed';
+    when PICKED_UP then
+      set $Plain = 'Picked up';
+      set $Cls = 'st-deployed';
+    when CANCELLED then
+      set $Plain = 'Cancelled';
+      set $Cls = 'st-failed';
+    when (empty) then
+      set $Plain = '';
+  end case;
+  -- stage reached: 0 none … 5 complete
+  declare $Reached Integer = 0;
+  if $O/QueuedAt != empty then
+    set $Reached = 1;
+  end if;
+  if $O/BakingStartedAt != empty then
+    set $Reached = 2;
+  end if;
+  if $O/QaStartedAt != empty then
+    set $Reached = 3;
+  end if;
+  if $O/ReadyAt != empty then
+    set $Reached = 4;
+  end if;
+  if $St = Shop.OrderStatus.DELIVERED or $St = Shop.OrderStatus.PICKED_UP then
+    set $Reached = 6;
+  end if;
+  if $St = Shop.OrderStatus.PAYMENT_PENDING or $St = Shop.OrderStatus.PAYMENT_FAILED then
+    set $Reached = 0;
+  end if;
+  declare $Final Boolean = $St = Shop.OrderStatus.DELIVERED or $St = Shop.OrderStatus.PICKED_UP or $St = Shop.OrderStatus.CANCELLED;
+  declare $Cancelled Boolean = $St = Shop.OrderStatus.CANCELLED;
+  -- timer progress of the running state
+  $P = call microflow Shop.SUB_Order_Progress(TheOrder = $O);
+  $Base = call microflow Shop.SUB_Order_TimerBase(TheOrder = $O);
+  $Eff = call microflow Shop.SUB_Eff(Base = max($Base, 1));
+  declare $Remaining Integer = max(0, round((1 - min($P, 1)) * $Eff));
+  $EQueue = call microflow Shop.SUB_Eff(Base = $Sim/QueueWait);
+  $EBake = call microflow Shop.SUB_Eff(Base = $Sim/Bake);
+  $EQa = call microflow Shop.SUB_Eff(Base = $Sim/Qa);
+  $ETo = call microflow Shop.SUB_Eff(Base = $Sim/CourierToStore);
+  $EHand = call microflow Shop.SUB_Eff(Base = $Sim/Handover);
+  $ETrip = call microflow Shop.SUB_Eff(Base = round($Sim/TravelBase + $Sim/TravelPerMile * $O/DistanceMiles));
+  declare $ToReady Integer = 0;
+  if $St = Shop.OrderStatus.PAYMENT_PENDING or $St = Shop.OrderStatus.PAYMENT_FAILED then
+    set $ToReady = $EQueue + $EBake + $EQa;
+  end if;
+  if $St = Shop.OrderStatus.QUEUED then
+    set $ToReady = $Remaining + $EBake + $EQa;
+  end if;
+  if $St = Shop.OrderStatus.BAKING then
+    set $ToReady = $Remaining + $EQa;
+  end if;
+  if $St = Shop.OrderStatus.QA_CHECK then
+    set $ToReady = $Remaining;
+  end if;
+  retrieve $Courier from $O/Shop.Order_Courier;
+  declare $CourierPart Integer = $ETo;
+  if $Courier != empty then
+    if $Courier/CourierStatus = Shop.CourierStatus.TO_STORE then
+      $CP = call microflow Shop.SUB_Timer_Progress(Progress = $Courier/TripProgress, AnchorAt = $Courier/TripAnchorAt, BaseSeconds = max($Courier/TripSeconds, 1));
+      set $CourierPart = max(0, round((1 - min($CP, 1)) * $ETo));
+    end if;
+    if $Courier/CourierStatus = Shop.CourierStatus.AT_STORE then
+      set $CourierPart = 0;
+    end if;
+  end if;
+  declare $ToDone Integer = $ToReady + $CourierPart + $EHand + $ETrip;
+  if $St = Shop.OrderStatus.OUT_FOR_DELIVERY then
+    set $ToDone = round($ETrip * (100 - $O/RouteProgressPercent) div 100);
+  end if;
+  if not($Delivery) then
+    set $ToDone = $ToReady;
+  end if;
+  $Countdown = call microflow Shop.SUB_MmSs(Seconds = $ToDone);
+  declare $EtaAt DateTime = addSeconds($Now, $ToDone);
+  -- progress line
+  retrieve $Oven from $O/Shop.Order_Oven;
+  declare $Progress String = '';
+  declare $Bucket Integer = 0;
+  if $St = Shop.OrderStatus.BAKING then
+    declare $Pct Integer = min(100, floor($P * 100));
+    set $Progress = if $P >= 1 then 'Coming out of the oven' else 'Baking in ' + (if $Oven = empty then 'the oven' else $Oven/DisplayName) + ' · ' + toString($Pct) + '%';
+    set $Bucket = round($Pct div 5);
+  end if;
+  declare $QueueText String = '';
+  if $St = Shop.OrderStatus.QUEUED then
+    retrieve $Ahead from Shop.Order where [OrderStatus = 'QUEUED' and QueuedAt < $O/QueuedAt];
+    $AheadCount = count $Ahead;
+    set $QueueText = 'Queue position ' + toString($AheadCount + 1) + ' · baking starts in about ' + toString(max(1, $Remaining)) + ' s';
+    set $Progress = $QueueText;
+    set $Bucket = round(min($P, 1) * 20);
+  end if;
+  if $St = Shop.OrderStatus.QA_CHECK then
+    set $Progress = 'Quality check & packing · ' + toString(min(100, floor($P * 100))) + '%';
+    set $Bucket = round(min($P, 1) * 20);
+  end if;
+  -- courier and map
+  declare $CourierText String = '';
+  declare $CourierStatus String = '';
+  declare $MapMode String = 'STANDBY';
+  declare $MapHelper String = '';
+  declare $CourierBucket Integer = 0;
+  if $Courier != empty then
+    set $CourierText = $Courier/NodeHandle + ' · ' + getKey($Courier/Vehicle);
+    set $CourierStatus = if $Courier/CourierStatus = Shop.CourierStatus.TO_STORE then 'On the way to the store' else if $Courier/CourierStatus = Shop.CourierStatus.AT_STORE then 'At the store' else if $Courier/CourierStatus = Shop.CourierStatus.DELIVERING then 'Courier on the way' else 'Delivered';
+  end if;
+  if $St = Shop.OrderStatus.OUT_FOR_DELIVERY then
+    set $MapMode = 'LIVE';
+    set $CourierBucket = round($O/RouteProgressPercent div 5);
+  else
+    if $St = Shop.OrderStatus.DELIVERED then
+      set $MapMode = 'DONE';
+      set $CourierBucket = 20;
+    else
+      set $MapHelper = 'The live map starts when the courier picks up your order.';
+    end if;
+  end if;
+  -- banners
+  declare $BannerKind String = 'none';
+  declare $BannerTitle String = '';
+  declare $BannerText String = '';
+  declare $Refund String = '';
+  retrieve $LastAttempt from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $O] sort by AttemptNumber desc first;
+  retrieve $Refunded from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $O and AttemptStatus = 'REFUNDED'] first;
+  declare $FailText String = '';
+  if $LastAttempt != empty and $LastAttempt/FailureCode != empty then
+    set $FailText = getCaption($LastAttempt/FailureCode);
+  end if;
+  $TotalText = call microflow Shop.SUB_Money(Amount = $O/Total);
+  if $St = Shop.OrderStatus.PAYMENT_PENDING then
+    set $BannerKind = 'pending';
+    set $BannerTitle = 'Processing payment…';
+    set $BannerText = 'The simulated gateway is deciding your payment.';
+  end if;
+  if $St = Shop.OrderStatus.PAYMENT_FAILED then
+    set $BannerKind = 'failed';
+    set $BannerTitle = 'PAYMENT_FAILED // ' + $FailText;
+    set $BannerText = 'Retry the payment or cancel the order.';
+  end if;
+  if $Cancelled then
+    set $BannerKind = 'cancelled';
+    set $BannerTitle = 'ROLLED_BACK // This order was rolled back.';
+    set $BannerText = if $O/CancelledBy = Shop.ActorType.GUEST then 'You cancelled it.' else if $O/CancelledBy = Shop.ActorType.SYSTEM then 'Payment was not completed.' else 'The store cancelled it. Reason: ' + (if $O/CancelReason = empty then '' else $O/CancelReason);
+    if $Refunded != empty then
+      set $Refund = 'Refund of ' + $TotalText + ' issued to ' + $O/PaymentLabel + ' (simulated).';
+    end if;
+  end if;
+  if $St = Shop.OrderStatus.DELIVERED then
+    set $BannerKind = 'done';
+    set $BannerTitle = 'DEPLOYED // Delivered at ' + formatDateTime($O/CompletedAt, 'HH:mm') + '. Enjoy your build!';
+  end if;
+  if $St = Shop.OrderStatus.PICKED_UP then
+    set $BannerKind = 'done';
+    set $BannerTitle = 'PULLED // Picked up at ' + formatDateTime($O/CompletedAt, 'HH:mm') + '. Enjoy your build!';
+  end if;
+  if $St = Shop.OrderStatus.READY_FOR_PICKUP then
+    set $BannerKind = 'ready';
+    set $BannerTitle = 'Ready at the counter: 2140 Folsom Street';
+    set $BannerText = 'Show your commit hash #' + $O/CommitHash + ' at the counter.';
+  end if;
+  -- rollback rule (BR-ORD-08)
+  declare $RollbackMsg String = '';
+  if $St = Shop.OrderStatus.BAKING or $St = Shop.OrderStatus.QA_CHECK then
+    set $RollbackMsg = 'ROLLBACK REJECTED — your order is already in the oven.';
+  end if;
+  if $St = Shop.OrderStatus.READY_FOR_DISPATCH or $St = Shop.OrderStatus.READY_FOR_PICKUP then
+    set $RollbackMsg = 'ROLLBACK REJECTED — your order is already packed.';
+  end if;
+  if $St = Shop.OrderStatus.OUT_FOR_DELIVERY then
+    set $RollbackMsg = 'ROLLBACK REJECTED — your order is already on its way.';
+  end if;
+  -- payment sheet
+  declare $PayState String = 'success';
+  if $St = Shop.OrderStatus.PAYMENT_PENDING then
+    set $PayState = 'processing';
+  end if;
+  if $St = Shop.OrderStatus.PAYMENT_FAILED then
+    set $PayState = 'failed';
+  end if;
+  if $Cancelled and $O/Payment != Shop.PaymentStatus.REFUNDED then
+    set $PayState = 'rolledback';
+  end if;
+  declare $AttemptNo Integer = if $LastAttempt = empty then 1 else $LastAttempt/AttemptNumber;
+  declare $FailureLine String = '';
+  if $St = Shop.OrderStatus.PAYMENT_FAILED then
+    set $FailureLine = $FailText + '. Attempt ' + toString($AttemptNo) + ' of 3 failed. Choose a payment method and retry, or cancel the order. Your manifest is unchanged.';
+  end if;
+  -- oven summary
+  retrieve $Online from Shop.Oven where [OvenStatus = 'ONLINE'];
+  retrieve $AllOvens from Shop.Oven;
+  $OnlineCount = count $Online;
+  $OvenCount = count $AllOvens;
+  $Slots = sum $Online by CapacityOrders;
+  retrieve $Baking from Shop.Order where [OrderStatus = 'BAKING'];
+  $BakingCount = count $Baking;
+  declare $Load Integer = if $Slots > 0 then round($BakingCount * 100 div $Slots) else 0;
+  -- stage helper texts
+  declare $S1 String = if $Reached > 1 then 'done' else if $Reached = 1 and not($Cancelled) then 'current' else if $Reached = 1 then 'done' else 'todo';
+  declare $S2 String = if $Reached > 2 then 'done' else if $Reached = 2 and not($Cancelled) then 'current' else if $Reached = 2 then 'done' else 'todo';
+  declare $S3 String = if $Reached > 3 then 'done' else if $Reached = 3 and not($Cancelled) then 'current' else if $Reached = 3 then 'done' else 'todo';
+  declare $S4 String = if $Reached > 4 then 'done' else if $Reached = 4 and not($Cancelled) then 'current' else if $Reached = 4 then 'done' else 'todo';
+  declare $S5 String = if $Reached > 5 then 'done' else 'todo';
+  declare $S4Sub String = if $Delivery then (if $St = Shop.OrderStatus.OUT_FOR_DELIVERY then 'Courier on the way' else 'Waiting for courier') else 'Ready for pickup';
+  $SubT = call microflow Shop.SUB_Money(Amount = $O/Subtotal);
+  $DiscT = call microflow Shop.SUB_Money(Amount = 0 - $O/DiscountAmount);
+  $FeeT = call microflow Shop.SUB_Money(Amount = $O/DeliveryFee);
+  $TaxT = call microflow Shop.SUB_Money(Amount = $O/TaxAmount);
+  $TipT = call microflow Shop.SUB_Money(Amount = $O/TipAmount);
+  change $View (SubText = $SubT, DiscText = $DiscT, TaxText = $TaxT, TipText = $TipT, TipLabel = if $O/Tip = empty then '0%' else getCaption($O/Tip), NumberText = 'MX-' + toString($O/OrderNumber),
+    FeeText = $FeeT + (if $O/FeeWaivedBy = Shop.FeeWaiver.THRESHOLD then ' (free from $40.00)' else if $O/FeeWaivedBy = Shop.FeeWaiver.COUPON then ' (FREE_DISPATCH)' else ''));
+  change $View (StatusDev = getCaption($St), StatusPlain = $Plain, StatusCls = $Cls, PlacedText = formatDateTime($O/PlacedAt, 'yyyy-MM-dd HH:mm'), TypeText = getKey($O/OrderType),
+    S1 = $S1, S2 = $S2, S3 = $S3, S4 = $S4, S5 = $S5,
+    T1 = if $O/QueuedAt = empty then '' else formatDateTime($O/QueuedAt, 'HH:mm'), T2 = if $O/BakingStartedAt = empty then '' else formatDateTime($O/BakingStartedAt, 'HH:mm'),
+    T3 = if $O/QaStartedAt = empty then '' else formatDateTime($O/QaStartedAt, 'HH:mm'), T4 = if $O/ReadyAt = empty then '' else formatDateTime($O/ReadyAt, 'HH:mm'),
+    T5 = if $O/CompletedAt = empty then '' else formatDateTime($O/CompletedAt, 'HH:mm'),
+    S4Label = if $Delivery then 'DISPATCH' else 'READY_TO_PULL', S5Label = if $Delivery then 'DEPLOYED' else 'PULLED', S4Sub = $S4Sub, S5Sub = if $Delivery then 'Delivered' else 'Picked up',
+    FillBucket = min(4, max(0, $Reached - 1)),
+    ProgressText = $Progress, ProgressBucket = $Bucket, ShowProgress = $Progress != '',
+    EtaLabel = if $Delivery then 'ESTIMATED_ETA' else 'READY_AT', EtaCountdown = $Countdown, EtaClock = '~' + formatDateTime($EtaAt, 'HH:mm'), ShowEta = not($Final),
+    DistanceText = formatDecimal(round($O/DistanceMiles * (100 - $O/RouteProgressPercent) div 100, 1), '0.0') + ' mi',
+    CourierText = $CourierText, CourierStatus = $CourierStatus, ShowCourier = $Courier != empty and $Delivery,
+    MapMode = $MapMode, CourierBucket = $CourierBucket, MapHelper = $MapHelper, IsDelivery = $Delivery,
+    BannerKind = $BannerKind, BannerTitle = $BannerTitle, BannerText = $BannerText, RefundLine = $Refund,
+    CanRollback = $St = Shop.OrderStatus.QUEUED, RollbackMsg = $RollbackMsg, ShowRollback = not($Final) and $St != Shop.OrderStatus.PAYMENT_PENDING and $St != Shop.OrderStatus.PAYMENT_FAILED,
+    CanRetry = $St = Shop.OrderStatus.PAYMENT_FAILED, IsFinal = $Final,
+    PayState = $PayState, AttemptText = 'Attempt ' + toString($AttemptNo) + ' of 3', AmountText = $TotalText, MethodLabel = $O/PaymentLabel, FailureText = $FailureLine,
+    TxnText = if $LastAttempt = empty or $LastAttempt/TransactionId = empty then '' else $LastAttempt/TransactionId,
+    QueueText = $QueueText, OvenSummary = toString($OnlineCount) + '/' + toString($OvenCount) + ' ovens online · thermal load ' + toString($Load) + '%',
+    TrackingUrl = @Shop.AppUrl + 'p/track/' + $O/TrackingToken, TotalText = $TotalText,
+    AddressText = if $Delivery then $O/AddressLine1 + (if $O/AddressLine2 = empty or $O/AddressLine2 = '' then '' else ', ' + $O/AddressLine2) + ', ' + $O/City + ', ' + $O/StateCode + ' ' + $O/Zip else 'Git Pizza MxDev — Mission Kitchen, 2140 Folsom Street, San Francisco, CA 94110',
+    PickupText = 'Git Pizza MxDev — Mission Kitchen · 2140 Folsom Street, San Francisco, CA 94110 · (415) 555-0142',
+    ReadyText = 'READY_AT · ~' + formatDateTime($EtaAt, 'HH:mm'));
+end;
+
+/**
+ * Data source: the track view of an order the guest holds a token for.
+ *
+ * @param $TheOrder The order (entity access already restricts it to token holders)
+ * @returns A filled track view
+ */
+create or modify microflow Shop.DS_Track ($TheOrder: Shop.Order)
+returns Shop.TrackView as $View
+folder 'Tracking'
+begin
+  $View = create Shop.TrackView (Shop.TrackView_Order = $TheOrder);
+  call microflow Shop.SUB_Track_Fill(View = $View);
+  return $View;
+end;
+grant execute on microflow Shop.DS_Track to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Live refresh of an order screen (BR-ORD-20: within 5 s).
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Track_Refresh ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  retrieve $Fresh from Shop.Order where [id = $O] first;
+  if $Fresh != empty then
+    commit $Fresh without events refresh;
+  end if;
+  call microflow Shop.SUB_Track_Fill(View = $View);
+end;
+grant execute on microflow Shop.ACT_Track_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Payment sheet refresh: when the payment succeeded, close the sheet and
+ * show the confirmation (US-103 AC5).
+ *
+ * @param $View The track view of the order being paid
+ */
+create or modify microflow Shop.ACT_Pay_Refresh ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.ACT_Track_Refresh(View = $View);
+  retrieve $O from $View/Shop.TrackView_Order;
+  if $O/OrderStatus != Shop.OrderStatus.PAYMENT_PENDING and $O/OrderStatus != Shop.OrderStatus.PAYMENT_FAILED and $O/OrderStatus != Shop.OrderStatus.CANCELLED then
+    close page;
+    show page Shop.Confirmation(TheOrder = $O);
+  end if;
+end;
+grant execute on microflow Shop.ACT_Pay_Refresh to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Retry payment with the method and test card chosen on the sheet (US-106,
+ * US-113). A second tab gets a notice instead of a second attempt (US-285).
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Pay_Retry ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  $Form = call microflow Shop.SUB_Checkout_Current();
+  $Ok = call microflow Shop.SUB_Payment_Retry(TheOrder = $O, Method = $Form/Method, Card = $Form/Card, Actor = Shop.ActorType.GUEST, ActorName = 'guest');
+  if not($Ok) then
+    call microflow Shop.SUB_Toast(Message = 'A payment is already being processed for this order.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  end if;
+  call microflow Shop.SUB_Track_Fill(View = $View);
+end;
+grant execute on microflow Shop.ACT_Pay_Retry to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Cancel an order after a failed payment (US-108, T-06): no refund (nothing
+ * was paid), the cart is unchanged.
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Pay_Cancel ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  if $O/OrderStatus != Shop.OrderStatus.PAYMENT_FAILED then
+    call microflow Shop.SUB_Toast(Message = 'This order changed in the meantime. The page now shows its latest state.', Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    call microflow Shop.SUB_Track_Fill(View = $View);
+    return;
+  end if;
+  call microflow Shop.SUB_Order_Cancel(TheOrder = $O, Actor = Shop.ActorType.GUEST, ActorName = 'guest', Reason = 'Cancelled by customer before payment', LogMessage = 'Order rolled back by customer before payment.');
+  call microflow Shop.SUB_Toast(Message = 'Order MX-' + toString($O/OrderNumber) + ' cancelled. Nothing was charged.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+  call microflow Shop.SUB_Track_Fill(View = $View);
+end;
+grant execute on microflow Shop.ACT_Pay_Cancel to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Cancel from the payment sheet: closes it and opens the cart (US-108 AC2).
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Pay_CancelAndCart ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  call microflow Shop.ACT_Pay_Cancel(View = $View);
+  close page;
+  call microflow Shop.ACT_Nav_Cart();
+end;
+grant execute on microflow Shop.ACT_Pay_CancelAndCart to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Rollback order while QUEUED (US-129, T-09): cancelled by the guest with a
+ * full simulated refund. Rejected when baking already started (US-129 AC4,
+ * BR-ORD-08) or another tab cancelled first (US-285).
+ *
+ * @param $View The track view
+ */
+create or modify microflow Shop.ACT_Track_Rollback ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  retrieve $Fresh from Shop.Order where [id = $O] first;
+  if $Fresh/OrderStatus = Shop.OrderStatus.CANCELLED then
+    call microflow Shop.SUB_Toast(Message = 'This order is already ROLLED_BACK.', Level = Shop.ToastLevel.INFO, ShowCartAction = false);
+    call microflow Shop.SUB_Track_Fill(View = $View);
+    return;
+  end if;
+  if $Fresh/OrderStatus != Shop.OrderStatus.QUEUED then
+    call microflow Shop.SUB_Toast(Message = 'ROLLBACK REJECTED — your order is already in the oven.', Level = Shop.ToastLevel.ERROR, ShowCartAction = false);
+    call microflow Shop.SUB_Track_Fill(View = $View);
+    return;
+  end if;
+  call microflow Shop.SUB_Order_Cancel(TheOrder = $Fresh, Actor = Shop.ActorType.GUEST, ActorName = 'guest', Reason = 'Cancelled by customer', LogMessage = 'Order rolled back by customer. Refund issued.');
+  call microflow Shop.SUB_Track_Fill(View = $View);
+end;
+grant execute on microflow Shop.ACT_Track_Rollback to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens tracking of an order (from confirmation, home, sidebar).
+ *
+ * @param $TheOrder The order
+ */
+create or modify microflow Shop.ACT_Track_OpenView ($View: Shop.TrackView)
+folder 'Tracking'
+begin
+  retrieve $O from $View/Shop.TrackView_Order;
+  show page Shop.Tracking(TheOrder = $O);
+end;
+grant execute on microflow Shop.ACT_Track_OpenView to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens tracking of an order (from confirmation and other pages).
+ *
+ * @param $TheOrder The order
+ */
+create or modify microflow Shop.ACT_Track_Open ($TheOrder: Shop.Order)
+folder 'Tracking'
+begin
+  close page;
+  show page Shop.Tracking(TheOrder = $TheOrder);
+end;
+grant execute on microflow Shop.ACT_Track_Open to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Opens the receipt of an order (US-128, US-166).
+ *
+ * @param $TheOrder The order
+ */
+create or modify microflow Shop.ACT_Receipt_Open ($TheOrder: Shop.Order)
+folder 'Tracking'
+begin
+  close page;
+  show page Shop.Receipt(TheOrder = $TheOrder);
+end;
+grant execute on microflow Shop.ACT_Receipt_Open to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Personal tracking link (US-121 AC2, NFR-11): /p/track/{Token}. A valid
+ * token of a guest order grants this browser session access and opens
+ * SCR-09; an unknown or altered token shows the invalid-link state (US-134).
+ * Simulated orders are never reachable (LITE-SEC-05).
+ *
+ * @param $Token The tracking token from the link
+ */
+create or modify microflow Shop.ACT_Track_Token ($Token: String)
+url 'track/{Token}'
+folder 'Tracking'
+begin
+  retrieve $O from Shop.Order where [TrackingToken = $Token and Source = 'GUEST'] first;
+  if $O = empty or length($Token) < 20 then
+    show page Shop.TrackInvalid();
+    return;
+  end if;
+  call microflow Shop.SUB_Order_Grant(TheOrder = $O);
+  show page Shop.Tracking(TheOrder = $O);
+end;
+grant execute on microflow Shop.ACT_Track_Token to Shop.Guest, Shop.Administrator; -- auto
