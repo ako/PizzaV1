@@ -98,6 +98,15 @@ begin
       end if;
     end if;
   end if;
+  $SubText = call microflow Shop.SUB_Money(Amount = $Subtotal);
+  $DiscText = call microflow Shop.SUB_Money(Amount = 0 - $Price/Discount);
+  $TotText = call microflow Shop.SUB_Money(Amount = $Subtotal - $Price/Discount);
+  declare $Badge String = 'NOT_APPLIED';
+  if $Price/CouponState = Shop.CouponState.APPLIED then
+    set $Badge = 'VALIDATED (' + (if $Price/Discount > 0 then $DiscText else 'FREE_DISPATCH') + ')';
+  end if;
+  change $Cart (SubtotalText = $SubText, DiscountText = $DiscText, TotalText = $TotText, CouponCode = if $Coupon = empty then '' else $Coupon/Code, CouponBadge = $Badge,
+    FreeUnlocked = $Subtotal >= $Store/FreeDeliveryThreshold, CountText = toString($Count) + (if $Count = 1 then ' DEPENDENCY INSTALLED' else ' DEPENDENCIES INSTALLED'));
   change $Cart (ItemCount = $Count, Subtotal = $Subtotal, CouponState = $Price/CouponState, CouponMessage = $Price/CouponMessage,
     DiscountPreview = $Price/Discount, Total = $Subtotal - $Price/Discount, HasUnavailable = $Unavailable, OnlyDrinks = $Count > 0 and not($NonDrink),
     FreeDeliveryHint = $Free, MinimumHint = $Minimum, CheckoutBlock = $Block, UpdatedAt = [%CurrentDateTime%]);

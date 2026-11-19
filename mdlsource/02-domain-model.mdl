@@ -247,7 +247,14 @@ create or modify persistent entity Shop."Cart" (
   "CheckoutBlock": String(200),
   "FreeDeliveryHint": String(200),
   "MinimumHint": String(200),
-  "Total": Decimal default 0
+  "Total": Decimal default 0,
+  "SubtotalText": String(20),
+  "DiscountText": String(20),
+  "TotalText": String(20),
+  "CouponCode": String(30),
+  "CouponBadge": String(60),
+  "FreeUnlocked": Boolean default false,
+  "CountText": String(40)
 );
 
 /** One configured item in the cart. Prices and flags are derived by SUB_Line_Recalculate. */

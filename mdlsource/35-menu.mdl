@@ -22,7 +22,7 @@ begin
   $ND = count $Drinks;
   $NE = count $Desserts;
   $All = count $Published;
-  $Shown = call microflow Shop.DS_Menu_Products(View = $View);
+  $Shown = call microflow Shop.DS_Menu_Products(Cart = $Cart);
   $NShown = count $Shown;
   declare $Query String = '';
   if $Cart/SearchQuery != empty then
@@ -76,14 +76,13 @@ grant execute on microflow Shop.DS_Menu to Shop.Guest, Shop.Administrator; -- au
  * description, default ingredients; case-insensitive; grouped by category),
  * narrowed by the diet chips. Only PUBLISHED products (BR-MENU, US-025).
  *
- * @param $View The menu view
+ * @param $Cart The guest's cart holding tab, search and filters
  * @returns Products in display order
  */
-create or modify microflow Shop.DS_Menu_Products ($View: Shop.MenuView)
+create or modify microflow Shop.DS_Menu_Products ($Cart: Shop.Cart)
 returns List of Shop.Product as $Result
 folder 'Menu'
 begin
-  retrieve $Cart from $View/Shop.MenuView_Cart;
   declare $Query String = '';
   if $Cart/SearchQuery != empty then
     set $Query = toLowerCase(trim($Cart/SearchQuery));
@@ -393,7 +392,7 @@ create or modify page Shop.Menu (
                 container fVegan (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterVegan then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'vegan')) { dynamictext fVeganT (Content: '--vegan') }
                 container fSpicy (Class: 'chip filter-chip', DynamicClasses: if $currentObject/FilterSpicy then 'on' else '', OnClick: CALL MICROFLOW Shop.ACT_Menu_Filter(View = $dvMenu, Filter = 'spicy')) { dynamictext fSpicyT (Content: '--spicy') }
               }
-              listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(View = $dvMenu), PageSize: 200, Class: 'cards mt-16') {
+              listview lvCards (DataSource: MICROFLOW Shop.DS_Menu_Products(Cart = $currentObject), PageSize: 200, Class: 'cards mt-16') {
                 snippetcall card (Snippet: Shop.SNIP_MenuCard, Params: (Product = $currentObject))
               }
               container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/NoResults) {

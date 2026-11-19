@@ -1,0 +1,174 @@
+mdl 1;
+-- SCR-05 Cart MANIFEST.LOCK (EP-04: US-061..US-073): drawer on desktop/tablet, full page on phone.
+
+/**
+ * Proceed to checkout (US-073): only with an orderable cart.
+ *
+ * @param $Cart The guest's cart
+ */
+create or modify microflow Shop.ACT_Cart_Checkout ($Cart: Shop.Cart)
+folder 'Cart'
+begin
+  call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+  if $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' then
+    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.WARNING, ShowCartAction = false);
+    return;
+  end if;
+  close page;
+  show page Shop.Checkout();
+end;
+grant execute on microflow Shop.ACT_Cart_Checkout to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * git checkout menu from the empty cart (US-062).
+ */
+create or modify microflow Shop.ACT_Cart_ToMenu ()
+folder 'Cart'
+begin
+  close page;
+  call microflow Shop.ACT_Nav_Menu(Category = 'PIZZAS');
+end;
+grant execute on microflow Shop.ACT_Cart_ToMenu to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Edit a pizza line (US-050): closes the drawer and opens the configurator.
+ *
+ * @param $Line The cart line
+ */
+create or modify microflow Shop.ACT_Cart_Edit ($Line: Shop.CartLine)
+folder 'Cart'
+begin
+  close page;
+  call microflow Shop.ACT_Configure_Edit(Line = $Line);
+end;
+grant execute on microflow Shop.ACT_Cart_Edit to Shop.Guest, Shop.Administrator; -- auto
+
+/** SCR-05 MANIFEST.LOCK. */
+create or modify page Shop.Cart_Drawer (
+  Title: 'Cart — Git Pizza MxDev',
+  Layout: Shop.Layout_Modal,
+  Params: ($Cart: Shop.Cart)
+) {
+  dataview dvCart (DataSource: $Cart, Class: 'drawer-dv scr-05') {
+    container drawerHead (Class: 'drawer-head') {
+      container dh (Class: 'between dh-row') {
+        container dhLeft (Class: 'row dh-left') {
+          dynamictext dhIcon (Content: 'inventory_2', Class: 'ms c-green')
+          container dhTitle {
+            dynamictext dhT (Content: '{1}', ContentParams: ({1} = 'MANIFEST.LOCK'), RenderMode: H2, Class: 't-h2 c-primary')
+            dynamictext dhN (Content: '{1}', ContentParams: ({1} = CountText), Class: 't-small', DynamicClasses: if $currentObject/ItemCount > 0 then 'c-green' else 'c-muted')
+          }
+        }
+        actionbutton dhClose (Caption: '[x] SIGINT', Action: CLOSE PAGE, Class: 'btn btn-ghost btn-sm sigint')
+      }
+    }
+    container emptyBody (Class: 'drawer-body empty-body', Visible: $currentObject/ItemCount = 0) {
+      image emptyImg (ImageType: imageUrl, ImageUrl: '/assets/illustrations/empty-cart.png', AlternativeText: '', Class: 'empty-img')
+      dynamictext emptyH (Content: '{1} is empty', ContentParams: ({1} = 'MANIFEST.LOCK'), RenderMode: H3, Class: 't-h3 mt-16')
+      dynamictext emptyP (Content: '// No dependencies installed. Import a module from the menu to start a build.', Class: 't-small c-muted cm')
+    }
+    container emptyFoot (Class: 'drawer-foot', Visible: $currentObject/ItemCount = 0) {
+      container emptyCta (Class: 'btn btn-primary btn-block btn-lg', OnClick: CALL MICROFLOW Shop.ACT_Cart_ToMenu) {
+        dynamictext ecI (Content: 'terminal', Class: 'ms')
+        dynamictext ecT (Content: 'git checkout menu')
+      }
+    }
+    container body (Class: 'drawer-body', Visible: $currentObject/ItemCount > 0) {
+      listview lvLines (DataSource: DATABASE Shop.CartLine WHERE [Shop.CartLine_Cart = $currentObject and IsDraft = false] SORT BY CreatedAt ASC, PageSize: 200, Class: 'lines-lv') {
+        container cline (Class: 'cline', DynamicClasses: if $currentObject/IsAvailable then '' else 'unavail') {
+          container clTop (Class: 'cline-top') {
+            container clImg (Class: 'img-frame') {
+              image clPic (ImageType: imageUrl, ImageUrl: '/assets/products/{1}', ImageUrlParams: ({1} = Shop.CartLine_Product/ImageFile), AlternativeText: '', Class: 'pimg')
+            }
+            container clInfo {
+              dynamictext clName (Content: '{1}', ContentParams: ({1} = Shop.CartLine_Product/Name), Class: 'nm')
+              dynamictext clPath (Content: '{1}', ContentParams: ({1} = Shop.CartLine_Product/ModulePath), Class: 't-micro c-muted')
+              dynamictext clMods (Content: '{1}{2}', ContentParams: ({1} = SizeText, {2} = if $currentObject/ConfigText = '' or $currentObject/ConfigText = empty then '' else ', ' + $currentObject/ConfigText), Class: 'mods')
+              dynamictext clAll (Content: 'Allergens: {1}', ContentParams: ({1} = AllergenText), Class: 't-micro c-muted mt-8')
+              container clErr (Class: 'field-error mt-8', Visible: not($currentObject/IsAvailable)) {
+                dynamictext clErrI (Content: 'error', Class: 'ms sm')
+                dynamictext clErrT (Content: '{1}', ContentParams: ({1} = UnavailableReason))
+              }
+            }
+            container clAmt (Class: 'amt') {
+              dynamictext clTotal (Content: '{1}', ContentParams: ({1} = LineTotalText), Class: 'price')
+              dynamictext clUnit (Content: '{1}/unit', ContentParams: ({1} = UnitPriceText), Class: 't-micro c-muted')
+            }
+          }
+          container clBottom (Class: 'between') {
+            container stepper (Class: 'stepper') {
+              dynamictext stLbl (Content: 'instances:', Class: 'lbl')
+              actionbutton stMinus (Caption: '−', Action: CALL MICROFLOW Shop.ACT_Line_Decrease(Line = $currentObject), Class: 'st-btn', DynamicClasses: if $currentObject/Quantity <= 1 then 'is-disabled' else '')
+              dynamictext stVal (Content: '{1}', ContentParams: ({1} = Quantity), Class: 'val')
+              actionbutton stPlus (Caption: '+', Action: CALL MICROFLOW Shop.ACT_Line_Increase(Line = $currentObject), Class: 'st-btn', DynamicClasses: if $currentObject/Quantity >= 10 or $dvCart/ItemCount >= 30 then 'is-disabled' else '')
+            }
+            container clActions (Class: 'row cl-actions') {
+              container clEdit (Class: 'btn btn-ghost btn-sm', OnClick: CALL MICROFLOW Shop.ACT_Cart_Edit(Line = $currentObject), Visible: $currentObject/SizeKey != 'REGULAR') {
+                dynamictext clEditI (Content: 'tune', Class: 'ms sm')
+                dynamictext clEditT (Content: 'edit')
+              }
+              container clRm (Class: 'btn btn-ghost btn-sm', OnClick: CALL MICROFLOW Shop.ACT_Line_Remove(Line = $currentObject)) {
+                dynamictext clRmI (Content: 'delete', Class: 'ms sm')
+                dynamictext clRmT (Content: 'rm')
+              }
+            }
+          }
+        }
+      }
+      container coupon (Class: 'coupon') {
+        dynamictext cpLabel (Content: '$ coupon --apply', Class: 'field-label cp-label')
+        container cpApplied (Visible: $currentObject/CouponCode != empty and $currentObject/CouponCode != '') {
+          container cpRow (Class: 'between') {
+            dynamictext cpCode (Content: '{1}', ContentParams: ({1} = CouponCode), Class: 'c-primary cp-code')
+            dynamictext cpBadge (Content: '{1}', ContentParams: ({1} = CouponBadge), Class: 'badge', DynamicClasses: if $currentObject/CouponState = Shop.CouponState.APPLIED then 'st-deployed' else 'st-staged')
+          }
+          dynamictext cpMsg (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/CouponState = Shop.CouponState.APPLIED then '>> ' else '', {2} = CouponMessage), Class: 't-small mt-8', DynamicClasses: if $currentObject/CouponState = Shop.CouponState.APPLIED then 'c-green' else 'c-warn')
+          dynamictext cpNote (Content: 'The code stays attached and applies automatically once the condition is met. It does not block your order.', Class: 't-micro c-muted mt-8', Visible: $currentObject/CouponState != Shop.CouponState.APPLIED)
+          actionbutton cpRm (Caption: 'rm coupon', Action: CALL MICROFLOW Shop.ACT_Coupon_Remove(Cart = $currentObject), Class: 'btn btn-ghost btn-sm mt-8')
+        }
+        container cpForm (Class: 'cp-form', Visible: $currentObject/CouponCode = empty or $currentObject/CouponCode = '') {
+          textbox cpInput (Attribute: CouponInput, Placeholder: 'CODE', OnEnterKeyPress: CALL MICROFLOW Shop.ACT_Coupon_Apply(Cart = $currentObject), Class: 'cp-input')
+          actionbutton cpApply (Caption: 'APPLY', Action: CALL MICROFLOW Shop.ACT_Coupon_Apply(Cart = $currentObject), Class: 'btn btn-secondary')
+        }
+        container cpErr (Class: 'field-error mt-8', Visible: $currentObject/CouponFieldError != empty and $currentObject/CouponFieldError != '') {
+          dynamictext cpErrI (Content: 'error', Class: 'ms sm')
+          dynamictext cpErrT (Content: '{1}', ContentParams: ({1} = CouponFieldError))
+        }
+      }
+      container drinks (Class: 'field-error', Visible: $currentObject/OnlyDrinks) {
+        dynamictext drI (Content: 'error', Class: 'ms sm')
+        dynamictext drT (Content: 'Add at least one pizza, side or dessert. Drinks-only orders can''t be deployed.')
+      }
+      container minHint (Class: 'notice warn', Visible: $currentObject/MinimumHint != empty and $currentObject/MinimumHint != '') {
+        dynamictext mhI (Content: 'warning', Class: 'ms')
+        dynamictext mhT (Content: '{1}', ContentParams: ({1} = MinimumHint))
+      }
+      container freeHint (Class: 'notice', DynamicClasses: if $currentObject/FreeUnlocked then 'success' else 'info', Visible: $currentObject/MinimumHint = empty or $currentObject/MinimumHint = '') {
+        dynamictext fhI (Content: 'local_shipping', Class: 'ms')
+        dynamictext fhT (Content: '{1}', ContentParams: ({1} = FreeDeliveryHint))
+      }
+      container clear (Class: 'btn btn-danger btn-sm clear-btn', OnClick: CALL MICROFLOW Shop.ACT_Cart_Clear(Cart = $currentObject) with (Confirmation: 'rm -rf MANIFEST.LOCK? This removes all items and the coupon from your cart.', ProceedCaption: 'rm -rf', CancelCaption: 'Cancel')) {
+        dynamictext clI (Content: 'delete_sweep', Class: 'ms sm')
+        dynamictext clT (Content: 'CLEAR (rm -rf)')
+      }
+    }
+    container foot (Class: 'drawer-foot', Visible: $currentObject/ItemCount > 0) {
+      container fSub (Class: 'sum-row') { dynamictext fSubL (Content: 'Dependencies Subtotal', Class: 'lbl') dynamictext fSubV (Content: '{1}', ContentParams: ({1} = SubtotalText)) }
+      container fDisc (Class: 'sum-row discount', Visible: $currentObject/DiscountPreview > 0) { dynamictext fDiscL (Content: 'Coupon Subsidy ({1})', ContentParams: ({1} = CouponCode), Class: 'lbl') dynamictext fDiscV (Content: '{1}', ContentParams: ({1} = DiscountText)) }
+      container fFee (Class: 'sum-row') { dynamictext fFeeL (Content: 'Pipeline Transit Fee', Class: 'lbl') dynamictext fFeeV (Content: 'calculated at checkout', Class: 'c-muted') }
+      container fTax (Class: 'sum-row') { dynamictext fTaxL (Content: 'SALES_TAX', Class: 'lbl') dynamictext fTaxV (Content: 'calculated at checkout', Class: 'c-muted') }
+      container fTotal (Class: 'sum-total') {
+        container fTotalL {
+          dynamictext fTotalT (Content: 'EXEC_TOTAL_OUTPUT', Class: 't-label')
+          dynamictext fTotalS (Content: 'before delivery fee, tax and tip', Class: 't-micro c-muted mt-8')
+        }
+        dynamictext fTotalV (Content: '{1}', ContentParams: ({1} = TotalText), Class: 't-price-lg c-primary')
+      }
+      container proceed (Class: 'btn btn-primary btn-block btn-lg mt-16', DynamicClasses: if $currentObject/CheckoutBlock != empty and $currentObject/CheckoutBlock != '' then 'is-disabled' else '', OnClick: CALL MICROFLOW Shop.ACT_Cart_Checkout(Cart = $currentObject)) {
+        dynamictext prI (Content: 'rocket_launch', Class: 'ms')
+        dynamictext prT (Content: 'PROCEED TO ./checkout.yml')
+      }
+      dynamictext prBlock (Content: '{1}', ContentParams: ({1} = CheckoutBlock), Class: 't-micro c-warn mt-8', Visible: $currentObject/HasUnavailable)
+    }
+  }
+};
