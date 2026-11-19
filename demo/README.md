@@ -27,7 +27,7 @@ node demo/assemble.js order desktop        # clock map, contact sheet, voice + b
   against the error dialog (`take.js`).
 - `assemble.js` maps the recorder's clock to the video's (offset + scale, measured at
   about 1.008–1.012), writes `out/<film>-<device>/contact.png` (one frame per beat, to
-  check by looking), places each voice line at its beat, adds a −30 LUFS pad bed,
+  check by looking), places each voice line at its beat over silence (the synthesized pad bed read as hum and is opt-in with `DEMO_BED=1`),
   and reports the voice density.
 - Desktop takes use CSS `zoom` 1.333, so the app lays out at the prototype's 1440 px
   in a sharp 1920×1080 frame. Phone takes use a real iPhone user agent

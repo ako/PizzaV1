@@ -85,13 +85,19 @@ beatNames.forEach((name, i) => {
   const at = Math.round((vt(mark.t) + 0.35) * 1000);   // the caption rises in ~0.35 s
   placed.push(`[${i + 1}:a]adelay=${at}|${at}[v${i}]`);
 });
-// The bed: a warm A-major pad, slow swell, no percussion, mastered to -30 LUFS.
-const bedSrc = `aevalsrc='0.2*sin(2*PI*110*t)+0.15*sin(2*PI*164.81*t)+0.12*sin(2*PI*220*t)+0.08*sin(2*PI*277.18*t)` +
-  `|0.2*sin(2*PI*110.4*t)+0.15*sin(2*PI*165.2*t)+0.12*sin(2*PI*220.6*t)+0.08*sin(2*PI*277.6*t)':s=48000:d=${videoDur.toFixed(2)}`;
+// The bed is OPT-IN (DEMO_BED=1): the synthesized pad (sustained sine chord + slow
+// tremolo) read as background hum, so by default the voice sits on silence. Input 0 is
+// either the bed or a silent track; either way it sets the soundtrack's full length.
 const bed = path.join(OUT, 'bed.wav');
-run('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'lavfi', '-i', bedSrc, '-af',
-  `tremolo=f=0.1:d=0.35,lowpass=f=900,afade=t=in:d=3,afade=t=out:st=${Math.max(0, videoDur - 4).toFixed(2)}:d=4,loudnorm=I=-30:TP=-3:LRA=7`,
-  '-ar', '48000', '-ac', '2', bed]);
+if (process.env.DEMO_BED === '1') {
+  const bedSrc = `aevalsrc='0.2*sin(2*PI*110*t)+0.15*sin(2*PI*164.81*t)+0.12*sin(2*PI*220*t)+0.08*sin(2*PI*277.18*t)` +
+    `|0.2*sin(2*PI*110.4*t)+0.15*sin(2*PI*165.2*t)+0.12*sin(2*PI*220.6*t)+0.08*sin(2*PI*277.6*t)':s=48000:d=${videoDur.toFixed(2)}`;
+  run('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'lavfi', '-i', bedSrc, '-af',
+    `tremolo=f=0.1:d=0.35,lowpass=f=900,afade=t=in:d=3,afade=t=out:st=${Math.max(0, videoDur - 4).toFixed(2)}:d=4,loudnorm=I=-30:TP=-3:LRA=7`,
+    '-ar', '48000', '-ac', '2', bed]);
+} else {
+  run('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'lavfi', '-i', `anullsrc=r=48000:cl=stereo`, '-t', videoDur.toFixed(2), bed]);
+}
 const mix = `${placed.join(';')};${beatNames.map((_, i) => `[v${i}]`).join('')}[0:a]amix=inputs=${beatNames.length + 1}:normalize=0:duration=longest[a]`;
 const audio = path.join(OUT, 'sound.wav');
 run('ffmpeg', ['-y', '-loglevel', 'error', '-i', bed, ...audioIn, '-filter_complex', mix, '-map', '[a]', '-t', videoDur.toFixed(2), audio]);
