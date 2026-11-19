@@ -1,0 +1,59 @@
+/**
+ * Formatting helpers: money (BR-PRICE-14), timers and phone numbers (BR-DATA-06).
+ */
+
+/**
+ * @test Money with thousands separator and two decimals
+ * @expect $T = '$1,234.50'
+ */
+$T = call microflow Shop.SUB_Money(Amount = 1234.5);
+/
+
+/**
+ * @test Negative money uses a true minus sign
+ * @expect $T = '−$3.22'
+ */
+$T = call microflow Shop.SUB_Money(Amount = -3.22);
+/
+
+/**
+ * @test Timer text mm:ss
+ * @expect $T = '01:30'
+ */
+$T = call microflow Shop.SUB_MmSs(Seconds = 90);
+/
+
+/**
+ * @test Negative seconds clamp to 00:00
+ * @expect $T = '00:00'
+ */
+$T = call microflow Shop.SUB_MmSs(Seconds = -5);
+/
+
+/**
+ * @test Phone with spaces is normalised
+ * @expect $P = '(415) 555-0199'
+ */
+$P = call microflow Shop.SUB_FormatPhone(Raw = '415 555 0199');
+/
+
+/**
+ * @test Phone with country code +1 is normalised
+ * @expect $P = '(415) 555-0199'
+ */
+$P = call microflow Shop.SUB_FormatPhone(Raw = '+1 (415) 555-0199');
+/
+
+/**
+ * @test Phone with letters is rejected
+ * @expect $P = ''
+ */
+$P = call microflow Shop.SUB_FormatPhone(Raw = '415-CALL-NOW');
+/
+
+/**
+ * @test Phone with too few digits is rejected
+ * @expect $P = ''
+ */
+$P = call microflow Shop.SUB_FormatPhone(Raw = '555 0199');
+/

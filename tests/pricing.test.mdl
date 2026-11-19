@@ -1,0 +1,185 @@
+/**
+ * Pricing rules BR-PRICE-05 … BR-PRICE-13 against the calculated examples of
+ * 12-acceptance/test-scenarios.md section 2.3 (store settings and coupons come
+ * from the seed that the after-startup microflow loads into the empty test database).
+ */
+
+/**
+ * @test Example A: delivery over the free-delivery threshold, tip 15 %
+ * @expect $R/Total = 68.62
+ * @expect $R/DeliveryFee = 0
+ * @expect $R/Tax = 4.79
+ * @expect $R/TipAmount = 8.33
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test Example A20: tip 20 %
+ * @expect $R/Total = 71.39
+ * @expect $R/TipAmount = 11.10
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.TWENTY);
+/
+
+/**
+ * @test Example A0: no tip
+ * @expect $R/Total = 60.29
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+/
+
+/**
+ * @test Example B: GITHUB_STUDENT 15 % on delivery under the threshold
+ * @expect $R/Discount = 3.22
+ * @expect $R/DeliveryFee = 3.99
+ * @expect $R/Tax = 1.58
+ * @expect $R/TipAmount = 2.74
+ * @expect $R/Total = 26.58
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 21.49, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test Example D: pickup has no fee and no tip
+ * @expect $R/Total = 20.36
+ * @expect $R/Tax = 1.62
+ * @expect $R/TipAmount = 0
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.74, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P1: percentage discount rounded half-up (4.425 to 4.43)
+ * @expect $R/Discount = 4.43
+ * @expect $R/Total = 34.98
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 29.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P2: FREE_DISPATCH waives the delivery fee
+ * @expect $R/DeliveryFee = 0
+ * @expect $R/FeeWaivedBy = Shop.FeeWaiver.COUPON
+ * @expect $R/Total = 22.85
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'FREE_DISPATCH'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.49, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P2-pickup: a delivery-only coupon is not applied to pickup
+ * @expect $R/CouponState = Shop.CouponState.NOT_APPLIED
+ * @expect $R/CouponMessage = 'FREE_DISPATCH is valid for delivery orders only'
+ * @expect $R/Total = 20.08
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'FREE_DISPATCH'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.49, OrderType = Shop.OrderType.PICKUP, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P3: below the coupon minimum names the missing amount
+ * @expect $R/CouponState = Shop.CouponState.NOT_APPLIED
+ * @expect $R/CouponMessage = 'Add $3.01 more to use GITHUB_STUDENT'
+ * @expect $R/Discount = 0
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 16.99, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P4: percentage discount capped at the coupon maximum
+ * @expect $R/Discount = 10.00
+ * @expect $R/Tax = 7.42
+ * @expect $R/TipAmount = 12.90
+ * @expect $R/Total = 106.32
+ */
+retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 96.00, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+/
+
+/**
+ * @test P10: pickup under the delivery minimum
+ * @expect $R/Tax = 1.27
+ * @expect $R/Total = 16.01
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 14.74, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+/
+
+/**
+ * @test P11: tax rounded half-up (1.7457 to 1.75)
+ * @expect $R/Total = 21.99
+ */
+retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Shop.SUB_Price_Compute(Subtotal = 20.24, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+/
+
+/**
+ * @test P6: vegan cheese surcharge, allergens GLUTEN and TREE_NUTS, vegan
+ * @expect $L/UnitPrice = 16.49
+ * @expect $L/IsVegetarian = true
+ * @expect $L/IsVegan = true
+ * @expect count($A) = 2
+ */
+retrieve $P from Shop.Product where [Name = 'The Root Pizza'] first;
+$L = create Shop.CartLine (Quantity = 1);
+call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
+retrieve $Cheese from Shop.Option where [Code = 'CH-03'] first;
+change $L (Shop.CartLine_Cheese = $Cheese);
+call microflow Shop.SUB_Line_Recalculate(Line = $L);
+retrieve $A from $L/Shop.CartLine_Allergen;
+/
+
+/**
+ * @test P7: stuffed crust makes a vegetarian pizza non-vegan
+ * @expect $L/UnitPrice = 19.49
+ * @expect $L/IsVegetarian = true
+ * @expect $L/IsVegan = false
+ * @expect count($A) = 3
+ */
+retrieve $P from Shop.Product where [Name = 'Low-Mem Garden'] first;
+$L = create Shop.CartLine (Quantity = 1);
+call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
+retrieve $Crust from Shop.Option where [Code = 'CR-04'] first;
+change $L (Shop.CartLine_Crust = $Crust);
+call microflow Shop.SUB_Line_Recalculate(Line = $L);
+retrieve $A from $L/Shop.CartLine_Allergen;
+/
+
+/**
+ * @test P8: gluten-free crust on Small removes GLUTEN
+ * @expect $L/UnitPrice = 14.99
+ * @expect count($A) = 1
+ */
+retrieve $P from Shop.Product where [Name = 'The Root Pizza'] first;
+$L = create Shop.CartLine (Quantity = 1);
+call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
+retrieve $Small from Shop.ProductSize where [Shop.ProductSize_Product = $P and Size = 'SMALL'] first;
+retrieve $Crust from Shop.Option where [Code = 'CR-05'] first;
+change $L (Shop.CartLine_Size = $Small, Shop.CartLine_Crust = $Crust);
+call microflow Shop.SUB_Line_Recalculate(Line = $L);
+retrieve $A from $L/Shop.CartLine_Allergen;
+/
+
+/**
+ * @test Example C: Boolean Pepperoni Large fully configured
+ * @expect $L/UnitPrice = 30.99
+ */
+retrieve $P from Shop.Product where [Name = 'Boolean Pepperoni'] first;
+$L = create Shop.CartLine (Quantity = 1);
+call microflow Shop.SUB_Line_ApplyDefaults(Line = $L, Product = $P);
+retrieve $Large from Shop.ProductSize where [Shop.ProductSize_Product = $P and Size = 'LARGE'] first;
+retrieve $Crust from Shop.Option where [Code = 'CR-04'] first;
+retrieve $Cheese from Shop.Option where [Code = 'CH-02'] first;
+retrieve $Extras from Shop.Option where [Code = 'EX-11' or Code = 'EX-21'];
+retrieve $Removed from Shop.Ingredient where [Code = 'oregano'];
+change $L (Shop.CartLine_Size = $Large, Shop.CartLine_Crust = $Crust, Shop.CartLine_Cheese = $Cheese, Shop.CartLine_Extra = $Extras, Shop.CartLine_Removed = $Removed);
+call microflow Shop.SUB_Line_Recalculate(Line = $L);
+/
