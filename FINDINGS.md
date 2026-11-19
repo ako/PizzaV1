@@ -17,3 +17,23 @@ Mendix 11.16.1 · mxcli nightly-20261118-9d764483c · MDL scripts `mdl 1`.
 - Baseline (blank app, 2026-11-19): `lint` 0 errors / 1 warning / 9 info. `report` overall
   98/100 — Security 96, Quality 94, Architecture 100, Performance 100, Naming 99,
   Design 100, Other 99. Boot: `run --local --watch --detach` → HTTP 200 on :8080.
+
+## 2026-11-19 — foundation
+
+- `create or modify microflow` refuses structural changes inside a loop body
+  (MDL-V1-REBUILD) to protect Studio Pro drawings. For MDL-only flows the
+  documented drop + create rebuild is automated in `tools/mdl_rebuild.py`;
+  `tools/apply_all.sh` applies every script and falls back to it.
+- Regenerating `mdlsource/` without re-applying it left the model on the old
+  seed (couriers finished trips instantly). `tools/apply_all.sh` now exists so
+  the model is always rebuilt from the scripts; a second pass must show 0 changes.
+- `mxcli check` catches a lot before mxbuild: duplicate variable names across
+  loop bodies (MDL063), `return` inside a loop (MDL062), association `= empty`
+  in XPath (MDL047, use `not(Assoc/Entity)`).
+- Scheduled events cannot run more often than once a minute, but SIM-09 needs a
+  tick at least every 2 s. The clock is a queued microflow that sleeps 1.5 s
+  (`Shop.JA_Sleep`, the only custom Java), ticks, and re-queues itself; a
+  minutely scheduled event restarts the chain if it ever stops. Verified in the
+  runtime log: seed timers resolve within 1–2 s of their due time.
+- Optimistic locking is enabled so a guest action and a simulator transition on
+  the same order cannot both win (lifecycle section 1, US-285).
