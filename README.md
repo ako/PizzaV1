@@ -20,3 +20,14 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 - **Theme:** `console` (dark), restyled with the prototype's design tokens.
 - **Mendix:** 11.16.1. MDL scripts are `mdl 1` (each starts with `mdl 1;`) and live
   in `mdlsource/`.
+
+## Journey videos
+
+Narrated walkthroughs of the two main guest journeys, recorded against the running
+app. Each is about 100 seconds long, filmed at desktop size (1920×1080) and on an
+iPhone profile. The scripts that rebuild them are in [`demo/`](demo/README.md).
+
+| Journey | Desktop | Phone |
+|---|---|---|
+| **Sam orders a pizza**: home → menu → configure Inferno Payload (Large + cherry tomatoes, $25.00) → cart → checkout → pay → confirmation → live tracking | [order-desktop.mp4](demo/films/order-desktop.mp4) | [order-phone.mp4](demo/films/order-phone.mp4) |
+| **A declined card**: Binary BBQ → checkout with the test card the bank declines → retry with Apple Pay → confirmation → order log showing both attempts | [declined-desktop.mp4](demo/films/declined-desktop.mp4) | [declined-phone.mp4](demo/films/declined-phone.mp4) |
