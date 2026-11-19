@@ -1,7 +1,7 @@
 {
  "lane": "m2",
  "name": "M2 — Pay and track",
- "collectedAt": "2026-11-19 15:41 UTC",
+ "collectedAt": "2026-11-19 18:54 UTC",
  "prd": {
   "epics": [
    {
@@ -83,13 +83,13 @@
    "Fulfilment.Order",
    "Shop.TrackView",
    "Fulfilment.OrderAccess",
-   "Fulfilment.PaymentAttempt",
    "Shop.CheckoutForm",
+   "Fulfilment.PaymentAttempt",
    "Fulfilment.SimulationEvent",
    "Shop.LookupForm",
    "Fulfilment.OrderLine",
-   "Simulation.SimCustomer",
-   "Fulfilment.DeliveryZone"
+   "Shop.LookupAttempt",
+   "Fulfilment.Oven"
   ],
   "jsActions": [
    "Shop.JS_CopyText",
@@ -118,6 +118,10 @@
     "status": "passed"
    },
    {
+    "name": "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)",
+    "status": "passed"
+   },
+   {
     "name": "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
     "status": "passed"
    },
@@ -127,6 +131,10 @@
    },
    {
     "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   },
+   {
+    "name": "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
     "status": "passed"
    },
    {
@@ -146,7 +154,7 @@
     "status": "passed"
    },
    {
-    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
     "status": "passed"
    },
    {

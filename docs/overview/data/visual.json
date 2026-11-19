@@ -12,7 +12,7 @@
   },
   {
    "id": "SCR-02-menu-d",
-   "mismatch": 2.46,
+   "mismatch": 3.01,
    "budget": 10
   },
   {
@@ -61,5 +61,5 @@
    "budget": 10
   }
  ],
- "measuredAt": "2026-11-19 12:35 UTC"
+ "measuredAt": "2026-11-19 16:38 UTC"
 }

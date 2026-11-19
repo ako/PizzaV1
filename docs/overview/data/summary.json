@@ -1,11 +1,11 @@
 {
- "collectedAt": "2026-11-19 15:41 UTC",
+ "collectedAt": "2026-11-19 18:54 UTC",
  "requirements": 111,
  "built": 109,
  "partial": 2,
  "notBuilt": 0,
  "changed": 0,
- "proven": 100,
+ "proven": 101,
  "milestones": [
   {
    "lane": "m1",
@@ -15,7 +15,7 @@
    "partial": 1,
    "changed": 0,
    "notBuilt": 0,
-   "proven": 58,
+   "proven": 59,
    "epics": [
     "EP-01",
     "EP-02",
@@ -99,13 +99,13 @@
   },
   "score": 47.5,
   "lint": {
-   "total": 245,
+   "total": 246,
    "errors": 2,
    "warnings": 99,
-   "infos": 144
+   "infos": 145
   },
   "tests": "24/24",
-  "journeys": "11/11"
+  "journeys": "13/13"
  },
  "mxcli": "nightly-20261118-9d764483c"
 }

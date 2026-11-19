@@ -1,7 +1,7 @@
 {
  "lane": "lane0",
  "name": "Crosscutting",
- "collectedAt": "2026-11-19 15:41 UTC",
+ "collectedAt": "2026-11-19 18:54 UTC",
  "prd": {
   "items": [
    {
@@ -176,7 +176,7 @@
    }
   ],
   "cycles": 0,
-  "clusters": 10,
+  "clusters": 9,
   "userRoles": [
    "Administrator",
    "Anonymous"
@@ -219,7 +219,7 @@
   "theme": "theme/web + themesource/shop (prototype CSS ported, scoped to .gp-app)",
   "brain": {
    "requirements": 111,
-   "decisions": 22,
+   "decisions": 25,
    "open": 0,
    "anchors": 249,
    "slices": 12
@@ -232,10 +232,10 @@
    "checkedAt": "2026-11-19 14:42 UTC"
   },
   "lint": {
-   "total": 245,
+   "total": 246,
    "errors": 2,
    "warnings": 99,
-   "infos": 144
+   "infos": 145
   },
   "score": 47.5,
   "categories": {
@@ -254,16 +254,16 @@
   "qualityCategory": {
    "name": "Quality",
    "score": 0,
-   "total": 169,
+   "total": 170,
    "errors": 0,
    "warnings": 35,
-   "infos": 134,
+   "infos": 135,
    "topActions": [
     "Remove the container, or give it the content it was meant to hold",
     "Extract logical sections into SUB_ microflows to keep each under 15 activities",
     "Extract logical sections into SUB_ microflows. This improves readability, testability, and reusability.",
-    "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows.",
-    "Replace entity validation rules with a VAL_Allergen microflow for explicit, testable validation"
+    "Replace entity validation rules with a VAL_Allergen microflow for explicit, testable validation",
+    "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows."
    ]
   },
   "topRules": [
@@ -301,20 +301,20 @@
    "failed": 0
   },
   "journeys": {
-   "count": 11,
-   "passed": 11
+   "count": 13,
+   "passed": 13
   },
   "visual": {
    "screens": 12,
    "withinBudget": 12,
    "minMismatch": 0.91,
    "maxMismatch": 9.45,
-   "measuredAt": "2026-11-19 12:35 UTC"
+   "measuredAt": "2026-11-19 16:38 UTC"
   },
   "coverage": {
-   "reached": 121,
-   "nonStartup": 169,
-   "byTests": 10
+   "reached": 128,
+   "nonStartup": 170,
+   "byTests": 11
   },
   "screenshots": [
    {

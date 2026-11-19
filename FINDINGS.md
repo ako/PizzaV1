@@ -375,3 +375,22 @@ Found while writing them:
     because of the read rules on what they take.
 - **Quality:** brain decision 071314 says no quality rule was switched off, but
   `.claude/lint-config.yaml` disables CONV002, which lint files under quality.
+
+## 2026-11-19 — tests for the gaps the reports found
+
+- **J12, tracking link.** One guest places an order and reads the tracking link from the
+  confirmation. A second browser context (a new anonymous session) opens it and sees that
+  order. An altered token shows `DEPLOYMENT_NOT_FOUND` and no order.
+- **J13, cancel after a declined card.** The cancel button on the payment sheet, then
+  "Cancel order" in the dialog. Checks the "cancelled, nothing charged" toast and that the
+  cart still holds the item.
+- **J9, remove a line.** It now adds a second line and removes it with that line's own
+  `rm` button, so US-064 is proven.
+- **The cart's list items are plain `li` elements** (`mx-name-index-N`), not
+  `.mx-listview-item`. Select them with `.mx-window li` plus `hasText`.
+- **Results:** 13/13 journeys pass, twice. Microflows reached went from 121 to 128 of 170.
+  The 7 newly reached are `ACT/SUB_Track_Token`, `ACT/SUB_Pay_Cancel`,
+  `ACT_Pay_CancelAndCart` and `ACT/SUB_Line_Remove`. Stories reached by a test or journey
+  went from 100 to 101.
+- **The tests page's gap guard caught it.** `gen_tests.py` asserts that its gap groups match
+  the data exactly, so it refused to render until the groups were updated.

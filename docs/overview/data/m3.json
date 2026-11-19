@@ -1,7 +1,7 @@
 {
  "lane": "m3",
  "name": "M3 — Simulated kitchen and couriers",
- "collectedAt": "2026-11-19 15:41 UTC",
+ "collectedAt": "2026-11-19 18:54 UTC",
  "prd": {
   "epics": [
    {
@@ -57,6 +57,16 @@
     "@Simulation.SE_ClockWatchdog",
     "@Simulation.SimulationClock"
    ]
+  },
+  {
+   "id": "b327f8",
+   "kind": "decision",
+   "module": "Simulation",
+   "text": "Housekeeping deletes in bounded batches (1,000 events, 50 orders per tick, oldest first) and marks its run done only when a batch comes back short: …",
+   "anchors": [
+    "@Simulation.SIM_Housekeeping",
+    "@Fulfilment.SimulationEvent"
+   ]
   }
  ],
  "model": {
@@ -69,15 +79,15 @@
   "snippets": [],
   "entities": [
    "Fulfilment.Order",
-   "Core.SimulationSettings",
    "Fulfilment.SimulationEvent",
+   "Core.SimulationSettings",
    "Fulfilment.Courier",
    "Fulfilment.Oven",
-   "Fulfilment.OrderLine",
-   "Simulation.SimCustomer",
-   "Fulfilment.DeliveryZone",
    "Catalog.Product",
-   "Shop.CartLine"
+   "Simulation.SimCustomer",
+   "Shop.CartLine",
+   "Fulfilment.DeliveryZone",
+   "Fulfilment.OrderStatusChange"
   ],
   "jsActions": [],
   "nanoflows": [],
@@ -117,7 +127,7 @@
     "status": "passed"
    },
    {
-    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
     "status": "passed"
    },
    {
@@ -126,6 +136,14 @@
    },
    {
     "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   },
+   {
+    "name": "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
+    "status": "passed"
+   },
+   {
+    "name": "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)",
     "status": "passed"
    },
    {

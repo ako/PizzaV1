@@ -1,7 +1,7 @@
 {
  "lane": "m1",
  "name": "M1 — Browse and order",
- "collectedAt": "2026-11-19 15:41 UTC",
+ "collectedAt": "2026-11-19 18:54 UTC",
  "prd": {
   "epics": [
    {
@@ -79,6 +79,16 @@
  },
  "decisions": [
   {
+   "id": "42a525",
+   "kind": "decision",
+   "module": "Fulfilment",
+   "text": "Indexes from the volume test: Order.CompletedAt for the home KPIs, Order(Source, IsOpen, StatusChangedAt) for the traffic generator and housekeeping, …",
+   "anchors": [
+    "@Fulfilment.Order",
+    "@Shop.SUB_Home_Refresh"
+   ]
+  },
+  {
    "id": "e77a06",
    "kind": "decision",
    "module": "Shop",
@@ -124,6 +134,16 @@
    "anchors": [
     "@Shop.Checkout"
    ]
+  },
+  {
+   "id": "da951c",
+   "kind": "decision",
+   "module": "Shop",
+   "text": "The menu card's toppings line is stored on the product (Catalog.Product.CodeToppings) by Shop.SUB_Product_Recalculate, and the catalog's stored card …",
+   "anchors": [
+    "@Shop.SUB_Product_Recalculate",
+    "@Simulation.ASU_Startup"
+   ]
   }
  ],
  "model": {
@@ -164,7 +184,7 @@
    "Core.StoreSettings",
    "Shop.HomeView",
    "Catalog.Option",
-   "Core.Toast"
+   "Catalog.Ingredient"
   ],
   "jsActions": [],
   "nanoflows": [],
@@ -307,7 +327,7 @@
     "status": "passed"
    },
    {
-    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear",
+    "name": "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
     "status": "passed"
    },
    {
@@ -316,6 +336,14 @@
    },
    {
     "name": "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
+    "status": "passed"
+   },
+   {
+    "name": "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
+    "status": "passed"
+   },
+   {
+    "name": "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)",
     "status": "passed"
    },
    {
@@ -351,7 +379,6 @@
    "US-004 DEMO MODE banner",
    "US-007 Storefront footer",
    "US-062 Empty cart state",
-   "US-064 Remove a line (rm)",
    "US-068 Remove or replace the coupon"
   ]
  },
@@ -362,7 +389,7 @@
   "changed": 0,
   "notBuilt": 0,
   "notTraceable": 0,
-  "proven": 58,
+  "proven": 59,
   "gaps": [
    {
     "id": "86ff90",

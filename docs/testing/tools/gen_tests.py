@@ -234,24 +234,19 @@ avg = lambda xs: sum(s['mismatch'] for s in xs) / len(xs)
 
 # ---------------------------------------------------------------- gaps: grouped by hand, every gap exactly once
 GROUPS = [
-    ('G1', 'bad', 'Add a test', 'Cancelling a payment', [
-        'Shop.ACT_Pay_Cancel', 'Shop.ACT_Pay_CancelAndCart', 'Shop.ACT_Pay_ToCart', 'Shop.SUB_Pay_Cancel'],
-     'The payment sheet\'s cancel paths change an order that is already placed: cancel, cancel and back to the cart, back to the cart. J3 covers a '
-     'declined card and a retry, but no journey walks away from a payment. A state change on an order with money attached is exactly what a test is for: '
-     'one journey step (cancel on the payment sheet, then check the order status and that the cart is back) covers all four.'),
-    ('G2', 'bad', 'Add a test', 'Opening an order by its tracking link', [
-        'Shop.ACT_Track_Token', 'Shop.SUB_Track_Token', 'Shop.ACT_Track_OpenView', 'Shop.SUB_Track_OpenView', 'Shop.ACT_Track_RetryOpen'],
-     '<code>ACT_Track_Token</code> is the entry point of the personal tracking link <code>/p/track/{token}</code> (US-121, NFR-11): a valid token of a '
-     'guest order grants the browser session access to that order; an unknown, short or simulated-order token shows the invalid-link page (US-134, '
-     'LITE-SEC-05). The journeys reach tracking only right after paying or through the lookup form, so neither branch has ever run. Access to someone '
-     'else\'s order is the one gap with a security edge: a journey that opens a known token and an altered one would cover it.'),
+    ('G1', 'warn', 'Worth a journey step', 'Back to the cart from the payment sheet', ['Shop.ACT_Pay_ToCart'],
+     'Cancelling after a declined card is now covered by J13 (order cancelled, nothing charged, cart kept), which closed the rest of this group. '
+     'Left is the sheet\'s plain "back to cart", which leaves the order unpaid without cancelling it: one click in J13 before cancelling would cover it.'),
+    ('G2', 'warn', 'Worth a journey step', 'Re-opening a tracked order\'s view', [
+        'Shop.ACT_Track_OpenView', 'Shop.SUB_Track_OpenView', 'Shop.ACT_Track_RetryOpen'],
+     'The tracking link itself is now covered by J12: a second browser opens the order through <code>/p/track/{token}</code> and an altered token '
+     'shows the invalid-link page (US-121, US-134, LITE-SEC-05). Left are the buttons that re-open the view and retry after a failed open.'),
     ('G3', 'warn', 'Worth a journey step', 'Editing what is already in the cart', [
-        'Shop.ACT_Cart_Edit', 'Shop.ACT_Configure_Edit', 'Shop.SUB_Configure_Edit', 'Shop.ACT_Line_Remove', 'Shop.SUB_Line_Remove',
+        'Shop.ACT_Cart_Edit', 'Shop.ACT_Configure_Edit', 'Shop.SUB_Configure_Edit',
         'Shop.ACT_Config_Qty', 'Shop.SUB_Config_Qty', 'Shop.ACT_Config_Back', 'Shop.SUB_Config_Back', 'Shop.ACT_Cart_Checkout', 'Shop.ACT_Cart_ToMenu'],
-     'Re-opening a line in the configurator, the configurator\'s own quantity stepper, removing one line, and the cart\'s checkout and back-to-menu buttons. '
+     'Re-opening a line in the configurator, the configurator\'s own quantity stepper, and the cart\'s checkout and back-to-menu buttons. '
      'The pricing underneath (<code>SUB_Line_Recalculate</code>, <code>SUB_Cart_Recalculate</code>) is covered, so the risk is the wiring, not the sums. '
-     'J9\'s name says "remove", but it changes the quantity and clears the cart: <code>SUB_Line_Remove</code> never runs. Adding "edit line, change size, '
-     'remove it" to J9 would close most of this group.'),
+     'Removing one line is now covered by J9 (US-064). Adding "edit line, change size" to J9 would close most of the rest.'),
     ('G4', 'warn', 'Worth a journey step', 'Removing a coupon and switching to pickup', [
         'Shop.ACT_Coupon_Remove', 'Shop.SUB_Coupon_Remove', 'Shop.ACT_Checkout_Pickup', 'Shop.SUB_Checkout_Pickup'],
      'Both change the total: removing a coupon must restore the discount, and the "Switch to pickup" button (shown when the address is outside the delivery zone) must drop '

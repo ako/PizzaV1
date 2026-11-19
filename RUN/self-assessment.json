@@ -239,7 +239,7 @@
       "id": "US-064",
       "status": "done",
       "where": "SCR-05 Cart",
-      "notes": "No automated test or browser journey covers this story yet."
+      "notes": ""
     },
     {
       "id": "US-065",

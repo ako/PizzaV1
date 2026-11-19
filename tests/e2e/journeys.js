@@ -153,7 +153,7 @@ async function fillDelivery(page) {
     } finally { await leave(g); }
   });
 
-  await test('J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear', async () => {
+  await test('J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear', async () => {
     const g = await guest(browser);
     try {
       const { page } = g;
@@ -165,11 +165,23 @@ async function fillDelivery(page) {
       expect(/\$25\.00/.test(await text(page, '.scr-03')), 'line total $25.00 (Large $22.50 + standard extra $2.50)');
       await page.locator('.scr-03 .mx-name-deploy').click(); await page.waitForTimeout(3000);
       expectEqual(await text(page, '.app-header-dv .count-bubble'), '1', 'cart badge after Build & Deploy');
+      await open(page, '/p/menu', 3000);
+      await addFromMenu(page, 'Binary BBQ');
+      expectEqual(await text(page, '.app-header-dv .count-bubble'), '2', 'cart badge with a second line');
       await page.locator('.app-header-dv .icon-btn').first().click(); await page.waitForTimeout(2000);
-      await page.locator('.mx-window .mx-name-stPlus').first().click(); await page.waitForTimeout(1500);
+      const inferno = page.locator('.mx-window li', { hasText: 'Inferno Payload' });
+      await inferno.locator('.mx-name-stPlus').first().click(); await page.waitForTimeout(1500);
       expect(/\$50\.00/.test(await text(page, '.mx-window')), 'quantity 2 doubles the line ($50.00)');
-      await page.locator('.mx-window .mx-name-stMinus').first().click(); await page.waitForTimeout(1500);
+      await inferno.locator('.mx-name-stMinus').first().click(); await page.waitForTimeout(1500);
       expect(/\$25\.00/.test(await text(page, '.mx-window')), 'back to quantity 1');
+      // US-064: remove one line with its own rm button; the other line stays
+      await page.locator('.mx-window li', { hasText: 'Binary BBQ' }).locator('.mx-name-clRm').first().click(); await page.waitForTimeout(800);
+      const rmConfirm = page.locator('.modal-dialog button, .mx-dialog button', { hasText: /rm|remove|yes|proceed/i });
+      if (await rmConfirm.count()) { await rmConfirm.first().click(); }
+      await page.waitForTimeout(2000);
+      const afterRm = await text(page, '.mx-window');
+      expect(!/Binary BBQ/.test(afterRm) && /Inferno Payload/.test(afterRm), 'removing one line leaves only the other');
+      expectEqual(await text(page, '.app-header-dv .count-bubble'), '1', 'cart badge after removing a line');
       await page.locator('.mx-window .mx-name-clear').click(); await page.waitForTimeout(800);
       const confirm = page.locator('.modal-dialog button, .mx-dialog button', { hasText: /rm -rf/ });
       if (await confirm.count()) { await confirm.first().click(); }
@@ -217,6 +229,57 @@ async function fillDelivery(page) {
       await page.waitForTimeout(3000);
       const head = await text(page, '.scr-09');
       expect(/ROLLED_BACK|CANCELLED|refund/i.test(head), 'order rolled back with refund');
+    } finally { await leave(g); }
+  });
+
+  await test('J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)', async () => {
+    const a = await guest(browser);
+    let link = null; let number = null;
+    try {
+      const { page } = a;
+      await open(page, '/p/menu', 3000);
+      await addFromMenu(page, 'Binary BBQ');
+      await page.locator('.main-nav .nav-checkout').click();
+      await page.locator('.mx-name-tA1 input').waitFor({ state: 'visible', timeout: 30000 });
+      await fillDelivery(page);
+      await page.locator('.mx-name-exec').click();
+      await page.locator('.scr-08').waitFor({ timeout: 30000 }); await page.waitForTimeout(1500);
+      link = (await text(page, '.scr-08 .link-url'));
+      number = (await text(page, '.scr-08')).match(/MX-\d{4}/)[0];
+      expect(/\/p\/track\/[0-9a-f]{20,}$/.test(link), `confirmation shows a tracking link: ${link}`);
+    } finally { await leave(a); }
+    const b = await guest(browser);   // another browser: a new anonymous session without access
+    try {
+      const { page } = b;
+      await open(page, link.replace(/^https?:\/\/[^/]+/, ''), 4000);
+      await page.locator('.scr-09').waitFor({ timeout: 30000 });
+      expect((await text(page, '.scr-09')).includes(number), `the link opens ${number} in a new session`);
+      const altered = link.replace(/.$/, (c) => (c === '0' ? '1' : '0'));
+      await open(page, altered.replace(/^https?:\/\/[^/]+/, ''), 4000);
+      const body = await text(page, 'body');
+      expect(/DEPLOYMENT_NOT_FOUND/.test(body) && !body.includes(number), 'an altered link shows the invalid-link page and no order');
+      expect(!(await page.locator('.mx-dialog-error').count()), 'no platform error dialog');
+    } finally { await leave(b); }
+  });
+
+  await test('J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/p/menu', 3000);
+      await addFromMenu(page, 'Binary BBQ');
+      await page.locator('.main-nav .nav-checkout').click(); await page.waitForTimeout(3000);
+      await fillDelivery(page);
+      await page.locator('.mx-name-coc2').click(); await page.waitForTimeout(1500);
+      await page.locator('.mx-name-exec').click(); await page.waitForTimeout(8000);
+      expect(/declin|fail/i.test(await text(page, '.mx-window')), 'payment sheet reports the declined card');
+      await page.locator('.mx-window .mx-name-fCancel').click(); await page.waitForTimeout(800);
+      await page.locator('.modal-dialog button, .mx-dialog button', { hasText: 'Cancel order' }).first().click();
+      await page.waitForTimeout(3000);
+      const body = await text(page, 'body');
+      expect(/MX-\d{4} cancelled\. Nothing was charged\./.test(body), 'toast: order cancelled, nothing charged');
+      expectEqual(await text(page, '.app-header-dv .count-bubble'), '1', 'the cart still holds the item');
+      expect(!(await page.locator('.mx-dialog-error').count()), 'no platform error dialog');
     } finally { await leave(g); }
   });
 
