@@ -11,7 +11,7 @@ folder 'Cart'
 begin
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
   if $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' then
-    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.WARNING, ShouldShowCartAction = false);
+    call microflow Core.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Core.ToastLevel.WARNING, ShouldShowCartAction = false);
     return;
   end if;
   close page;
@@ -120,10 +120,10 @@ create or modify page Shop.Cart_Drawer (
         container cpApplied (Visible: $currentObject/CouponCode != empty and $currentObject/CouponCode != '') {
           container cpRow (Class: 'between') {
             dynamictext cpCode (Content: '{1}', ContentParams: ({1} = CouponCode), Class: 'c-primary cp-code')
-            dynamictext cpBadge (Content: '{1}', ContentParams: ({1} = CouponBadge), Class: 'badge', DynamicClasses: if $currentObject/CouponState = Shop.CouponState.APPLIED then 'st-deployed' else 'st-staged')
+            dynamictext cpBadge (Content: '{1}', ContentParams: ({1} = CouponBadge), Class: 'badge', DynamicClasses: if $currentObject/CouponState = Fulfilment.CouponState.APPLIED then 'st-deployed' else 'st-staged')
           }
-          dynamictext cpMsg (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/CouponState = Shop.CouponState.APPLIED then '>> ' else '', {2} = CouponMessage), Class: 't-small mt-8', DynamicClasses: if $currentObject/CouponState = Shop.CouponState.APPLIED then 'c-green' else 'c-warn')
-          dynamictext cpNote (Content: 'The code stays attached and applies automatically once the condition is met. It does not block your order.', Class: 't-micro c-muted mt-8', Visible: $currentObject/CouponState != Shop.CouponState.APPLIED)
+          dynamictext cpMsg (Content: '{1}{2}', ContentParams: ({1} = if $currentObject/CouponState = Fulfilment.CouponState.APPLIED then '>> ' else '', {2} = CouponMessage), Class: 't-small mt-8', DynamicClasses: if $currentObject/CouponState = Fulfilment.CouponState.APPLIED then 'c-green' else 'c-warn')
+          dynamictext cpNote (Content: 'The code stays attached and applies automatically once the condition is met. It does not block your order.', Class: 't-micro c-muted mt-8', Visible: $currentObject/CouponState != Fulfilment.CouponState.APPLIED)
           actionbutton cpRm (Caption: 'rm coupon', Action: CALL MICROFLOW Shop.ACT_Coupon_Remove(Cart = $currentObject), Class: 'btn btn-ghost btn-sm mt-8')
         }
         container cpForm (Class: 'cp-form', Visible: $currentObject/CouponCode = empty or $currentObject/CouponCode = '') {

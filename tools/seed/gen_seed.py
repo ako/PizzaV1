@@ -62,7 +62,7 @@ CATALOG_ENUMS = {'ProductKind', 'ProductStatus', 'SizeCode', 'SpiceLevel', 'Opti
 
 
 def enum(e, v):
-    mod = 'Catalog' if e in CATALOG_ENUMS else 'Shop'
+    mod = 'Catalog' if e in CATALOG_ENUMS else 'Core' if e == 'ToastLevel' else 'Shop' if e == 'StageState' else 'Fulfilment'
     return 'empty' if v is None else f'{mod}.{e}.{v}'
 
 
@@ -157,7 +157,7 @@ def gen_catalog():
           f"Catalog.RecipeItem_Product = $p_{var(r['productCode'])}, Catalog.RecipeItem_Ingredient = $ing_{var(r['ingredientCode'])});")
         w(f"  commit $ri{n} without events;")
     for z in zones:
-        w(f"  $z_{z['zip']} = create Shop.DeliveryZone (Zip = {q(z['zip'])}, Neighborhood = {q(z['neighborhood'])}, DistanceMiles = {dec(z['distanceMiles'])}, IsActive = {b(z['isActive'])});")
+        w(f"  $z_{z['zip']} = create Fulfilment.DeliveryZone (Zip = {q(z['zip'])}, Neighborhood = {q(z['neighborhood'])}, DistanceMiles = {dec(z['distanceMiles'])}, IsActive = {b(z['isActive'])});")
         w(f"  commit $z_{z['zip']} without events;")
     for c in coupons:
         def dt(s):
@@ -165,19 +165,19 @@ def gen_catalog():
                 return 'empty'
             d = datetime.strptime(s, '%Y-%m-%d %H:%M').replace(tzinfo=LA)
             return f"parseDateTimeUTC({q(d.astimezone(ZoneInfo('UTC')).strftime('%Y-%m-%dT%H:%M:%S'))}, 'yyyy-MM-dd''T''HH:mm:ss')"
-        w(f"  $cp_{var(c['code'])} = create Shop.Coupon (Code = {q(c['code'])}, Description = {q(c['description'])}, Discount = {enum('DiscountType', c['discountType'])}, "
+        w(f"  $cp_{var(c['code'])} = create Fulfilment.Coupon (Code = {q(c['code'])}, Description = {q(c['description'])}, Discount = {enum('DiscountType', c['discountType'])}, "
           f"DiscountValue = {dec(c.get('value'))}, MaxDiscount = {dec(c.get('maxDiscount'))}, MinSubtotal = {dec(c.get('minSubtotal'))}, "
           f"ValidFrom = {dt(c.get('validFrom'))}, ValidUntil = {dt(c.get('validUntil'))}, IsActive = {b(c['isActive'])}, IsDeliveryOnly = {b(c['deliveryOnly'])});")
         w(f"  commit $cp_{var(c['code'])} without events;")
     for o in ovens:
-        w(f"  $ov_{var(o['code'])} = create Shop.Oven (Code = {q(o['code'])}, DisplayName = {q(o['displayName'])}, OvenType = {q(o['ovenType'])}, "
+        w(f"  $ov_{var(o['code'])} = create Fulfilment.Oven (Code = {q(o['code'])}, DisplayName = {q(o['displayName'])}, OvenType = {q(o['ovenType'])}, "
           f"TargetTempF = {o['targetTempF']}, CapacityOrders = {o['capacityOrders']}, OvenStatus = {enum('OvenStatus', o['status'])});")
         w(f"  commit $ov_{var(o['code'])} without events;")
     dist = {o['displayNumber']: o.get('distanceMiles') or 0 for o in load('orders.json')}
     durs = sim['durations']
     for c in couriers:
         trip = {'TO_STORE': durs['courierToStore'], 'AT_STORE': durs['handover']}.get(c['status'], round(durs['travelBase'] + durs['travelPerMile'] * dist.get(c.get('currentOrder'), 0)))
-        w(f"  $cu_{var(c['code'])} = create Shop.Courier (Code = {q(c['code'])}, Name = {q(c['name'])}, NodeHandle = {q(c['nodeHandle'])}, Vehicle = {enum('VehicleType', c['vehicleType'])}, "
+        w(f"  $cu_{var(c['code'])} = create Fulfilment.Courier (Code = {q(c['code'])}, Name = {q(c['name'])}, NodeHandle = {q(c['nodeHandle'])}, Vehicle = {enum('VehicleType', c['vehicleType'])}, "
           f"Plate = {q(c.get('plate'))}, Phone = {q(c['phone'])}, CourierStatus = {enum('CourierStatus', c['status'])}, StatusChangedAt = {at(c['statusChangedAt'])}, "
           f"TripProgressPercent = {c['tripProgressPercent']}, TripSeconds = {trip}, TripProgress = {c['tripProgressPercent'] / 100.0}, TripAnchorAt = $T);")
         w(f"  commit $cu_{var(c['code'])} without events;")
@@ -187,13 +187,13 @@ def gen_catalog():
           f"Zip = {q(c.get('zip'))}, DeliveryNotes = {q(c.get('deliveryNotes'))}, IsInZone = {b(c.get('inDeliveryZone'))});")
         w(f"  commit $sc_{var(c['code'])} without events;")
     d = sim['durations']
-    w(f"  $sim = create Shop.SimulationSettings (PaymentProcessing = {d['paymentProcessing']}, PaymentTimeout = {d['paymentTimeout']}, "
+    w(f"  $sim = create Core.SimulationSettings (PaymentProcessing = {d['paymentProcessing']}, PaymentTimeout = {d['paymentTimeout']}, "
       f"PaymentFailedTimeout = {d['paymentFailedTimeout']}, SimulatedRetryDelay = {d['simulatedRetryDelay']}, QueueWait = {d['queueWait']}, Bake = {d['bake']}, "
       f"Qa = {d['qa']}, CourierToStore = {d['courierToStore']}, Handover = {d['handover']}, TravelBase = {d['travelBase']}, TravelPerMile = {d['travelPerMile']}, "
       f"PickupArrival = {d['pickupArrival']}, TrafficIntervalSeconds = {sim['trafficIntervalSeconds']}, TrafficMaxActiveOrders = {sim['trafficMaxActiveOrders']}, "
       f"RetentionHours = {sim.get('retentionHours', 24)}, TrafficProgress = 0, TrafficAnchorAt = $T, LastTickAt = $T);")
     w('  commit $sim without events;')
-    w(f"  $store = create Shop.StoreSettings (StoreName = {q(store['storeName'])}, AddressLine = {q(store['addressLine'])}, Phone = {q(store['phone'])}, "
+    w(f"  $store = create Core.StoreSettings (StoreName = {q(store['storeName'])}, AddressLine = {q(store['addressLine'])}, Phone = {q(store['phone'])}, "
       f"TaxRatePercent = {dec(store['taxRatePercent'])}, DeliveryFee = {dec(store['deliveryFee'])}, FreeDeliveryThreshold = {dec(store['freeDeliveryThreshold'])}, "
       f"MinDeliverySubtotal = {dec(store['minDeliverySubtotal'])}, MaxQuantityPerLine = {store['maxQuantityPerLine']}, MaxItemsPerOrder = {store['maxItemsPerOrder']}, "
       f"MaxPaymentAttempts = {store['maxPaymentAttempts']});")
@@ -250,25 +250,25 @@ def gen_orders():
             f"PizzaCount = {sum(l['quantity'] for l in o['lines'] if l['productCode'].startswith('PZ'))}",
             f"ItemCount = {sum(l['quantity'] for l in o['lines'])}", f"IsOpen = {b(not final)}",
         ]
-        w('  $token = call microflow Shop.SUB_RandomHex(Length = 32);')
-        w(f"  $o = create Shop.Order ({', '.join(fields)});")
+        w('  $token = call microflow Core.SUB_RandomHex(Length = 32);')
+        w(f"  $o = create Fulfilment.Order ({', '.join(fields)});")
         if o.get('deliveryZone'):
-            w(f"  retrieve $zone from Shop.DeliveryZone where Zip = {q(o['deliveryZone'])} first;")
-            w('  change $o (Shop.Order_Zone = $zone);')
+            w(f"  retrieve $zone from Fulfilment.DeliveryZone where Zip = {q(o['deliveryZone'])} first;")
+            w('  change $o (Fulfilment.Order_Zone = $zone);')
         if o.get('couponCode') and o['paymentStatus'] != 'UNPAID':
-            w(f"  retrieve $coupon from Shop.Coupon where Code = {q(o['couponCode'])} first;")
-            w('  change $o (Shop.Order_Coupon = $coupon);')
+            w(f"  retrieve $coupon from Fulfilment.Coupon where Code = {q(o['couponCode'])} first;")
+            w('  change $o (Fulfilment.Order_Coupon = $coupon);')
         if o.get('oven'):
-            w(f"  retrieve $oven from Shop.Oven where Code = {q(o['oven'])} first;")
-            w('  change $o (Shop.Order_Oven = $oven);')
+            w(f"  retrieve $oven from Fulfilment.Oven where Code = {q(o['oven'])} first;")
+            w('  change $o (Fulfilment.Order_Oven = $oven);')
         if o.get('courier'):
-            w(f"  retrieve $courier from Shop.Courier where Code = {q(o['courier'])} first;")
-            w('  change $o (Shop.Order_Courier = $courier);')
+            w(f"  retrieve $courier from Fulfilment.Courier where Code = {q(o['courier'])} first;")
+            w('  change $o (Fulfilment.Order_Courier = $courier);')
         w('  commit $o without events;')
         for c in couriers:
             if c.get('currentOrder') == o['displayNumber']:
-                w(f"  retrieve $cur from Shop.Courier where Code = {q(c['code'])} first;")
-                w('  change $cur (Shop.Courier_CurrentOrder = $o);')
+                w(f"  retrieve $cur from Fulfilment.Courier where Code = {q(c['code'])} first;")
+                w('  change $cur (Fulfilment.Courier_CurrentOrder = $o);')
                 w('  commit $cur without events;')
         parts = {'Lines': [], 'History': [], 'Log': []}
         P = lambda k, t: parts[k].append(t)
@@ -284,37 +284,37 @@ def gen_orders():
                 elif m['type'] == 'REMOVE':
                     diff.append('− ' + m['name'])
             P('Lines', f"  retrieve $prod{li} from Catalog.Product where Code = {q(l['productCode'])} first;")
-            P('Lines', f"  $l{li} = create Shop.OrderLine (ProductCode = {q(l['productCode'])}, ProductName = {q(l['productName'])}, RealWorldName = {q(l['realWorldName'])}, "
+            P('Lines', f"  $l{li} = create Fulfilment.OrderLine (ProductCode = {q(l['productCode'])}, ProductName = {q(l['productName'])}, RealWorldName = {q(l['realWorldName'])}, "
               f"ModuleKey = {q(l['moduleKey'])}, Kind = {enum('ProductKind', kind)}, Size = {enum('SizeCode', l['sizeCode'])}, SizeLabel = {q(l['sizeLabel'])}, "
               f"Quantity = {l['quantity']}, UnitPrice = {dec(l['unitPrice'])}, LineTotal = {dec(l['lineTotal'])}, "
               f"AllergenText = {q(', '.join(cap[a] for a in l['allergens']))}, IsVegetarian = {b(l['isVegetarian'])}, IsVegan = {b(l['isVegan'])}, "
-              f"ConfigText = {q(', '.join(diff))}, SortOrder = {l['sortOrder']}, Shop.OrderLine_Order = $o, Shop.OrderLine_Product = $prod{li});")
+              f"ConfigText = {q(', '.join(diff))}, SortOrder = {l['sortOrder']}, Fulfilment.OrderLine_Order = $o, Fulfilment.OrderLine_Product = $prod{li});")
             P('Lines', f"  commit $l{li} without events;")
             for mi, m in enumerate(mods):
-                P('Lines', f"  $m{li}_{mi} = create Shop.OrderLineModifier (ModifierType = {enum('ModifierType', m['type'])}, OptionKey = {q(m['key'])}, Name = {q(m['name'])}, "
-                  f"Price = {dec(m['price'])}, IsDefault = {b(m['isDefault'])}, SortOrder = {mi + 1}, Shop.OrderLineModifier_OrderLine = $l{li});")
+                P('Lines', f"  $m{li}_{mi} = create Fulfilment.OrderLineModifier (ModifierType = {enum('ModifierType', m['type'])}, OptionKey = {q(m['key'])}, Name = {q(m['name'])}, "
+                  f"Price = {dec(m['price'])}, IsDefault = {b(m['isDefault'])}, SortOrder = {mi + 1}, Fulfilment.OrderLineModifier_OrderLine = $l{li});")
                 P('Lines', f"  commit $m{li}_{mi} without events;")
         for ai, a in enumerate(o['paymentAttempts']):
-            P('History', f"  $a{ai} = create Shop.PaymentAttempt (AttemptNumber = {a['attemptNumber']}, Method = {enum('PaymentMethod', a['method'])}, Card = {enum('TestCard', a.get('testCard'))}, "
+            P('History', f"  $a{ai} = create Fulfilment.PaymentAttempt (AttemptNumber = {a['attemptNumber']}, Method = {enum('PaymentMethod', a['method'])}, Card = {enum('TestCard', a.get('testCard'))}, "
               f"Amount = {dec(a['amount'])}, AttemptStatus = {enum('PaymentAttemptStatus', a['status'])}, FailureCode = {enum('PaymentFailureCode', a.get('failureCode'))}, "
               f"TransactionId = {q(a.get('transactionId'))}, StartedAt = {at(a.get('startedAt'))}, FinishedAt = {at(a.get('finishedAt'))}, "
-              f"RefundedAt = {at(a.get('refundedAt'))}, RefundId = {q(a.get('refundId'))}, Shop.PaymentAttempt_Order = $o);")
+              f"RefundedAt = {at(a.get('refundedAt'))}, RefundId = {q(a.get('refundId'))}, Fulfilment.PaymentAttempt_Order = $o);")
             P('History', f"  commit $a{ai} without events;")
         for si, s in enumerate(o['statusChanges']):
-            P('History', f"  $s{si} = create Shop.OrderStatusChange (FromStatus = {enum('OrderStatus', s.get('fromStatus'))}, ToStatus = {enum('OrderStatus', s['toStatus'])}, "
+            P('History', f"  $s{si} = create Fulfilment.OrderStatusChange (FromStatus = {enum('OrderStatus', s.get('fromStatus'))}, ToStatus = {enum('OrderStatus', s['toStatus'])}, "
               f"ChangedAt = {at(s['changedAt'])}, Actor = {enum('ActorType', s['actorType'])}, ActorName = {q(s['actorName'])}, Reason = {q(s.get('reason'))}, "
-              f"Seq = {s['seq']}, Shop.OrderStatusChange_Order = $o);")
+              f"Seq = {s['seq']}, Fulfilment.OrderStatusChange_Order = $o);")
             P('History', f"  commit $s{si} without events;")
         for gi, g in enumerate(o['logEntries']):
-            P('Log', f"  $g{gi} = create Shop.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, TimeText = formatDateTime({at(g['loggedAt'])}, 'HH:mm:ss'), Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
-              f"Message = {q(g['message'])}, IsCustomerVisible = {b(g['isCustomerVisible'])}, Seq = {g['seq']}, Shop.OrderLogEntry_Order = $o);")
+            P('Log', f"  $g{gi} = create Fulfilment.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, TimeText = formatDateTime({at(g['loggedAt'])}, 'HH:mm:ss'), Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
+              f"Message = {q(g['message'])}, IsCustomerVisible = {b(g['isCustomerVisible'])}, Seq = {g['seq']}, Fulfilment.OrderLogEntry_Order = $o);")
             P('Log', f"  commit $g{gi} without events;")
         what = {'Lines': 'lines and their modifiers', 'History': 'payment attempts and status history', 'Log': 'terminal log lines'}
         for k, stmts in parts.items():
             if stmts:
                 uses_t = any('$T' in t for t in stmts)
                 w(f"  call microflow Simulation.{name}_{k}(TheOrder = $o{', T = $T' if uses_t else ''});")
-        w('  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $o);')
+        w('  call microflow Fulfilment.SUB_Order_RefreshPaymentLabel(TheOrder = $o);')
         w('end;')
         w('')
         # one small flow per part of the order (keeps every seed flow short)
@@ -329,7 +329,7 @@ def gen_orders():
             if uses_t:
                 w(' * @param $T Demo start time: relative seed timestamps resolve against it')
             w(' */')
-            w(f"create or modify microflow Simulation.{name}_{k} ($TheOrder: Shop.Order{', $T: DateTime' if uses_t else ''})")
+            w(f"create or modify microflow Simulation.{name}_{k} ($TheOrder: Fulfilment.Order{', $T: DateTime' if uses_t else ''})")
             w("folder 'Seed/Orders'")
             w('begin')
             for t in stmts:

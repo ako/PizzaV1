@@ -15,17 +15,17 @@ grant read * on entity Catalog.ProductSize to Catalog.Guest where [Catalog.Produ
 grant read * on entity Catalog.RecipeItem to Catalog.Guest where [Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED'];
 grant read * on entity Catalog.Ingredient to Catalog.Guest where [Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product/Catalog.Product/ProductStatus = 'PUBLISHED' or Catalog.Option_Ingredient/Catalog.Option/IsActive = true];
 grant read * on entity Catalog.Option to Catalog.Guest where [IsActive = true];
--- only the zone of the guest's own checkout or orders (the zone table itself is checked server-side)
-grant read * on entity Shop.DeliveryZone to Shop.Guest where [Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]' or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read (StoreName, AddressLine, Phone, TaxRatePercent, DeliveryFee, FreeDeliveryThreshold, MinDeliverySubtotal, MaxQuantityPerLine, MaxItemsPerOrder, MaxPaymentAttempts) on entity Shop.StoreSettings to Shop.Guest;
+-- only the zones of the guest's own orders (the checkout's zone check runs server-side)
+grant read * on entity Fulfilment.DeliveryZone to Fulfilment.Guest where [Fulfilment.Order_Zone/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read (StoreName, AddressLine, Phone, TaxRatePercent, DeliveryFee, FreeDeliveryThreshold, MinDeliverySubtotal, MaxQuantityPerLine, MaxItemsPerOrder, MaxPaymentAttempts) on entity Core.StoreSettings to Core.Guest;
 
 -- ── The guest's own session state
 grant read *, write (CouponInput, SearchInput, SearchQuery) on entity Shop.Cart to Shop.Guest where [Shop.Cart_Owner = '[%CurrentUser%]'];
 grant read * on entity Shop.CartLine to Shop.Guest where [Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'];
 grant read *, write (AddressLine1, AddressLine2, City, StateCode, Zip, DeliveryNotes, ContactName, ContactEmail, ContactPhone) on entity Shop.CheckoutForm to Shop.Guest where [Shop.CheckoutForm_Owner = '[%CurrentUser%]'];
-grant read * on entity Shop.Toast to Shop.Guest where [Shop.Toast_Owner = '[%CurrentUser%]'];
-grant read * on entity Shop.Coupon to Shop.Guest where [Shop.Cart_Coupon/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'];
-grant read * on entity Shop.PriceResult to Shop.Guest;
+grant read * on entity Core.Toast to Core.Guest where [Core.Toast_Owner = '[%CurrentUser%]'];
+-- Coupon: no guest access. Only server-side flows read coupons; pages show the code stored on the cart.
+grant read * on entity Fulfilment.PriceResult to Fulfilment.Guest;
 grant read * on entity Shop.HomeView to Shop.Guest;
 grant read * on entity Shop.MenuView to Shop.Guest;
 grant read * on entity Shop.Choice to Shop.Guest;
@@ -33,15 +33,15 @@ grant read * on entity Shop.TrackView to Shop.Guest;
 grant read *, write (OrderNumber, Email) on entity Shop.LookupForm to Shop.Guest;
 
 -- ── Orders the guest holds a token for (LITE-SES-03): placed, looked up or opened by tracking link
-grant read * on entity Shop.OrderAccess to Shop.Guest where [Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read * on entity Shop.Order to Shop.Guest where [Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read * on entity Shop.OrderLine to Shop.Guest where [Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read * on entity Shop.OrderLineModifier to Shop.Guest where [Shop.OrderLineModifier_OrderLine/Shop.OrderLine/Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read (AttemptNumber, Method, Card, Amount, AttemptStatus, FailureCode, TransactionId, StartedAt, FinishedAt, RefundedAt, RefundId, MethodLabel, PaymentAttempt_Order) on entity Shop.PaymentAttempt to Shop.Guest where [Shop.PaymentAttempt_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Fulfilment.OrderAccess to Fulfilment.Guest where [Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Fulfilment.Order to Fulfilment.Guest where [Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Fulfilment.OrderLine to Fulfilment.Guest where [Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Fulfilment.OrderLineModifier to Fulfilment.Guest where [Fulfilment.OrderLineModifier_OrderLine/Fulfilment.OrderLine/Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read (AttemptNumber, Method, Card, Amount, AttemptStatus, FailureCode, TransactionId, StartedAt, FinishedAt, RefundedAt, RefundId, MethodLabel, PaymentAttempt_Order) on entity Fulfilment.PaymentAttempt to Fulfilment.Guest where [Fulfilment.PaymentAttempt_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
 -- status history: time and status only
-grant read (ToStatus, ChangedAt, Seq, OrderStatusChange_Order) on entity Shop.OrderStatusChange to Shop.Guest where [Shop.OrderStatusChange_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read (ToStatus, ChangedAt, Seq, OrderStatusChange_Order) on entity Fulfilment.OrderStatusChange to Fulfilment.Guest where [Fulfilment.OrderStatusChange_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
 -- customer-visible log lines only
-grant read (LoggedAt, TimeText, Level, Tag, Message, Seq, IsCustomerVisible, OrderLogEntry_Order) on entity Shop.OrderLogEntry to Shop.Guest where [IsCustomerVisible = true and Shop.OrderLogEntry_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read (LoggedAt, TimeText, Level, Tag, Message, Seq, IsCustomerVisible, OrderLogEntry_Order) on entity Fulfilment.OrderLogEntry to Fulfilment.Guest where [IsCustomerVisible = true and Fulfilment.OrderLogEntry_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
 -- courier and oven of a token order: display fields only
-grant read (Name, NodeHandle, Vehicle) on entity Shop.Courier to Shop.Guest where [Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
-grant read (Code, DisplayName) on entity Shop.Oven to Shop.Guest where [Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read (Name, NodeHandle, Vehicle) on entity Fulfilment.Courier to Fulfilment.Guest where [Fulfilment.Order_Courier/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];
+grant read (Code, DisplayName) on entity Fulfilment.Oven to Fulfilment.Guest where [Fulfilment.Order_Oven/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'];

@@ -1,20 +1,23 @@
 # Architecture
 
-Module layers, coupling, bounded contexts and cycles · GitPizza · generated 2026-11-19 09:57 · mxcli nightly-20261118-9d764483c
+Module layers, coupling, bounded contexts and cycles · GitPizza · generated 2026-11-19 12:36 · mxcli nightly-20261118-9d764483c
 
 | | |
 |---|---|
-| app modules | 2 — 8 outside |
-| layers | 1 |
+| app modules | 5 — 8 outside |
+| layers | 4 |
 | domain cycles | 0 — 0 modules; 0 with navigation counted |
-| clusters | 11 |
+| clusters | 10 |
 | unused documents | 3 — 0 to verify |
 
 ## Layered module map
 
 Each app module on the layer its domain dependencies put it on: arrows point from a module to what it uses, thicker for more references. Red dashed arrows close a cycle. Fill shows cohesion.
 
-Layer 0: Shop, Simulation
+Layer 3: Simulation  
+Layer 2: Shop  
+Layer 1: Fulfilment  
+Layer 0: Catalog, Core
 
 ## Module health
 
@@ -22,17 +25,23 @@ Purpose is the module's documentation (`alter module <Name> set documentation '�
 
 | Module | Purpose | Layer | Documents | Internal refs | Outbound | Inbound | Cohesion | Fan-in | Fan-out | Role / note |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Shop | Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages. | 0 | 465 | 12693 | 9 | 0 | 100% | 0 | 0 |  |
-| Simulation | Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08). | 0 | 2 | 0 | 0 | 0 | n/a | 0 | 0 |  |
+| Simulation | Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08). | 3 | 211 | 286 | 10021 | 0 | 3% | 0 | 4 |  |
+| Shop | Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages. | 2 | 195 | 1270 | 834 | 16 | 60% | 1 | 3 |  |
+| Fulfilment | The order domain without UI: orders and their lines, payments, status history and log, couriers, ovens, delivery zones, coupons, pricing and the order transitions. | 1 | 43 | 268 | 10 | 9257 | 96% | 2 | 2 |  |
+| Catalog | Product catalog: pizzas, sides, drinks and desserts with sizes, options, recipes, ingredients and allergens (the menu's data). | 0 | 17 | 66 | 0 | 1313 | 100% | 3 | 0 |  |
+| Core | Shared foundation: store and simulation settings, guest toasts, and the money, time, phone and id helpers every module uses. | 0 | 11 | 19 | 1 | 271 | 95% | 3 | 0 |  |
 
 ## Coupling matrix (domain)
 
 Rows use columns. Modules are in layer order, highest first, so a layered design is a triangle above the diagonal; a filled cell below it is a dependency upward — part of a cycle.
 
-| uses → | Shop | Simulation |
-|---|---|---|
-| Shop |  |  |
-| Simulation |  |  |
+| uses → | Simulation | Shop | Fulfilment | Catalog | Core |
+|---|---|---|---|---|---|
+| Simulation |  | 16 | 8823 | 1038 | 141 |
+| Shop |  |  | 434 | 272 | 125 |
+| Fulfilment |  |  |  | 3 | 5 |
+| Catalog |  |  |  |  |  |
+| Core |  |  |  |  |  |
 
 ## Navigation dependencies
 
@@ -50,19 +59,25 @@ No domain cycles between app modules.
 
 Clusters of tightly connected documents, against the modules they come from. A module spread over several clusters may hold more than one context; a cluster spanning modules may be one context split across them.
 
-| Cluster | Key | Size | Shop | Simulation | Note |
-|---|---|---|---|---|---|
-| Shop · Cart | `cluster:Shop.Cart` | 121 | 121 |  | label derived — name it |
-| Shop · Order | `cluster:Shop.Order` | 66 | 66 |  | label derived — name it |
-| Shop · Product | `cluster:Shop.Product` | 59 | 59 |  | label derived — name it |
-| Shop · TrackView | `cluster:Shop.TrackView` | 51 | 51 |  | label derived — name it |
-| Shop · OrderStatusChange | `cluster:Shop.OrderStatusChange` | 50 | 50 |  | label derived — name it |
-| Shop · OrderLogEntry | `cluster:Shop.OrderLogEntry` | 48 | 48 |  | label derived — name it |
-| Shop · OrderAccess | `cluster:Shop.OrderAccess` | 19 | 19 |  | label derived — name it |
-| Shop · MenuView | `cluster:Shop.MenuView` | 16 | 16 |  | label derived — name it |
-| Shop · Option | `cluster:Shop.Option` | 14 | 14 |  | label derived — name it |
-| Shop · HomeView | `cluster:Shop.HomeView` | 7 | 7 |  | label derived — name it |
-| Shop · ErrorView | `cluster:Shop.ErrorView` | 3 | 3 |  | label derived — name it |
+| Cluster | Key | Size | Simulation | Shop | Fulfilment | Catalog | Core | Note |
+|---|---|---|---|---|---|---|---|---|
+| Shop · CartLine | `cluster:Shop.CartLine` | 90 | 1 | 75 |  | 11 | 3 | label derived — name it |
+| Simulation · Order | `cluster:Fulfilment.Order` | 86 | 55 | 10 | 19 |  | 2 | label derived — name it |
+| Simulation · Product | `cluster:Catalog.Product` | 61 | 46 | 9 | 5 | 1 |  | label derived — name it |
+| Shop · Cart | `cluster:Shop.Cart` | 52 |  | 46 | 3 |  | 3 | label derived — name it |
+| Simulation · OrderStatusChange | `cluster:Fulfilment.OrderStatusChange` | 52 | 46 | 2 | 4 |  |  | label derived — name it |
+| Simulation · OrderLogEntry | `cluster:Fulfilment.OrderLogEntry` | 49 | 46 | 1 | 2 |  |  | label derived — name it |
+| Shop · TrackView | `cluster:Shop.TrackView` | 47 | 7 | 34 | 4 |  | 2 | label derived — name it |
+| Catalog | `cluster:Catalog.Option` | 21 | 4 | 6 | 2 | 8 | 1 |  |
+| Shop · SE_DailyReset | `cluster:Simulation.SE_DailyReset` | 4 | 2 | 2 |  |  |  | label derived — name it |
+| Shop · ErrorView | `cluster:Shop.ErrorView` | 3 |  | 3 |  |  |  | label derived — name it |
+
+Modules that may hold more than one context:
+
+- `Simulation` has at least a fifth of its clustered documents in each of 4 clusters
+- `Shop` has at least a fifth of its clustered documents in each of 2 clusters
+- `Catalog` has at least a fifth of its clustered documents in each of 2 clusters
+- `Core` has at least a fifth of its clustered documents in each of 2 clusters
 
 3 cluster(s) of fewer than three documents not shown.
 
@@ -74,20 +89,20 @@ God nodes are what the most references hang on; bridges sit on the most shortest
 
 | Element | Type | Module | In | Out | Betweenness |
 |---|---|---|---|---|---|
-| `Shop.OrderLogEntry` | ENTITY | Shop | 961 | 7 | 0.0 |
-| `Shop.SEED_Catalog` | MICROFLOW | Shop | 1 | 837 | 6.0 |
-| `Shop.OrderStatusChange` | ENTITY | Shop | 501 | 7 | 0.0 |
-| `Shop.Order` | ENTITY | Shop | 421 | 10 | 0.0 |
-| `Shop.OrderLineModifier` | ENTITY | Shop | 382 | 8 | 0.0 |
-| `Shop.Product` | ENTITY | Shop | 251 | 5 | 0.0 |
-| `Shop.OrderLine` | ENTITY | Shop | 244 | 7 | 0.0 |
-| `Shop.Option` | ENTITY | Shop | 140 | 3 | 0.0 |
-| `Shop.Ingredient` | ENTITY | Shop | 132 | 9 | 0.0 |
+| `Fulfilment.OrderLogEntry` | ENTITY | Fulfilment | 962 | 7 | 0.0 |
+| `Simulation.SEED_Catalog` | MICROFLOW | Simulation | 1 | 837 | 6.0 |
+| `Fulfilment.OrderStatusChange` | ENTITY | Fulfilment | 502 | 7 | 0.0 |
+| `Fulfilment.Order` | ENTITY | Fulfilment | 430 | 10 | 0.0 |
+| `Fulfilment.OrderLineModifier` | ENTITY | Fulfilment | 383 | 8 | 0.0 |
+| `Catalog.Product` | ENTITY | Catalog | 255 | 5 | 0.0 |
+| `Fulfilment.OrderLine` | ENTITY | Fulfilment | 246 | 7 | 0.0 |
+| `Catalog.Option` | ENTITY | Catalog | 141 | 3 | 0.0 |
+| `Catalog.Ingredient` | ENTITY | Catalog | 133 | 9 | 0.0 |
 | `Shop.SUB_Track_Fill` | MICROFLOW | Shop | 9 | 128 | 155.7 |
-| `Shop.PaymentAttempt` | ENTITY | Shop | 124 | 9 | 0.0 |
-| `Shop.RecipeItem` | ENTITY | Shop | 112 | 5 | 0.0 |
-| `Shop.CartLine` | ENTITY | Shop | 106 | 3 | 0.0 |
-| `Shop.ProductSize` | ENTITY | Shop | 100 | 5 | 0.0 |
+| `Fulfilment.PaymentAttempt` | ENTITY | Fulfilment | 125 | 9 | 0.0 |
+| `Catalog.RecipeItem` | ENTITY | Catalog | 113 | 5 | 0.0 |
+| `Shop.CartLine` | ENTITY | Shop | 112 | 3 | 0.0 |
+| `Catalog.ProductSize` | ENTITY | Catalog | 100 | 5 | 0.0 |
 | `Shop.DS_Config_Choices` | MICROFLOW | Shop | 1 | 87 | 0.0 |
 
 **Bridges**
@@ -96,38 +111,38 @@ God nodes are what the most references hang on; bridges sit on the most shortest
 |---|---|---|---|---|---|
 | `Shop.SUB_Line_Recalculate` | MICROFLOW | Shop | 12 | 62 | 1110.6 |
 | `Shop.SUB_Cart_Recalculate` | MICROFLOW | Shop | 13 | 47 | 952.5 |
-| `Shop.SEED_Orders` | MICROFLOW | Shop | 1 | 46 | 571.9 |
-| `Shop.SUB_Reset` | MICROFLOW | Shop | 3 | 62 | 473.9 |
+| `Simulation.SEED_Orders` | MICROFLOW | Simulation | 1 | 46 | 571.9 |
+| `Simulation.SUB_Reset` | MICROFLOW | Simulation | 3 | 62 | 473.9 |
 | `Shop.SUB_Checkout_Recalculate` | MICROFLOW | Shop | 5 | 5 | 297.0 |
-| `Shop.SIM_Tick` | MICROFLOW | Shop | 1 | 10 | 262.1 |
-| `Shop.SUB_Traffic_Spawn` | MICROFLOW | Shop | 1 | 49 | 193.2 |
-| `Shop.SIM_ClockRun` | MICROFLOW | Shop | 4 | 3 | 190.1 |
+| `Simulation.SIM_Tick` | MICROFLOW | Simulation | 1 | 10 | 262.1 |
+| `Simulation.SUB_Traffic_Spawn` | MICROFLOW | Simulation | 1 | 49 | 193.2 |
+| `Simulation.SIM_ClockRun` | MICROFLOW | Simulation | 4 | 3 | 190.1 |
 | `Shop.ACT_Nav_Cart` | MICROFLOW | Shop | 10 | 3 | 175.0 |
 | `Shop.SUB_Track_Fill` | MICROFLOW | Shop | 9 | 128 | 155.7 |
-| `Shop.SIM_Traffic` | MICROFLOW | Shop | 1 | 12 | 152.2 |
+| `Simulation.SIM_Traffic` | MICROFLOW | Simulation | 1 | 12 | 152.2 |
 | `Shop.SUB_Product_Add` | MICROFLOW | Shop | 1 | 12 | 148.0 |
 | `Shop.SUB_Order_Place` | MICROFLOW | Shop | 2 | 85 | 141.2 |
 | `Shop.SUB_Cart_AddLine` | MICROFLOW | Shop | 2 | 37 | 122.2 |
-| `Shop.SUB_Price_Compute` | MICROFLOW | Shop | 3 | 27 | 115.0 |
+| `Fulfilment.SUB_Price_Compute` | MICROFLOW | Fulfilment | 3 | 27 | 115.0 |
 
 **Entity hotspots**
 
 | Entity | Used by flows | From modules |
 |---|---|---|
-| `Shop.Order` | 218 | Shop |
-| `Shop.Product` | 66 | Shop |
-| `Shop.PaymentAttempt` | 54 | Shop |
-| `Shop.OrderLine` | 49 | Shop |
-| `Shop.OrderLineModifier` | 47 | Shop |
-| `Shop.OrderLogEntry` | 47 | Shop |
-| `Shop.OrderStatusChange` | 47 | Shop |
-| `Shop.Oven` | 41 | Shop |
-| `Shop.DeliveryZone` | 37 | Shop |
-| `Shop.CartLine` | 34 | Shop |
-| `Shop.Cart` | 28 | Shop |
-| `Shop.Courier` | 28 | Shop |
+| `Fulfilment.Order` | 223 | Fulfilment,Simulation,Shop |
+| `Catalog.Product` | 68 | Shop,Simulation |
+| `Fulfilment.PaymentAttempt` | 55 | Fulfilment,Shop,Simulation |
+| `Fulfilment.OrderLine` | 51 | Shop,Simulation |
+| `Fulfilment.OrderLineModifier` | 48 | Shop,Simulation |
+| `Fulfilment.OrderLogEntry` | 48 | Fulfilment,Simulation,Shop |
+| `Fulfilment.OrderStatusChange` | 48 | Fulfilment,Simulation,Shop |
+| `Fulfilment.Oven` | 41 | Simulation,Shop |
+| `Fulfilment.DeliveryZone` | 37 | Simulation,Shop |
+| `Shop.CartLine` | 37 | Shop,Simulation |
+| `Shop.Cart` | 33 | Shop,Simulation |
+| `Fulfilment.Courier` | 28 | Simulation,Shop |
 | `Shop.TrackView` | 18 | Shop |
-| `Shop.CheckoutForm` | 16 | Shop |
+| `Shop.CheckoutForm` | 16 | Shop,Simulation |
 | `Shop.MenuView` | 14 | Shop |
 
 ## Outside the app
@@ -136,7 +151,10 @@ References between app modules and Marketplace or platform modules. These are de
 
 | From | To | References | Kinds |
 |---|---|---|---|
-| Shop | System | 9 | associate, member, retrieve |
+| Shop | System | 3 | associate |
+| Simulation | System | 3 | member, retrieve |
+| Fulfilment | System | 2 | associate |
+| Core | System | 1 | associate |
 
 ## Unused documents
 

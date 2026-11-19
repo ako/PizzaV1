@@ -22,7 +22,7 @@ create or modify microflow Shop.DS_Error ()
 returns Shop.ErrorView as $View
 folder 'Errors'
 begin
-  $Hex = call microflow Shop.SUB_RandomHex(Length = 4);
+  $Hex = call microflow Core.SUB_RandomHex(Length = 4);
   $View = create Shop.ErrorView (IncidentId = 'ERR-' + formatDateTime([%CurrentDateTime%], 'yyyyMMdd-HHmmss') + '-' + toUpperCase($Hex));
   log error node 'GitPizza' 'INCIDENT {1}: unexpected error page shown to {2}' with ({1} = $View/IncidentId, {2} = $currentUser/Name);
   return $View;

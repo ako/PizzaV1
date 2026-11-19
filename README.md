@@ -18,6 +18,10 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 - **Who logs in:** nobody — a single `Guest` role mapped to Anonymous; an
   `Administrator` exists only for the Mendix runtime.
 - **Theme:** `console` (dark), restyled with the prototype's design tokens.
+- **Modules** (layered, no cycles; see `FINDINGS.md`): `Simulation` (simulation, reset,
+  seed) → `Shop` (storefront: cart, checkout, pages) → `Fulfilment` (orders, payments,
+  couriers, pricing) → `Catalog` (products and options) and `Core` (settings, toasts,
+  helpers).
 - **Mendix:** 11.16.1. MDL scripts are `mdl 1` (each starts with `mdl 1;`) and live
   in `mdlsource/`.
 

@@ -196,8 +196,8 @@ begin
   $LineAllergenText = call microflow Catalog.SUB_AllergenText(Allergens = $Allergens);
   retrieve $CountExtras from $Line/Shop.CartLine_Extra;
   $ExtrasCount = count $CountExtras;
-  $UnitText = call microflow Shop.SUB_Money(Amount = $Unit);
-  $TotalText = call microflow Shop.SUB_Money(Amount = $Unit * $Line/Quantity);
+  $UnitText = call microflow Core.SUB_Money(Amount = $Unit);
+  $TotalText = call microflow Core.SUB_Money(Amount = $Unit * $Line/Quantity);
   change $Line (SizeKey = getKey($SizeCode), UnitPriceText = $UnitText, LineTotalText = $TotalText, UnitPriceJson = formatDecimal($Unit, '0.00'), AllergenText = if $LineAllergenText = '' then 'No major allergens' else $LineAllergenText, ExtrasCount = $ExtrasCount, DisplayName = $Display, SizeText = $SizeText, UnitPrice = $Unit, LineTotal = $Unit * $Line/Quantity, IsVegetarian = $Veg, IsVegan = $Vegan, IsAvailable = $Available, ConfigurationKey = $Key, ConfigText = $Text, Shop.CartLine_Allergen = $Allergens);
 end;
 
@@ -273,7 +273,7 @@ begin
   end if;
   retrieve $Category from $Product/Catalog.Product_Category;
   declare $Folder String = substring($Category/FileName, 0, find($Category/FileName, '.'));
-  $PriceText = call microflow Shop.SUB_Money(Amount = $Default/Price);
+  $PriceText = call microflow Core.SUB_Money(Amount = $Default/Price);
   declare $PriceLabel String = $PriceText;
   if $Product/Kind = Catalog.ProductKind.PIZZA then
     set $PriceLabel = $PriceText + ' · ' + $SizeLabel;

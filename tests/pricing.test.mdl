@@ -11,8 +11,8 @@
  * @expect $R/Tax = 4.79
  * @expect $R/TipAmount = 8.33
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 55.50, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
@@ -20,16 +20,16 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.Or
  * @expect $R/Total = 71.39
  * @expect $R/TipAmount = 11.10
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.TWENTY);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 55.50, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.TWENTY);
 /
 
 /**
  * @test Example A0: no tip
  * @expect $R/Total = 60.29
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 55.50, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.NONE);
 /
 
 /**
@@ -40,8 +40,8 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 55.50, OrderType = Shop.Or
  * @expect $R/TipAmount = 2.74
  * @expect $R/Total = 26.58
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 21.49, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 21.49, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
@@ -50,8 +50,8 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 21.49, OrderType = Shop.Or
  * @expect $R/Tax = 1.62
  * @expect $R/TipAmount = 0
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.74, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 18.74, OrderType = Fulfilment.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
@@ -59,38 +59,38 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.74, OrderType = Shop.Or
  * @expect $R/Discount = 4.43
  * @expect $R/Total = 34.98
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 29.50, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 29.50, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
  * @test P2: FREE_DISPATCH waives the delivery fee
  * @expect $R/DeliveryFee = 0
- * @expect $R/FeeWaivedBy = Shop.FeeWaiver.COUPON
+ * @expect $R/FeeWaivedBy = Fulfilment.FeeWaiver.COUPON
  * @expect $R/Total = 22.85
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'FREE_DISPATCH'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.49, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'FREE_DISPATCH'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 18.49, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
  * @test P2-pickup: a delivery-only coupon is not applied to pickup
- * @expect $R/CouponState = Shop.CouponState.NOT_APPLIED
+ * @expect $R/CouponState = Fulfilment.CouponState.NOT_APPLIED
  * @expect $R/CouponMessage = 'FREE_DISPATCH is valid for delivery orders only'
  * @expect $R/Total = 20.08
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'FREE_DISPATCH'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 18.49, OrderType = Shop.OrderType.PICKUP, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'FREE_DISPATCH'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 18.49, OrderType = Fulfilment.OrderType.PICKUP, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
  * @test P3: below the coupon minimum names the missing amount
- * @expect $R/CouponState = Shop.CouponState.NOT_APPLIED
+ * @expect $R/CouponState = Fulfilment.CouponState.NOT_APPLIED
  * @expect $R/CouponMessage = 'Add $3.01 more to use GITHUB_STUDENT'
  * @expect $R/Discount = 0
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 16.99, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 16.99, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
@@ -100,8 +100,8 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 16.99, OrderType = Shop.Or
  * @expect $R/TipAmount = 12.90
  * @expect $R/Total = 106.32
  */
-retrieve $Coupon from Shop.Coupon where [Code = 'GITHUB_STUDENT'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 96.00, OrderType = Shop.OrderType.DELIVERY, Coupon = $Coupon, Tip = Shop.TipOption.FIFTEEN);
+retrieve $Coupon from Fulfilment.Coupon where [Code = 'GITHUB_STUDENT'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 96.00, OrderType = Fulfilment.OrderType.DELIVERY, Coupon = $Coupon, Tip = Fulfilment.TipOption.FIFTEEN);
 /
 
 /**
@@ -109,16 +109,16 @@ $R = call microflow Shop.SUB_Price_Compute(Subtotal = 96.00, OrderType = Shop.Or
  * @expect $R/Tax = 1.27
  * @expect $R/Total = 16.01
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 14.74, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 14.74, OrderType = Fulfilment.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.NONE);
 /
 
 /**
  * @test P11: tax rounded half-up (1.7457 to 1.75)
  * @expect $R/Total = 21.99
  */
-retrieve $NoCoupon from Shop.Coupon where [Code = 'NO_SUCH_COUPON'] first;
-$R = call microflow Shop.SUB_Price_Compute(Subtotal = 20.24, OrderType = Shop.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Shop.TipOption.NONE);
+retrieve $NoCoupon from Fulfilment.Coupon where [Code = 'NO_SUCH_COUPON'] first;
+$R = call microflow Fulfilment.SUB_Price_Compute(Subtotal = 20.24, OrderType = Fulfilment.OrderType.PICKUP, Coupon = $NoCoupon, Tip = Fulfilment.TipOption.NONE);
 /
 
 /**

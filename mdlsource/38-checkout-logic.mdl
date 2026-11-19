@@ -15,8 +15,8 @@ begin
   if $Existing != empty then
     return $Existing;
   end if;
-  $Form = create Shop.CheckoutForm (OrderType = Shop.OrderType.DELIVERY, City = 'San Francisco', StateCode = 'CA', Tip = Shop.TipOption.FIFTEEN,
-    Method = Shop.PaymentMethod.CARD, Card = Shop.TestCard.VISA_4242, Shop.CheckoutForm_Owner = [%CurrentUser%]) commit without events;
+  $Form = create Shop.CheckoutForm (OrderType = Fulfilment.OrderType.DELIVERY, City = 'San Francisco', StateCode = 'CA', Tip = Fulfilment.TipOption.FIFTEEN,
+    Method = Fulfilment.PaymentMethod.CARD, Card = Fulfilment.TestCard.VISA_4242, Shop.CheckoutForm_Owner = [%CurrentUser%]) commit without events;
   return $Form;
 end;
 
@@ -32,10 +32,10 @@ create or modify microflow Shop.SUB_Checkout_Compute ($Form: Shop.CheckoutForm)
 folder 'Checkout'
 begin
   $Cart = call microflow Shop.SUB_Cart_Current();
-  retrieve $Store from Shop.StoreSettings first;
-  retrieve $Sim from Shop.SimulationSettings first;
+  retrieve $Store from Core.StoreSettings first;
+  retrieve $Sim from Core.SimulationSettings first;
   retrieve $Coupon from $Cart/Shop.Cart_Coupon;
-  declare $Delivery Boolean = $Form/OrderType = Shop.OrderType.DELIVERY;
+  declare $Delivery Boolean = $Form/OrderType = Fulfilment.OrderType.DELIVERY;
   -- zone check
   declare $Zip String = if $Form/Zip = empty then '' else trim($Form/Zip);
   declare $ZoneMsg String = '';
@@ -43,7 +43,7 @@ begin
   declare $Outside Boolean = false;
   declare $Trip Integer = 0;
   if isMatch($Zip, '[0-9]{5}') then
-    retrieve $Zone from Shop.DeliveryZone where [Zip = $Zip and IsActive = true] first;
+    retrieve $Zone from Fulfilment.DeliveryZone where [Zip = $Zip and IsActive = true] first;
     if $Zone != empty then
       set $IsZoneOk = true;
       set $ZoneMsg = 'ZONE_OK // ZIP ' + $Zip + ' · ' + $Zone/Neighborhood + ' · ' + formatDecimal($Zone/DistanceMiles, '0.0') + ' mi';
@@ -57,28 +57,28 @@ begin
   else
     change $Form (Shop.CheckoutForm_Zone = empty);
   end if;
-  $Price = call microflow Shop.SUB_Price_Compute(Subtotal = $Cart/Subtotal, OrderType = $Form/OrderType, Coupon = $Coupon, Tip = $Form/Tip);
+  $Price = call microflow Fulfilment.SUB_Price_Compute(Subtotal = $Cart/Subtotal, OrderType = $Form/OrderType, Coupon = $Coupon, Tip = $Form/Tip);
   declare $NetAmount Decimal = $Cart/Subtotal - $Price/Discount;
-  $T0 = call microflow Shop.SUB_Money(Amount = 0);
-  $T10 = call microflow Shop.SUB_Money(Amount = round($NetAmount * 10 div 100, 2));
-  $T15 = call microflow Shop.SUB_Money(Amount = round($NetAmount * 15 div 100, 2));
-  $T20 = call microflow Shop.SUB_Money(Amount = round($NetAmount * 20 div 100, 2));
-  $SubText = call microflow Shop.SUB_Money(Amount = $Cart/Subtotal);
-  $DiscText = call microflow Shop.SUB_Money(Amount = 0 - $Price/Discount);
-  $FeeMoney = call microflow Shop.SUB_Money(Amount = $Price/DeliveryFee);
-  $TaxText = call microflow Shop.SUB_Money(Amount = $Price/Tax);
-  $TipText = call microflow Shop.SUB_Money(Amount = $Price/TipAmount);
-  $TotalText = call microflow Shop.SUB_Money(Amount = $Price/Total);
+  $T0 = call microflow Core.SUB_Money(Amount = 0);
+  $T10 = call microflow Core.SUB_Money(Amount = round($NetAmount * 10 div 100, 2));
+  $T15 = call microflow Core.SUB_Money(Amount = round($NetAmount * 15 div 100, 2));
+  $T20 = call microflow Core.SUB_Money(Amount = round($NetAmount * 20 div 100, 2));
+  $SubText = call microflow Core.SUB_Money(Amount = $Cart/Subtotal);
+  $DiscText = call microflow Core.SUB_Money(Amount = 0 - $Price/Discount);
+  $FeeMoney = call microflow Core.SUB_Money(Amount = $Price/DeliveryFee);
+  $TaxText = call microflow Core.SUB_Money(Amount = $Price/Tax);
+  $TipText = call microflow Core.SUB_Money(Amount = $Price/TipAmount);
+  $TotalText = call microflow Core.SUB_Money(Amount = $Price/Total);
   declare $FeeNote String = '';
-  if $Delivery and $Price/FeeWaivedBy = Shop.FeeWaiver.THRESHOLD then
+  if $Delivery and $Price/FeeWaivedBy = Fulfilment.FeeWaiver.THRESHOLD then
     set $FeeNote = 'free from $40.00';
   end if;
-  if $Delivery and $Price/FeeWaivedBy = Shop.FeeWaiver.COUPON then
+  if $Delivery and $Price/FeeWaivedBy = Fulfilment.FeeWaiver.COUPON then
     set $FeeNote = 'FREE_DISPATCH';
   end if;
   declare $MinMsg String = '';
   if $Delivery and $Cart/Subtotal < $Store/MinDeliverySubtotal and $Cart/ItemCount > 0 then
-    $Missing = call microflow Shop.SUB_Money(Amount = $Store/MinDeliverySubtotal - $Cart/Subtotal);
+    $Missing = call microflow Core.SUB_Money(Amount = $Store/MinDeliverySubtotal - $Cart/Subtotal);
     set $MinMsg = 'Delivery needs a subtotal of at least $15.00 (' + $Missing + ' more). Choose pickup or add more.';
   end if;
   declare $CouponLine String = '';
@@ -86,10 +86,10 @@ begin
     set $CouponLine = 'Coupon ' + $Coupon/Code + ': ' + $Price/CouponMessage;
   end if;
   -- ETA: ready = queueWait + bake + qa; delivery adds courier, handover and trip
-  $ReadyEff = call microflow Shop.SUB_Eff(Base = $Sim/QueueWait + $Sim/Bake + $Sim/Qa);
+  $ReadyEff = call microflow Core.SUB_Eff(Base = $Sim/QueueWait + $Sim/Bake + $Sim/Qa);
   declare $ReadyAt DateTime = addSeconds([%CurrentDateTime%], $ReadyEff);
   declare $AvgTrip Integer = if $Trip > 0 then $Trip else 140;
-  $DeliveryEff = call microflow Shop.SUB_Eff(Base = $Sim/QueueWait + $Sim/Bake + $Sim/Qa + $Sim/CourierToStore + $Sim/Handover + $AvgTrip);
+  $DeliveryEff = call microflow Core.SUB_Eff(Base = $Sim/QueueWait + $Sim/Bake + $Sim/Qa + $Sim/CourierToStore + $Sim/Handover + $AvgTrip);
   declare $Minutes Integer = max(1, round($DeliveryEff div 60));
   change $Form (ZoneMessage = $ZoneMsg, IsZoneOk = $IsZoneOk, IsZoneOutside = $Outside, Subtotal = $Cart/Subtotal, Discount = $Price/Discount,
     DeliveryFee = $Price/DeliveryFee, FeeNote = $FeeNote, Tax = $Price/Tax, TipAmount = $Price/TipAmount, TipPercent = $Price/TipPercent, Total = $Price/Total,
@@ -138,7 +138,7 @@ grant execute on microflow Shop.DS_Checkout to Shop.Guest; -- auto
 create or modify microflow Shop.SUB_Checkout_Type ($Form: Shop.CheckoutForm, $Type: String)
 folder 'Checkout'
 begin
-  change $Form (OrderType = if $Type = 'PICKUP' then Shop.OrderType.PICKUP else Shop.OrderType.DELIVERY);
+  change $Form (OrderType = if $Type = 'PICKUP' then Fulfilment.OrderType.PICKUP else Fulfilment.OrderType.DELIVERY);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
 
@@ -165,7 +165,7 @@ grant execute on microflow Shop.ACT_Checkout_Type to Shop.Guest; -- auto
 create or modify microflow Shop.SUB_Checkout_Tip ($Form: Shop.CheckoutForm, $Tip: String)
 folder 'Checkout'
 begin
-  change $Form (Tip = if $Tip = 'NONE' then Shop.TipOption.NONE else if $Tip = 'TEN' then Shop.TipOption.TEN else if $Tip = 'TWENTY' then Shop.TipOption.TWENTY else Shop.TipOption.FIFTEEN);
+  change $Form (Tip = if $Tip = 'NONE' then Fulfilment.TipOption.NONE else if $Tip = 'TEN' then Fulfilment.TipOption.TEN else if $Tip = 'TWENTY' then Fulfilment.TipOption.TWENTY else Fulfilment.TipOption.FIFTEEN);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
 
@@ -193,9 +193,9 @@ grant execute on microflow Shop.ACT_Checkout_Tip to Shop.Guest; -- auto
 create or modify microflow Shop.SUB_Checkout_Pay ($Form: Shop.CheckoutForm, $Method: String, $Card: String)
 folder 'Checkout'
 begin
-  change $Form (Method = if $Method = 'APPLE_PAY' then Shop.PaymentMethod.APPLE_PAY else if $Method = 'GOOGLE_PAY' then Shop.PaymentMethod.GOOGLE_PAY else Shop.PaymentMethod.CARD);
+  change $Form (Method = if $Method = 'APPLE_PAY' then Fulfilment.PaymentMethod.APPLE_PAY else if $Method = 'GOOGLE_PAY' then Fulfilment.PaymentMethod.GOOGLE_PAY else Fulfilment.PaymentMethod.CARD);
   if $Card != '' then
-    change $Form (Card = if $Card = 'MASTERCARD_4444' then Shop.TestCard.MASTERCARD_4444 else if $Card = 'VISA_0002' then Shop.TestCard.VISA_0002 else if $Card = 'VISA_9995' then Shop.TestCard.VISA_9995 else if $Card = 'AMEX_0005' then Shop.TestCard.AMEX_0005 else Shop.TestCard.VISA_4242);
+    change $Form (Card = if $Card = 'MASTERCARD_4444' then Fulfilment.TestCard.MASTERCARD_4444 else if $Card = 'VISA_0002' then Fulfilment.TestCard.VISA_0002 else if $Card = 'VISA_9995' then Fulfilment.TestCard.VISA_9995 else if $Card = 'AMEX_0005' then Fulfilment.TestCard.AMEX_0005 else Fulfilment.TestCard.VISA_4242);
   end if;
   commit $Form without events refresh;
 end;
@@ -236,7 +236,7 @@ grant execute on microflow Shop.ACT_Checkout_Changed to Shop.Guest; -- auto
 create or modify microflow Shop.SUB_Checkout_Pickup ($Form: Shop.CheckoutForm)
 folder 'Checkout'
 begin
-  change $Form (OrderType = Shop.OrderType.PICKUP);
+  change $Form (OrderType = Fulfilment.OrderType.PICKUP);
   call microflow Shop.SUB_Checkout_Recalculate(Form = $Form);
 end;
 
@@ -260,7 +260,7 @@ grant execute on microflow Shop.ACT_Checkout_Pickup to Shop.Guest; -- auto
  * @param $Raw Typed phone number
  * @returns Formatted phone or ''
  */
-create or modify microflow Shop.SUB_FormatPhone ($Raw: String)
+create or modify microflow Core.SUB_FormatPhone ($Raw: String)
 returns String as $Phone
 folder 'Checkout'
 begin
@@ -295,19 +295,19 @@ begin
   $Cart = call microflow Shop.SUB_Cart_Current();
   if $Cart/ItemCount = 0 then
     show page Shop.Menu();
-    call microflow Shop.SUB_Toast(Message = 'MANIFEST.LOCK is empty. Import a module first.', Level = Shop.ToastLevel.INFO, ShouldShowCartAction = false);
+    call microflow Core.SUB_Toast(Message = 'MANIFEST.LOCK is empty. Import a module first.', Level = Core.ToastLevel.INFO, ShouldShowCartAction = false);
     return;
   end if;
   if $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' then
-    call microflow Shop.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = true);
+    call microflow Core.SUB_Toast(Message = $Cart/CheckoutBlock, Level = Core.ToastLevel.ERROR, ShouldShowCartAction = true);
     return;
   end if;
-  declare $Delivery Boolean = $Form/OrderType = Shop.OrderType.DELIVERY;
+  declare $Delivery Boolean = $Form/OrderType = Fulfilment.OrderType.DELIVERY;
   declare $Errors Integer = 0;
   declare $Summary String = '';
   declare $Name String = if $Form/ContactName = empty then '' else trim($Form/ContactName);
   declare $Email String = if $Form/ContactEmail = empty then '' else trim($Form/ContactEmail);
-  $Phone = call microflow Shop.SUB_FormatPhone(Raw = $Form/ContactPhone);
+  $Phone = call microflow Core.SUB_FormatPhone(Raw = $Form/ContactPhone);
   declare $Line1 String = if $Form/AddressLine1 = empty then '' else trim($Form/AddressLine1);
   declare $City String = if $Form/City = empty then '' else trim($Form/City);
   declare $State String = if $Form/StateCode = empty then '' else toUpperCase(trim($Form/StateCode));
@@ -361,7 +361,7 @@ begin
     set $Errors = $Errors + 1;
     set $Summary = $Summary + 'CONTACT_PHONE · ';
   end if;
-  if $Form/Method = Shop.PaymentMethod.CARD and $Form/Card = empty then
+  if $Form/Method = Fulfilment.PaymentMethod.CARD and $Form/Card = empty then
     set $Errors = $Errors + 1;
     set $Summary = $Summary + 'PAYMENT_PROTOCOL · ';
   end if;
@@ -377,13 +377,13 @@ begin
   retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false] sort by CreatedAt asc;
   retrieve $Coupon from $Cart/Shop.Cart_Coupon;
   retrieve $Zone from $Form/Shop.CheckoutForm_Zone;
-  $Order = create Shop.Order (Source = Shop.OrderSource.GUEST, OrderType = $Form/OrderType, ContactName = $Name, ContactEmail = $Email, ContactPhone = $Phone,
+  $Order = create Fulfilment.Order (Source = Fulfilment.OrderSource.GUEST, OrderType = $Form/OrderType, ContactName = $Name, ContactEmail = $Email, ContactPhone = $Phone,
     AddressLine1 = if $Delivery then $Line1 else '', AddressLine2 = if $Delivery then (if $Form/AddressLine2 = empty then '' else trim($Form/AddressLine2)) else '',
     City = if $Delivery then $City else '', StateCode = if $Delivery then $State else '', Zip = if $Delivery then $Zip else '',
     DeliveryNotes = if $Delivery then (if $Form/DeliveryNotes = empty then '' else trim($Form/DeliveryNotes)) else '',
-    Tip = if $Delivery then $Form/Tip else Shop.TipOption.NONE, Shop.Order_Zone = if $Delivery then $Zone else empty, Shop.Order_PlacedBy = [%CurrentUser%], OrderNumber = 0);
+    Tip = if $Delivery then $Form/Tip else Fulfilment.TipOption.NONE, Fulfilment.Order_Zone = if $Delivery then $Zone else empty, Fulfilment.Order_PlacedBy = [%CurrentUser%], OrderNumber = 0);
   call microflow Shop.SUB_Order_Place(TheOrder = $Order, Lines = $Lines, Coupon = $Coupon, Method = $Form/Method,
-    Card = if $Form/Method = Shop.PaymentMethod.CARD then $Form/Card else empty, Actor = Shop.ActorType.GUEST, ActorName = 'guest');
+    Card = if $Form/Method = Fulfilment.PaymentMethod.CARD then $Form/Card else empty, Actor = Fulfilment.ActorType.GUEST, ActorName = 'guest');
   call microflow Shop.SUB_Order_Grant(TheOrder = $Order);
   show page Shop.PaymentSheet(TheOrder = $Order);
 end;
@@ -410,14 +410,14 @@ grant execute on microflow Shop.ACT_Checkout_Place to Shop.Guest; -- auto
  *
  * @param $TheOrder The order
  */
-create or modify microflow Shop.SUB_Order_Grant ($TheOrder: Shop.Order)
+create or modify microflow Shop.SUB_Order_Grant ($TheOrder: Fulfilment.Order)
 folder 'Orders'
 begin
-  retrieve $Existing from Shop.OrderAccess where [Shop.OrderAccess_Order = $TheOrder and Shop.OrderAccess_User = '[%CurrentUser%]'] first;
+  retrieve $Existing from Fulfilment.OrderAccess where [Fulfilment.OrderAccess_Order = $TheOrder and Fulfilment.OrderAccess_User = '[%CurrentUser%]'] first;
   if $Existing != empty then
     change $Existing (GrantedAt = [%CurrentDateTime%]) commit without events;
   else
-    $Access = create Shop.OrderAccess (GrantedAt = [%CurrentDateTime%], Shop.OrderAccess_Order = $TheOrder, Shop.OrderAccess_User = [%CurrentUser%]) commit without events;
+    $Access = create Fulfilment.OrderAccess (GrantedAt = [%CurrentDateTime%], Fulfilment.OrderAccess_Order = $TheOrder, Fulfilment.OrderAccess_User = [%CurrentUser%]) commit without events;
   end if;
   $Cart = call microflow Shop.SUB_Cart_Current();
   change $Cart (Shop.Cart_ActiveOrder = $TheOrder) commit without events refresh;

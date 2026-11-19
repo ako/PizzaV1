@@ -151,3 +151,56 @@ Where the cost went:
 
 Lesson for a next run: read the spec and prototype in a subagent and keep only
 its summary in the main conversation.
+
+## 2026-11-19 — module split (architecture follow-up)
+
+Lint MPR003 flagged Shop (27 persistent entities, 467 documents), and the
+architecture report showed 11 clusters inside it. Shop was split in three
+stages, with every gate run after each stage.
+
+| Layer | Module | Holds |
+|---|---|---|
+| 3 | **Simulation** | simulation steps, clock and watchdog, daily reset, after-startup, all seed data, SimCustomer |
+| 2 | **Shop** | the storefront: cart, checkout, every page, snippet and layout, page entry points, menu/configurator/tracking view models |
+| 1 | **Fulfilment** | order domain without UI: Order and lines/modifiers, payments, status history, log, access tokens, couriers, ovens, delivery zones, coupons, pricing, order/payment transitions |
+| 0 | **Catalog** | products, sizes, options, ingredients, recipes, categories, allergens, option pricing/availability |
+| 0 | **Core** | store and simulation settings, toasts, money/time/phone/id helpers |
+
+All dependencies point down; `report architecture` finds **0 domain cycles**.
+
+How it was done, and why it holds:
+- The cut was computed from `CATALOG.REFS`, not guessed. The storefront set was
+  seeded (UI entities, pages, snippets, layouts, nanoflows, ACT_/DS_/NF_ flows) and
+  grown with everything that references it. The rest can sit below.
+- `MOVE` rewrote every model reference, moved associations to their parent
+  entity's module, and remapped access rules to a same-named role in the target
+  module. So each new module got a `Guest` role on both user roles *before* the
+  move.
+- The scripts stay the source of truth: names renamed by token, the seed
+  generator's dynamic names fixed by hand (output byte-identical), and the module
+  and role created at the top of `01-domain-enums.mdl`. `apply_all.sh` twice writes
+  nothing.
+
+Found along the way:
+- Coupon's guest read rule navigated `Shop.Cart_Coupon`, the one edge that made a
+  Fulfilment<->Shop cycle. No page reads coupons (they are shown as text on the
+  cart), so guest access to Coupon was **removed**: tighter security and no cycle.
+- DeliveryZone's guest rule also went through the checkout form. It now covers
+  only the zones of the guest's own orders; the checkout zone check runs server-side.
+- Pages querying another module's tables (lint ARCH001) now use guarded Shop
+  data-source flows: `DS_Product_Recipe/Allergens`, `DS_Line_Extras/Removed/Allergens`,
+  `DS_Order_Log/Lines/Payments/History`, `DS_OrderLine_Modifiers`. Each checks
+  ownership or published status. The live lists still refresh, because the
+  configurator and tracking poll commit their context object with refresh;
+  verified by probing the configurator manifest and the receipt.
+- Accepted ARCH001: `Shop.ItemInfo` takes a `Catalog.Product` parameter (a page
+  about a product), and `SNIP_Toasts` lists `Core.Toast` from the layout. A
+  microflow source there has no context object to refresh it, so toasts would
+  stop appearing.
+- Old queued `Shop.SIM_ClockRun` tasks from before the move fail once after
+  restart ("moved due to model changes"); the clock restarts under its new name.
+- A watch build can catch the scripts mid-apply and fail (CE0115). After a
+  multi-script change, `run stop` + `run` before testing.
+
+Result: mx check 0 errors; tests 24/24, journeys 11/11, visual 12/12 (same scores);
+security 0 open high/medium; report 48/100 (unchanged; Security 49 -> 50).

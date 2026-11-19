@@ -8,7 +8,7 @@ mdl 1;
  * @param $Amount Amount in dollars
  * @returns Display text, e.g. $1,024.00
  */
-create or modify microflow Shop.SUB_Money ($Amount: Decimal)
+create or modify microflow Core.SUB_Money ($Amount: Decimal)
 returns String as $Text
 folder 'Core'
 begin
@@ -27,7 +27,7 @@ end;
  * @param $Length Number of characters
  * @returns Random hex string
  */
-create or modify microflow Shop.SUB_RandomHex ($Length: Integer)
+create or modify microflow Core.SUB_RandomHex ($Length: Integer)
 returns String as $Out
 folder 'Core'
 begin
@@ -50,7 +50,7 @@ end;
  * @param $Seconds Duration in seconds (negative counts as 0)
  * @returns Text like 05:47
  */
-create or modify microflow Shop.SUB_MmSs ($Seconds: Integer)
+create or modify microflow Core.SUB_MmSs ($Seconds: Integer)
 returns String as $Text
 folder 'Core'
 begin
@@ -68,11 +68,11 @@ end;
  * @param $Base Duration at 1× in seconds
  * @returns Effective seconds
  */
-create or modify microflow Shop.SUB_Eff ($Base: Integer)
+create or modify microflow Core.SUB_Eff ($Base: Integer)
 returns Integer as $Eff
 folder 'Core'
 begin
-  retrieve $Sim from Shop.SimulationSettings first;
+  retrieve $Sim from Core.SimulationSettings first;
   declare $Factor Integer = 1;
   if $Sim != empty then
     set $Factor = max($Sim/SpeedFactor, 1);
@@ -90,24 +90,24 @@ end;
  * @param $Level Toast level
  * @param $ShouldShowCartAction Offer "View manifest"
  */
-create or modify microflow Shop.SUB_Toast ($Message: String, $Level: Enumeration(Shop.ToastLevel), $ShouldShowCartAction: Boolean)
+create or modify microflow Core.SUB_Toast ($Message: String, $Level: Enumeration(Core.ToastLevel), $ShouldShowCartAction: Boolean)
 folder 'Core'
 begin
   declare $Now DateTime = [%CurrentDateTime%];
   declare $Expires DateTime = addSeconds($Now, 4);
-  if $Level = Shop.ToastLevel.WARNING then
+  if $Level = Core.ToastLevel.WARNING then
     set $Expires = addSeconds($Now, 6);
   end if;
-  if $Level = Shop.ToastLevel.ERROR then
+  if $Level = Core.ToastLevel.ERROR then
     set $Expires = addDays($Now, 1);
   end if;
-  retrieve $Existing from Shop.Toast where [Shop.Toast_Owner = '[%CurrentUser%]'] sort by CreatedAt asc;
+  retrieve $Existing from Core.Toast where [Core.Toast_Owner = '[%CurrentUser%]'] sort by CreatedAt asc;
   $Count = count $Existing;
   if $Count >= 3 then
     $Oldest = head $Existing;
     delete $Oldest;
   end if;
-  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShouldShowCartAction = $ShouldShowCartAction, Shop.Toast_Owner = [%CurrentUser%]) commit without events refresh;
+  $Toast = create Core.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShouldShowCartAction = $ShouldShowCartAction, Core.Toast_Owner = [%CurrentUser%]) commit without events refresh;
 end;
 
 /**
@@ -115,7 +115,7 @@ end;
  *
  * @param $Toast The toast to close
  */
-create or modify microflow Shop.SUB_Toast_Close ($Toast: Shop.Toast)
+create or modify microflow Core.SUB_Toast_Close ($Toast: Core.Toast)
 folder 'Core'
 begin
   delete $Toast refresh;
@@ -127,8 +127,8 @@ end;
  *
  * @param $Toast The toast to close
  */
-create or modify microflow Shop.ACT_Toast_Close ($Toast: Shop.Toast)
+create or modify microflow Shop.ACT_Toast_Close ($Toast: Core.Toast)
 folder 'Core'
 begin
-  call microflow Shop.SUB_Toast_Close(Toast = $Toast);
+  call microflow Core.SUB_Toast_Close(Toast = $Toast);
 end;

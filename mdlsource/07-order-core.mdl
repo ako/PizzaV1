@@ -7,13 +7,13 @@ mdl 1;
  *
  * @param $TheOrder The order
  */
-create or modify microflow Shop.SUB_Order_RefreshPaymentLabel ($TheOrder: Shop.Order)
+create or modify microflow Fulfilment.SUB_Order_RefreshPaymentLabel ($TheOrder: Fulfilment.Order)
 folder 'Orders'
 begin
-  retrieve $Attempt from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder] sort by AttemptNumber desc first;
+  retrieve $Attempt from Fulfilment.PaymentAttempt where [Fulfilment.PaymentAttempt_Order = $TheOrder] sort by AttemptNumber desc first;
   declare $Label String = '';
   if $Attempt != empty then
-    if $Attempt/Method = Shop.PaymentMethod.CARD and $Attempt/Card != empty then
+    if $Attempt/Method = Fulfilment.PaymentMethod.CARD and $Attempt/Card != empty then
       set $Label = getCaption($Attempt/Card);
     else
       set $Label = getCaption($Attempt/Method);
@@ -32,16 +32,16 @@ end;
  * @param $Message Message text with real values filled in
  * @param $Visible False for staff-only and DEBUG lines (never shown to guests)
  */
-create or modify microflow Shop.SUB_Order_Log ($TheOrder: Shop.Order, $Level: Enumeration(Shop.LogLevel), $Tag: String, $Message: String, $Visible: Boolean)
+create or modify microflow Fulfilment.SUB_Order_Log ($TheOrder: Fulfilment.Order, $Level: Enumeration(Fulfilment.LogLevel), $Tag: String, $Message: String, $Visible: Boolean)
 folder 'Orders'
 begin
-  retrieve $Last from Shop.OrderLogEntry where [Shop.OrderLogEntry_Order = $TheOrder] sort by Seq desc first;
+  retrieve $Last from Fulfilment.OrderLogEntry where [Fulfilment.OrderLogEntry_Order = $TheOrder] sort by Seq desc first;
   declare $Seq Integer = 1;
   if $Last != empty then
     set $Seq = $Last/Seq + 1;
   end if;
-  $Entry = create Shop.OrderLogEntry (LoggedAt = [%CurrentDateTime%], TimeText = formatDateTime([%CurrentDateTime%], 'HH:mm:ss'), Level = $Level, Tag = $Tag, Message = $Message,
-    IsCustomerVisible = $Visible and $Level != Shop.LogLevel.DEBUG, Seq = $Seq, Shop.OrderLogEntry_Order = $TheOrder) commit without events;
+  $Entry = create Fulfilment.OrderLogEntry (LoggedAt = [%CurrentDateTime%], TimeText = formatDateTime([%CurrentDateTime%], 'HH:mm:ss'), Level = $Level, Tag = $Tag, Message = $Message,
+    IsCustomerVisible = $Visible and $Level != Fulfilment.LogLevel.DEBUG, Seq = $Seq, Fulfilment.OrderLogEntry_Order = $TheOrder) commit without events;
 end;
 
 /**
@@ -56,19 +56,19 @@ end;
  * @param $ActorName Actor name, e.g. sim/kitchen-auto or guest
  * @param $Reason Reason (cancellations), may be empty
  */
-create or modify microflow Shop.SUB_Order_Transition ($TheOrder: Shop.Order, $ToStatus: Enumeration(Shop.OrderStatus), $Actor: Enumeration(Shop.ActorType), $ActorName: String, $Reason: String)
+create or modify microflow Fulfilment.SUB_Order_Transition ($TheOrder: Fulfilment.Order, $ToStatus: Enumeration(Fulfilment.OrderStatus), $Actor: Enumeration(Fulfilment.ActorType), $ActorName: String, $Reason: String)
 folder 'Orders'
 begin
-  declare $From Enumeration(Shop.OrderStatus) = $TheOrder/OrderStatus;
+  declare $From Enumeration(Fulfilment.OrderStatus) = $TheOrder/OrderStatus;
   declare $Now DateTime = [%CurrentDateTime%];
-  retrieve $Last from Shop.OrderStatusChange where [Shop.OrderStatusChange_Order = $TheOrder] sort by Seq desc first;
+  retrieve $Last from Fulfilment.OrderStatusChange where [Fulfilment.OrderStatusChange_Order = $TheOrder] sort by Seq desc first;
   declare $Seq Integer = 1;
   if $Last != empty then
     set $Seq = $Last/Seq + 1;
   end if;
-  declare $Open Boolean = $ToStatus != Shop.OrderStatus.DELIVERED and $ToStatus != Shop.OrderStatus.PICKED_UP and $ToStatus != Shop.OrderStatus.CANCELLED;
+  declare $Open Boolean = $ToStatus != Fulfilment.OrderStatus.DELIVERED and $ToStatus != Fulfilment.OrderStatus.PICKED_UP and $ToStatus != Fulfilment.OrderStatus.CANCELLED;
   change $TheOrder (OrderStatus = $ToStatus, StatusChangedAt = $Now, IsOpen = $Open, TimerProgress = 0, TimerAnchorAt = $Now) commit without events;
-  $Change = create Shop.OrderStatusChange (FromStatus = $From, ToStatus = $ToStatus, ChangedAt = $Now, Actor = $Actor, ActorName = $ActorName, Reason = $Reason, Seq = $Seq, Shop.OrderStatusChange_Order = $TheOrder) commit without events;
+  $Change = create Fulfilment.OrderStatusChange (FromStatus = $From, ToStatus = $ToStatus, ChangedAt = $Now, Actor = $Actor, ActorName = $ActorName, Reason = $Reason, Seq = $Seq, Fulfilment.OrderStatusChange_Order = $TheOrder) commit without events;
   declare $FromText String = 'NEW';
   if $From != empty then
     set $FromText = getKey($From);

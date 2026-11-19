@@ -14,7 +14,7 @@ create or modify microflow Shop.SUB_Home_Refresh ($View: Shop.HomeView)
 folder 'Home'
 begin
   declare $DayStart DateTime = beginOfDay([%CurrentDateTime%]);
-  retrieve $Done from Shop.Order where [(OrderStatus = 'DELIVERED' or OrderStatus = 'PICKED_UP') and CompletedAt >= $DayStart];
+  retrieve $Done from Fulfilment.Order where [(OrderStatus = 'DELIVERED' or OrderStatus = 'PICKED_UP') and CompletedAt >= $DayStart];
   $DoneCount = count $Done;
   declare $Total Decimal = 0;
   declare $Timed Integer = 0;
@@ -27,22 +27,22 @@ begin
   end loop;
   declare $AvgText String = '—';
   if $Timed > 0 then
-    $Mm = call microflow Shop.SUB_MmSs(Seconds = round($Total div $Timed));
+    $Mm = call microflow Core.SUB_MmSs(Seconds = round($Total div $Timed));
     set $AvgText = $Mm;
   end if;
   declare $Per Integer = max(1, ceil($DoneCount div 40));
   declare $Lit Integer = ceil($DoneCount div $Per);
-  retrieve $Ovens from Shop.Oven where [OvenStatus = 'ONLINE'];
+  retrieve $Ovens from Fulfilment.Oven where [OvenStatus = 'ONLINE'];
   $Slots = sum $Ovens by CapacityOrders;
-  retrieve $Baking from Shop.Order where [OrderStatus = 'BAKING' and Shop.Order_Oven/Shop.Oven/OvenStatus = 'ONLINE'];
+  retrieve $Baking from Fulfilment.Order where [OrderStatus = 'BAKING' and Fulfilment.Order_Oven/Fulfilment.Oven/OvenStatus = 'ONLINE'];
   $Busy = count $Baking;
   declare $Pct Integer = 0;
   if $Slots > 0 then
     set $Pct = round($Busy * 100 div $Slots);
   end if;
-  retrieve $AllCouriers from Shop.Courier;
+  retrieve $AllCouriers from Fulfilment.Courier;
   $CourierTotal = count $AllCouriers;
-  retrieve $OnDuty from Shop.Courier where [CourierStatus != 'OFF_DUTY'];
+  retrieve $OnDuty from Fulfilment.Courier where [CourierStatus != 'OFF_DUTY'];
   $OnDutyCount = count $OnDuty;
   retrieve $Published from Catalog.Product where [ProductStatus = 'PUBLISHED'];
   $PublishedCount = count $Published;

@@ -58,26 +58,26 @@ folder 'Simulation'
 begin
   declare $Start DateTime = [%CurrentDateTime%];
   log info node 'Simulation' 'RESET start by ' + $Trigger;
-  retrieve $Orders from Shop.Order;
+  retrieve $Orders from Fulfilment.Order;
   $Deleted = count $Orders;
   retrieve $Carts from Shop.Cart;
   delete $Carts;
   retrieve $Forms from Shop.CheckoutForm;
   delete $Forms;
-  retrieve $Access from Shop.OrderAccess;
+  retrieve $Access from Fulfilment.OrderAccess;
   delete $Access;
   retrieve $Lookups from Shop.LookupAttempt;
   delete $Lookups;
-  retrieve $Events from Shop.SimulationEvent;
+  retrieve $Events from Fulfilment.SimulationEvent;
   delete $Events;
-  retrieve $Couriers from Shop.Courier;
+  retrieve $Couriers from Fulfilment.Courier;
   delete $Couriers;
   delete $Orders;
-  retrieve $Ovens from Shop.Oven;
+  retrieve $Ovens from Fulfilment.Oven;
   delete $Ovens;
-  retrieve $Coupons from Shop.Coupon;
+  retrieve $Coupons from Fulfilment.Coupon;
   delete $Coupons;
-  retrieve $Zones from Shop.DeliveryZone;
+  retrieve $Zones from Fulfilment.DeliveryZone;
   delete $Zones;
   retrieve $Products from Catalog.Product;
   delete $Products;
@@ -91,16 +91,16 @@ begin
   delete $Allergens;
   retrieve $SimCustomers from Simulation.SimCustomer;
   delete $SimCustomers;
-  retrieve $Sims from Shop.SimulationSettings;
+  retrieve $Sims from Core.SimulationSettings;
   delete $Sims;
-  retrieve $Stores from Shop.StoreSettings;
+  retrieve $Stores from Core.StoreSettings;
   delete $Stores;
   declare $T DateTime = [%CurrentDateTime%];
   call microflow Simulation.SEED_Catalog(T = $T);
   call microflow Simulation.SEED_Orders(T = $T);
   call microflow Shop.SUB_Catalog_RecalculateAll();
-  retrieve $Highest from Shop.Order sort by OrderNumber desc first;
-  retrieve $Store from Shop.StoreSettings first;
+  retrieve $Highest from Fulfilment.Order sort by OrderNumber desc first;
+  retrieve $Store from Core.StoreSettings first;
   change $Store (NextOrderNumber = $Highest/OrderNumber + 1) commit without events;
   declare $Speed Integer = @Simulation.SpeedFactor;
   if $Speed != 1 and $Speed != 2 and $Speed != 5 and $Speed != 10 then
@@ -111,10 +111,10 @@ begin
     set $By = 'SYSTEM (initial seed)';
     set $Deleted = 0;
   end if;
-  retrieve $Sim from Shop.SimulationSettings first;
-  $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
+  retrieve $Sim from Core.SimulationSettings first;
+  $Eff = call microflow Core.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
   change $Sim (SpeedFactor = $Speed, LastResetAt = $T, LastResetBy = $By, LastHousekeepingAt = $T, TrafficAnchorAt = $T, TrafficProgress = 0, TrafficIntervalEffective = $Eff) commit without events;
-  $Event = create Shop.SimulationEvent (OccurredAt = $T, EventType = Shop.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By) commit without events;
+  $Event = create Fulfilment.SimulationEvent (OccurredAt = $T, EventType = Fulfilment.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By) commit without events;
   declare $Duration Integer = round(secondsBetween($Start, [%CurrentDateTime%]));
   log info node 'Simulation' 'RESET end orders=' + toString($Deleted) + ' duration=' + toString($Duration) + 's';
 end;
@@ -138,7 +138,7 @@ begin
     set $Speed = 1;
   end if;
   log info node 'Simulation' 'CONFIG SpeedFactor=' + toString($Speed) + ' ResetOnStartup=' + toString($Reset);
-  retrieve $Store from Shop.StoreSettings first;
+  retrieve $Store from Core.StoreSettings first;
   if $Reset then
     call microflow Simulation.SUB_Reset(Trigger = 'startup');
   else
@@ -162,29 +162,29 @@ end;
 create or modify microflow Simulation.SUB_Sim_ApplySpeed ($Speed: Integer)
 folder 'Simulation'
 begin
-  retrieve $Sim from Shop.SimulationSettings first;
+  retrieve $Sim from Core.SimulationSettings first;
   declare $Now DateTime = [%CurrentDateTime%];
   if $Sim/SpeedFactor != $Speed then
     -- freeze every running timer's progress at the old rate, then anchor at now
-    retrieve $Open from Shop.Order where [IsOpen = true];
+    retrieve $Open from Fulfilment.Order where [IsOpen = true];
     loop $O in $Open
     begin
-      $P = call microflow Shop.SUB_Order_Progress(TheOrder = $O);
+      $P = call microflow Fulfilment.SUB_Order_Progress(TheOrder = $O);
       change $O (TimerProgress = $P, TimerAnchorAt = $Now);
     end loop;
     commit $Open without events;
-    retrieve $Couriers from Shop.Courier where [CourierStatus != 'OFF_DUTY' and CourierStatus != 'AVAILABLE'];
+    retrieve $Couriers from Fulfilment.Courier where [CourierStatus != 'OFF_DUTY' and CourierStatus != 'AVAILABLE'];
     loop $C in $Couriers
     begin
-      $CP = call microflow Shop.SUB_Timer_Progress(Progress = $C/TripProgress, AnchorAt = $C/TripAnchorAt, BaseSeconds = max($C/TripSeconds, 1));
+      $CP = call microflow Fulfilment.SUB_Timer_Progress(Progress = $C/TripProgress, AnchorAt = $C/TripAnchorAt, BaseSeconds = max($C/TripSeconds, 1));
       change $C (TripProgress = $CP, TripAnchorAt = $Now);
     end loop;
     commit $Couriers without events;
-    $TrafficP = call microflow Shop.SUB_Timer_Progress(Progress = $Sim/TrafficProgress, AnchorAt = $Sim/TrafficAnchorAt, BaseSeconds = $Sim/TrafficIntervalSeconds);
+    $TrafficP = call microflow Fulfilment.SUB_Timer_Progress(Progress = $Sim/TrafficProgress, AnchorAt = $Sim/TrafficAnchorAt, BaseSeconds = $Sim/TrafficIntervalSeconds);
     change $Sim (TrafficProgress = $TrafficP, TrafficAnchorAt = $Now);
   end if;
   change $Sim (SpeedFactor = $Speed) commit without events;
-  $Eff = call microflow Shop.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
+  $Eff = call microflow Core.SUB_Eff(Base = $Sim/TrafficIntervalSeconds);
   change $Sim (TrafficIntervalEffective = $Eff) commit without events;
 end;
 
@@ -205,7 +205,7 @@ end;
 create or modify microflow Simulation.SE_ClockWatchdog ()
 folder 'Simulation'
 begin
-  retrieve $Sim from Shop.SimulationSettings first;
+  retrieve $Sim from Core.SimulationSettings first;
   if $Sim != empty then
     declare $Age Decimal = 0;
     if $Sim/LastTickAt != empty then
@@ -242,12 +242,12 @@ folder 'Simulation'
 begin
   retrieve $Sessions from System.Session;
   declare $Now DateTime = [%CurrentDateTime%];
-  $Toasts = create list of Shop.Toast;
+  $Toasts = create list of Core.Toast;
   loop $Session in $Sessions
   begin
     retrieve $User from $Session/System.Session_User;
     if $User != empty then
-      $T = create Shop.Toast (Message = $Message, Level = Shop.ToastLevel.INFO, CreatedAt = $Now, ExpiresAt = addSeconds($Now, 6), ShouldShowCartAction = false, Shop.Toast_Owner = $User);
+      $T = create Core.Toast (Message = $Message, Level = Core.ToastLevel.INFO, CreatedAt = $Now, ExpiresAt = addSeconds($Now, 6), ShouldShowCartAction = false, Core.Toast_Owner = $User);
       add $T to $Toasts;
     end if;
   end loop;

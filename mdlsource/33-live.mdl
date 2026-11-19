@@ -150,7 +150,7 @@ grant execute on nanoflow Shop.DS_Shell_Live to Shop.Guest; -- auto
 create or modify microflow Shop.SUB_Shell_Refresh ($Cart: Shop.Cart)
 folder 'Shell'
 begin
-  retrieve $Expired from Shop.Toast where [Shop.Toast_Owner = '[%CurrentUser%]' and ExpiresAt < '[%CurrentDateTime%]'];
+  retrieve $Expired from Core.Toast where [Core.Toast_Owner = '[%CurrentUser%]' and ExpiresAt < '[%CurrentDateTime%]'];
   delete $Expired refresh;
   retrieve $Fresh from Shop.Cart where [Shop.Cart_Owner = '[%CurrentUser%]'] first;
   if $Fresh != empty then

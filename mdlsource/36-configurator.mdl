@@ -28,7 +28,7 @@ begin
     retrieve $Sizes from Catalog.ProductSize where [Catalog.ProductSize_Product = $Product] sort by SortOrder asc;
     loop $S in $Sizes
     begin
-      $SPrice = call microflow Shop.SUB_Money(Amount = $S/Price);
+      $SPrice = call microflow Core.SUB_Money(Amount = $S/Price);
       $SC = create Shop.Choice (Kind = 'SIZE', Title = toUpperCase(getKey($S/Size)), Sub = $S/ServingDescription + ' · ' + $SPrice, IsSelected = $S = $Size, SortOrder = $S/SortOrder, Shop.Choice_Size = $S, Shop.Choice_Line = $Line);
       add $SC to $Choices;
     end loop;
@@ -74,7 +74,7 @@ begin
           if $O = $Default or $O/Surcharge = 0 then
             set $Sub = 'included';
           else
-            $Sur = call microflow Shop.SUB_Money(Amount = $O/Surcharge);
+            $Sur = call microflow Core.SUB_Money(Amount = $O/Surcharge);
             set $Sub = '+' + $Sur;
           end if;
           if $O = $Default then
@@ -111,7 +111,7 @@ begin
       $XOn = contains $X in $Chosen;
       $XAvail = call microflow Catalog.SUB_Option_AvailableFor(Option = $X, Size = $SizeCode);
       $XPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $X, Size = $SizeCode);
-      $XPriceText = call microflow Shop.SUB_Money(Amount = $XPrice);
+      $XPriceText = call microflow Core.SUB_Money(Amount = $XPrice);
       $XC = create Shop.Choice (Kind = 'EXTRA', Title = $X/OptionKey, Sub = $X/Name + ' · ' + (if $XAvail then $X/VersionTag else 'unavailable today'), PriceLabel = '+' + $XPriceText,
         IsSelected = $XOn, IsDisabled = not($XOn) and ($Full or not($XAvail)), SortOrder = $X/SortOrder, Shop.Choice_Option = $X, Shop.Choice_Line = $Line);
       add $XC to $Choices;
@@ -125,7 +125,7 @@ begin
   retrieve $Crust from $Line/Shop.CartLine_Crust;
   retrieve $Sauce from $Line/Shop.CartLine_Sauce;
   retrieve $Cheese from $Line/Shop.CartLine_Cheese;
-  $BasePrice = call microflow Shop.SUB_Money(Amount = $Size/Price);
+  $BasePrice = call microflow Core.SUB_Money(Amount = $Size/Price);
   $Row0 = create Shop.Choice (Kind = 'ROW', Title = getCaption($SizeCode), PriceLabel = $BasePrice, SortOrder = 0);
   add $Row0 to $Choices;
   $Base = create list of Catalog.Option;
@@ -135,7 +135,7 @@ begin
   loop $B in $Base
   begin
     if $B != $DefCrust and $B != $DefSauce and $B != $DefCheese then
-      $BText = call microflow Shop.SUB_Money(Amount = $B/Surcharge);
+      $BText = call microflow Core.SUB_Money(Amount = $B/Surcharge);
       $RowB = create Shop.Choice (Kind = 'ROW', Title = $B/Name, PriceLabel = '+' + $BText, SortOrder = 1);
       add $RowB to $Choices;
     end if;
@@ -145,7 +145,7 @@ begin
   loop $E in $SortedLineExtras
   begin
     $EPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $E, Size = $SizeCode);
-    $EText = call microflow Shop.SUB_Money(Amount = $EPrice);
+    $EText = call microflow Core.SUB_Money(Amount = $EPrice);
     $RowE = create Shop.Choice (Kind = 'ROW', Title = '+ ' + $E/Name, PriceLabel = '+' + $EText, SortOrder = 2);
     add $RowE to $Choices;
   end loop;
@@ -311,7 +311,7 @@ begin
   declare $ReturnTo String = $Line/ReturnTo;
   call microflow Shop.SUB_Line_Recalculate(Line = $Line);
   if not($Line/IsAvailable) then
-    call microflow Shop.SUB_Toast(Message = 'This build is no longer available: ' + $Product/Name + ' cannot be made today.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
+    call microflow Core.SUB_Toast(Message = 'This build is no longer available: ' + $Product/Name + ' cannot be made today.', Level = Core.ToastLevel.ERROR, ShouldShowCartAction = false);
     return;
   end if;
   retrieve $Original from $Line/Shop.CartLine_EditOf;
@@ -325,7 +325,7 @@ begin
   -- edit mode: the original keeps its identity, takes the new configuration
   retrieve $Still from Shop.CartLine where [id = $Original] first;
   if $Still = empty then
-    call microflow Shop.SUB_Toast(Message = 'This manifest line no longer exists.', Level = Shop.ToastLevel.ERROR, ShouldShowCartAction = false);
+    call microflow Core.SUB_Toast(Message = 'This manifest line no longer exists.', Level = Core.ToastLevel.ERROR, ShouldShowCartAction = false);
     call microflow Shop.ACT_Nav_Cart();
     return;
   end if;
@@ -349,7 +349,7 @@ begin
   end if;
   delete $Line;
   call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
-  call microflow Shop.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = true);
+  call microflow Core.SUB_Toast(Message = 'Manifest updated: ' + $Product/Name + ' (' + getCaption($Size/Size) + ').', Level = Core.ToastLevel.SUCCESS, ShouldShowCartAction = true);
   call microflow Shop.ACT_Nav_Cart();
 end;
 

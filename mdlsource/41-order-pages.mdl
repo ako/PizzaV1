@@ -59,7 +59,7 @@ grant execute on nanoflow Shop.NF_Print to Shop.Guest; -- auto
 create or modify microflow Shop.ACT_Toast_Copied ()
 folder 'Tracking'
 begin
-  call microflow Shop.SUB_Toast(Message = 'Copied to clipboard.', Level = Shop.ToastLevel.SUCCESS, ShouldShowCartAction = false);
+  call microflow Core.SUB_Toast(Message = 'Copied to clipboard.', Level = Core.ToastLevel.SUCCESS, ShouldShowCartAction = false);
 end;
 grant execute on microflow Shop.ACT_Toast_Copied to Shop.Guest; -- auto
 
@@ -103,7 +103,7 @@ begin
   end if;
   declare $Digits String = replaceAll(replaceFirst($Raw, '^MX-', ''), '[^0-9]', '');
   declare $Number Integer = if isMatch($Digits, '[0-9]{1,9}') then parseInteger($Digits) else -1;
-  retrieve $O from Shop.Order where [OrderNumber = $Number and Source = 'GUEST'] first;
+  retrieve $O from Fulfilment.Order where [OrderNumber = $Number and Source = 'GUEST'] first;
   if $O = empty or toLowerCase($O/ContactEmail) != $Email then
     $Miss = create Shop.LookupAttempt (AttemptedAt = [%CurrentDateTime%], Shop.LookupAttempt_User = [%CurrentUser%]) commit without events;
     change $Form (Error = 'No order matches this order number and email.');
@@ -139,11 +139,11 @@ create or modify microflow Shop.DS_Home_Active ()
 returns Shop.TrackView as $View
 folder 'Home'
 begin
-  retrieve $Access from Shop.OrderAccess where [Shop.OrderAccess_User = '[%CurrentUser%]' and Shop.OrderAccess_Order/Shop.Order/IsOpen = true] sort by GrantedAt desc first;
+  retrieve $Access from Fulfilment.OrderAccess where [Fulfilment.OrderAccess_User = '[%CurrentUser%]' and Fulfilment.OrderAccess_Order/Fulfilment.Order/IsOpen = true] sort by GrantedAt desc first;
   if $Access = empty then
     return empty;
   end if;
-  retrieve $O from $Access/Shop.OrderAccess_Order;
+  retrieve $O from $Access/Fulfilment.OrderAccess_Order;
   $View = create Shop.TrackView (Shop.TrackView_Order = $O);
   call microflow Shop.SUB_Track_Fill(View = $View);
   return $View;
@@ -167,19 +167,99 @@ grant execute on microflow Shop.ACT_Pay_ToCart to Shop.Guest; -- auto
  *
  * @param $TheOrder The order
  */
-create or modify microflow Shop.ACT_Track_RetryOpen ($TheOrder: Shop.Order)
+create or modify microflow Shop.ACT_Track_RetryOpen ($TheOrder: Fulfilment.Order)
 folder 'Tracking'
 begin
   show page Shop.PaymentSheet(TheOrder = $TheOrder);
 end;
 grant execute on microflow Shop.ACT_Track_RetryOpen to Shop.Guest; -- auto
 
+/**
+ * Customer-visible log lines of an order, read through a flow rather than queried from the page; only orders
+ * the caller holds a token for (LITE-SES-03).
+ *
+ * @param $TheOrder The order
+ * @returns Customer-visible log lines of an order
+ */
+create or modify microflow Shop.DS_Order_Log ($TheOrder: Fulfilment.Order)
+returns List of Fulfilment.OrderLogEntry as $Entries
+folder 'Tracking'
+begin
+  retrieve $Entries from Fulfilment.OrderLogEntry where [Fulfilment.OrderLogEntry_Order = $TheOrder and IsCustomerVisible = true and Fulfilment.OrderLogEntry_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by Seq asc;
+  return $Entries;
+end;
+grant execute on microflow Shop.DS_Order_Log to Shop.Guest;
+
+/**
+ * Lines of an order, read through a flow rather than queried from the page; only orders
+ * the caller holds a token for (LITE-SES-03).
+ *
+ * @param $TheOrder The order
+ * @returns Lines of an order
+ */
+create or modify microflow Shop.DS_Order_Lines ($TheOrder: Fulfilment.Order)
+returns List of Fulfilment.OrderLine as $Lines
+folder 'Tracking'
+begin
+  retrieve $Lines from Fulfilment.OrderLine where [Fulfilment.OrderLine_Order = $TheOrder and Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by SortOrder asc;
+  return $Lines;
+end;
+grant execute on microflow Shop.DS_Order_Lines to Shop.Guest;
+
+/**
+ * Modifiers of an order line, read through a flow rather than queried from the page; only orders
+ * the caller holds a token for (LITE-SES-03).
+ *
+ * @param $Line The order line
+ * @returns Modifiers of an order line
+ */
+create or modify microflow Shop.DS_OrderLine_Modifiers ($Line: Fulfilment.OrderLine)
+returns List of Fulfilment.OrderLineModifier as $Modifiers
+folder 'Tracking'
+begin
+  retrieve $Modifiers from Fulfilment.OrderLineModifier where [Fulfilment.OrderLineModifier_OrderLine = $Line and Fulfilment.OrderLineModifier_OrderLine/Fulfilment.OrderLine/Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by SortOrder asc;
+  return $Modifiers;
+end;
+grant execute on microflow Shop.DS_OrderLine_Modifiers to Shop.Guest;
+
+/**
+ * Successful and refunded payments of an order, read through a flow rather than queried from the page; only orders
+ * the caller holds a token for (LITE-SES-03).
+ *
+ * @param $TheOrder The order
+ * @returns Successful and refunded payments of an order
+ */
+create or modify microflow Shop.DS_Order_Payments ($TheOrder: Fulfilment.Order)
+returns List of Fulfilment.PaymentAttempt as $Attempts
+folder 'Tracking'
+begin
+  retrieve $Attempts from Fulfilment.PaymentAttempt where [Fulfilment.PaymentAttempt_Order = $TheOrder and (AttemptStatus = 'SUCCEEDED' or AttemptStatus = 'REFUNDED') and Fulfilment.PaymentAttempt_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by AttemptNumber asc;
+  return $Attempts;
+end;
+grant execute on microflow Shop.DS_Order_Payments to Shop.Guest;
+
+/**
+ * Status history of an order, read through a flow rather than queried from the page; only orders
+ * the caller holds a token for (LITE-SES-03).
+ *
+ * @param $TheOrder The order
+ * @returns Status history of an order
+ */
+create or modify microflow Shop.DS_Order_History ($TheOrder: Fulfilment.Order)
+returns List of Fulfilment.OrderStatusChange as $Changes
+folder 'Tracking'
+begin
+  retrieve $Changes from Fulfilment.OrderStatusChange where [Fulfilment.OrderStatusChange_Order = $TheOrder and Fulfilment.OrderStatusChange_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by Seq asc;
+  return $Changes;
+end;
+grant execute on microflow Shop.DS_Order_History to Shop.Guest;
+
 /** Live log of an order (US-123): customer-visible lines only, oldest first. */
-create or modify snippet Shop.SNIP_OrderLog (Params: ($TheOrder: Shop.Order)) {
-  listview lvLog (DataSource: DATABASE Shop.OrderLogEntry WHERE [Shop.OrderLogEntry_Order = $TheOrder and IsCustomerVisible = true] SORT BY Seq ASC, PageSize: 500, Class: 'log-lv') {
+create or modify snippet Shop.SNIP_OrderLog (Params: ($TheOrder: Fulfilment.Order)) {
+  listview lvLog (DataSource: MICROFLOW Shop.DS_Order_Log(TheOrder = $TheOrder), PageSize: 500, Class: 'log-lv') {
     container ll (Class: 'log-line') {
       dynamictext llTs (Content: '[{1}]', ContentParams: ({1} = TimeText), Class: 'ts')
-      dynamictext llTag (Content: '[{1}]', ContentParams: ({1} = Tag), Class: 'tag', DynamicClasses: if $currentObject/Level = Shop.LogLevel.ERROR then 'tag-error' else if $currentObject/Level = Shop.LogLevel.WARN then 'tag-warn' else if $currentObject/Level = Shop.LogLevel.SUCCESS then 'tag-success' else if $currentObject/Tag = 'PAYMENT' or $currentObject/Tag = 'ROUTER' or $currentObject/Tag = 'COURIER' then 'tag-info' else if $currentObject/Tag = 'QA' then 'tag-qa' else if $currentObject/Tag = 'INIT' then 'tag-success' else 'tag-orange')
+      dynamictext llTag (Content: '[{1}]', ContentParams: ({1} = Tag), Class: 'tag', DynamicClasses: if $currentObject/Level = Fulfilment.LogLevel.ERROR then 'tag-error' else if $currentObject/Level = Fulfilment.LogLevel.WARN then 'tag-warn' else if $currentObject/Level = Fulfilment.LogLevel.SUCCESS then 'tag-success' else if $currentObject/Tag = 'PAYMENT' or $currentObject/Tag = 'ROUTER' or $currentObject/Tag = 'COURIER' then 'tag-info' else if $currentObject/Tag = 'QA' then 'tag-qa' else if $currentObject/Tag = 'INIT' then 'tag-success' else 'tag-orange')
       dynamictext llMsg (Content: '{1}', ContentParams: ({1} = Message), Class: 'msg')
     }
   }
@@ -240,7 +320,7 @@ create or modify snippet Shop.SNIP_HomeActiveOrder {
 create or modify page Shop.PaymentSheet (
   Title: 'Payment',
   Layout: Shop.Layout_Modal,
-  Params: ($TheOrder: Shop.Order)
+  Params: ($TheOrder: Fulfilment.Order)
 ) {
   dataview dvPay (DataSource: MICROFLOW Shop.DS_Track(TheOrder = $TheOrder), Class: 'scr-07 pay-sheet') {
     container head (Class: 'modal-head') {
@@ -302,7 +382,7 @@ create or modify page Shop.PaymentSheet (
 create or modify page Shop.Confirmation (
   Title: 'Order confirmation',
   Layout: Shop.Layout_Modal,
-  Params: ($TheOrder: Shop.Order)
+  Params: ($TheOrder: Fulfilment.Order)
 ) {
   dataview dvConf (DataSource: MICROFLOW Shop.DS_Track(TheOrder = $TheOrder), Class: 'scr-08 conf-sheet') {
     container cbar (Class: 'term-bar') {
@@ -370,7 +450,7 @@ create or modify page Shop.Confirmation (
 create or modify page Shop.Tracking (
   Title: 'Order tracking — Git Pizza MxDev',
   Layout: Shop.Layout_Guest,
-  Params: ($TheOrder: Shop.Order)
+  Params: ($TheOrder: Fulfilment.Order)
 ) {
   dataview dvTrack (DataSource: MICROFLOW Shop.DS_Track(TheOrder = $TheOrder), Class: 'page-dv') {
     container page (Class: 'page scr-09') {
@@ -462,7 +542,7 @@ create or modify page Shop.Tracking (
           }
           container cfg (Class: 'panel panel-pad') {
             container cfgH (Class: 'section-label') { dynamictext cfgI (Content: 'inventory_2', Class: 'ms') dynamictext cfgT (Content: 'Order configuration') }
-            listview lvLines (DataSource: DATABASE Shop.OrderLine WHERE [Shop.OrderLine_Order = $TheOrder] SORT BY SortOrder ASC, PageSize: 200, Class: 'ord-lv') {
+            listview lvLines (DataSource: MICROFLOW Shop.DS_Order_Lines(TheOrder = $TheOrder), PageSize: 200, Class: 'ord-lv') {
               container ol (Class: 'ord-line') {
                 container olL {
                   dynamictext olN (Content: '{1}× {2}', ContentParams: ({1} = Quantity, {2} = ProductName), Class: 'c-primary')
@@ -474,9 +554,9 @@ create or modify page Shop.Tracking (
             container sumRows (Class: 'mt-8') {
               container rSub (Class: 'sum-row') { dynamictext rSubL (Content: 'Subtotal', Class: 'lbl') dynamictext rSubV (Content: '{1}', ContentParams: ({1} = SubText)) }
               container rDisc (Class: 'sum-row discount', Visible: $TheOrder/DiscountAmount > 0) { dynamictext rDiscL (Content: 'Discount ({1})', ContentParams: ({1} = $TheOrder/CouponCode), Class: 'lbl') dynamictext rDiscV (Content: '{1}', ContentParams: ({1} = DiscText)) }
-              container rFee (Class: 'sum-row', Visible: $TheOrder/OrderType = Shop.OrderType.DELIVERY) { dynamictext rFeeL (Content: 'Delivery fee', Class: 'lbl') dynamictext rFeeV (Content: '{1}', ContentParams: ({1} = FeeText)) }
+              container rFee (Class: 'sum-row', Visible: $TheOrder/OrderType = Fulfilment.OrderType.DELIVERY) { dynamictext rFeeL (Content: 'Delivery fee', Class: 'lbl') dynamictext rFeeV (Content: '{1}', ContentParams: ({1} = FeeText)) }
               container rTax (Class: 'sum-row') { dynamictext rTaxL (Content: 'Sales tax 8.625 %', Class: 'lbl') dynamictext rTaxV (Content: '{1}', ContentParams: ({1} = TaxText)) }
-              container rTip (Class: 'sum-row', Visible: $TheOrder/OrderType = Shop.OrderType.DELIVERY) { dynamictext rTipL (Content: 'Courier tip', Class: 'lbl') dynamictext rTipV (Content: '{1}', ContentParams: ({1} = TipText)) }
+              container rTip (Class: 'sum-row', Visible: $TheOrder/OrderType = Fulfilment.OrderType.DELIVERY) { dynamictext rTipL (Content: 'Courier tip', Class: 'lbl') dynamictext rTipV (Content: '{1}', ContentParams: ({1} = TipText)) }
               dynamictext rPay (Content: 'Paid with {1}', ContentParams: ({1} = MethodLabel), Class: 't-micro c-muted')
               dynamictext rAddr (Content: '{1}', ContentParams: ({1} = AddressText), Class: 't-micro c-muted')
             }
@@ -548,7 +628,7 @@ create or modify page Shop.TrackLookup (
 create or modify page Shop.Receipt (
   Title: 'Receipt — Git Pizza MxDev',
   Layout: Shop.Layout_Guest,
-  Params: ($TheOrder: Shop.Order)
+  Params: ($TheOrder: Fulfilment.Order)
 ) {
   dataview dvRec (DataSource: MICROFLOW Shop.DS_Track(TheOrder = $TheOrder), Class: 'page-dv') {
     container page (Class: 'page scr-13 print-area') {
@@ -567,13 +647,13 @@ create or modify page Shop.Receipt (
       container det (Class: 'det') {
         container detLeft (Class: 'panel panel-pad') {
           container th (Class: 'r-row r-head') { dynamictext th1 (Content: 'Module') dynamictext th2 (Content: 'Qty', Class: 'num') dynamictext th3 (Content: 'Unit', Class: 'num') dynamictext th4 (Content: 'Total', Class: 'num') }
-          listview lvRLines (DataSource: DATABASE Shop.OrderLine WHERE [Shop.OrderLine_Order = $TheOrder] SORT BY SortOrder ASC, PageSize: 200, Class: 'rlines-lv') {
+          listview lvRLines (DataSource: MICROFLOW Shop.DS_Order_Lines(TheOrder = $TheOrder), PageSize: 200, Class: 'rlines-lv') {
             container rl (Class: 'r-row') {
               container rlInfo {
                 dynamictext rlN (Content: '{1}', ContentParams: ({1} = ProductName), Class: 'c-primary b')
                 dynamictext rlS (Content: '{1} · {2}', ContentParams: ({1} = RealWorldName, {2} = SizeLabel), Class: 't-micro c-muted')
-                listview lvMods (DataSource: DATABASE Shop.OrderLineModifier WHERE [Shop.OrderLineModifier_OrderLine = $currentObject] SORT BY SortOrder ASC, PageSize: 50, Class: 'mods-lv') {
-                  dynamictext md (Content: '{1}{2}{3}{4}', ContentParams: ({1} = if $currentObject/ModifierType = Shop.ModifierType.ADD then '+ ' else if $currentObject/ModifierType = Shop.ModifierType.REMOVE then '− ' else getKey($currentObject/ModifierType) + ': ', {2} = Name, {3} = if $currentObject/IsDefault then ' (default)' else '', {4} = if $currentObject/Price > 0 then ' +$' + toString($currentObject/Price) else ''), Class: 'mod', DynamicClasses: if $currentObject/ModifierType = Shop.ModifierType.ADD then 'add' else if $currentObject/ModifierType = Shop.ModifierType.REMOVE then 'rem' else '')
+                listview lvMods (DataSource: MICROFLOW Shop.DS_OrderLine_Modifiers(Line = $currentObject), PageSize: 50, Class: 'mods-lv') {
+                  dynamictext md (Content: '{1}{2}{3}{4}', ContentParams: ({1} = if $currentObject/ModifierType = Fulfilment.ModifierType.ADD then '+ ' else if $currentObject/ModifierType = Fulfilment.ModifierType.REMOVE then '− ' else getKey($currentObject/ModifierType) + ': ', {2} = Name, {3} = if $currentObject/IsDefault then ' (default)' else '', {4} = if $currentObject/Price > 0 then ' +$' + toString($currentObject/Price) else ''), Class: 'mod', DynamicClasses: if $currentObject/ModifierType = Fulfilment.ModifierType.ADD then 'add' else if $currentObject/ModifierType = Fulfilment.ModifierType.REMOVE then 'rem' else '')
                 }
                 dynamictext rlA (Content: 'Allergens: {1}', ContentParams: ({1} = AllergenText), Class: 't-micro c-muted')
               }
@@ -595,11 +675,11 @@ create or modify page Shop.Receipt (
         container detRight (Class: 'stack') {
           container pay (Class: 'panel panel-pad') {
             container payH (Class: 'section-label') { dynamictext payHI (Content: 'payments', Class: 'ms') dynamictext payHT (Content: 'Payment') }
-            listview lvAttempts (DataSource: DATABASE Shop.PaymentAttempt WHERE [Shop.PaymentAttempt_Order = $TheOrder and (AttemptStatus = 'SUCCEEDED' or AttemptStatus = 'REFUNDED')] SORT BY AttemptNumber ASC, PageSize: 10, Class: 'att-lv') {
+            listview lvAttempts (DataSource: MICROFLOW Shop.DS_Order_Payments(TheOrder = $TheOrder), PageSize: 10, Class: 'att-lv') {
               container att {
                 dynamictext attM (Content: '{1} · {2}', ContentParams: ({1} = MethodLabel, {2} = AttemptStatus), Class: 'c-green')
                 dynamictext attT (Content: 'TxID {1} (simulated) · {2}', ContentParams: ({1} = TransactionId, {2} = FinishedAt format (dateFormat: Custom, customDateFormat: 'yyyy-MM-dd HH:mm')), Class: 't-micro c-muted')
-                dynamictext attR (Content: 'Refund {1} · {2}', ContentParams: ({1} = RefundId, {2} = RefundedAt format (dateFormat: Custom, customDateFormat: 'yyyy-MM-dd HH:mm')), Class: 't-micro c-warn', Visible: $currentObject/AttemptStatus = Shop.PaymentAttemptStatus.REFUNDED)
+                dynamictext attR (Content: 'Refund {1} · {2}', ContentParams: ({1} = RefundId, {2} = RefundedAt format (dateFormat: Custom, customDateFormat: 'yyyy-MM-dd HH:mm')), Class: 't-micro c-warn', Visible: $currentObject/AttemptStatus = Fulfilment.PaymentAttemptStatus.REFUNDED)
               }
             }
             dynamictext payCancel (Content: '{1} {2}', ContentParams: ({1} = BannerText, {2} = RefundLine), Class: 't-small c-error mt-8', Visible: $currentObject/BannerKind = 'cancelled')
@@ -610,7 +690,7 @@ create or modify page Shop.Receipt (
           }
           container hist (Class: 'panel panel-pad') {
             container histH (Class: 'section-label') { dynamictext histHI (Content: 'timeline', Class: 'ms') dynamictext histHT (Content: 'Status history') }
-            listview lvHist (DataSource: DATABASE Shop.OrderStatusChange WHERE [Shop.OrderStatusChange_Order = $TheOrder] SORT BY Seq ASC, PageSize: 50, Class: 'hist-lv') {
+            listview lvHist (DataSource: MICROFLOW Shop.DS_Order_History(TheOrder = $TheOrder), PageSize: 50, Class: 'hist-lv') {
               container hr (Class: 'hist-row') {
                 dynamictext hrT (Content: '{1}', ContentParams: ({1} = ChangedAt format (dateFormat: Custom, customDateFormat: 'HH:mm')), Class: 'ts')
                 dynamictext hrS (Content: '● {1}', ContentParams: ({1} = ToStatus), Class: 'badge st-queued')

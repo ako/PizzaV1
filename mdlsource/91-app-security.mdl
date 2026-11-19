@@ -3,10 +3,10 @@ mdl 1;
 -- is an anonymous user with user role Anonymous; the built-in administrator
 -- holds the same Shop.Guest module role. No sign-in page, no demo users.
 
-create or modify user role Anonymous (ModuleRoles: (Shop.Guest, Catalog.Guest, Atlas_Core.User, Atlas_Web_Content.Anonymous, NanoflowCommons.User, DataWidgets.User, System.User), Description: 'Every visitor: an anonymous guest (LITE-SES-01)');
+create or modify user role Anonymous (ModuleRoles: (Shop.Guest, Catalog.Guest, Core.Guest, Fulfilment.Guest, Atlas_Core.User, Atlas_Web_Content.Anonymous, NanoflowCommons.User, DataWidgets.User, System.User), Description: 'Every visitor: an anonymous guest (LITE-SES-01)');
 -- The built-in administrator sees the same screens as a guest (there are no admin
 -- screens), under the same row-level rules: no unconstrained reads (DIVD-2022-00019).
-alter user role Administrator add module roles (Shop.Guest, Catalog.Guest);
+alter user role Administrator add module roles (Shop.Guest, Catalog.Guest, Core.Guest, Fulfilment.Guest);
 
 create or modify navigation Responsive
   app title 'Git Pizza MxDev'

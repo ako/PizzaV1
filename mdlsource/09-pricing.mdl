@@ -11,11 +11,11 @@ mdl 1;
  * @param $OrderType DELIVERY or PICKUP
  * @param $Result The price result whose CouponState/CouponMessage are set
  */
-create or modify microflow Shop.SUB_Coupon_Evaluate ($Coupon: Shop.Coupon, $Subtotal: Decimal, $OrderType: Enumeration(Shop.OrderType), $Result: Shop.PriceResult)
+create or modify microflow Fulfilment.SUB_Coupon_Evaluate ($Coupon: Fulfilment.Coupon, $Subtotal: Decimal, $OrderType: Enumeration(Fulfilment.OrderType), $Result: Fulfilment.PriceResult)
 folder 'Pricing'
 begin
   if $Coupon = empty then
-    change $Result (CouponState = Shop.CouponState.NONE, CouponMessage = '');
+    change $Result (CouponState = Fulfilment.CouponState.NONE, CouponMessage = '');
     return;
   end if;
   declare $Now DateTime = [%CurrentDateTime%];
@@ -31,19 +31,19 @@ begin
     end if;
   end if;
   if $Expired then
-    change $Result (CouponState = Shop.CouponState.INVALID, CouponMessage = 'Coupon ' + $Coupon/Code + ' has expired');
+    change $Result (CouponState = Fulfilment.CouponState.INVALID, CouponMessage = 'Coupon ' + $Coupon/Code + ' has expired');
     return;
   end if;
-  if $Coupon/IsDeliveryOnly and $OrderType = Shop.OrderType.PICKUP then
-    change $Result (CouponState = Shop.CouponState.NOT_APPLIED, CouponMessage = $Coupon/Code + ' is valid for delivery orders only');
+  if $Coupon/IsDeliveryOnly and $OrderType = Fulfilment.OrderType.PICKUP then
+    change $Result (CouponState = Fulfilment.CouponState.NOT_APPLIED, CouponMessage = $Coupon/Code + ' is valid for delivery orders only');
     return;
   end if;
   if $Subtotal < $Coupon/MinSubtotal then
-    $Missing = call microflow Shop.SUB_Money(Amount = $Coupon/MinSubtotal - $Subtotal);
-    change $Result (CouponState = Shop.CouponState.NOT_APPLIED, CouponMessage = 'Add ' + $Missing + ' more to use ' + $Coupon/Code);
+    $Missing = call microflow Core.SUB_Money(Amount = $Coupon/MinSubtotal - $Subtotal);
+    change $Result (CouponState = Fulfilment.CouponState.NOT_APPLIED, CouponMessage = 'Add ' + $Missing + ' more to use ' + $Coupon/Code);
     return;
   end if;
-  change $Result (CouponState = Shop.CouponState.APPLIED, CouponMessage = $Coupon/Description);
+  change $Result (CouponState = Fulfilment.CouponState.APPLIED, CouponMessage = $Coupon/Description);
 end;
 
 /**
@@ -58,23 +58,23 @@ end;
  * @param $Tip Tip option (ignored for pickup)
  * @returns A non-persistent PriceResult
  */
-create or modify microflow Shop.SUB_Price_Compute ($Subtotal: Decimal, $OrderType: Enumeration(Shop.OrderType), $Coupon: Shop.Coupon, $Tip: Enumeration(Shop.TipOption))
-returns Shop.PriceResult as $Result
+create or modify microflow Fulfilment.SUB_Price_Compute ($Subtotal: Decimal, $OrderType: Enumeration(Fulfilment.OrderType), $Coupon: Fulfilment.Coupon, $Tip: Enumeration(Fulfilment.TipOption))
+returns Fulfilment.PriceResult as $Result
 folder 'Pricing'
 begin
-  retrieve $Store from Shop.StoreSettings first;
-  $Result = create Shop.PriceResult (Subtotal = $Subtotal, Discount = 0, DeliveryFee = 0, Tax = 0, TipAmount = 0, TipPercent = 0, Total = 0);
-  call microflow Shop.SUB_Coupon_Evaluate(Coupon = $Coupon, Subtotal = $Subtotal, OrderType = $OrderType, Result = $Result);
+  retrieve $Store from Core.StoreSettings first;
+  $Result = create Fulfilment.PriceResult (Subtotal = $Subtotal, Discount = 0, DeliveryFee = 0, Tax = 0, TipAmount = 0, TipPercent = 0, Total = 0);
+  call microflow Fulfilment.SUB_Coupon_Evaluate(Coupon = $Coupon, Subtotal = $Subtotal, OrderType = $OrderType, Result = $Result);
   declare $Discount Decimal = 0;
   declare $FreeByCoupon Boolean = false;
-  if $Result/CouponState = Shop.CouponState.APPLIED then
-    if $Coupon/Discount = Shop.DiscountType.PERCENT then
+  if $Result/CouponState = Fulfilment.CouponState.APPLIED then
+    if $Coupon/Discount = Fulfilment.DiscountType.PERCENT then
       set $Discount = round($Subtotal * $Coupon/DiscountValue div 100, 2);
       if $Coupon/MaxDiscount > 0 and $Discount > $Coupon/MaxDiscount then
         set $Discount = $Coupon/MaxDiscount;
       end if;
     else
-      if $Coupon/Discount = Shop.DiscountType.FIXED_AMOUNT then
+      if $Coupon/Discount = Fulfilment.DiscountType.FIXED_AMOUNT then
         set $Discount = min($Coupon/DiscountValue, $Subtotal);
       else
         set $FreeByCoupon = true;
@@ -87,24 +87,24 @@ begin
   declare $Fee Decimal = 0;
   declare $Net Decimal = $Subtotal - $Discount;
   declare $TipPercent Integer = 0;
-  if $OrderType = Shop.OrderType.DELIVERY then
+  if $OrderType = Fulfilment.OrderType.DELIVERY then
     set $Fee = $Store/DeliveryFee;
     if $Subtotal >= $Store/FreeDeliveryThreshold then
       set $Fee = 0;
-      change $Result (FeeWaivedBy = Shop.FeeWaiver.THRESHOLD);
+      change $Result (FeeWaivedBy = Fulfilment.FeeWaiver.THRESHOLD);
     else
       if $FreeByCoupon then
         set $Fee = 0;
-        change $Result (FeeWaivedBy = Shop.FeeWaiver.COUPON);
+        change $Result (FeeWaivedBy = Fulfilment.FeeWaiver.COUPON);
       end if;
     end if;
-    if $Tip = Shop.TipOption.TEN then
+    if $Tip = Fulfilment.TipOption.TEN then
       set $TipPercent = 10;
     else
-      if $Tip = Shop.TipOption.FIFTEEN then
+      if $Tip = Fulfilment.TipOption.FIFTEEN then
         set $TipPercent = 15;
       else
-        if $Tip = Shop.TipOption.TWENTY then
+        if $Tip = Fulfilment.TipOption.TWENTY then
           set $TipPercent = 20;
         end if;
       end if;

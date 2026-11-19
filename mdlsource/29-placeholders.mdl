@@ -8,11 +8,11 @@ create page if not exists Shop.Configurator (Title: 'Configurator', Layout: Atla
 create page if not exists Shop.ItemInfo (Title: 'ItemInfo', Layout: Atlas_Core.PopupLayout, Params: ($Product: Catalog.Product)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Cart_Drawer (Title: 'Cart_Drawer', Layout: Atlas_Core.PopupLayout, Params: ($Cart: Shop.Cart)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.Checkout (Title: 'Checkout', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
-create page if not exists Shop.PaymentSheet (Title: 'PaymentSheet', Layout: Atlas_Core.PopupLayout, Params: ($TheOrder: Shop.Order)) { dynamictext ph (Content: '…') };
-create page if not exists Shop.Confirmation (Title: 'Confirmation', Layout: Atlas_Core.PopupLayout, Params: ($TheOrder: Shop.Order)) { dynamictext ph (Content: '…') };
-create page if not exists Shop.Tracking (Title: 'Tracking', Layout: Atlas_Core.Atlas_Default, Params: ($TheOrder: Shop.Order)) { dynamictext ph (Content: '…') };
+create page if not exists Shop.PaymentSheet (Title: 'PaymentSheet', Layout: Atlas_Core.PopupLayout, Params: ($TheOrder: Fulfilment.Order)) { dynamictext ph (Content: '…') };
+create page if not exists Shop.Confirmation (Title: 'Confirmation', Layout: Atlas_Core.PopupLayout, Params: ($TheOrder: Fulfilment.Order)) { dynamictext ph (Content: '…') };
+create page if not exists Shop.Tracking (Title: 'Tracking', Layout: Atlas_Core.Atlas_Default, Params: ($TheOrder: Fulfilment.Order)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.TrackLookup (Title: 'TrackLookup', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
-create page if not exists Shop.Receipt (Title: 'Receipt', Layout: Atlas_Core.Atlas_Default, Params: ($TheOrder: Shop.Order)) { dynamictext ph (Content: '…') };
+create page if not exists Shop.Receipt (Title: 'Receipt', Layout: Atlas_Core.Atlas_Default, Params: ($TheOrder: Fulfilment.Order)) { dynamictext ph (Content: '…') };
 create page if not exists Shop.NotFound (Title: 'NotFound', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.UnexpectedError (Title: 'UnexpectedError', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.AllergenNotice (Title: 'AllergenNotice', Layout: Atlas_Core.PopupLayout) { dynamictext ph (Content: '…') };

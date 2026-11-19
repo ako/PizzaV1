@@ -8,6 +8,12 @@ create or modify module Shop;
 /** Product catalog: pizzas, sides, drinks and desserts with sizes, options, recipes, ingredients and allergens (the menu's data). */
 create or modify module Catalog;
 create or modify module role Catalog.Guest description 'Every visitor: reads the published catalog';
+/** Shared foundation: store and simulation settings, guest toasts, and the money, time, phone and id helpers every module uses. */
+create or modify module Core;
+create or modify module role Core.Guest description 'Every visitor: own toasts, public store settings';
+/** The order domain without UI: orders and their lines, payments, status history and log, couriers, ovens, delivery zones, coupons, pricing and the order transitions. */
+create or modify module Fulfilment;
+create or modify module role Fulfilment.Guest description 'Every visitor: orders they hold a token for';
 
 /** Menu category kind of a product (pizzas.json, sides.yml, drinks.env, desserts.md). */
 create or modify enumeration Catalog."ProductKind" ( "PIZZA" 'Pizza', "SIDE" 'Side', "DRINK" 'Drink', "DESSERT" 'Dessert' );
@@ -24,15 +30,15 @@ create or modify enumeration Catalog."PriceClass" ( "FLAT" 'FLAT', "STANDARD" 'S
 /** Role of an ingredient in a recipe: topping or finish. */
 create or modify enumeration Catalog."RecipeRole" ( "TOPPING" 'Topping', "FINISH" 'Finish' );
 /** Outcome of evaluating the cart coupon (BR-PRICE-06). */
-create or modify enumeration Shop."CouponState" ( "NONE" 'NONE', "APPLIED" 'APPLIED', "NOT_APPLIED" 'NOT_APPLIED', "INVALID" 'INVALID' );
+create or modify enumeration Fulfilment."CouponState" ( "NONE" 'NONE', "APPLIED" 'APPLIED', "NOT_APPLIED" 'NOT_APPLIED', "INVALID" 'INVALID' );
 /** What a coupon gives: a percentage, a fixed amount or free delivery. */
-create or modify enumeration Shop."DiscountType" ( "PERCENT" 'Percent', "FIXED_AMOUNT" 'Fixed amount', "FREE_DELIVERY" 'Free delivery' );
+create or modify enumeration Fulfilment."DiscountType" ( "PERCENT" 'Percent', "FIXED_AMOUNT" 'Fixed amount', "FREE_DELIVERY" 'Free delivery' );
 /** Delivery to an address or pickup at the store. */
-create or modify enumeration Shop."OrderType" ( "DELIVERY" 'DELIVERY', "PICKUP" 'PICKUP' );
+create or modify enumeration Fulfilment."OrderType" ( "DELIVERY" 'DELIVERY', "PICKUP" 'PICKUP' );
 /** Who placed an order: a guest or the traffic simulator. */
-create or modify enumeration Shop."OrderSource" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR' );
+create or modify enumeration Fulfilment."OrderSource" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR' );
 /** Order lifecycle state (order-lifecycle T-01 … T-17); captions are the developer labels. */
-create or modify enumeration Shop."OrderStatus" (
+create or modify enumeration Fulfilment."OrderStatus" (
   "PAYMENT_PENDING" 'STAGED',
   "PAYMENT_FAILED" 'PAYMENT_FAILED',
   "QUEUED" 'QUEUED',
@@ -46,11 +52,11 @@ create or modify enumeration Shop."OrderStatus" (
   "CANCELLED" 'ROLLED_BACK'
 );
 /** Money state of an order. */
-create or modify enumeration Shop."PaymentStatus" ( "UNPAID" 'UNPAID', "PAID" 'PAID', "REFUNDED" 'REFUNDED' );
+create or modify enumeration Fulfilment."PaymentStatus" ( "UNPAID" 'UNPAID', "PAID" 'PAID', "REFUNDED" 'REFUNDED' );
 /** Simulated payment method chosen at checkout. */
-create or modify enumeration Shop."PaymentMethod" ( "CARD" 'Card', "APPLE_PAY" 'Apple Pay', "GOOGLE_PAY" 'Google Pay' );
+create or modify enumeration Fulfilment."PaymentMethod" ( "CARD" 'Card', "APPLE_PAY" 'Apple Pay', "GOOGLE_PAY" 'Google Pay' );
 /** Simulated test card; the number decides the payment outcome (SIM-01). */
-create or modify enumeration Shop."TestCard" (
+create or modify enumeration Fulfilment."TestCard" (
   "VISA_4242" 'Visa •••• 4242',
   "MASTERCARD_4444" 'Mastercard •••• 4444',
   "VISA_0002" 'Visa •••• 0002',
@@ -58,26 +64,26 @@ create or modify enumeration Shop."TestCard" (
   "AMEX_0005" 'Amex •••• 0005'
 );
 /** State of one simulated payment attempt. */
-create or modify enumeration Shop."PaymentAttemptStatus" ( "PROCESSING" 'PROCESSING', "SUCCEEDED" 'SUCCEEDED', "FAILED" 'FAILED', "REFUNDED" 'REFUNDED' );
+create or modify enumeration Fulfilment."PaymentAttemptStatus" ( "PROCESSING" 'PROCESSING', "SUCCEEDED" 'SUCCEEDED', "FAILED" 'FAILED', "REFUNDED" 'REFUNDED' );
 /** Reason a simulated payment attempt failed. */
-create or modify enumeration Shop."PaymentFailureCode" (
+create or modify enumeration Fulfilment."PaymentFailureCode" (
   "DECLINED" 'Card declined by issuer',
   "INSUFFICIENT_FUNDS" 'Insufficient funds',
   "GATEWAY_TIMEOUT" 'Payment gateway timed out',
   "VOIDED" 'Voided — order cancelled'
 );
 /** Why the delivery fee was waived: over the threshold or by a coupon. */
-create or modify enumeration Shop."FeeWaiver" ( "THRESHOLD" 'THRESHOLD', "COUPON" 'COUPON' );
+create or modify enumeration Fulfilment."FeeWaiver" ( "THRESHOLD" 'THRESHOLD', "COUPON" 'COUPON' );
 /** Courier tip as a share of subtotal minus discount (delivery only). */
-create or modify enumeration Shop."TipOption" ( "NONE" '0%', "TEN" '10%', "FIFTEEN" '15%', "TWENTY" '20%' );
+create or modify enumeration Fulfilment."TipOption" ( "NONE" '0%', "TEN" '10%', "FIFTEEN" '15%', "TWENTY" '20%' );
 /** Kind of change from the default build, snapshotted on an order line. */
-create or modify enumeration Shop."ModifierType" ( "CRUST" 'CRUST', "SAUCE" 'SAUCE', "CHEESE" 'CHEESE', "ADD" 'ADD', "REMOVE" 'REMOVE' );
+create or modify enumeration Fulfilment."ModifierType" ( "CRUST" 'CRUST', "SAUCE" 'SAUCE', "CHEESE" 'CHEESE', "ADD" 'ADD', "REMOVE" 'REMOVE' );
 /** Who made an order transition (audit trail). */
-create or modify enumeration Shop."ActorType" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR', "SYSTEM" 'SYSTEM', "KITCHEN" 'KITCHEN', "MANAGER" 'MANAGER' );
+create or modify enumeration Fulfilment."ActorType" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR', "SYSTEM" 'SYSTEM', "KITCHEN" 'KITCHEN', "MANAGER" 'MANAGER' );
 /** Level of a terminal-style order log line. */
-create or modify enumeration Shop."LogLevel" ( "INFO" 'INFO', "SUCCESS" 'SUCCESS', "WARN" 'WARN', "ERROR" 'ERROR', "DEBUG" 'DEBUG' );
+create or modify enumeration Fulfilment."LogLevel" ( "INFO" 'INFO', "SUCCESS" 'SUCCESS', "WARN" 'WARN', "ERROR" 'ERROR', "DEBUG" 'DEBUG' );
 /** Simulated courier state; captions are the terminal labels. */
-create or modify enumeration Shop."CourierStatus" (
+create or modify enumeration Fulfilment."CourierStatus" (
   "OFF_DUTY" 'OFF_DUTY',
   "AVAILABLE" 'IDLE',
   "TO_STORE" 'EN_ROUTE_TO_STORE',
@@ -86,17 +92,17 @@ create or modify enumeration Shop."CourierStatus" (
   "RETURNING" 'RETURNING'
 );
 /** Simulated courier vehicle. */
-create or modify enumeration Shop."VehicleType" ( "E_BIKE" 'E_BIKE', "SCOOTER" 'SCOOTER', "CAR" 'CAR' );
+create or modify enumeration Fulfilment."VehicleType" ( "E_BIKE" 'E_BIKE', "SCOOTER" 'SCOOTER', "CAR" 'CAR' );
 /** Whether a simulated oven accepts new pizzas. */
-create or modify enumeration Shop."OvenStatus" ( "ONLINE" 'ONLINE', "OFFLINE" 'OFFLINE' );
+create or modify enumeration Fulfilment."OvenStatus" ( "ONLINE" 'ONLINE', "OFFLINE" 'OFFLINE' );
 /** Kind of entry in the simulation event log. */
-create or modify enumeration Shop."SimulationEventType" (
+create or modify enumeration Fulfilment."SimulationEventType" (
   "ORDER_SPAWNED" 'ORDER_SPAWNED', "PAYMENT_RESULT" 'PAYMENT_RESULT', "STAGE_ADVANCED" 'STAGE_ADVANCED',
   "COURIER_ASSIGNED" 'COURIER_ASSIGNED', "COURIER_ARRIVED" 'COURIER_ARRIVED', "DELIVERY_COMPLETED" 'DELIVERY_COMPLETED',
   "PICKUP_COMPLETED" 'PICKUP_COMPLETED', "QA_FAILED" 'QA_FAILED', "AUTO_CANCELLED" 'AUTO_CANCELLED',
   "RESET" 'RESET', "HOUSEKEEPING" 'HOUSEKEEPING'
 );
 /** Level of a toast; the caption is the CSS modifier. */
-create or modify enumeration Shop."ToastLevel" ( "SUCCESS" 'success', "INFO" 'info', "WARNING" 'warning', "ERROR" 'error' );
+create or modify enumeration Core."ToastLevel" ( "SUCCESS" 'success', "INFO" 'info', "WARNING" 'warning', "ERROR" 'error' );
 /** State of one step of the tracking pipeline stepper; the caption is the CSS class. */
 create or modify enumeration Shop."StageState" ( "DONE" 'done', "CURRENT" 'current', "TODO" 'todo' );

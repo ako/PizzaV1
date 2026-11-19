@@ -2,7 +2,7 @@
   "kind": "security",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 12:04",
+  "generated": "2026-11-19 12:36",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "A review of the model, read from the mxcli catalog (`refresh catalog full` and `source`) and the project security settings. Nothing ran against the app.",
@@ -22,6 +22,8 @@
     "scope": {
       "app": [
         "Catalog",
+        "Core",
+        "Fulfilment",
         "Shop",
         "Simulation"
       ],
@@ -70,8 +72,8 @@
       "Security is at Production level: entity access rules are enforced.",
       "Strict mode is on: the client API is limited to what pages request.",
       "Demo users are disabled.",
-      "21 of 23 persistent app entities have an XPath constraint on every role's read access.",
-      "2 client-callable flow(s) check the caller in their own body."
+      "20 of 22 persistent app entities have an XPath constraint on every role's read access.",
+      "10 client-callable flow(s) check the caller in their own body."
     ],
     "roles": [
       "Administrator",
@@ -128,6 +130,90 @@
         }
       },
       {
+        "entity": "Core.StoreSettings",
+        "access": {
+          "Administrator": "R all",
+          "Anonymous": "R all"
+        }
+      },
+      {
+        "entity": "Core.Toast",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.Courier",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.DeliveryZone",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.Order",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.OrderAccess",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.OrderLine",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.OrderLineModifier",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.OrderLogEntry",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.OrderStatusChange",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.Oven",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
+        "entity": "Fulfilment.PaymentAttempt",
+        "access": {
+          "Administrator": "R via user",
+          "Anonymous": "R via user"
+        }
+      },
+      {
         "entity": "Shop.Cart",
         "access": {
           "Administrator": "RW via user",
@@ -146,97 +232,6 @@
         "access": {
           "Administrator": "RW via user",
           "Anonymous": "RW via user"
-        }
-      },
-      {
-        "entity": "Shop.Coupon",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.Courier",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.DeliveryZone",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.Order",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.OrderAccess",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.OrderLine",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.OrderLineModifier",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.OrderLogEntry",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.OrderStatusChange",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.Oven",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.PaymentAttempt",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
-        }
-      },
-      {
-        "entity": "Shop.StoreSettings",
-        "access": {
-          "Administrator": "R all",
-          "Anonymous": "R all"
-        }
-      },
-      {
-        "entity": "Shop.Toast",
-        "access": {
-          "Administrator": "R via user",
-          "Anonymous": "R via user"
         }
       }
     ],
@@ -290,6 +285,94 @@
         ]
       },
       {
+        "entity": "Core.Toast",
+        "xpath": "[Core.Toast_Owner = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Core.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.Courier",
+        "xpath": "[Fulfilment.Order_Courier/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.DeliveryZone",
+        "xpath": "[Fulfilment.Order_Zone/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.Order",
+        "xpath": "[Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.OrderAccess",
+        "xpath": "[Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.OrderLine",
+        "xpath": "[Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.OrderLineModifier",
+        "xpath": "[Fulfilment.OrderLineModifier_OrderLine/Fulfilment.OrderLine/Fulfilment.OrderLine_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.OrderLogEntry",
+        "xpath": "[\n  IsCustomerVisible = true\n  and Fulfilment.OrderLogEntry_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'\n]",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.OrderStatusChange",
+        "xpath": "[Fulfilment.OrderStatusChange_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.Oven",
+        "xpath": "[Fulfilment.Order_Oven/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
+        "entity": "Fulfilment.PaymentAttempt",
+        "xpath": "[Fulfilment.PaymentAttempt_Order/Fulfilment.Order/Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]']",
+        "class": "via user",
+        "roles": [
+          "Fulfilment.Guest"
+        ]
+      },
+      {
         "entity": "Shop.Cart",
         "xpath": "[Shop.Cart_Owner = '[%CurrentUser%]']",
         "class": "via user",
@@ -308,102 +391,6 @@
       {
         "entity": "Shop.CheckoutForm",
         "xpath": "[Shop.CheckoutForm_Owner = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Coupon",
-        "xpath": "[Shop.Cart_Coupon/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Courier",
-        "xpath": "[Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.DeliveryZone",
-        "xpath": "[\n  Shop.CheckoutForm_Zone/Shop.CheckoutForm/Shop.CheckoutForm_Owner = '[%CurrentUser%]'\n  or Shop.Order_Zone/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'\n]",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Order",
-        "xpath": "[Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.OrderAccess",
-        "xpath": "[Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.OrderLine",
-        "xpath": "[Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.OrderLineModifier",
-        "xpath": "[Shop.OrderLineModifier_OrderLine/Shop.OrderLine/Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.OrderLogEntry",
-        "xpath": "[\n  IsCustomerVisible = true\n  and Shop.OrderLogEntry_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'\n]",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.OrderStatusChange",
-        "xpath": "[Shop.OrderStatusChange_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Oven",
-        "xpath": "[Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.PaymentAttempt",
-        "xpath": "[Shop.PaymentAttempt_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]']",
-        "class": "via user",
-        "roles": [
-          "Shop.Guest"
-        ]
-      },
-      {
-        "entity": "Shop.Toast",
-        "xpath": "[Shop.Toast_Owner = '[%CurrentUser%]']",
         "class": "via user",
         "roles": [
           "Shop.Guest"
@@ -818,7 +805,7 @@
           "Anonymous"
         ],
         "params": [
-          "$TheOrder: Object:Shop.Order"
+          "$TheOrder: Object:Fulfilment.Order"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -850,7 +837,7 @@
           "Anonymous"
         ],
         "params": [
-          "$Toast: Object:Shop.Toast"
+          "$Toast: Object:Core.Toast"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -866,7 +853,7 @@
           "Anonymous"
         ],
         "params": [
-          "$TheOrder: Object:Shop.Order"
+          "$TheOrder: Object:Fulfilment.Order"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -882,7 +869,7 @@
           "Anonymous"
         ],
         "params": [
-          "$TheOrder: Object:Shop.Order"
+          "$TheOrder: Object:Fulfilment.Order"
         ],
         "applyEntityAccess": false,
         "checksCaller": false,
@@ -940,6 +927,54 @@
         "triage": "changes an object the client chose, with entity access off: no access rule stops a substituted id"
       },
       {
+        "name": "Shop.DS_Line_Allergens",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Line: Object:Shop.CartLine"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Line_Extras",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Line: Object:Shop.CartLine"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Line_Removed",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Line: Object:Shop.CartLine"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
         "name": "Shop.DS_Menu_Products",
         "roles": [
           "Administrator",
@@ -956,13 +991,125 @@
         "triage": "reads an object the client chose, with entity access off"
       },
       {
+        "name": "Shop.DS_OrderLine_Modifiers",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Line: Object:Fulfilment.OrderLine"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Order_History",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$TheOrder: Object:Fulfilment.Order"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Order_Lines",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$TheOrder: Object:Fulfilment.Order"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Order_Log",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$TheOrder: Object:Fulfilment.Order"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Order_Payments",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$TheOrder: Object:Fulfilment.Order"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": true,
+        "takesUser": false,
+        "writes": false,
+        "risk": "ok",
+        "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
+      },
+      {
+        "name": "Shop.DS_Product_Allergens",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Product: Object:Catalog.Product"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": false,
+        "takesUser": false,
+        "writes": false,
+        "risk": "medium",
+        "triage": "reads an object the client chose, with entity access off"
+      },
+      {
+        "name": "Shop.DS_Product_Recipe",
+        "roles": [
+          "Administrator",
+          "Anonymous"
+        ],
+        "params": [
+          "$Product: Object:Catalog.Product"
+        ],
+        "applyEntityAccess": false,
+        "checksCaller": false,
+        "takesUser": false,
+        "writes": false,
+        "risk": "medium",
+        "triage": "reads an object the client chose, with entity access off"
+      },
+      {
         "name": "Shop.DS_Track",
         "roles": [
           "Administrator",
           "Anonymous"
         ],
         "params": [
-          "$TheOrder: Object:Shop.Order"
+          "$TheOrder: Object:Fulfilment.Order"
         ],
         "applyEntityAccess": false,
         "checksCaller": true,
@@ -980,27 +1127,28 @@
         "count": 2,
         "examples": [
           "Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' has unconstrained READ access for role 'Catalog.Guest' - all rows are accessible",
-          "Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' has unconstrained READ access for role 'Shop.Guest' - all rows are accessible"
+          "Core.Core.StoreSettings: Entity 'Core.StoreSettings' has unconstrained READ access for role 'Core.Guest' - all rows are accessible"
         ],
         "hint": "Fires on every unconstrained rule, including the intended ones (an admin role, reference data). Judge each entity, do not count them."
       },
       {
         "rule": "CONV008",
         "severity": "info",
-        "count": 2,
+        "count": 4,
         "examples": [
           "ProjectSecurity: Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role.",
-          "ProjectSecurity: Module role 'Catalog.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+          "ProjectSecurity: Module role 'Catalog.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role.",
+          "ProjectSecurity: Module role 'Core.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
         ]
       },
       {
         "rule": "SEC001",
         "severity": "warning",
-        "count": 4,
+        "count": 5,
         "examples": [
-          "Shop.LookupAttempt: Persistent entity 'Shop.LookupAttempt' has no access rules",
-          "Shop.SimulationEvent: Persistent entity 'Shop.SimulationEvent' has no access rules",
-          "Shop.SimulationSettings: Persistent entity 'Shop.SimulationSettings' has no access rules"
+          "Core.SimulationSettings: Persistent entity 'Core.SimulationSettings' has no access rules",
+          "Fulfilment.Coupon: Persistent entity 'Fulfilment.Coupon' has no access rules",
+          "Fulfilment.SimulationEvent: Persistent entity 'Fulfilment.SimulationEvent' has no access rules"
         ]
       },
       {
@@ -1025,17 +1173,17 @@
         "count": 2,
         "examples": [
           "Catalog.Catalog.Allergen: Entity 'Catalog.Allergen' is readable by anonymous users (via role 'Catalog.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)",
-          "Shop.Shop.StoreSettings: Entity 'Shop.StoreSettings' is readable by anonymous users (via role 'Shop.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)"
+          "Core.Core.StoreSettings: Entity 'Core.StoreSettings' is readable by anonymous users (via role 'Core.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)"
         ]
       },
       {
         "rule": "SEC010",
         "severity": "info",
-        "count": 10,
+        "count": 3,
         "examples": [
           "Shop.Cart_Drawer: List view 'lvLines' on page Shop.Cart_Drawer lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows",
           "Shop.Checkout: List view 'lvSum' on page Shop.Checkout lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows",
-          "Shop.Configurator: List view 'lvDeps' on page Shop.Configurator lists Catalog.Option, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
+          "Shop.Menu: List view 'lvDbg' on page Shop.Menu lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
         ],
         "hint": "Fires when a page's role may not read a listed entity. Often intended when access is row-level by design; real when a role sees an empty page."
       }

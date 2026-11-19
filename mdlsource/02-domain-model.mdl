@@ -134,7 +134,7 @@ create or modify association Catalog."Product_Allergen" from Catalog."Product" t
 -- ───────────────────────── Store / reference ─────────────────────────
 
 /** Delivery zone matched by ZIP code. */
-create or modify persistent entity Shop."DeliveryZone" (
+create or modify persistent entity Fulfilment."DeliveryZone" (
   "Zip": String(5) not null unique,
   "Neighborhood": String(40),
   "DistanceMiles": Decimal default 0,
@@ -142,10 +142,10 @@ create or modify persistent entity Shop."DeliveryZone" (
 ) index ("Zip");
 
 /** Coupon code (matched case-insensitively, stored upper-case). */
-create or modify persistent entity Shop."Coupon" (
+create or modify persistent entity Fulfilment."Coupon" (
   "Code": String(30) not null unique,
   "Description": String(140),
-  "Discount": Enumeration(Shop."DiscountType"),
+  "Discount": Enumeration(Fulfilment."DiscountType"),
   "DiscountValue": Decimal default 0,
   "MaxDiscount": Decimal default 0,
   "MinSubtotal": Decimal default 0,
@@ -156,7 +156,7 @@ create or modify persistent entity Shop."Coupon" (
 ) index ("Code");
 
 /** Store-wide settings (singleton). */
-create or modify persistent entity Shop."StoreSettings" (
+create or modify persistent entity Core."StoreSettings" (
   "StoreName": String(60),
   "AddressLine": String(120),
   "Phone": String(20),
@@ -171,14 +171,14 @@ create or modify persistent entity Shop."StoreSettings" (
 );
 
 /** A courier of the simulated fleet. */
-create or modify persistent entity Shop."Courier" (
+create or modify persistent entity Fulfilment."Courier" (
   "Code": String(5) not null unique,
   "Name": String(60),
   "NodeHandle": String(30),
-  "Vehicle": Enumeration(Shop."VehicleType"),
+  "Vehicle": Enumeration(Fulfilment."VehicleType"),
   "Plate": String(10),
   "Phone": String(20),
-  "CourierStatus": Enumeration(Shop."CourierStatus"),
+  "CourierStatus": Enumeration(Fulfilment."CourierStatus"),
   "StatusChangedAt": DateTime,
   "TripProgress": Decimal default 0,
   "TripAnchorAt": DateTime,
@@ -187,17 +187,17 @@ create or modify persistent entity Shop."Courier" (
 );
 
 /** An oven of the simulated kitchen. */
-create or modify persistent entity Shop."Oven" (
+create or modify persistent entity Fulfilment."Oven" (
   "Code": String(10) not null unique,
   "DisplayName": String(30),
   "OvenType": String(30),
   "TargetTempF": Integer default 0,
   "CapacityOrders": Integer default 3,
-  "OvenStatus": Enumeration(Shop."OvenStatus")
+  "OvenStatus": Enumeration(Fulfilment."OvenStatus")
 );
 
 /** Simulation settings (singleton). Durations are seconds at 1×. */
-create or modify persistent entity Shop."SimulationSettings" (
+create or modify persistent entity Core."SimulationSettings" (
   "SpeedFactor": Integer default 1,
   "PaymentProcessing": Integer default 3,
   "PaymentTimeout": Integer default 10,
@@ -229,7 +229,7 @@ create or modify persistent entity Shop."SimulationSettings" (
 /** The guest's cart; one per anonymous user (= browser session). */
 create or modify persistent entity Shop."Cart" (
   "CouponInput": String(30),
-  "CouponState": Enumeration(Shop."CouponState"),
+  "CouponState": Enumeration(Fulfilment."CouponState"),
   "CouponMessage": String(140),
   "CouponFieldError": String(140),
   "ItemCount": Integer default 0,
@@ -285,7 +285,7 @@ create or modify persistent entity Shop."CartLine" (
 );
 
 create or modify association Shop."Cart_Owner" from Shop."Cart" to System."User" on delete cascade;
-create or modify association Shop."Cart_Coupon" from Shop."Cart" to Shop."Coupon";
+create or modify association Shop."Cart_Coupon" from Shop."Cart" to Fulfilment."Coupon";
 create or modify association Shop."CartLine_Cart" from Shop."CartLine" to Shop."Cart" on delete cascade;
 create or modify association Shop."CartLine_Product" from Shop."CartLine" to Catalog."Product";
 create or modify association Shop."CartLine_Size" from Shop."CartLine" to Catalog."ProductSize";
@@ -298,7 +298,7 @@ create or modify association Shop."CartLine_Allergen" from Shop."CartLine" to Ca
 
 /** Checkout form of a guest; kept per user so switching delivery/pickup never loses data. */
 create or modify persistent entity Shop."CheckoutForm" (
-  "OrderType": Enumeration(Shop."OrderType"),
+  "OrderType": Enumeration(Fulfilment."OrderType"),
   "AddressLine1": String(80),
   "AddressLine2": String(80),
   "City": String(40),
@@ -308,9 +308,9 @@ create or modify persistent entity Shop."CheckoutForm" (
   "ContactName": String(80),
   "ContactEmail": String(254),
   "ContactPhone": String(30),
-  "Tip": Enumeration(Shop."TipOption"),
-  "Method": Enumeration(Shop."PaymentMethod"),
-  "Card": Enumeration(Shop."TestCard"),
+  "Tip": Enumeration(Fulfilment."TipOption"),
+  "Method": Enumeration(Fulfilment."PaymentMethod"),
+  "Card": Enumeration(Fulfilment."TestCard"),
   "ZoneMessage": String(300),
   "IsZoneOk": Boolean default false,
   "IsZoneOutside": Boolean default false,
@@ -346,30 +346,30 @@ create or modify persistent entity Shop."CheckoutForm" (
   "FieldErrors": String(1000)
 );
 create or modify association Shop."CheckoutForm_Owner" from Shop."CheckoutForm" to System."User" on delete cascade;
-create or modify association Shop."CheckoutForm_Zone" from Shop."CheckoutForm" to Shop."DeliveryZone";
+create or modify association Shop."CheckoutForm_Zone" from Shop."CheckoutForm" to Fulfilment."DeliveryZone";
 
 /** A non-blocking notification for one guest. Removed when it expires (US-010). */
-create or modify persistent entity Shop."Toast" (
+create or modify persistent entity Core."Toast" (
   "Message": String(300),
-  "Level": Enumeration(Shop."ToastLevel"),
+  "Level": Enumeration(Core."ToastLevel"),
   "CreatedAt": DateTime,
   "ExpiresAt": DateTime,
   "ShouldShowCartAction": Boolean default false
 );
-create or modify association Shop."Toast_Owner" from Shop."Toast" to System."User" on delete cascade;
+create or modify association Core."Toast_Owner" from Core."Toast" to System."User" on delete cascade;
 
 -- ───────────────────────── Orders ─────────────────────────
 
 /** A placed order (snapshot of the cart at checkout). */
-create or modify persistent entity Shop."Order" (
+create or modify persistent entity Fulfilment."Order" (
   "OrderNumber": Integer not null unique,
   "CommitHash": String(7),
   "TrackingToken": String(40),
-  "Source": Enumeration(Shop."OrderSource"),
-  "OrderType": Enumeration(Shop."OrderType"),
-  "OrderStatus": Enumeration(Shop."OrderStatus"),
+  "Source": Enumeration(Fulfilment."OrderSource"),
+  "OrderType": Enumeration(Fulfilment."OrderType"),
+  "OrderStatus": Enumeration(Fulfilment."OrderStatus"),
   "StatusChangedAt": DateTime,
-  "Payment": Enumeration(Shop."PaymentStatus"),
+  "Payment": Enumeration(Fulfilment."PaymentStatus"),
   "ContactName": String(80),
   "ContactEmail": String(254),
   "ContactPhone": String(20),
@@ -384,10 +384,10 @@ create or modify persistent entity Shop."Order" (
   "Subtotal": Decimal default 0,
   "DiscountAmount": Decimal default 0,
   "DeliveryFee": Decimal default 0,
-  "FeeWaivedBy": Enumeration(Shop."FeeWaiver"),
+  "FeeWaivedBy": Enumeration(Fulfilment."FeeWaiver"),
   "TaxRatePercent": Decimal default 0,
   "TaxAmount": Decimal default 0,
-  "Tip": Enumeration(Shop."TipOption"),
+  "Tip": Enumeration(Fulfilment."TipOption"),
   "TipAmount": Decimal default 0,
   "Total": Decimal default 0,
   "PlacedAt": DateTime,
@@ -408,7 +408,7 @@ create or modify persistent entity Shop."Order" (
   "RemakeCount": Integer default 0,
   "IsPriority": Boolean default false,
   "CancelReason": String(200),
-  "CancelledBy": Enumeration(Shop."ActorType"),
+  "CancelledBy": Enumeration(Fulfilment."ActorType"),
   "PizzaCount": Integer default 0,
   "ItemCount": Integer default 0,
   "IsOpen": Boolean default true,
@@ -416,7 +416,7 @@ create or modify persistent entity Shop."Order" (
 ) index ("OrderNumber") index ("TrackingToken") index ("OrderStatus");
 
 /** Snapshot of one cart line. */
-create or modify persistent entity Shop."OrderLine" (
+create or modify persistent entity Fulfilment."OrderLine" (
   "ProductCode": String(5),
   "ProductName": String(40),
   "RealWorldName": String(40),
@@ -435,8 +435,8 @@ create or modify persistent entity Shop."OrderLine" (
 );
 
 /** Snapshot of one configuration choice of a pizza line. */
-create or modify persistent entity Shop."OrderLineModifier" (
-  "ModifierType": Enumeration(Shop."ModifierType"),
+create or modify persistent entity Fulfilment."OrderLineModifier" (
+  "ModifierType": Enumeration(Fulfilment."ModifierType"),
   "OptionKey": String(30),
   "Name": String(60),
   "Price": Decimal default 0,
@@ -445,13 +445,13 @@ create or modify persistent entity Shop."OrderLineModifier" (
 );
 
 /** One simulated payment attempt (max 3 per order). */
-create or modify persistent entity Shop."PaymentAttempt" (
+create or modify persistent entity Fulfilment."PaymentAttempt" (
   "AttemptNumber": Integer default 1,
-  "Method": Enumeration(Shop."PaymentMethod"),
-  "Card": Enumeration(Shop."TestCard"),
+  "Method": Enumeration(Fulfilment."PaymentMethod"),
+  "Card": Enumeration(Fulfilment."TestCard"),
   "Amount": Decimal default 0,
-  "AttemptStatus": Enumeration(Shop."PaymentAttemptStatus"),
-  "FailureCode": Enumeration(Shop."PaymentFailureCode"),
+  "AttemptStatus": Enumeration(Fulfilment."PaymentAttemptStatus"),
+  "FailureCode": Enumeration(Fulfilment."PaymentFailureCode"),
   "TransactionId": String(24),
   "StartedAt": DateTime,
   "FinishedAt": DateTime,
@@ -461,20 +461,20 @@ create or modify persistent entity Shop."PaymentAttempt" (
 );
 
 /** Audit record of one order status transition. */
-create or modify persistent entity Shop."OrderStatusChange" (
-  "FromStatus": Enumeration(Shop."OrderStatus"),
-  "ToStatus": Enumeration(Shop."OrderStatus"),
+create or modify persistent entity Fulfilment."OrderStatusChange" (
+  "FromStatus": Enumeration(Fulfilment."OrderStatus"),
+  "ToStatus": Enumeration(Fulfilment."OrderStatus"),
   "ChangedAt": DateTime,
-  "Actor": Enumeration(Shop."ActorType"),
+  "Actor": Enumeration(Fulfilment."ActorType"),
   "ActorName": String(60),
   "Reason": String(200),
   "Seq": Integer default 0
 );
 
 /** Terminal-style log line of an order. */
-create or modify persistent entity Shop."OrderLogEntry" (
+create or modify persistent entity Fulfilment."OrderLogEntry" (
   "LoggedAt": DateTime,
-  "Level": Enumeration(Shop."LogLevel"),
+  "Level": Enumeration(Fulfilment."LogLevel"),
   "Tag": String(12),
   "Message": String(300),
   "IsCustomerVisible": Boolean default true,
@@ -484,14 +484,14 @@ create or modify persistent entity Shop."OrderLogEntry" (
 );
 
 /** Grants one guest (anonymous user) access to one order: placed, looked up or opened via tracking link. */
-create or modify persistent entity Shop."OrderAccess" (
+create or modify persistent entity Fulfilment."OrderAccess" (
   "GrantedAt": DateTime
 );
 
 /** Simulation event log (no guest access). */
-create or modify persistent entity Shop."SimulationEvent" (
+create or modify persistent entity Fulfilment."SimulationEvent" (
   "OccurredAt": DateTime,
-  "EventType": Enumeration(Shop."SimulationEventType"),
+  "EventType": Enumeration(Fulfilment."SimulationEventType"),
   "Message": String(200)
 );
 
@@ -500,32 +500,32 @@ create or modify persistent entity Shop."LookupAttempt" (
   "AttemptedAt": DateTime
 );
 
-create or modify association Shop."Order_Zone" from Shop."Order" to Shop."DeliveryZone";
-create or modify association Shop."Order_Coupon" from Shop."Order" to Shop."Coupon";
-create or modify association Shop."Order_Oven" from Shop."Order" to Shop."Oven";
-create or modify association Shop."Order_Courier" from Shop."Order" to Shop."Courier";
-create or modify association Shop."Courier_CurrentOrder" from Shop."Courier" to Shop."Order";
-create or modify association Shop."OrderLine_Order" from Shop."OrderLine" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderLine_Product" from Shop."OrderLine" to Catalog."Product";
-create or modify association Shop."OrderLineModifier_OrderLine" from Shop."OrderLineModifier" to Shop."OrderLine" on delete cascade;
-create or modify association Shop."PaymentAttempt_Order" from Shop."PaymentAttempt" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderStatusChange_Order" from Shop."OrderStatusChange" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderLogEntry_Order" from Shop."OrderLogEntry" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderAccess_Order" from Shop."OrderAccess" to Shop."Order" on delete cascade;
-create or modify association Shop."OrderAccess_User" from Shop."OrderAccess" to System."User" on delete cascade;
-create or modify association Shop."SimulationEvent_Order" from Shop."SimulationEvent" to Shop."Order";
+create or modify association Fulfilment."Order_Zone" from Fulfilment."Order" to Fulfilment."DeliveryZone";
+create or modify association Fulfilment."Order_Coupon" from Fulfilment."Order" to Fulfilment."Coupon";
+create or modify association Fulfilment."Order_Oven" from Fulfilment."Order" to Fulfilment."Oven";
+create or modify association Fulfilment."Order_Courier" from Fulfilment."Order" to Fulfilment."Courier";
+create or modify association Fulfilment."Courier_CurrentOrder" from Fulfilment."Courier" to Fulfilment."Order";
+create or modify association Fulfilment."OrderLine_Order" from Fulfilment."OrderLine" to Fulfilment."Order" on delete cascade;
+create or modify association Fulfilment."OrderLine_Product" from Fulfilment."OrderLine" to Catalog."Product";
+create or modify association Fulfilment."OrderLineModifier_OrderLine" from Fulfilment."OrderLineModifier" to Fulfilment."OrderLine" on delete cascade;
+create or modify association Fulfilment."PaymentAttempt_Order" from Fulfilment."PaymentAttempt" to Fulfilment."Order" on delete cascade;
+create or modify association Fulfilment."OrderStatusChange_Order" from Fulfilment."OrderStatusChange" to Fulfilment."Order" on delete cascade;
+create or modify association Fulfilment."OrderLogEntry_Order" from Fulfilment."OrderLogEntry" to Fulfilment."Order" on delete cascade;
+create or modify association Fulfilment."OrderAccess_Order" from Fulfilment."OrderAccess" to Fulfilment."Order" on delete cascade;
+create or modify association Fulfilment."OrderAccess_User" from Fulfilment."OrderAccess" to System."User" on delete cascade;
+create or modify association Fulfilment."SimulationEvent_Order" from Fulfilment."SimulationEvent" to Fulfilment."Order";
 create or modify association Shop."LookupAttempt_User" from Shop."LookupAttempt" to System."User" on delete cascade;
 
 -- ───────────────────────── Simulation / pricing helpers ─────────────────────────
 
 /** Result of the price rules for a subtotal, order type, coupon and tip (BR-PRICE-05..10). */
-create or modify non-persistent entity Shop."PriceResult" (
+create or modify non-persistent entity Fulfilment."PriceResult" (
   "Subtotal": Decimal default 0,
-  "CouponState": Enumeration(Shop."CouponState"),
+  "CouponState": Enumeration(Fulfilment."CouponState"),
   "CouponMessage": String(200),
   "Discount": Decimal default 0,
   "DeliveryFee": Decimal default 0,
-  "FeeWaivedBy": Enumeration(Shop."FeeWaiver"),
+  "FeeWaivedBy": Enumeration(Fulfilment."FeeWaiver"),
   "Tax": Decimal default 0,
   "TipPercent": Integer default 0,
   "TipAmount": Decimal default 0,
@@ -533,11 +533,11 @@ create or modify non-persistent entity Shop."PriceResult" (
 );
 
 /** The guest (anonymous user) who placed the order; its cart is cleared when payment succeeds (T-02). */
-create or modify association Shop."Order_PlacedBy" from Shop."Order" to System."User";
+create or modify association Fulfilment."Order_PlacedBy" from Fulfilment."Order" to System."User";
 
 -- Guest UI state lives on the Cart (one per guest).
 create or modify association Shop."CartLine_EditOf" from Shop."CartLine" to Shop."CartLine";
-create or modify association Shop."Cart_ActiveOrder" from Shop."Cart" to Shop."Order";
+create or modify association Shop."Cart_ActiveOrder" from Shop."Cart" to Fulfilment."Order";
 
 /** Home page view (SCR-01): the four KPIs as numbers only (LITE-SEC-02) and the carousel position. */
 create or modify non-persistent entity Shop."HomeView" (
@@ -618,7 +618,7 @@ create or modify non-persistent entity Shop."TrackView" (
   "SubText": String(20), "DiscText": String(20), "FeeText": String(60), "TaxText": String(20), "TipText": String(20), "TipLabel": String(20),
   "NumberText": String(12)
 );
-create or modify association Shop."TrackView_Order" from Shop."TrackView" to Shop."Order";
+create or modify association Shop."TrackView_Order" from Shop."TrackView" to Fulfilment."Order";
 
 /** Order lookup form (SCR-10, US-133). */
 create or modify non-persistent entity Shop."LookupForm" (
