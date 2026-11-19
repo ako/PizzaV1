@@ -1,0 +1,22 @@
+/* Git Pizza MxDev design tokens (07-design-system/tokens.md) mapped onto the mxcli palette. Dark only. */
+@media (prefers-color-scheme: dark) { :root {
+  --mxt-brand: #ff9d00; --mxt-brand-hover: #ffb869; --mxt-brand-ink: #2c1700;
+  --mxt-accent: #dec4ff;
+  --mxt-ground: #131313; --mxt-surface: #1b1b1c; --mxt-surface-alt: #202020;
+  --mxt-surface-hover: #2a2a2a; --mxt-surface-selected: rgba(255,157,0,0.12);
+  --mxt-ink: #e5e2e1; --mxt-ink-muted: #dac2ad; --mxt-ink-faint: #a28d79; --mxt-line: #333333;
+  --mxt-rail: #1b1b1c; --mxt-rail-line: #544433; --mxt-rail-ink: #dac2ad; --mxt-rail-ink-active: #72ff70;
+  --mxt-success: #00ff41; --mxt-warning: #f1fa8c; --mxt-danger: #ff5555; --mxt-info: #38bdf8;
+  --mxt-link: #ffc485; --mxt-link-hover: #ffffff;
+  --mxt-tint-ok: rgba(0,255,65,0.12); --mxt-tone-ok: #72ff70;
+  --mxt-tint-warn: rgba(241,250,140,0.12); --mxt-tone-warn: #f1fa8c;
+  --mxt-tint-risk: rgba(255,85,85,0.12); --mxt-tone-risk: #ffb4ab;
+  --mxt-tint-info: rgba(56,189,248,0.12); --mxt-tone-info: #38bdf8;
+  --mxt-tint-neutral: #353535;
+  --mxt-font: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-heading: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-size: 14px; --mxt-line-height: 1.5;
+  --mxt-radius: 2px; --mxt-radius-lg: 8px; --mxt-control-height: 44px; --mxt-row-height: 44px;
+  --mxt-shadow: 0 1px 8px rgba(0,0,0,0.3); --mxt-focus-halo: 0 0 0 2px #ffc485;
+} }

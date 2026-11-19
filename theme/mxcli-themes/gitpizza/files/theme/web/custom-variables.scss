@@ -1,0 +1,74 @@
+// Layer 1 — the Gitpizza palette. This is the file to edit.
+//
+// These are the theme's own semantic tokens. _mxcli-atlas-map.scss maps them
+// onto the ~60 Atlas variables that Atlas components, form controls and the
+// brand-aware pluggable widgets (Switch, Slider, ProgressBar, BadgeButton)
+// actually read — so changing --mxt-brand here re-brands the entire app, with
+// no per-widget CSS.
+//
+// The values below are the DARK palette, which is Gitpizza's default. The light palette lives in _mxcli-gitpizza.scss.
+//
+// Mendix 11 Atlas is CSS-custom-property-first, so these are `:root`
+// declarations rather than SCSS `!default` variables. This file is imported
+// once per module, so it must hold declarations only — never rules.
+
+{{PALETTE_SCOPE}} {
+  /* ---- the one colour that defines the app --------------------------- */
+  --mxt-brand: #ff9d00;
+  --mxt-brand-hover: #ffb869;
+  --mxt-brand-ink: #2c1700;
+  --mxt-accent: #dec4ff;
+
+  /* ---- semantic status ----------------------------------------------- */
+  --mxt-success: #00ff41;
+  --mxt-warning: #f1fa8c;
+  --mxt-danger: #ff5555;
+  --mxt-info: #38bdf8;
+
+  /* ---- surfaces and ink — separated by lightness, never by shadow ----- */
+  --mxt-ground: #131313;
+  --mxt-surface: #1b1b1c;
+  --mxt-surface-alt: #202020;
+  --mxt-surface-hover: #2a2a2a;
+  --mxt-surface-selected: rgba(255,157,0,0.12);
+  --mxt-ink: #e5e2e1;
+  --mxt-ink-muted: #dac2ad;
+  --mxt-ink-faint: #a28d79;
+  --mxt-line: #333333;
+
+  /* ---- the navigation rail -------------------------------------------- */
+  --mxt-rail: #1b1b1c;
+  --mxt-rail-line: #544433;
+  --mxt-rail-ink: #dac2ad;
+  --mxt-rail-ink-active: #72ff70;
+
+  /* ---- status pill tones ---------------------------------------------- */
+  --mxt-tint-ok: rgba(0,255,65,0.12);
+  --mxt-tone-ok: #72ff70;
+  --mxt-tint-warn: rgba(241,250,140,0.12);
+  --mxt-tone-warn: #f1fa8c;
+  --mxt-tint-risk: rgba(255,85,85,0.12);
+  --mxt-tone-risk: #ffb4ab;
+  --mxt-tint-info: rgba(56,189,248,0.12);
+  --mxt-tone-info: #38bdf8;
+  --mxt-tint-neutral: #353535;
+
+  /* ---- shape, density, elevation --------------------------------------- */
+  --mxt-radius: 2px;
+  --mxt-radius-lg: 8px;
+  --mxt-row-height: 44px;
+  --mxt-control-height: 44px;
+  --mxt-shadow: 0 1px 8px rgba(0,0,0,0.3);
+  --mxt-focus-halo: 0 0 0 2px #ffc485;
+
+  /* ---- type ------------------------------------------------------------ */
+  --mxt-font: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-heading: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
+  --mxt-font-size: 14px;
+  --mxt-line-height: 1.5;
+
+  /* from tokens.css */
+  --mxt-link: #ffc485;
+  --mxt-link-hover: #ffffff;
+}

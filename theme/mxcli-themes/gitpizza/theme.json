@@ -1,0 +1,56 @@
+{
+  "name": "gitpizza",
+  "title": "Gitpizza",
+  "version": "1",
+  "summary": "Project theme; palette seeded from tokens.css (43 declarations).",
+  "description": "Project-local theme, scaffolded from Console by `mxcli theme create`. Edit the palette in files/theme/web/custom-variables.scss and the dark palette in files/theme/web/_mxcli-gitpizza.scss, then re-run `mxcli theme apply gitpizza`.",
+  "colorway": [
+    "#2DD4BF",
+    "#A78BFA",
+    "#3FB950",
+    "#D29922",
+    "#F85149",
+    "#9AA6B4"
+  ],
+  "defaultVariant": "dark",
+  "files": [
+    {
+      "path": "theme/web/custom-variables.scss",
+      "mode": "block",
+      "purpose": "Layer 1 — the Gitpizza palette (dark): brand, surfaces, ink, density"
+    },
+    {
+      "path": "theme/web/_mxcli-atlas-map.scss",
+      "mode": "block",
+      "purpose": "the Atlas wiring — shared by every mxcli theme, identical in each",
+      "shared": true
+    },
+    {
+      "path": "theme/web/_mxcli-gitpizza.scss",
+      "mode": "block",
+      "purpose": "the other palette, the variant blocks, @font-face, and this theme's own skin rules"
+    },
+    {
+      "path": "theme/web/_mxcli-recipes.scss",
+      "mode": "block",
+      "purpose": "the recipe layer — num / pill / stat / focus / density, shared by every theme",
+      "shared": true
+    },
+    {
+      "path": "theme/web/_mxcli-widgets.scss",
+      "mode": "block",
+      "purpose": "the widget-module layer — rules for colours Sass bakes before any token exists",
+      "shared": true
+    },
+    {
+      "path": "theme/web/main.scss",
+      "mode": "block",
+      "purpose": "variant switch + imports — this file compiles last, so the partials win"
+    },
+    {
+      "path": "theme/web/mxcli-fonts/",
+      "mode": "verbatim",
+      "purpose": "vendored Space Grotesk + JetBrains Mono (SIL OFL 1.1, OFL-gitpizza.txt) — no CDN at runtime"
+    }
+  ]
+}
