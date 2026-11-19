@@ -650,39 +650,3 @@ create or modify page Shop.NotFound (
   }
 };
 
-/** SCR-41 ERROR 500 // SEG_FAULT (US-282). */
-create or modify page Shop.UnexpectedError (
-  Title: 'Unexpected error — Git Pizza MxDev',
-  Layout: Shop.Layout_Minimal,
-  Url: 'error'
-) {
-  container page (Class: 'err-page scr-41') {
-    container wrap (Class: 'err-wrap') {
-      container logo (Class: 'err-logo', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { image logoImg (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-horizontal.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'err-logo-img') }
-      container head (Class: 'err-head') {
-        image illus (ImageType: imageUrl, ImageUrl: '/assets/illustrations/error-seg-fault.png', AlternativeText: '', Class: 'err-illus')
-        container ht {
-          container code (Class: 'err-code') { dynamictext codeI (Content: 'bug_report', Class: 'ms') dynamictext codeT (Content: 'ERROR 500') }
-          container title (Class: 'err-title t-h2') { dynamictext titleT (Content: 'SEG_FAULT') container titleC (Class: 'cursor amber') { } }
-          dynamictext expl (Content: 'Something went wrong on our side. Your manifest and orders are safe.', Class: 't-body-long')
-          dynamictext incident (Content: 'INCIDENT_ID: ERR-{1}', ContentParams: ({1} = formatDateTime([%CurrentDateTime%], 'yyyyMMdd-HHmmss')), Class: 'c-warn t-small mt-8')
-        }
-      }
-      container trace (Class: 'term') {
-        container tBar (Class: 'term-bar') { container tDots (Class: 'dots') { container td1 (Class: 'dot') { } container td2 (Class: 'dot') { } container td3 (Class: 'dot') { } } dynamictext tName (Content: '{1}', ContentParams: ({1} = 'stack_trace.log')) }
-        container tBody (Class: 'term-body trace') {
-          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t (Content: '[FATAL] Segmentation fault in OvenCluster.dispatch()', Class: 'c-error') }
-          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t (Content: 'at Pipeline.run() // pipeline.ts:88:7') }
-          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t (Content: 'at Kitchen.handle() // kitchen.ts:211:9') }
-          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t (Content: 'at GitPizza.boot() // main.js:1:1') }
-        }
-      }
-      dynamictext resol (Content: '// SUGGESTED RESOLUTION: Re-synchronize with the main branch.', Class: 't-small c-muted')
-      container actions (Class: 'row err-actions') {
-        container aRetry (Class: 'btn btn-primary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aRetryI (Content: 'refresh', Class: 'ms md') dynamictext aRetryT (Content: 'RETRY_DEPLOYMENT') }
-        container aMain (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aMainI (Content: 'terminal', Class: 'ms md') dynamictext aMainT (Content: 'RETURN_TO_MAIN') }
-      }
-      dynamictext status (Content: 'STATUS SEG_FAULT · demo time', Class: 't-micro c-muted')
-    }
-  }
-};

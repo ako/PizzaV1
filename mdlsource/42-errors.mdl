@@ -1,0 +1,123 @@
+mdl 1;
+
+-- Errors and system messages (EP-15): incident IDs (US-282, BR-ERR-02), retry of
+-- the failed page, and an opt-in fault probe for the acceptance test.
+
+/** Incident shown on SCR-41; the same ID is written to the application log. */
+create or modify non-persistent entity Shop."ErrorView" (
+  "IncidentId": String(40)
+);
+grant read * on entity Shop.ErrorView to Shop.Guest;
+grant read * on entity Shop.ErrorView to Shop.Administrator;
+
+/** When true, the page at /p/fault raises an unhandled error (acceptance test of US-282). Off in production. */
+create or modify constant Shop."FaultInjection" (Type: Boolean, DefaultValue: false);
+
+/**
+ * Data source of SCR-41: creates the incident ID (ERR-yyyyMMdd-HHmmss-XXXX,
+ * TXT-ERR-24) and writes it to the application log (BR-ERR-02).
+ *
+ * @returns The incident
+ */
+create or modify microflow Shop.DS_Error ()
+returns Shop.ErrorView as $View
+folder 'Errors'
+begin
+  $Hex = call microflow Shop.SUB_RandomHex(Length = 4);
+  $View = create Shop.ErrorView (IncidentId = 'ERR-' + formatDateTime([%CurrentDateTime%], 'yyyyMMdd-HHmmss') + '-' + toUpperCase($Hex));
+  log error node 'GitPizza' 'INCIDENT {1}: unexpected error page shown to {2}' with ({1} = $View/IncidentId, {2} = $currentUser/Name);
+  return $View;
+end;
+grant execute on microflow Shop.DS_Error to Shop.Guest, Shop.Administrator; -- auto
+
+/**
+ * Data source of the fault probe: raises an unhandled error when
+ * Shop.FaultInjection is on, so the acceptance test can see SCR-41.
+ *
+ * @returns An incident view (only when fault injection is off)
+ */
+create or modify microflow Shop.DS_FaultProbe ()
+returns Shop.ErrorView as $Probe
+folder 'Errors'
+begin
+  declare $Zero Integer = 0;
+  if @Shop.FaultInjection then
+    declare $Boom Decimal = 1 div $Zero;
+  end if;
+  $Probe = create Shop.ErrorView (IncidentId = 'Fault injection is off.');
+  return $Probe;
+end;
+grant execute on microflow Shop.DS_FaultProbe to Shop.Guest, Shop.Administrator; -- auto
+
+/** Repeats the page load that failed (RETRY_DEPLOYMENT, US-282 AC1). */
+create or modify javascript action Shop."JS_RetryLast" () returns Boolean
+as $$
+    var target = '/';
+    try { target = sessionStorage.getItem('gp-failed-url') || '/'; sessionStorage.removeItem('gp-failed-url'); } catch (e) { target = '/'; }
+    if (!/^\/(?!\/)/.test(target) || /^\/p\/error/.test(target)) { target = '/'; }
+    window.location.assign(target);
+    return true;
+$$;
+
+/** RETRY_DEPLOYMENT on SCR-41. */
+create or modify nanoflow Shop.NF_RetryLast ()
+folder 'Errors'
+begin
+  $Retried = call javascript action Shop.JS_RetryLast();
+end;
+grant execute on nanoflow Shop.NF_RetryLast to Shop.Guest, Shop.Administrator;
+
+/** Fault probe (opt-in, see Shop.FaultInjection): with injection off it says so and links home. */
+create or modify page Shop.FaultProbe (
+  Title: 'Fault probe — Git Pizza MxDev',
+  Layout: Shop.Layout_Minimal,
+  Url: 'fault'
+) {
+  dataview dvProbe (DataSource: MICROFLOW Shop.DS_FaultProbe, Class: 'err-dv') {
+    container probe (Class: 'err-page') {
+      dynamictext probeT (Content: '{1}', ContentParams: ({1} = IncidentId), Class: 't-body c-muted')
+      container probeHome (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext probeHomeT (Content: 'RETURN_TO_MAIN') }
+    }
+  }
+};
+
+/** SCR-41 ERROR 500 // SEG_FAULT (US-282). */
+create or modify page Shop.UnexpectedError (
+  Title: 'Unexpected error — Git Pizza MxDev',
+  Layout: Shop.Layout_Minimal,
+  Url: 'error'
+) {
+  dataview dvErr (DataSource: MICROFLOW Shop.DS_Error, Class: 'err-dv') {
+  container page (Class: 'err-page scr-41') {
+    container wrap (Class: 'err-wrap') {
+      container logo (Class: 'err-logo', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { image logoImg (ImageType: imageUrl, ImageUrl: '/assets/brand/logo-horizontal.svg', AlternativeText: 'Git Pizza MxDev logo', Class: 'err-logo-img') }
+      container head (Class: 'err-head') {
+        image illus (ImageType: imageUrl, ImageUrl: '/assets/illustrations/error-seg-fault.png', AlternativeText: '', Class: 'err-illus')
+        container ht {
+          container code (Class: 'err-code') { dynamictext codeI (Content: 'bug_report', Class: 'ms') dynamictext codeT (Content: 'ERROR 500') }
+          container title (Class: 'err-title t-h2') { dynamictext titleT (Content: 'SEG_FAULT') container titleC (Class: 'cursor amber') { } }
+          dynamictext expl (Content: 'Something went wrong on our side. Your manifest and orders are safe.', Class: 't-body-long')
+          dynamictext incident (Content: 'INCIDENT_ID: {1}', ContentParams: ({1} = IncidentId), Class: 'c-warn t-small mt-8 select-all')
+        }
+      }
+      container trace (Class: 'term') {
+        container tBar (Class: 'term-bar') { container tDots (Class: 'dots') { container td1 (Class: 'dot') { } container td2 (Class: 'dot') { } container td3 (Class: 'dot') { } } dynamictext tName (Content: '{1}', ContentParams: ({1} = 'stack_trace.log')) }
+        container tBody (Class: 'term-body trace') {
+          container tr1 (Class: 'tr') { dynamictext tr1n (Content: '1', Class: 'ln') dynamictext tr1t (Content: '[FATAL] Segmentation fault in OvenCluster.dispatch()', Class: 'c-error') }
+          container tr2 (Class: 'tr') { dynamictext tr2n (Content: '2', Class: 'ln') dynamictext tr2t (Content: 'at Pipeline.run() // pipeline.ts:88:7') }
+          container tr3 (Class: 'tr') { dynamictext tr3n (Content: '3', Class: 'ln') dynamictext tr3t (Content: 'at Kitchen.handle() // kitchen.ts:211:9') }
+          container tr4 (Class: 'tr') { dynamictext tr4n (Content: '4', Class: 'ln') dynamictext tr4t (Content: 'at GitPizza.boot() // main.js:1:1') }
+        }
+      }
+      dynamictext resol (Content: '// SUGGESTED RESOLUTION: Re-synchronize with the main branch.', Class: 't-small c-muted')
+      container actions (Class: 'row err-actions') {
+        container aRetry (Class: 'btn btn-primary', OnClick: CALL NANOFLOW Shop.NF_RetryLast) { dynamictext aRetryI (Content: 'refresh', Class: 'ms md') dynamictext aRetryT (Content: 'RETRY_DEPLOYMENT') }
+        container aMain (Class: 'btn btn-secondary', OnClick: CALL MICROFLOW Shop.ACT_Nav_Home) { dynamictext aMainI (Content: 'terminal', Class: 'ms md') dynamictext aMainT (Content: 'RETURN_TO_MAIN') }
+      }
+      dynamictext status (Content: 'STATUS SEG_FAULT · demo time', Class: 't-micro c-muted')
+    }
+  }
+  }
+};
+grant view on page Shop.FaultProbe to Shop.Guest, Shop.Administrator;
+grant view on page Shop.UnexpectedError to Shop.Guest, Shop.Administrator;
