@@ -1,0 +1,513 @@
+mdl 1;
+-- Git Pizza MxDev Lite — domain model (information model sections 3-7).
+-- Money is Decimal (decimal arithmetic, rounded half-up only where a rule says so).
+-- Sets of allergens are reference sets to the Allergen catalog entity.
+
+-- ───────────────────────── Catalog ─────────────────────────
+
+/** EU-14 allergen. Seeded; referenced by ingredients, products and lines. */
+create or modify persistent entity Shop."Allergen" (
+  "Code": String(20) not null unique,
+  "ShortCode": String(5),
+  "Caption": String(60),
+  "SortOrder": Integer default 0
+) index ("Code");
+
+/** Menu category shown as a file tab (pizzas.json, sides.yml, …). */
+create or modify persistent entity Shop."Category" (
+  "Code": String(20) not null unique,
+  "FileName": String(30),
+  "DisplayName": String(30),
+  "Kind": Enumeration(Shop."ProductKind"),
+  "SortOrder": Integer default 0
+);
+
+/** A menu item ("module"). Derived values (card price, flags, orderable, code block) are stored by SUB_Product_Recalculate. */
+create or modify persistent entity Shop."Product" (
+  "Code": String(5) not null unique,
+  "Name": String(40),
+  "ModuleKey": String(40),
+  "RealWorldName": String(40),
+  "ShortDescription": String(200),
+  "Description": String(800),
+  "VersionTag": String(12),
+  "Kind": Enumeration(Shop."ProductKind"),
+  "ProductStatus": Enumeration(Shop."ProductStatus"),
+  "IsSoldOut": Boolean default false,
+  "IsFeatured": Boolean default false,
+  "BadgeClassic": Boolean default false,
+  "BadgeBestSeller": Boolean default false,
+  "BadgeNew": Boolean default false,
+  "BadgeChefPick": Boolean default false,
+  "Spice": Enumeration(Shop."SpiceLevel"),
+  "DeclaredVegetarian": Boolean default false,
+  "DeclaredVegan": Boolean default false,
+  "CrustSelectable": Boolean default true,
+  "MaxExtras": Integer default 0,
+  "ImageFile": String(80),
+  "ImageAlt": String(200),
+  "CaffeineMg": Integer default 0,
+  "SortOrder": Integer default 0,
+  "IsVegetarian": Boolean default false,
+  "IsVegan": Boolean default false,
+  "IsOrderable": Boolean default true,
+  "CardPrice": Decimal default 0,
+  "CardSizeLabel": String(20),
+  "ServingLabel": String(60),
+  "CaloriesLabel": String(40),
+  "AllergenText": String(300),
+  "ToppingsCode": String(600),
+  "SearchText": String(1000)
+) index ("Code") index ("SortOrder");
+
+/** A price point of a product (Small/Medium/Large or Regular). */
+create or modify persistent entity Shop."ProductSize" (
+  "Size": Enumeration(Shop."SizeCode"),
+  "DiameterInches": Integer default 0,
+  "ServingDescription": String(40),
+  "Price": Decimal default 0,
+  "Calories": Integer default 0,
+  "Slices": Integer default 0,
+  "IsDefault": Boolean default false,
+  "SortOrder": Integer default 0
+);
+
+/** A raw ingredient with allergens, diet flags and stock. */
+create or modify persistent entity Shop."Ingredient" (
+  "Code": String(30) not null unique,
+  "Name": String(60),
+  "IsVegetarian": Boolean default true,
+  "IsVegan": Boolean default true,
+  "IsInStock": Boolean default true,
+  "SortOrder": Integer default 0
+) index ("Code");
+
+/** A default ingredient of a pizza besides crust, sauce and cheese. */
+create or modify persistent entity Shop."RecipeItem" (
+  "Role": Enumeration(Shop."RecipeRole"),
+  "IsRemovable": Boolean default true,
+  "SortOrder": Integer default 0
+);
+
+/** A configurator choice: crust, sauce, cheese or extra topping. */
+create or modify persistent entity Shop."Option" (
+  "Code": String(5) not null unique,
+  "OptionKey": String(30),
+  "Name": String(60),
+  "Description": String(200),
+  "OptionGroup": Enumeration(Shop."OptionGroup"),
+  "PriceClass": Enumeration(Shop."PriceClass"),
+  "Surcharge": Decimal default 0,
+  "PriceSmall": Decimal default 0,
+  "PriceMedium": Decimal default 0,
+  "PriceLarge": Decimal default 0,
+  "ForSmall": Boolean default true,
+  "ForMedium": Boolean default true,
+  "ForLarge": Boolean default true,
+  "IsActive": Boolean default true,
+  "VersionTag": String(20),
+  "SortOrder": Integer default 0
+) index ("Code");
+
+create or modify association Shop."Product_Category" from Shop."Product" to Shop."Category";
+create or modify association Shop."ProductSize_Product" from Shop."ProductSize" to Shop."Product" on delete cascade;
+create or modify association Shop."RecipeItem_Product" from Shop."RecipeItem" to Shop."Product" on delete cascade;
+create or modify association Shop."RecipeItem_Ingredient" from Shop."RecipeItem" to Shop."Ingredient";
+create or modify association Shop."Option_Ingredient" from Shop."Option" to Shop."Ingredient";
+create or modify association Shop."Product_DefaultCrust" from Shop."Product" to Shop."Option";
+create or modify association Shop."Product_DefaultSauce" from Shop."Product" to Shop."Option";
+create or modify association Shop."Product_DefaultCheese" from Shop."Product" to Shop."Option";
+create or modify association Shop."Ingredient_Allergen" from Shop."Ingredient" to Shop."Allergen" type ReferenceSet;
+create or modify association Shop."Product_Allergen" from Shop."Product" to Shop."Allergen" type ReferenceSet;
+
+-- ───────────────────────── Store / reference ─────────────────────────
+
+/** Delivery zone matched by ZIP code. */
+create or modify persistent entity Shop."DeliveryZone" (
+  "Zip": String(5) not null unique,
+  "Neighborhood": String(40),
+  "DistanceMiles": Decimal default 0,
+  "IsActive": Boolean default true
+) index ("Zip");
+
+/** Coupon code (matched case-insensitively, stored upper-case). */
+create or modify persistent entity Shop."Coupon" (
+  "Code": String(30) not null unique,
+  "Description": String(140),
+  "Discount": Enumeration(Shop."DiscountType"),
+  "DiscountValue": Decimal default 0,
+  "MaxDiscount": Decimal default 0,
+  "MinSubtotal": Decimal default 0,
+  "ValidFrom": DateTime,
+  "ValidUntil": DateTime,
+  "IsActive": Boolean default true,
+  "DeliveryOnly": Boolean default false
+) index ("Code");
+
+/** Store-wide settings (singleton). */
+create or modify persistent entity Shop."StoreSettings" (
+  "StoreName": String(60),
+  "AddressLine": String(120),
+  "Phone": String(20),
+  "TaxRatePercent": Decimal default 8.625,
+  "DeliveryFee": Decimal default 3.99,
+  "FreeDeliveryThreshold": Decimal default 40,
+  "MinDeliverySubtotal": Decimal default 15,
+  "MaxQuantityPerLine": Integer default 10,
+  "MaxItemsPerOrder": Integer default 30,
+  "MaxPaymentAttempts": Integer default 3,
+  "NextOrderNumber": Integer default 1000
+);
+
+/** A courier of the simulated fleet. */
+create or modify persistent entity Shop."Courier" (
+  "Code": String(5) not null unique,
+  "Name": String(60),
+  "NodeHandle": String(30),
+  "Vehicle": Enumeration(Shop."VehicleType"),
+  "Plate": String(10),
+  "Phone": String(20),
+  "CourierStatus": Enumeration(Shop."CourierStatus"),
+  "StatusChangedAt": DateTime,
+  "TripProgress": Decimal default 0,
+  "TripAnchorAt": DateTime,
+  "TripSeconds": Integer default 0,
+  "TripProgressPercent": Integer default 0
+);
+
+/** An oven of the simulated kitchen. */
+create or modify persistent entity Shop."Oven" (
+  "Code": String(10) not null unique,
+  "DisplayName": String(30),
+  "OvenType": String(30),
+  "TargetTempF": Integer default 0,
+  "CapacityOrders": Integer default 3,
+  "OvenStatus": Enumeration(Shop."OvenStatus")
+);
+
+/** Simulation settings (singleton). Durations are seconds at 1×. */
+create or modify persistent entity Shop."SimulationSettings" (
+  "SpeedFactor": Integer default 1,
+  "PaymentProcessing": Integer default 3,
+  "PaymentTimeout": Integer default 10,
+  "PaymentFailedTimeout": Integer default 600,
+  "SimulatedRetryDelay": Integer default 15,
+  "QueueWait": Integer default 20,
+  "Bake": Integer default 90,
+  "Qa": Integer default 30,
+  "CourierToStore": Integer default 30,
+  "Handover": Integer default 5,
+  "TravelBase": Integer default 60,
+  "TravelPerMile": Integer default 40,
+  "PickupArrival": Integer default 90,
+  "TrafficIntervalSeconds": Integer default 120,
+  "TrafficMaxActiveOrders": Integer default 8,
+  "RetentionHours": Integer default 24,
+  "TrafficProgress": Decimal default 0,
+  "TrafficAnchorAt": DateTime,
+  "TrafficIntervalEffective": Integer default 120,
+  "LastTickAt": DateTime,
+  "LastResetAt": DateTime,
+  "LastResetBy": String(40),
+  "LastHousekeepingAt": DateTime,
+  "SpawnSeq": Integer default 0
+);
+
+-- ───────────────────────── Guest session state ─────────────────────────
+
+/** The guest's cart; one per anonymous user (= browser session). */
+create or modify persistent entity Shop."Cart" (
+  "CouponInput": String(30),
+  "CouponState": Enumeration(Shop."CouponState"),
+  "CouponMessage": String(140),
+  "CouponFieldError": String(140),
+  "ItemCount": Integer default 0,
+  "Subtotal": Decimal default 0,
+  "DiscountPreview": Decimal default 0,
+  "HasUnavailable": Boolean default false,
+  "OnlyDrinks": Boolean default false,
+  "UpdatedAt": DateTime,
+  "MenuCategory": String(20),
+  "SearchInput": String(80),
+  "SearchQuery": String(80),
+  "FilterVegetarian": Boolean default false,
+  "FilterVegan": Boolean default false,
+  "FilterSpicy": Boolean default false,
+  "CheckoutBlock": String(200),
+  "FreeDeliveryHint": String(200),
+  "MinimumHint": String(200),
+  "Total": Decimal default 0
+);
+
+/** One configured item in the cart. Prices and flags are derived by SUB_Line_Recalculate. */
+create or modify persistent entity Shop."CartLine" (
+  "Quantity": Integer default 1,
+  "UnitPrice": Decimal default 0,
+  "LineTotal": Decimal default 0,
+  "IsVegetarian": Boolean default false,
+  "IsVegan": Boolean default false,
+  "IsAvailable": Boolean default true,
+  "ConfigurationKey": String(400),
+  "ConfigText": String(400),
+  "CreatedAt": DateTime,
+  "IsDraft": Boolean default false,
+  "Notice": String(300),
+  "ReturnTo": String(20),
+  "UnavailableReason": String(200)
+);
+
+create or modify association Shop."Cart_Owner" from Shop."Cart" to System."User" on delete cascade;
+create or modify association Shop."Cart_Coupon" from Shop."Cart" to Shop."Coupon";
+create or modify association Shop."CartLine_Cart" from Shop."CartLine" to Shop."Cart" on delete cascade;
+create or modify association Shop."CartLine_Product" from Shop."CartLine" to Shop."Product";
+create or modify association Shop."CartLine_Size" from Shop."CartLine" to Shop."ProductSize";
+create or modify association Shop."CartLine_Crust" from Shop."CartLine" to Shop."Option";
+create or modify association Shop."CartLine_Sauce" from Shop."CartLine" to Shop."Option";
+create or modify association Shop."CartLine_Cheese" from Shop."CartLine" to Shop."Option";
+create or modify association Shop."CartLine_Extra" from Shop."CartLine" to Shop."Option" type ReferenceSet;
+create or modify association Shop."CartLine_Removed" from Shop."CartLine" to Shop."Ingredient" type ReferenceSet;
+create or modify association Shop."CartLine_Allergen" from Shop."CartLine" to Shop."Allergen" type ReferenceSet;
+
+/** Checkout form of a guest; kept per user so switching delivery/pickup never loses data. */
+create or modify persistent entity Shop."CheckoutForm" (
+  "OrderType": Enumeration(Shop."OrderType"),
+  "AddressLine1": String(80),
+  "AddressLine2": String(80),
+  "City": String(40),
+  "StateCode": String(2),
+  "Zip": String(5),
+  "DeliveryNotes": String(140),
+  "ContactName": String(80),
+  "ContactEmail": String(254),
+  "ContactPhone": String(30),
+  "Tip": Enumeration(Shop."TipOption"),
+  "Method": Enumeration(Shop."PaymentMethod"),
+  "Card": Enumeration(Shop."TestCard"),
+  "ZoneMessage": String(300),
+  "ZoneOk": Boolean default false,
+  "ZoneOutside": Boolean default false,
+  "Subtotal": Decimal default 0,
+  "Discount": Decimal default 0,
+  "CouponLabel": String(200),
+  "DeliveryFee": Decimal default 0,
+  "FeeNote": String(120),
+  "Tax": Decimal default 0,
+  "TipAmount": Decimal default 0,
+  "TipPercent": Integer default 15,
+  "Total": Decimal default 0,
+  "Tip0Label": String(20),
+  "Tip10Label": String(20),
+  "Tip15Label": String(20),
+  "Tip20Label": String(20),
+  "MinimumMessage": String(200),
+  "ErrorCount": Integer default 0,
+  "ErrorSummary": String(600),
+  "ReadyEstimate": String(10)
+);
+create or modify association Shop."CheckoutForm_Owner" from Shop."CheckoutForm" to System."User" on delete cascade;
+create or modify association Shop."CheckoutForm_Zone" from Shop."CheckoutForm" to Shop."DeliveryZone";
+
+/** A non-blocking notification for one guest. Removed when it expires (US-010). */
+create or modify persistent entity Shop."Toast" (
+  "Message": String(300),
+  "Level": Enumeration(Shop."ToastLevel"),
+  "CreatedAt": DateTime,
+  "ExpiresAt": DateTime,
+  "ShowCartAction": Boolean default false
+);
+create or modify association Shop."Toast_Owner" from Shop."Toast" to System."User" on delete cascade;
+
+-- ───────────────────────── Orders ─────────────────────────
+
+/** A placed order (snapshot of the cart at checkout). */
+create or modify persistent entity Shop."Order" (
+  "OrderNumber": Integer not null unique,
+  "CommitHash": String(7),
+  "TrackingToken": String(40),
+  "Source": Enumeration(Shop."OrderSource"),
+  "OrderType": Enumeration(Shop."OrderType"),
+  "OrderStatus": Enumeration(Shop."OrderStatus"),
+  "StatusChangedAt": DateTime,
+  "Payment": Enumeration(Shop."PaymentStatus"),
+  "ContactName": String(80),
+  "ContactEmail": String(254),
+  "ContactPhone": String(20),
+  "AddressLine1": String(80),
+  "AddressLine2": String(80),
+  "City": String(40),
+  "StateCode": String(2),
+  "Zip": String(5),
+  "DeliveryNotes": String(140),
+  "DistanceMiles": Decimal default 0,
+  "CouponCode": String(30),
+  "Subtotal": Decimal default 0,
+  "DiscountAmount": Decimal default 0,
+  "DeliveryFee": Decimal default 0,
+  "FeeWaivedBy": Enumeration(Shop."FeeWaiver"),
+  "TaxRatePercent": Decimal default 0,
+  "TaxAmount": Decimal default 0,
+  "Tip": Enumeration(Shop."TipOption"),
+  "TipAmount": Decimal default 0,
+  "Total": Decimal default 0,
+  "PlacedAt": DateTime,
+  "PaidAt": DateTime,
+  "QueuedAt": DateTime,
+  "BakingStartedAt": DateTime,
+  "QaStartedAt": DateTime,
+  "ReadyAt": DateTime,
+  "DispatchedAt": DateTime,
+  "CompletedAt": DateTime,
+  "CancelledAt": DateTime,
+  "RouteProgressPercent": Integer default 0,
+  "TimerProgress": Decimal default 0,
+  "TimerAnchorAt": DateTime,
+  "QaSlicedDone": Boolean default false,
+  "QaExtrasDone": Boolean default false,
+  "QaSealedDone": Boolean default false,
+  "RemakeCount": Integer default 0,
+  "IsPriority": Boolean default false,
+  "CancelReason": String(200),
+  "CancelledBy": Enumeration(Shop."ActorType"),
+  "PizzaCount": Integer default 0,
+  "ItemCount": Integer default 0,
+  "IsOpen": Boolean default true,
+  "PaymentLabel": String(60)
+) index ("OrderNumber") index ("TrackingToken") index ("OrderStatus");
+
+/** Snapshot of one cart line. */
+create or modify persistent entity Shop."OrderLine" (
+  "ProductCode": String(5),
+  "ProductName": String(40),
+  "RealWorldName": String(40),
+  "ModuleKey": String(40),
+  "Kind": Enumeration(Shop."ProductKind"),
+  "Size": Enumeration(Shop."SizeCode"),
+  "SizeLabel": String(40),
+  "Quantity": Integer default 1,
+  "UnitPrice": Decimal default 0,
+  "LineTotal": Decimal default 0,
+  "AllergenText": String(300),
+  "IsVegetarian": Boolean default false,
+  "IsVegan": Boolean default false,
+  "ConfigText": String(400),
+  "SortOrder": Integer default 0
+);
+
+/** Snapshot of one configuration choice of a pizza line. */
+create or modify persistent entity Shop."OrderLineModifier" (
+  "ModifierType": Enumeration(Shop."ModifierType"),
+  "OptionKey": String(30),
+  "Name": String(60),
+  "Price": Decimal default 0,
+  "IsDefault": Boolean default false,
+  "SortOrder": Integer default 0
+);
+
+/** One simulated payment attempt (max 3 per order). */
+create or modify persistent entity Shop."PaymentAttempt" (
+  "AttemptNumber": Integer default 1,
+  "Method": Enumeration(Shop."PaymentMethod"),
+  "Card": Enumeration(Shop."TestCard"),
+  "Amount": Decimal default 0,
+  "AttemptStatus": Enumeration(Shop."PaymentAttemptStatus"),
+  "FailureCode": Enumeration(Shop."PaymentFailureCode"),
+  "TransactionId": String(24),
+  "StartedAt": DateTime,
+  "FinishedAt": DateTime,
+  "RefundedAt": DateTime,
+  "RefundId": String(24),
+  "MethodLabel": String(60)
+);
+
+/** Audit record of one order status transition. */
+create or modify persistent entity Shop."OrderStatusChange" (
+  "FromStatus": Enumeration(Shop."OrderStatus"),
+  "ToStatus": Enumeration(Shop."OrderStatus"),
+  "ChangedAt": DateTime,
+  "Actor": Enumeration(Shop."ActorType"),
+  "ActorName": String(60),
+  "Reason": String(200),
+  "Seq": Integer default 0
+);
+
+/** Terminal-style log line of an order. */
+create or modify persistent entity Shop."OrderLogEntry" (
+  "LoggedAt": DateTime,
+  "Level": Enumeration(Shop."LogLevel"),
+  "Tag": String(12),
+  "Message": String(300),
+  "IsCustomerVisible": Boolean default true,
+  "Seq": Integer default 0
+);
+
+/** Grants one guest (anonymous user) access to one order: placed, looked up or opened via tracking link. */
+create or modify persistent entity Shop."OrderAccess" (
+  "GrantedAt": DateTime
+);
+
+/** Simulation event log (no guest access). */
+create or modify persistent entity Shop."SimulationEvent" (
+  "OccurredAt": DateTime,
+  "EventType": Enumeration(Shop."SimulationEventType"),
+  "Message": String(200)
+);
+
+/** Failed order lookups per guest (US-136). */
+create or modify persistent entity Shop."LookupAttempt" (
+  "AttemptedAt": DateTime
+);
+
+create or modify association Shop."Order_Zone" from Shop."Order" to Shop."DeliveryZone";
+create or modify association Shop."Order_Coupon" from Shop."Order" to Shop."Coupon";
+create or modify association Shop."Order_Oven" from Shop."Order" to Shop."Oven";
+create or modify association Shop."Order_Courier" from Shop."Order" to Shop."Courier";
+create or modify association Shop."Courier_CurrentOrder" from Shop."Courier" to Shop."Order";
+create or modify association Shop."OrderLine_Order" from Shop."OrderLine" to Shop."Order" on delete cascade;
+create or modify association Shop."OrderLine_Product" from Shop."OrderLine" to Shop."Product";
+create or modify association Shop."OrderLineModifier_OrderLine" from Shop."OrderLineModifier" to Shop."OrderLine" on delete cascade;
+create or modify association Shop."PaymentAttempt_Order" from Shop."PaymentAttempt" to Shop."Order" on delete cascade;
+create or modify association Shop."OrderStatusChange_Order" from Shop."OrderStatusChange" to Shop."Order" on delete cascade;
+create or modify association Shop."OrderLogEntry_Order" from Shop."OrderLogEntry" to Shop."Order" on delete cascade;
+create or modify association Shop."OrderAccess_Order" from Shop."OrderAccess" to Shop."Order" on delete cascade;
+create or modify association Shop."OrderAccess_User" from Shop."OrderAccess" to System."User" on delete cascade;
+create or modify association Shop."SimulationEvent_Order" from Shop."SimulationEvent" to Shop."Order";
+create or modify association Shop."LookupAttempt_User" from Shop."LookupAttempt" to System."User" on delete cascade;
+
+-- ───────────────────────── Simulation / pricing helpers ─────────────────────────
+
+/** Fictional customer used by the traffic generator (09-demo-data/simulated-customers.json). */
+create or modify persistent entity Shop."SimCustomer" (
+  "Code": String(6) not null unique,
+  "FirstName": String(40),
+  "LastName": String(40),
+  "Email": String(254),
+  "Phone": String(20),
+  "Line1": String(80),
+  "Line2": String(80),
+  "City": String(40),
+  "StateCode": String(2),
+  "Zip": String(5),
+  "DeliveryNotes": String(140),
+  "InZone": Boolean default true
+);
+
+/** Result of the price rules for a subtotal, order type, coupon and tip (BR-PRICE-05..10). */
+create or modify non-persistent entity Shop."PriceResult" (
+  "Subtotal": Decimal default 0,
+  "CouponState": Enumeration(Shop."CouponState"),
+  "CouponMessage": String(200),
+  "Discount": Decimal default 0,
+  "DeliveryFee": Decimal default 0,
+  "FeeWaivedBy": Enumeration(Shop."FeeWaiver"),
+  "Tax": Decimal default 0,
+  "TipPercent": Integer default 0,
+  "TipAmount": Decimal default 0,
+  "Total": Decimal default 0
+);
+
+/** The guest (anonymous user) who placed the order; its cart is cleared when payment succeeds (T-02). */
+create or modify association Shop."Order_PlacedBy" from Shop."Order" to System."User";
+
+-- Guest UI state lives on the Cart (one per guest).
+create or modify association Shop."CartLine_EditOf" from Shop."CartLine" to Shop."CartLine";
+create or modify association Shop."Cart_ActiveOrder" from Shop."Cart" to Shop."Order";

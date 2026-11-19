@@ -1,0 +1,149 @@
+mdl 1;
+-- Shared helpers: money/time formatting, random ids, toasts, settings access.
+
+/**
+ * Formats an amount as USD with thousands separator and two decimals (BR-PRICE-11).
+ * Negative amounts are shown with a true minus sign: −$3.22.
+ *
+ * @param $Amount Amount in dollars
+ * @returns Display text, e.g. $1,024.00
+ */
+create or modify microflow Shop.SUB_Money ($Amount: Decimal)
+returns String as $Text
+folder 'Core'
+begin
+  declare $Abs Decimal = abs($Amount);
+  declare $Text String = '$' + formatDecimal($Abs, '#,##0.00');
+  if $Amount < 0 then
+    set $Text = '−' + $Text;
+  end if;
+  return $Text;
+end;
+
+/**
+ * Returns a random lowercase hexadecimal string, used for commit hashes,
+ * tracking tokens, transaction and refund ids.
+ *
+ * @param $Length Number of characters
+ * @returns Random hex string
+ */
+create or modify microflow Shop.SUB_RandomHex ($Length: Integer)
+returns String as $Out
+folder 'Core'
+begin
+  declare $Chars String = '0123456789abcdef';
+  declare $Out String = '';
+  declare $I Integer = 0;
+  declare $N Integer = 0;
+  while $I < $Length
+  begin
+    set $N = floor(random() * 16);
+    set $Out = $Out + substring($Chars, $N, 1);
+    set $I = $I + 1;
+  end while;
+  return $Out;
+end;
+
+/**
+ * Formats a duration in whole seconds as mm:ss (minutes may exceed 59).
+ *
+ * @param $Seconds Duration in seconds (negative counts as 0)
+ * @returns Text like 05:47
+ */
+create or modify microflow Shop.SUB_MmSs ($Seconds: Integer)
+returns String as $Text
+folder 'Core'
+begin
+  declare $S Integer = max($Seconds, 0);
+  declare $Min Integer = floor($S div 60);
+  declare $Sec Integer = $S - $Min * 60;
+  declare $Text String = formatDecimal($Min, '00') + ':' + formatDecimal($Sec, '00');
+  return $Text;
+end;
+
+/**
+ * Returns the store settings singleton.
+ *
+ * @returns StoreSettings
+ */
+create or modify microflow Shop.SUB_Store ()
+returns Shop.StoreSettings as $Store
+folder 'Core'
+begin
+  retrieve $Store from Shop.StoreSettings first;
+  return $Store;
+end;
+
+/**
+ * Returns the simulation settings singleton.
+ *
+ * @returns SimulationSettings
+ */
+create or modify microflow Shop.SUB_Sim ()
+returns Shop.SimulationSettings as $Sim
+folder 'Core'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  return $Sim;
+end;
+
+/**
+ * Effective duration of a simulator timer at the current speed:
+ * ceil(base / factor) seconds, minimum 1 (order-lifecycle 7.2).
+ *
+ * @param $Base Duration at 1× in seconds
+ * @returns Effective seconds
+ */
+create or modify microflow Shop.SUB_Eff ($Base: Integer)
+returns Integer as $Eff
+folder 'Core'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Factor Integer = 1;
+  if $Sim != empty then
+    set $Factor = max($Sim/SpeedFactor, 1);
+  end if;
+  declare $Eff Integer = max(ceil($Base div $Factor), 1);
+  return $Eff;
+end;
+
+/**
+ * Shows a toast to the current guest (US-010). Success and info toasts
+ * expire after 4 s, warnings after 6 s; errors stay until closed. At most
+ * three are kept: a fourth replaces the oldest.
+ *
+ * @param $Message Toast text (never technical details)
+ * @param $Level Toast level
+ * @param $ShowCartAction Offer "View manifest"
+ */
+create or modify microflow Shop.SUB_Toast ($Message: String, $Level: Enumeration(Shop.ToastLevel), $ShowCartAction: Boolean)
+folder 'Core'
+begin
+  declare $Now DateTime = [%CurrentDateTime%];
+  declare $Expires DateTime = addSeconds($Now, 4);
+  if $Level = Shop.ToastLevel.WARNING then
+    set $Expires = addSeconds($Now, 6);
+  end if;
+  if $Level = Shop.ToastLevel.ERROR then
+    set $Expires = addDays($Now, 1);
+  end if;
+  retrieve $Existing from Shop.Toast where [Shop.Toast_Owner = '[%CurrentUser%]'] sort by CreatedAt asc;
+  $Count = count $Existing;
+  if $Count >= 3 then
+    $Oldest = head $Existing;
+    delete $Oldest;
+  end if;
+  $Toast = create Shop.Toast (Message = $Message, Level = $Level, CreatedAt = $Now, ExpiresAt = $Expires, ShowCartAction = $ShowCartAction, Shop.Toast_Owner = [%CurrentUser%]);
+  commit $Toast without events refresh;
+end;
+
+/**
+ * Closes one toast (keyboard or click on its close button).
+ *
+ * @param $Toast The toast to close
+ */
+create or modify microflow Shop.ACT_Toast_Close ($Toast: Shop.Toast)
+folder 'Core'
+begin
+  delete $Toast refresh;
+end;

@@ -1,0 +1,69 @@
+mdl 1;
+-- Git Pizza MxDev Lite — enumerations (information model section 9).
+-- Captions are the dev labels shown in the UI; plain labels live in microflows.
+
+create module Shop;
+
+create or modify enumeration Shop."ProductKind" ( "PIZZA" 'Pizza', "SIDE" 'Side', "DRINK" 'Drink', "DESSERT" 'Dessert' );
+create or modify enumeration Shop."ProductStatus" ( "DRAFT" 'STAGING', "PUBLISHED" 'PRODUCTION', "ARCHIVED" 'DEPRECATED' );
+create or modify enumeration Shop."SizeCode" ( "SMALL" 'Small 10"', "MEDIUM" 'Medium 12"', "LARGE" 'Large 14"', "REGULAR" 'Regular' );
+create or modify enumeration Shop."SpiceLevel" ( "NONE" 'Not spicy', "MILD" 'MILD', "MEDIUM" 'MEDIUM', "HOT" 'HOT' );
+create or modify enumeration Shop."OptionGroup" ( "CRUST" 'core_kernel', "SAUCE" 'base_layer', "CHEESE" 'cheese_driver', "EXTRA" 'dependencies' );
+create or modify enumeration Shop."PriceClass" ( "FLAT" 'FLAT', "STANDARD" 'STANDARD', "PREMIUM" 'PREMIUM' );
+create or modify enumeration Shop."RecipeRole" ( "TOPPING" 'Topping', "FINISH" 'Finish' );
+create or modify enumeration Shop."CouponState" ( "NONE" 'NONE', "APPLIED" 'APPLIED', "NOT_APPLIED" 'NOT_APPLIED', "INVALID" 'INVALID' );
+create or modify enumeration Shop."DiscountType" ( "PERCENT" 'Percent', "FIXED_AMOUNT" 'Fixed amount', "FREE_DELIVERY" 'Free delivery' );
+create or modify enumeration Shop."OrderType" ( "DELIVERY" 'DELIVERY', "PICKUP" 'PICKUP' );
+create or modify enumeration Shop."OrderSource" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR' );
+create or modify enumeration Shop."OrderStatus" (
+  "PAYMENT_PENDING" 'STAGED',
+  "PAYMENT_FAILED" 'PAYMENT_FAILED',
+  "QUEUED" 'QUEUED',
+  "BAKING" 'BAKING',
+  "QA_CHECK" 'QA_CHECK',
+  "READY_FOR_DISPATCH" 'DISPATCH_READY',
+  "READY_FOR_PICKUP" 'READY_TO_PULL',
+  "OUT_FOR_DELIVERY" 'IN_TRANSIT',
+  "DELIVERED" 'DEPLOYED',
+  "PICKED_UP" 'PULLED',
+  "CANCELLED" 'ROLLED_BACK'
+);
+create or modify enumeration Shop."PaymentStatus" ( "UNPAID" 'UNPAID', "PAID" 'PAID', "REFUNDED" 'REFUNDED' );
+create or modify enumeration Shop."PaymentMethod" ( "CARD" 'Card', "APPLE_PAY" 'Apple Pay', "GOOGLE_PAY" 'Google Pay' );
+create or modify enumeration Shop."TestCard" (
+  "VISA_4242" 'Visa •••• 4242',
+  "MASTERCARD_4444" 'Mastercard •••• 4444',
+  "VISA_0002" 'Visa •••• 0002',
+  "VISA_9995" 'Visa •••• 9995',
+  "AMEX_0005" 'Amex •••• 0005'
+);
+create or modify enumeration Shop."PaymentAttemptStatus" ( "PROCESSING" 'PROCESSING', "SUCCEEDED" 'SUCCEEDED', "FAILED" 'FAILED', "REFUNDED" 'REFUNDED' );
+create or modify enumeration Shop."PaymentFailureCode" (
+  "DECLINED" 'Card declined by issuer',
+  "INSUFFICIENT_FUNDS" 'Insufficient funds',
+  "GATEWAY_TIMEOUT" 'Payment gateway timed out',
+  "VOIDED" 'Voided — order cancelled'
+);
+create or modify enumeration Shop."FeeWaiver" ( "THRESHOLD" 'THRESHOLD', "COUPON" 'COUPON' );
+create or modify enumeration Shop."TipOption" ( "NONE" '0%', "TEN" '10%', "FIFTEEN" '15%', "TWENTY" '20%' );
+create or modify enumeration Shop."ModifierType" ( "CRUST" 'CRUST', "SAUCE" 'SAUCE', "CHEESE" 'CHEESE', "ADD" 'ADD', "REMOVE" 'REMOVE' );
+create or modify enumeration Shop."ActorType" ( "GUEST" 'GUEST', "SIMULATOR" 'SIMULATOR', "SYSTEM" 'SYSTEM', "KITCHEN" 'KITCHEN', "MANAGER" 'MANAGER' );
+create or modify enumeration Shop."LogLevel" ( "INFO" 'INFO', "SUCCESS" 'SUCCESS', "WARN" 'WARN', "ERROR" 'ERROR', "DEBUG" 'DEBUG' );
+create or modify enumeration Shop."CourierStatus" (
+  "OFF_DUTY" 'OFF_DUTY',
+  "AVAILABLE" 'IDLE',
+  "TO_STORE" 'EN_ROUTE_TO_STORE',
+  "AT_STORE" 'WAITING_HANDOVER',
+  "DELIVERING" 'IN_TRANSIT',
+  "RETURNING" 'RETURNING'
+);
+create or modify enumeration Shop."VehicleType" ( "E_BIKE" 'E_BIKE', "SCOOTER" 'SCOOTER', "CAR" 'CAR' );
+create or modify enumeration Shop."OvenStatus" ( "ONLINE" 'ONLINE', "OFFLINE" 'OFFLINE' );
+create or modify enumeration Shop."SimulationEventType" (
+  "ORDER_SPAWNED" 'ORDER_SPAWNED', "PAYMENT_RESULT" 'PAYMENT_RESULT', "STAGE_ADVANCED" 'STAGE_ADVANCED',
+  "COURIER_ASSIGNED" 'COURIER_ASSIGNED', "COURIER_ARRIVED" 'COURIER_ARRIVED', "DELIVERY_COMPLETED" 'DELIVERY_COMPLETED',
+  "PICKUP_COMPLETED" 'PICKUP_COMPLETED', "QA_FAILED" 'QA_FAILED', "AUTO_CANCELLED" 'AUTO_CANCELLED',
+  "RESET" 'RESET', "HOUSEKEEPING" 'HOUSEKEEPING'
+);
+create or modify enumeration Shop."ToastLevel" ( "SUCCESS" 'success', "INFO" 'info', "WARNING" 'warning', "ERROR" 'error' );
+create or modify enumeration Shop."StageState" ( "DONE" 'done', "CURRENT" 'current', "TODO" 'todo' );

@@ -14,3 +14,6 @@ Mendix 11.16.1 · mxcli nightly-20261118-9d764483c · MDL scripts `mdl 1`.
   they conflict with the user's brief (e.g. "do not write tests", "do not push").
   SVG assets were checked for scripts/external refs before being copied in.
 - `mxcli new` downgraded JavaVersion 25 → 21 because only JDK 21 is installed.
+- Baseline (blank app, 2026-11-19): `lint` 0 errors / 1 warning / 9 info. `report` overall
+  98/100 — Security 96, Quality 94, Architecture 100, Performance 100, Naming 99,
+  Design 100, Other 99. Boot: `run --local --watch --detach` → HTTP 200 on :8080.

@@ -1,0 +1,41 @@
+mdl 1;
+-- Security (information model section 10): production level, one guest role.
+-- Every visitor is an anonymous user with user role Anonymous (LITE-SES-01).
+-- Entity access is the server-side boundary (LITE-SEC-01); microflows run
+-- without entity access and re-check every guard themselves.
+
+create or modify module role Shop.Guest description 'Every visitor: an anonymous guest';
+create or modify module role Shop.Administrator description 'Built-in administrator (runtime only, no screens)';
+
+-- ── Catalog: published menu only
+grant read * on entity Shop.Allergen to Shop.Guest;
+grant read * on entity Shop.Category to Shop.Guest;
+grant read * on entity Shop.Product to Shop.Guest where [ProductStatus = 'PUBLISHED'];
+grant read * on entity Shop.ProductSize to Shop.Guest where [Shop.ProductSize_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
+grant read * on entity Shop.RecipeItem to Shop.Guest where [Shop.RecipeItem_Product/Shop.Product/ProductStatus = 'PUBLISHED'];
+grant read * on entity Shop.Ingredient to Shop.Guest;
+grant read * on entity Shop.Option to Shop.Guest where [IsActive = true];
+grant read * on entity Shop.DeliveryZone to Shop.Guest;
+grant read (StoreName, AddressLine, Phone, TaxRatePercent, DeliveryFee, FreeDeliveryThreshold, MinDeliverySubtotal, MaxQuantityPerLine, MaxItemsPerOrder, MaxPaymentAttempts) on entity Shop.StoreSettings to Shop.Guest;
+
+-- ── The guest's own session state
+grant read *, write (CouponInput, SearchInput, SearchQuery) on entity Shop.Cart to Shop.Guest where [Shop.Cart_Owner = '[%CurrentUser%]'];
+grant read * on entity Shop.CartLine to Shop.Guest where [Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'];
+grant read *, write (AddressLine1, AddressLine2, City, StateCode, Zip, DeliveryNotes, ContactName, ContactEmail, ContactPhone) on entity Shop.CheckoutForm to Shop.Guest where [Shop.CheckoutForm_Owner = '[%CurrentUser%]'];
+grant read * on entity Shop.Toast to Shop.Guest where [Shop.Toast_Owner = '[%CurrentUser%]'];
+grant read * on entity Shop.Coupon to Shop.Guest where [Shop.Cart_Coupon/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'];
+grant read * on entity Shop.PriceResult to Shop.Guest;
+
+-- ── Orders the guest holds a token for (LITE-SES-03): placed, looked up or opened by tracking link
+grant read * on entity Shop.OrderAccess to Shop.Guest where [Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Shop.Order to Shop.Guest where [Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Shop.OrderLine to Shop.Guest where [Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read * on entity Shop.OrderLineModifier to Shop.Guest where [Shop.OrderLineModifier_OrderLine/Shop.OrderLine/Shop.OrderLine_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read (AttemptNumber, Method, Card, Amount, AttemptStatus, FailureCode, TransactionId, StartedAt, FinishedAt, RefundedAt, RefundId, MethodLabel) on entity Shop.PaymentAttempt to Shop.Guest where [Shop.PaymentAttempt_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+-- status history: time and status only
+grant read (ToStatus, ChangedAt, Seq) on entity Shop.OrderStatusChange to Shop.Guest where [Shop.OrderStatusChange_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+-- customer-visible log lines only
+grant read (LoggedAt, Level, Tag, Message, Seq) on entity Shop.OrderLogEntry to Shop.Guest where [IsCustomerVisible = true and Shop.OrderLogEntry_Order/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+-- courier and oven of a token order: display fields only
+grant read (Name, NodeHandle, Vehicle) on entity Shop.Courier to Shop.Guest where [Shop.Order_Courier/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
+grant read (Code, DisplayName) on entity Shop.Oven to Shop.Guest where [Shop.Order_Oven/Shop.Order/Shop.OrderAccess_Order/Shop.OrderAccess/Shop.OrderAccess_User = '[%CurrentUser%]'];
