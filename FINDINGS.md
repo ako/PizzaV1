@@ -124,3 +124,30 @@ Accepted findings, with reasons:
   a business key adds nothing. Wide view models mirror one screen each.
 - MPR003: Shop holds 27 persistent entities. A split into Catalog / Ordering /
   Tracking modules is the main structural follow-up.
+
+## Session statistics
+
+Measured with `./mxcli diag session-report` on this session's transcript (no subagents).
+
+| Metric | Value |
+|---|---|
+| Wall time | 3h 46m (started 2026-11-19 06:55) |
+| Model calls | 672 (1 context compaction) |
+| Tool calls | 696: Bash 614, Read 38, Write 29, TaskUpdate 8, TaskCreate 5, ToolSearch 2 |
+| Bash calls | 260 mxcli, 40 git, 2 build, 312 other (Python generators, Playwright, grep/sed) |
+| mxcli invocations | 428: exec 110, check 54, syntax 52, run wait 33, lint 27, … |
+| Tokens | cache read 278.0M, cache write 1.3M, output 608k, uncached input 1.4k |
+| Average context | ~416k tokens per model call |
+
+Where the cost went:
+- Tool output was 361k tokens, but re-reading it on later calls cost ~71M (25% of
+  cache reads). The biggest were spec and prototype files read early (stories,
+  `proto.css`, the order-lifecycle spec), each carried through ~250–290 later calls.
+- Calls by purpose: 48% orientation, 17% write, 10% apply, 9% validate, 4% verify,
+  4% retry, 3% diagnosis.
+- 35 failed calls, 24 retry chains (23 resolved): mostly access-rule build errors,
+  expression errors, and splice refusals that needed a rebuild.
+- 34 of 141 file reads were repeats (`_gitpizza-app.scss` 12 times).
+
+Lesson for a next run: read the spec and prototype in a subagent and keep only
+its summary in the main conversation.
