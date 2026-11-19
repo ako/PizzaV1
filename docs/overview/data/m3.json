@@ -1,7 +1,7 @@
 {
  "lane": "m3",
  "name": "M3 — Simulated kitchen and couriers",
- "collectedAt": "2026-11-19 14:50 UTC",
+ "collectedAt": "2026-11-19 15:41 UTC",
  "prd": {
   "epics": [
    {
@@ -73,11 +73,11 @@
    "Fulfilment.SimulationEvent",
    "Fulfilment.Courier",
    "Fulfilment.Oven",
-   "Shop.CartLine",
-   "Catalog.Product",
+   "Fulfilment.OrderLine",
    "Simulation.SimCustomer",
    "Fulfilment.DeliveryZone",
-   "Core.Toast"
+   "Catalog.Product",
+   "Shop.CartLine"
   ],
   "jsActions": [],
   "nanoflows": [],

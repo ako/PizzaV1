@@ -1,0 +1,838 @@
+{
+ "US-001": {
+  "title": "Customer header and main navigation",
+  "priority": "Must",
+  "screens": [
+   "SCR-16",
+   "SCR-01",
+   "SCR-02",
+   "SCR-05",
+   "SCR-06",
+   "SCR-09"
+  ]
+ },
+ "US-002": {
+  "title": "Project Explorer sidebar (desktop)",
+  "priority": "Must",
+  "screens": [
+   "SCR-16"
+  ]
+ },
+ "US-003": {
+  "title": "Phone bottom tab bar",
+  "priority": "Must",
+  "screens": [
+   "SCR-16"
+  ]
+ },
+ "US-004": {
+  "title": "DEMO MODE banner",
+  "priority": "Must",
+  "screens": [
+   "SCR-16",
+   "SCR-40",
+   "SCR-41"
+  ]
+ },
+ "US-006": {
+  "title": "Official brand and logo only",
+  "priority": "Must",
+  "screens": [
+   "SCR-16",
+   "SCR-01",
+   "SCR-08",
+   "SCR-40",
+   "SCR-41"
+  ]
+ },
+ "US-007": {
+  "title": "Storefront footer",
+  "priority": "Must",
+  "screens": [
+   "SCR-16"
+  ]
+ },
+ "US-010": {
+  "title": "Toast notifications",
+  "priority": "Must",
+  "screens": [
+   "SCR-16"
+  ]
+ },
+ "US-011": {
+  "title": "Responsive layout switch",
+  "priority": "Must",
+  "screens": []
+ },
+ "US-012": {
+  "title": "Dev labels with plain meaning",
+  "priority": "Must",
+  "screens": []
+ },
+ "US-021": {
+  "title": "Home hero and terminal intro",
+  "priority": "Must",
+  "screens": [
+   "SCR-01"
+  ]
+ },
+ "US-022": {
+  "title": "Featured modules carousel",
+  "priority": "Must",
+  "screens": [
+   "SCR-01",
+   "SCR-03"
+  ]
+ },
+ "US-023": {
+  "title": "Live demo KPIs on the home page",
+  "priority": "Must",
+  "screens": [
+   "SCR-01"
+  ]
+ },
+ "US-024": {
+  "title": "Live build status of my active order on the home page",
+  "priority": "Must",
+  "screens": [
+   "SCR-01",
+   "SCR-09"
+  ]
+ },
+ "US-025": {
+  "title": "Category tabs and product cards",
+  "priority": "Must",
+  "screens": [
+   "SCR-02"
+  ]
+ },
+ "US-026": {
+  "title": "Ingredients shown as a code block",
+  "priority": "Must",
+  "screens": [
+   "SCR-01",
+   "SCR-02"
+  ]
+ },
+ "US-027": {
+  "title": "Menu search (`grep`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-02",
+   "SCR-16"
+  ]
+ },
+ "US-028": {
+  "title": "Quick add (`+ import`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-01",
+   "SCR-02",
+   "SCR-05"
+  ]
+ },
+ "US-029": {
+  "title": "Item info for sides, drinks and desserts",
+  "priority": "Must",
+  "screens": [
+   "SCR-04",
+   "SCR-02"
+  ]
+ },
+ "US-030": {
+  "title": "Allergen and nutrition info for pizzas",
+  "priority": "Must",
+  "screens": [
+   "SCR-04",
+   "SCR-02",
+   "SCR-03"
+  ]
+ },
+ "US-031": {
+  "title": "Sold-out products",
+  "priority": "Must",
+  "screens": [
+   "SCR-01",
+   "SCR-02",
+   "SCR-03",
+   "SCR-04"
+  ]
+ },
+ "US-032": {
+  "title": "Terminal Debugger cart panel (desktop menu)",
+  "priority": "Must",
+  "screens": [
+   "SCR-02",
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-033": {
+  "title": "Dietary quick filter",
+  "priority": "Could",
+  "screens": [
+   "SCR-02"
+  ]
+ },
+ "US-034": {
+  "title": "Menu loading state",
+  "priority": "Should",
+  "screens": [
+   "SCR-02"
+  ]
+ },
+ "US-041": {
+  "title": "Open the configurator with the default configuration",
+  "priority": "Must",
+  "screens": [
+   "SCR-03",
+   "SCR-01",
+   "SCR-02",
+   "SCR-04"
+  ]
+ },
+ "US-042": {
+  "title": "Choose the size (`scale_factor`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-043": {
+  "title": "Choose the crust (`core_kernel`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-044": {
+  "title": "Choose sauce and cheese (`base_layer`, `cheese_driver`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-045": {
+  "title": "Add extra toppings (inject dependencies)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-046": {
+  "title": "Remove default ingredients (unlink)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-047": {
+  "title": "Live allergens and diet flags",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-048": {
+  "title": "Live `manifest.json` preview",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-049": {
+  "title": "Set quantity and add to cart (`Build & Deploy`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-03",
+   "SCR-05"
+  ]
+ },
+ "US-050": {
+  "title": "Edit a cart line in the configurator",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-03"
+  ]
+ },
+ "US-051": {
+  "title": "Unavailable options and ingredients",
+  "priority": "Must",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-052": {
+  "title": "Price breakdown",
+  "priority": "Should",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-053": {
+  "title": "Phone layout with sticky price bar",
+  "priority": "Should",
+  "screens": [
+   "SCR-03"
+  ]
+ },
+ "US-061": {
+  "title": "Review the cart (`MANIFEST.LOCK`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-16"
+  ]
+ },
+ "US-062": {
+  "title": "Empty cart state",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-063": {
+  "title": "Change the quantity of a line",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-064": {
+  "title": "Remove a line (`rm`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-065": {
+  "title": "Clear the cart (`rm -rf`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-066": {
+  "title": "Apply a coupon",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-067": {
+  "title": "Coupon validation messages",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-068": {
+  "title": "Remove or replace the coupon",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-069": {
+  "title": "Totals in the cart",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-070": {
+  "title": "Delivery minimum and free-delivery hints",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-071": {
+  "title": "Unavailable lines in the cart",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-072": {
+  "title": "Cart persistence in the guest session",
+  "priority": "Must",
+  "screens": [
+   "SCR-05"
+  ]
+ },
+ "US-073": {
+  "title": "Proceed to checkout",
+  "priority": "Must",
+  "screens": [
+   "SCR-05",
+   "SCR-06"
+  ]
+ },
+ "US-081": {
+  "title": "Choose delivery or pickup",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-082": {
+  "title": "Enter a delivery address (`.env` variables)",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-083": {
+  "title": "Delivery-zone check",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-085": {
+  "title": "Contact details",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-086": {
+  "title": "Courier tip",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-087": {
+  "title": "Order summary and total",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-088": {
+  "title": "Delivery fee",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-089": {
+  "title": "Minimum delivery order",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-091": {
+  "title": "Place the order (`Execute Order --force`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-06",
+   "SCR-07"
+  ]
+ },
+ "US-092": {
+  "title": "Empty-cart redirect",
+  "priority": "Must",
+  "screens": [
+   "SCR-06",
+   "SCR-02"
+  ]
+ },
+ "US-093": {
+  "title": "Pickup details",
+  "priority": "Should",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-094": {
+  "title": "Coupon re-check for the order type",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-095": {
+  "title": "Item became unavailable during checkout",
+  "priority": "Must",
+  "screens": [
+   "SCR-06",
+   "SCR-05"
+  ]
+ },
+ "US-097": {
+  "title": "Delivery preview map",
+  "priority": "Could",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-101": {
+  "title": "Choose a payment method and demo test card",
+  "priority": "Must",
+  "screens": [
+   "SCR-06",
+   "SCR-07"
+  ]
+ },
+ "US-102": {
+  "title": "Payment processing sheet",
+  "priority": "Must",
+  "screens": [
+   "SCR-07",
+   "SCR-09"
+  ]
+ },
+ "US-103": {
+  "title": "Successful payment",
+  "priority": "Must",
+  "screens": [
+   "SCR-07",
+   "SCR-08",
+   "SCR-05"
+  ]
+ },
+ "US-104": {
+  "title": "Declined card or insufficient funds",
+  "priority": "Must",
+  "screens": [
+   "SCR-07"
+  ]
+ },
+ "US-105": {
+  "title": "Gateway timeout",
+  "priority": "Must",
+  "screens": [
+   "SCR-07"
+  ]
+ },
+ "US-106": {
+  "title": "Retry payment with another method",
+  "priority": "Must",
+  "screens": [
+   "SCR-07",
+   "SCR-08"
+  ]
+ },
+ "US-107": {
+  "title": "Third failure rolls the order back",
+  "priority": "Must",
+  "screens": [
+   "SCR-07",
+   "SCR-09"
+  ]
+ },
+ "US-108": {
+  "title": "Cancel the order before payment",
+  "priority": "Must",
+  "screens": [
+   "SCR-07",
+   "SCR-09",
+   "SCR-05"
+  ]
+ },
+ "US-109": {
+  "title": "Abandoned failed payment expires",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-110": {
+  "title": "Order confirmation (`DEPLOYMENT SUCCESSFUL // 200 OK`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-08",
+   "SCR-09"
+  ]
+ },
+ "US-111": {
+  "title": "Simulated refund on cancellation",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-13"
+  ]
+ },
+ "US-112": {
+  "title": "Random payment failure rate",
+  "priority": "Must",
+  "screens": [
+   "SCR-07"
+  ]
+ },
+ "US-113": {
+  "title": "Retry or cancel from the tracking page",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-07"
+  ]
+ },
+ "US-114": {
+  "title": "Simulated customers pay through the same gateway",
+  "priority": "Must",
+  "screens": []
+ },
+ "US-121": {
+  "title": "Open the tracking page",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-08",
+   "SCR-01",
+   "SCR-10"
+  ]
+ },
+ "US-122": {
+  "title": "Pipeline stepper",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-123": {
+  "title": "Live order log (`bash — track.log`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-124": {
+  "title": "Automatic refresh",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-125": {
+  "title": "ETA countdown",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-126": {
+  "title": "Simulated map with the courier",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-127": {
+  "title": "Courier and oven information",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-128": {
+  "title": "Order summary and receipt link",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-13"
+  ]
+ },
+ "US-129": {
+  "title": "Roll back (cancel) a queued order",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-130": {
+  "title": "Rollback rejected after baking starts",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-131": {
+  "title": "Cancelled order display",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-132": {
+  "title": "Pickup tracking",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-133": {
+  "title": "Look up an order by number and email",
+  "priority": "Must",
+  "screens": [
+   "SCR-10",
+   "SCR-09"
+  ]
+ },
+ "US-134": {
+  "title": "Invalid tracking link",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-10"
+  ]
+ },
+ "US-135": {
+  "title": "`./track.log` navigation target",
+  "priority": "Must",
+  "screens": [
+   "SCR-16",
+   "SCR-09",
+   "SCR-10"
+  ]
+ },
+ "US-136": {
+  "title": "Lookup abuse protection",
+  "priority": "Should",
+  "screens": [
+   "SCR-10"
+  ]
+ },
+ "US-137": {
+  "title": "Completed order view",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-13"
+  ]
+ },
+ "US-166": {
+  "title": "Order detail and receipt (`git show <hash>`)",
+  "priority": "Must",
+  "screens": [
+   "SCR-13"
+  ]
+ },
+ "US-167": {
+  "title": "Print the receipt",
+  "priority": "Should",
+  "screens": [
+   "SCR-13"
+  ]
+ },
+ "US-194": {
+  "title": "Automatic kitchen run by the simulator",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-08",
+   "SCR-01"
+  ]
+ },
+ "US-247": {
+  "title": "Automatic dispatch and courier trips",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-265": {
+  "title": "Order traffic generator",
+  "priority": "Must",
+  "screens": []
+ },
+ "US-270": {
+  "title": "Reset the demo",
+  "priority": "Must",
+  "screens": [
+   "SCR-10",
+   "SCR-09"
+  ]
+ },
+ "US-271": {
+  "title": "Live log lines for every step",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-272": {
+  "title": "Simulated pickup arrival",
+  "priority": "Must",
+  "screens": [
+   "SCR-09"
+  ]
+ },
+ "US-273": {
+  "title": "Housekeeping of old simulated orders",
+  "priority": "Must",
+  "screens": []
+ },
+ "US-281": {
+  "title": "Page not found (404)",
+  "priority": "Must",
+  "screens": [
+   "SCR-40"
+  ]
+ },
+ "US-282": {
+  "title": "Unexpected error (500)",
+  "priority": "Must",
+  "screens": [
+   "SCR-41"
+  ]
+ },
+ "US-284": {
+  "title": "Field validation messages",
+  "priority": "Must",
+  "screens": [
+   "SCR-06"
+  ]
+ },
+ "US-285": {
+  "title": "Conflicting change by someone else",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-07"
+  ]
+ },
+ "US-286": {
+  "title": "Session expiry",
+  "priority": "Must",
+  "screens": [
+   "SCR-16",
+   "SCR-05"
+  ]
+ },
+ "US-287": {
+  "title": "Connection lost or refresh failure",
+  "priority": "Must",
+  "screens": [
+   "SCR-09",
+   "SCR-02"
+  ]
+ },
+ "US-288": {
+  "title": "Busy states and double-submit protection",
+  "priority": "Must",
+  "screens": [
+   "SCR-06",
+   "SCR-07",
+   "SCR-09"
+  ]
+ },
+ "US-289": {
+  "title": "No technical details exposed",
+  "priority": "Must",
+  "screens": [
+   "SCR-40",
+   "SCR-41",
+   "SCR-16"
+  ]
+ }
+}

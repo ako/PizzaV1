@@ -1,7 +1,7 @@
 {
  "lane": "m2",
  "name": "M2 — Pay and track",
- "collectedAt": "2026-11-19 14:50 UTC",
+ "collectedAt": "2026-11-19 15:41 UTC",
  "prd": {
   "epics": [
    {
@@ -83,13 +83,13 @@
    "Fulfilment.Order",
    "Shop.TrackView",
    "Fulfilment.OrderAccess",
-   "Shop.CheckoutForm",
    "Fulfilment.PaymentAttempt",
-   "Shop.LookupForm",
+   "Shop.CheckoutForm",
    "Fulfilment.SimulationEvent",
+   "Shop.LookupForm",
    "Fulfilment.OrderLine",
-   "Shop.LookupAttempt",
-   "Shop.CartLine"
+   "Simulation.SimCustomer",
+   "Fulfilment.DeliveryZone"
   ],
   "jsActions": [
    "Shop.JS_CopyText",

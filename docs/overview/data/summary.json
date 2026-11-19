@@ -1,5 +1,5 @@
 {
- "collectedAt": "2026-11-19 14:50 UTC",
+ "collectedAt": "2026-11-19 15:41 UTC",
  "requirements": 111,
  "built": 109,
  "partial": 2,
@@ -76,9 +76,7 @@
    ]
   }
  ],
- "openQuestions": [
-  "PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessment.json, RUN/operations.md, RUN/start.ps1 and …"
- ],
+ "openQuestions": [],
  "lessons": [
   {
    "source": "FINDINGS.md: Home carousel never moved",

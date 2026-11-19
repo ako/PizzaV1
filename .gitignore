@@ -38,3 +38,6 @@ __pycache__/
 demo/out/
 demo/voice/**/*.wav
 docs/reports/raw/spans.jsonl
+
+# mxcli.exe downloaded by RUN/start.ps1
+/.mxcli-bin/

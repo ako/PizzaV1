@@ -1,7 +1,7 @@
 {
  "lane": "m1",
  "name": "M1 — Browse and order",
- "collectedAt": "2026-11-19 14:50 UTC",
+ "collectedAt": "2026-11-19 15:41 UTC",
  "prd": {
   "epics": [
    {
@@ -129,8 +129,8 @@
  "model": {
   "modules": {
    "Shop": 100,
-   "Simulation": 3,
    "Core": 3,
+   "Simulation": 3,
    "Fulfilment": 1
   },
   "footprintMicroflows": 107,
@@ -164,7 +164,7 @@
    "Core.StoreSettings",
    "Shop.HomeView",
    "Catalog.Option",
-   "Catalog.Allergen"
+   "Core.Toast"
   ],
   "jsActions": [],
   "nanoflows": [],

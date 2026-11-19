@@ -1,7 +1,7 @@
 {
  "lane": "m4",
  "name": "M4 — Errors and system messages",
- "collectedAt": "2026-11-19 14:50 UTC",
+ "collectedAt": "2026-11-19 15:41 UTC",
  "prd": {
   "epics": [
    {
@@ -70,8 +70,8 @@
    "Shop.ErrorView",
    "Fulfilment.PaymentAttempt",
    "Core.StoreSettings",
-   "Fulfilment.DeliveryZone",
-   "Core.SimulationSettings"
+   "Core.SimulationSettings",
+   "Fulfilment.DeliveryZone"
   ],
   "jsActions": [
    "Shop.JS_LivePoller",

@@ -2,7 +2,7 @@
   "kind": "traceability",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 14:50",
+  "generated": "2026-11-19 15:41",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "Requirements, decisions and open questions are read from the project brain (`docs/brain/`) with `brain list`; each requirement's anchor resolutions come from the same check `brain plan` uses, so \"built\" is defined in one place.",

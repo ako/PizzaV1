@@ -1,0 +1,671 @@
+{
+  "studioProVersion": "11.16.1",
+  "stories": [
+    {
+      "id": "US-001",
+      "status": "done",
+      "where": "SCR-16 Customer shell, SCR-01 Home, SCR-02 Menu, SCR-05 Cart, SCR-06 Checkout, SCR-09 Order tracking; Shop.SNIP_Header",
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "status": "done",
+      "where": "SCR-16 Customer shell; Shop.SNIP_Sidebar",
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "status": "done",
+      "where": "SCR-16 Customer shell; Shop.SNIP_BottomNav",
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "status": "done",
+      "where": "SCR-16 Customer shell, SCR-40 Not found, SCR-41 Unexpected error; Shop.SNIP_DemoBanner",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-006",
+      "status": "done",
+      "where": "SCR-16 Customer shell, SCR-01 Home, SCR-08 Order confirmation, SCR-40 Not found, SCR-41 Unexpected error; Shop.SNIP_Header",
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "status": "done",
+      "where": "SCR-16 Customer shell; Shop.SNIP_Footer",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-010",
+      "status": "done",
+      "where": "SCR-16 Customer shell; Shop.SNIP_Toasts",
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "status": "done",
+      "where": "Shop.SNIP_BottomNav",
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "status": "done",
+      "where": "n/a",
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "status": "done",
+      "where": "SCR-01 Home; Shop.Home",
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "status": "done",
+      "where": "SCR-01 Home, SCR-03 Pizza configurator; Shop.SNIP_FeaturedCard",
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "status": "done",
+      "where": "SCR-01 Home",
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "status": "done",
+      "where": "SCR-01 Home, SCR-09 Order tracking; Shop.SNIP_HomeActiveOrder",
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "status": "done",
+      "where": "SCR-02 Menu; Shop.SNIP_MenuCard",
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "status": "done",
+      "where": "SCR-01 Home, SCR-02 Menu; Shop.SNIP_CodeBlock",
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "status": "done",
+      "where": "SCR-02 Menu, SCR-16 Customer shell",
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "status": "done",
+      "where": "SCR-01 Home, SCR-02 Menu, SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "status": "done",
+      "where": "SCR-04 Item info, SCR-02 Menu; Shop.ItemInfo",
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "status": "done",
+      "where": "SCR-04 Item info, SCR-02 Menu, SCR-03 Pizza configurator; Shop.ItemInfo",
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "status": "done",
+      "where": "SCR-01 Home, SCR-02 Menu, SCR-03 Pizza configurator, SCR-04 Item info; Shop.SNIP_MenuCard",
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "status": "done",
+      "where": "SCR-02 Menu, SCR-05 Cart, SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "status": "done",
+      "where": "SCR-02 Menu",
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "status": "done",
+      "where": "SCR-02 Menu; Shop.Menu",
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator, SCR-01 Home, SCR-02 Menu, SCR-04 Item info",
+      "notes": ""
+    },
+    {
+      "id": "US-042",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-043",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-044",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-045",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-046",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-047",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-048",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator; Shop.Configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-049",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator, SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-050",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-051",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-052",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-053",
+      "status": "done",
+      "where": "SCR-03 Pizza configurator; Shop.Configurator",
+      "notes": ""
+    },
+    {
+      "id": "US-061",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-16 Customer shell",
+      "notes": ""
+    },
+    {
+      "id": "US-062",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-063",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-064",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-065",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-066",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-067",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-068",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-06 Checkout",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-069",
+      "status": "done",
+      "where": "SCR-05 Cart; Shop.Cart_Drawer",
+      "notes": ""
+    },
+    {
+      "id": "US-070",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-071",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-072",
+      "status": "done",
+      "where": "SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-073",
+      "status": "done",
+      "where": "SCR-05 Cart, SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-081",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-082",
+      "status": "done",
+      "where": "SCR-06 Checkout; Shop.Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-083",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-085",
+      "status": "done",
+      "where": "SCR-06 Checkout; Shop.Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-086",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-087",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-088",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-089",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-091",
+      "status": "done",
+      "where": "SCR-06 Checkout, SCR-07 Payment sheet",
+      "notes": ""
+    },
+    {
+      "id": "US-092",
+      "status": "done",
+      "where": "SCR-06 Checkout, SCR-02 Menu; Shop.Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-093",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-094",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-095",
+      "status": "done",
+      "where": "SCR-06 Checkout, SCR-05 Cart",
+      "notes": ""
+    },
+    {
+      "id": "US-097",
+      "status": "partial",
+      "where": "SCR-06 Checkout; Shop.Checkout",
+      "notes": "US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone. (DEV-01)"
+    },
+    {
+      "id": "US-101",
+      "status": "done",
+      "where": "SCR-06 Checkout, SCR-07 Payment sheet; Shop.SNIP_PaymentChoice",
+      "notes": ""
+    },
+    {
+      "id": "US-102",
+      "status": "done",
+      "where": "SCR-07 Payment sheet, SCR-09 Order tracking; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-103",
+      "status": "done",
+      "where": "SCR-07 Payment sheet, SCR-08 Order confirmation, SCR-05 Cart; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-104",
+      "status": "done",
+      "where": "SCR-07 Payment sheet; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-105",
+      "status": "done",
+      "where": "SCR-07 Payment sheet; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-106",
+      "status": "done",
+      "where": "SCR-07 Payment sheet, SCR-08 Order confirmation; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-107",
+      "status": "done",
+      "where": "SCR-07 Payment sheet, SCR-09 Order tracking; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-108",
+      "status": "done",
+      "where": "SCR-07 Payment sheet, SCR-09 Order tracking, SCR-05 Cart; Shop.PaymentSheet",
+      "notes": ""
+    },
+    {
+      "id": "US-109",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-110",
+      "status": "done",
+      "where": "SCR-08 Order confirmation, SCR-09 Order tracking; Shop.Confirmation",
+      "notes": ""
+    },
+    {
+      "id": "US-111",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-13 Order receipt",
+      "notes": ""
+    },
+    {
+      "id": "US-112",
+      "status": "done",
+      "where": "SCR-07 Payment sheet",
+      "notes": ""
+    },
+    {
+      "id": "US-113",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-07 Payment sheet",
+      "notes": ""
+    },
+    {
+      "id": "US-114",
+      "status": "done",
+      "where": "n/a",
+      "notes": ""
+    },
+    {
+      "id": "US-121",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-08 Order confirmation, SCR-01 Home, SCR-10 Track order lookup",
+      "notes": ""
+    },
+    {
+      "id": "US-122",
+      "status": "done",
+      "where": "SCR-09 Order tracking; Shop.SNIP_Stepper",
+      "notes": ""
+    },
+    {
+      "id": "US-123",
+      "status": "done",
+      "where": "SCR-09 Order tracking; Shop.SNIP_OrderLog",
+      "notes": ""
+    },
+    {
+      "id": "US-124",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-125",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-126",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-127",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-128",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-13 Order receipt",
+      "notes": ""
+    },
+    {
+      "id": "US-129",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-130",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-131",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-132",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-133",
+      "status": "done",
+      "where": "SCR-10 Track order lookup, SCR-09 Order tracking; Shop.TrackLookup",
+      "notes": ""
+    },
+    {
+      "id": "US-134",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-10 Track order lookup; Shop.TrackInvalid",
+      "notes": ""
+    },
+    {
+      "id": "US-135",
+      "status": "done",
+      "where": "SCR-16 Customer shell, SCR-09 Order tracking, SCR-10 Track order lookup",
+      "notes": ""
+    },
+    {
+      "id": "US-136",
+      "status": "done",
+      "where": "SCR-10 Track order lookup",
+      "notes": ""
+    },
+    {
+      "id": "US-137",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-13 Order receipt",
+      "notes": ""
+    },
+    {
+      "id": "US-166",
+      "status": "done",
+      "where": "SCR-13 Order receipt; Shop.Receipt",
+      "notes": ""
+    },
+    {
+      "id": "US-167",
+      "status": "done",
+      "where": "SCR-13 Order receipt; Shop.Receipt",
+      "notes": ""
+    },
+    {
+      "id": "US-194",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-08 Order confirmation, SCR-01 Home",
+      "notes": ""
+    },
+    {
+      "id": "US-247",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-265",
+      "status": "done",
+      "where": "n/a",
+      "notes": ""
+    },
+    {
+      "id": "US-270",
+      "status": "done",
+      "where": "SCR-10 Track order lookup, SCR-09 Order tracking",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-271",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-272",
+      "status": "done",
+      "where": "SCR-09 Order tracking",
+      "notes": ""
+    },
+    {
+      "id": "US-273",
+      "status": "done",
+      "where": "n/a",
+      "notes": ""
+    },
+    {
+      "id": "US-281",
+      "status": "done",
+      "where": "SCR-40 Not found; Shop.NotFound",
+      "notes": "Exercised by browser journey J5 (tests/e2e/journeys.js)."
+    },
+    {
+      "id": "US-282",
+      "status": "done",
+      "where": "SCR-41 Unexpected error; Shop.UnexpectedError",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-284",
+      "status": "done",
+      "where": "SCR-06 Checkout",
+      "notes": ""
+    },
+    {
+      "id": "US-285",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-07 Payment sheet",
+      "notes": ""
+    },
+    {
+      "id": "US-286",
+      "status": "done",
+      "where": "SCR-16 Customer shell, SCR-05 Cart",
+      "notes": "No automated test or browser journey covers this story yet."
+    },
+    {
+      "id": "US-287",
+      "status": "done",
+      "where": "SCR-09 Order tracking, SCR-02 Menu",
+      "notes": "Exercised by browser journey J6 (tests/e2e/journeys.js)."
+    },
+    {
+      "id": "US-288",
+      "status": "partial",
+      "where": "SCR-06 Checkout, SCR-07 Payment sheet, SCR-09 Order tracking",
+      "notes": "US-288 is partly met: a second payment retry or rollback is refused on the server (the second tab gets a toast), so no order is paid or refunded twice; buttons show no explicit busy state of their own. (DEV-02)"
+    },
+    {
+      "id": "US-289",
+      "status": "done",
+      "where": "SCR-40 Not found, SCR-41 Unexpected error, SCR-16 Customer shell; Shop.UnexpectedError",
+      "notes": "No automated test or browser journey covers this story yet."
+    }
+  ]
+}
