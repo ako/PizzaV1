@@ -1,0 +1,29 @@
+{
+  "order": {
+    "title": "Sam orders a pizza",
+    "lines": {
+      "home": "Sam is hungry, and wants something with a kick. Git Pizza opens on its kitchen, live: ovens, couriers and today's orders.",
+      "menu": "The menu reads like source code. Each pizza lists its crust, sauce, cheese and toppings, with a price per size.",
+      "open": "Sam opens the Inferno Payload, to make it just right.",
+      "size": "A large, fourteen inches. The price follows straight away.",
+      "extra": "Add cherry tomatoes, and the line comes to twenty-five dollars.",
+      "deploy": "Build and Deploy puts it in the cart.",
+      "checkout": "At checkout, Sam types a San Francisco address. It is checked against the delivery zone, and fee, tax and tip are worked out as Sam types.",
+      "pay": "Execute order. Payment is simulated, so no real money moves.",
+      "confirmed": "Deployment successful. The kitchen accepted the order, with an estimated delivery time.",
+      "tracking": "From here, Sam follows the order live: from the queue, through the oven, to the courier."
+    }
+  },
+  "declined": {
+    "title": "A declined card",
+    "lines": {
+      "menu": "Alex is ordering dinner for delivery tonight, and goes for a Binary BBQ: pulled pork and barbecue sauce.",
+      "added": "One click on import, and it is in the cart. The counter at the top shows it straight away.",
+      "checkout": "At checkout, Alex fills in a San Francisco address, a name and a phone number. Then, to see what happens when a bank says no, Alex picks the test card that the simulated bank always declines.",
+      "declined": "The payment is declined. Nothing was charged, the cart is untouched, and the order simply waits, so Alex can decide what to do next.",
+      "switch": "Alex switches to Apple Pay, and tries the payment again.",
+      "confirmed": "This time it goes through. The kitchen accepts the order, and gives an estimated delivery time.",
+      "tracking": "On the tracking page, the order log keeps both attempts: the declined card, and the payment that went through. Nothing is hidden from Alex."
+    }
+  }
+}

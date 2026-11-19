@@ -35,3 +35,5 @@ mxcli
 mxcli.exe
 .mxcli/
 __pycache__/
+demo/out/
+demo/voice/**/*.wav
