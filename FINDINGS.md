@@ -394,3 +394,61 @@ Found while writing them:
   went from 100 to 101.
 - **The tests page's gap guard caught it.** `gen_tests.py` asserts that its gap groups match
   the data exactly, so it refused to render until the groups were updated.
+
+## 2026-11-19 — mxcli main (nightly-54-g619bce7d) tested on GitPizza
+
+Built from ako/mxcli main. The build needs ANTLR: run `make -C mdl/grammar bootstrap`, then
+`ANTLR4_TOOLS_ANTLR_VERSION=4.13.2 make build`. It was run next to the project's binary
+(nightly-20261118); the project binary was not replaced.
+
+**Clean:**
+- **Scripts:** all scripts pass `check --deprecations=error --v1=error`.
+- **Exec:** re-executing every script writes nothing (exec is idempotent, the working tree
+  stays clean).
+- **Build and tests:** `docker check` 0 errors; microflow tests 24/24; the app boots in
+  31 s; journeys 13/13; visual comparison 12/12.
+- **Brain:** `brain check` OK.
+
+**Fixes confirmed on our model:**
+- **Security:**
+  - `Shop.DS_Info_Line` is no longer a false "high"; it is rated low because sub-microflow
+    caller checks are followed.
+  - Constants are now part of the report.
+  - The grid's create and delete columns are not checked separately here.
+- **Architecture `--exclude-docs 'Simulation.SEED_*'`:** Simulation's cohesion is 8 % (our
+  hand estimate was 9 %), and the three seed clusters drop out.
+- **Annotations:** an `unused:FaultProbe` key without the module prefix now applies (the old
+  binary reported it as "matched nothing").
+- **Tests report:** startup flows (seed, catalog recalculation) and scheduled flows are
+  listed apart, and gaps are grouped by kind.
+
+**New:**
+- **Lint MPR017:** a Boolean a decision tests but which can only be true. It fires 3 times:
+  `IsActive` on Catalog.Option, Fulfilment.Coupon and Fulfilment.DeliveryZone. That is
+  accurate for Lite, where nothing deactivates them. Lint: 246 → 249 findings.
+- **Scored report:** now also runs `mx check` (54 warnings, 1 deprecation). Score
+  47.5 → 47.1, from the "Other" category.
+- **`report configuration`:** flags `Shop.AppUrl`, whose localhost default must be
+  overridden; the other 3 constants keep their defaults.
+- **`report readiness` and `report all`:** all ten reports in 20 s, every page error-free
+  offline. Verdict: "not assessed in full", 0 blocking.
+
+**Problems with `report all` / readiness:**
+1. **`--journeys` and `--spans` reach only the tests and performance reports, not
+   traceability.** Readiness therefore claims 57 of M1's requirements have no test or
+   journey, against 101 of 111 proven when traceability gets the evidence
+   (`cmd/mxcli/cmd_report_all.go` passThrough).
+2. **`report all` has no `--junit` flag.** The tests report shows "no test results were
+   read", so readiness can never be fully assessed from `report all` alone.
+3. **One `--journeys` log feeds both the tests and the performance report.** A functional
+   journey log turns each whole journey into a "performance step", and every journey then
+   shows as a risk over budget.
+4. **Readiness "accepted" counts only report verdicts (1), not brain decisions.** Our
+   "Accepted SEC007: …" decision is prose, not the `--accepts SEC007` form, so it is not
+   recognised. Re-recording it with `brain capture --accepts` would fix that on our side.
+
+Not verified:
+- **Open questions as questions:** the brain has no open question left, and a scratch brain
+  without a project did not promote.
+- **Test-runner leftover:** the `mxtest` line the test runner leaves in
+  `UserActionsRegistrar.java` is still there with the new binary.
