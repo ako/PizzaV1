@@ -518,22 +518,6 @@ create or modify association Shop."LookupAttempt_User" from Shop."LookupAttempt"
 
 -- ───────────────────────── Simulation / pricing helpers ─────────────────────────
 
-/** Fictional customer used by the traffic generator (09-demo-data/simulated-customers.json). */
-create or modify persistent entity Shop."SimCustomer" (
-  "Code": String(6) not null unique,
-  "FirstName": String(40),
-  "LastName": String(40),
-  "Email": String(254),
-  "Phone": String(20),
-  "Line1": String(80),
-  "Line2": String(80),
-  "City": String(40),
-  "StateCode": String(2),
-  "Zip": String(5),
-  "DeliveryNotes": String(140),
-  "IsInZone": Boolean default true
-);
-
 /** Result of the price rules for a subtotal, order type, coupon and tip (BR-PRICE-05..10). */
 create or modify non-persistent entity Shop."PriceResult" (
   "Subtotal": Decimal default 0,

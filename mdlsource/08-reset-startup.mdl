@@ -4,6 +4,22 @@ mdl 1;
 /** Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08). */
 create or modify module Simulation;
 
+/** Fictional customer used by the traffic generator (09-demo-data/simulated-customers.json). */
+create or modify persistent entity Simulation."SimCustomer" (
+  "Code": String(6) not null unique,
+  "FirstName": String(40),
+  "LastName": String(40),
+  "Email": String(254),
+  "Phone": String(20),
+  "Line1": String(80),
+  "Line2": String(80),
+  "City": String(40),
+  "StateCode": String(2),
+  "Zip": String(5),
+  "DeliveryNotes": String(140),
+  "IsInZone": Boolean default true
+);
+
 /** Speed factor of the simulation clock: 1, 2, 5 or 10 (LITE-CFG-01). Any other value is treated as 1. */
 create or modify constant Simulation."SpeedFactor" ( Type: Integer, DefaultValue: 1 );
 
@@ -11,14 +27,14 @@ create or modify constant Simulation."SpeedFactor" ( Type: Integer, DefaultValue
 create or modify constant Simulation."ResetOnStartup" ( Type: Boolean, DefaultValue: false );
 
 /** Runs the simulation clock: one beat at a time. */
-create or modify task queue Shop."SimulationClock" ( Parallelism: 1 );
+create or modify task queue Simulation."SimulationClock" ( Parallelism: 1 );
 
 /**
  * Pauses the calling task for a number of milliseconds. Used only by the
  * simulation clock: Mendix scheduled events cannot run more often than once
  * a minute, while SIM-09 needs a tick at least every 2 seconds.
  */
-create or modify java action Shop."JA_Sleep" (
+create or modify java action Simulation."JA_Sleep" (
   /** Milliseconds to wait (0–10000). */
   Millis: integer not null
 ) returns boolean
@@ -37,7 +53,7 @@ $$;
  *
  * @param $Trigger startup, scheduled or initial-seed
  */
-create or modify microflow Shop.SUB_Reset ($Trigger: String)
+create or modify microflow Simulation.SUB_Reset ($Trigger: String)
 folder 'Simulation'
 begin
   declare $Start DateTime = [%CurrentDateTime%];
@@ -73,15 +89,15 @@ begin
   delete $Categories;
   retrieve $Allergens from Shop.Allergen;
   delete $Allergens;
-  retrieve $SimCustomers from Shop.SimCustomer;
+  retrieve $SimCustomers from Simulation.SimCustomer;
   delete $SimCustomers;
   retrieve $Sims from Shop.SimulationSettings;
   delete $Sims;
   retrieve $Stores from Shop.StoreSettings;
   delete $Stores;
   declare $T DateTime = [%CurrentDateTime%];
-  call microflow Shop.SEED_Catalog(T = $T);
-  call microflow Shop.SEED_Orders(T = $T);
+  call microflow Simulation.SEED_Catalog(T = $T);
+  call microflow Simulation.SEED_Orders(T = $T);
   call microflow Shop.SUB_Catalog_RecalculateAll();
   retrieve $Highest from Shop.Order sort by OrderNumber desc first;
   retrieve $Store from Shop.StoreSettings first;
@@ -111,7 +127,7 @@ end;
  *
  * @returns true (the runtime only starts when this returns true)
  */
-create or modify microflow Shop.ASU_Startup ()
+create or modify microflow Simulation.ASU_Startup ()
 returns Boolean as $Ok
 folder 'Simulation'
 begin
@@ -124,15 +140,15 @@ begin
   log info node 'Simulation' 'CONFIG SpeedFactor=' + toString($Speed) + ' ResetOnStartup=' + toString($Reset);
   retrieve $Store from Shop.StoreSettings first;
   if $Reset then
-    call microflow Shop.SUB_Reset(Trigger = 'startup');
+    call microflow Simulation.SUB_Reset(Trigger = 'startup');
   else
     if $Store = empty then
-      call microflow Shop.SUB_Reset(Trigger = 'initial-seed');
+      call microflow Simulation.SUB_Reset(Trigger = 'initial-seed');
     else
-      call microflow Shop.SUB_Sim_ApplySpeed(Speed = $Speed);
+      call microflow Simulation.SUB_Sim_ApplySpeed(Speed = $Speed);
     end if;
   end if;
-  call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+  call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;
   return true;
 end;
 
@@ -143,7 +159,7 @@ end;
  *
  * @param $Speed The validated speed factor
  */
-create or modify microflow Shop.SUB_Sim_ApplySpeed ($Speed: Integer)
+create or modify microflow Simulation.SUB_Sim_ApplySpeed ($Speed: Integer)
 folder 'Simulation'
 begin
   retrieve $Sim from Shop.SimulationSettings first;
@@ -175,18 +191,18 @@ end;
 /**
  * Daily demo reset at 04:00 store time (A-42).
  */
-create or modify microflow Shop.SE_DailyReset ()
+create or modify microflow Simulation.SE_DailyReset ()
 folder 'Simulation'
 begin
-  call microflow Shop.SUB_Reset(Trigger = 'scheduled');
-  call microflow Shop.SUB_Toast_Broadcast(Message = 'The demo data was reset by the system.');
+  call microflow Simulation.SUB_Reset(Trigger = 'scheduled');
+  call microflow Simulation.SUB_Toast_Broadcast(Message = 'The demo data was reset by the system.');
 end;
 
 /**
  * Watchdog, every minute: restarts the simulation clock when its chain of
  * queued ticks stopped (for example after an error), and ticks once itself.
  */
-create or modify microflow Shop.SE_ClockWatchdog ()
+create or modify microflow Simulation.SE_ClockWatchdog ()
 folder 'Simulation'
 begin
   retrieve $Sim from Shop.SimulationSettings first;
@@ -197,7 +213,7 @@ begin
     end if;
     if $Sim/LastTickAt = empty or $Age > 15 then
       log warning node 'Simulation' 'Simulation clock restarted by watchdog';
-      call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+      call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;
     end if;
   end if;
 end;
@@ -207,12 +223,12 @@ end;
  * simulation to now, and queues the next beat. Runs as a chain of short
  * background tasks so each tick is its own transaction.
  */
-create or modify microflow Shop.SIM_ClockRun ()
+create or modify microflow Simulation.SIM_ClockRun ()
 folder 'Simulation'
 begin
-  $Slept = call java action Shop.JA_Sleep(Millis = 1500);
-  call microflow Shop.SIM_Tick() on error continue;
-  call microflow Shop.SIM_ClockRun() in queue Shop.SimulationClock;
+  $Slept = call java action Simulation.JA_Sleep(Millis = 1500);
+  call microflow Simulation.SIM_Tick() on error continue;
+  call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;
 end;
 
 /**
@@ -221,7 +237,7 @@ end;
  *
  * @param $Message Toast text
  */
-create or modify microflow Shop.SUB_Toast_Broadcast ($Message: String)
+create or modify microflow Simulation.SUB_Toast_Broadcast ($Message: String)
 folder 'Simulation'
 begin
   retrieve $Sessions from System.Session;
@@ -238,8 +254,8 @@ begin
   commit $Toasts without events;
 end;
 
-create or modify scheduled event Shop."SE_DailyReset" (
-  Microflow: Shop.SE_DailyReset,
+create or modify scheduled event Simulation."SE_DailyReset" (
+  Microflow: Simulation.SE_DailyReset,
   Repeat: Daily,
   HourOfDay: 4,
   MinuteOfHour: 0,
@@ -247,11 +263,11 @@ create or modify scheduled event Shop."SE_DailyReset" (
   Enabled: true
 );
 
-create or modify scheduled event Shop."SE_ClockWatchdog" (
-  Microflow: Shop.SE_ClockWatchdog,
+create or modify scheduled event Simulation."SE_ClockWatchdog" (
+  Microflow: Simulation.SE_ClockWatchdog,
   Repeat: Minutely,
   Multiplier: 1,
   Enabled: true
 );
 
-alter settings runtime ( AfterStartupMicroflow: 'Shop.ASU_Startup', ScheduledEventTimeZoneCode: 'America/Los_Angeles', DefaultTimeZoneCode: 'America/Los_Angeles', EnableDataStorageOptimisticLocking: true );
+alter settings runtime ( AfterStartupMicroflow: 'Simulation.ASU_Startup', ScheduledEventTimeZoneCode: 'America/Los_Angeles', DefaultTimeZoneCode: 'America/Los_Angeles', EnableDataStorageOptimisticLocking: true );

@@ -99,7 +99,7 @@ def gen_catalog():
     w(' *')
     w(' * @param $T Demo start time: relative seed timestamps resolve against it')
     w(' */')
-    w('create or modify microflow Shop.SEED_Catalog ($T: DateTime)')
+    w('create or modify microflow Simulation.SEED_Catalog ($T: DateTime)')
     w("folder 'Seed'")
     w('begin')
     for a in allergens:
@@ -178,7 +178,7 @@ def gen_catalog():
           f"TripProgressPercent = {c['tripProgressPercent']}, TripSeconds = {trip}, TripProgress = {c['tripProgressPercent'] / 100.0}, TripAnchorAt = $T);")
         w(f"  commit $cu_{var(c['code'])} without events;")
     for c in custs:
-        w(f"  $sc_{var(c['code'])} = create Shop.SimCustomer (Code = {q(c['code'])}, FirstName = {q(c['firstName'])}, LastName = {q(c['lastName'])}, Email = {q(c['email'])}, "
+        w(f"  $sc_{var(c['code'])} = create Simulation.SimCustomer (Code = {q(c['code'])}, FirstName = {q(c['firstName'])}, LastName = {q(c['lastName'])}, Email = {q(c['email'])}, "
           f"Phone = {q(c['phone'])}, Line1 = {q(c.get('line1'))}, Line2 = {q(c.get('line2'))}, City = {q(c.get('city'))}, StateCode = {q(c.get('state'))}, "
           f"Zip = {q(c.get('zip'))}, DeliveryNotes = {q(c.get('deliveryNotes'))}, IsInZone = {b(c.get('inDeliveryZone'))});")
         w(f"  commit $sc_{var(c['code'])} without events;")
@@ -221,7 +221,7 @@ def gen_orders():
         w(' *')
         w(' * @param $T Demo start time: relative seed timestamps resolve against it')
         w(' */')
-        w(f'create or modify microflow Shop.{name} ($T: DateTime)')
+        w(f'create or modify microflow Simulation.{name} ($T: DateTime)')
         w("folder 'Seed/Orders'")
         w('begin')
         final = o['status'] in ('DELIVERED', 'PICKED_UP', 'CANCELLED')
@@ -309,7 +309,7 @@ def gen_orders():
         for k, stmts in parts.items():
             if stmts:
                 uses_t = any('$T' in t for t in stmts)
-                w(f"  call microflow Shop.{name}_{k}(TheOrder = $o{', T = $T' if uses_t else ''});")
+                w(f"  call microflow Simulation.{name}_{k}(TheOrder = $o{', T = $T' if uses_t else ''});")
         w('  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $o);')
         w('end;')
         w('')
@@ -325,7 +325,7 @@ def gen_orders():
             if uses_t:
                 w(' * @param $T Demo start time: relative seed timestamps resolve against it')
             w(' */')
-            w(f"create or modify microflow Shop.{name}_{k} ($TheOrder: Shop.Order{', $T: DateTime' if uses_t else ''})")
+            w(f"create or modify microflow Simulation.{name}_{k} ($TheOrder: Shop.Order{', $T: DateTime' if uses_t else ''})")
             w("folder 'Seed/Orders'")
             w('begin')
             for t in stmts:
@@ -338,11 +338,11 @@ def gen_orders():
     w(' *')
     w(' * @param $T Demo start time: relative seed timestamps resolve against it')
     w(' */')
-    w('create or modify microflow Shop.SEED_Orders ($T: DateTime)')
+    w('create or modify microflow Simulation.SEED_Orders ($T: DateTime)')
     w("folder 'Seed'")
     w('begin')
     for name in names:
-        w(f'  call microflow Shop.{name}(T = $T);')
+        w(f'  call microflow Simulation.{name}(T = $T);')
     w('end;')
     return '\n'.join(L) + '\n'
 
