@@ -1,0 +1,364 @@
+mdl 1;
+-- Order processes: T-01 creation with snapshots, SIM-01 payment outcome (T-02..T-05),
+-- cancellation (T-04, T-06, T-07, T-09) and refund (BR-ORD-10).
+
+/**
+ * Seconds-based progress p of a simulator timer (BR-ORD-21):
+ * p = stored progress + elapsed since anchor / eff(base).
+ *
+ * @param $Progress Progress at the anchor (0–1)
+ * @param $AnchorAt Moment the progress was last anchored
+ * @param $BaseSeconds Timer duration at 1×
+ * @returns Current progress (may exceed 1)
+ */
+create or modify microflow Shop.SUB_Timer_Progress ($Progress: Decimal, $AnchorAt: DateTime, $BaseSeconds: Integer)
+returns Decimal as $P
+folder 'Simulation'
+begin
+  $Eff = call microflow Shop.SUB_Eff(Base = $BaseSeconds);
+  declare $Elapsed Decimal = 0;
+  if $AnchorAt != empty then
+    if $AnchorAt < [%CurrentDateTime%] then
+      set $Elapsed = secondsBetween($AnchorAt, [%CurrentDateTime%]);
+    end if;
+  end if;
+  declare $P Decimal = $Progress + $Elapsed div $Eff;
+  return $P;
+end;
+
+/**
+ * Base duration (at 1×) of the automatic timer that runs in the order's
+ * current state (order-lifecycle 7.1); 0 when no timer runs.
+ *
+ * @param $TheOrder The order
+ * @returns Seconds at 1×
+ */
+create or modify microflow Shop.SUB_Order_TimerBase ($TheOrder: Shop.Order)
+returns Integer as $Base
+folder 'Simulation'
+begin
+  retrieve $Sim from Shop.SimulationSettings first;
+  declare $Base Integer = 0;
+  declare $Status Enumeration(Shop.OrderStatus) = $TheOrder/OrderStatus;
+  if $Status = Shop.OrderStatus.PAYMENT_PENDING then
+    retrieve $Attempt from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder and AttemptStatus = 'PROCESSING'] sort by AttemptNumber desc first;
+    set $Base = $Sim/PaymentProcessing;
+    if $Attempt != empty then
+      if $Attempt/Card = Shop.TestCard.AMEX_0005 then
+        set $Base = $Sim/PaymentTimeout;
+      end if;
+    end if;
+  end if;
+  if $Status = Shop.OrderStatus.PAYMENT_FAILED then
+    if $TheOrder/Source = Shop.OrderSource.SIMULATOR then
+      set $Base = $Sim/SimulatedRetryDelay;
+    else
+      set $Base = $Sim/PaymentFailedTimeout;
+    end if;
+  end if;
+  if $Status = Shop.OrderStatus.QUEUED then
+    set $Base = $Sim/QueueWait;
+  end if;
+  if $Status = Shop.OrderStatus.BAKING then
+    set $Base = $Sim/Bake;
+  end if;
+  if $Status = Shop.OrderStatus.QA_CHECK then
+    set $Base = $Sim/Qa;
+  end if;
+  if $Status = Shop.OrderStatus.READY_FOR_PICKUP then
+    set $Base = $Sim/PickupArrival;
+  end if;
+  if $Status = Shop.OrderStatus.OUT_FOR_DELIVERY then
+    set $Base = round($Sim/TravelBase + $Sim/TravelPerMile * $TheOrder/DistanceMiles);
+  end if;
+  return $Base;
+end;
+
+/**
+ * Current progress p of the order's running timer.
+ *
+ * @param $TheOrder The order
+ * @returns Progress (0 when no timer runs)
+ */
+create or modify microflow Shop.SUB_Order_Progress ($TheOrder: Shop.Order)
+returns Decimal as $P
+folder 'Simulation'
+begin
+  $Base = call microflow Shop.SUB_Order_TimerBase(TheOrder = $TheOrder);
+  if $Base <= 0 then
+    return 0;
+  end if;
+  $P = call microflow Shop.SUB_Timer_Progress(Progress = $TheOrder/TimerProgress, AnchorAt = $TheOrder/TimerAnchorAt, BaseSeconds = $Base);
+  return $P;
+end;
+
+/**
+ * T-01: turns prepared order data and configured lines into an order in
+ * PAYMENT_PENDING (BR-ORD-03 is checked by the caller). Assigns number,
+ * commit hash and tracking token, snapshots the lines and modifiers
+ * (BR-DATA-03), fixes every amount (BR-PRICE-12), stores the coupon only
+ * when APPLIED (BR-PRICE-06), creates payment attempt #1 in PROCESSING and
+ * writes the T-01 log lines.
+ *
+ * @param $TheOrder Order holding type, contact, address, tip and source (not yet numbered)
+ * @param $Lines The configured lines to snapshot
+ * @param $Coupon Coupon of the cart (may be empty)
+ * @param $Method Payment method
+ * @param $Card Test card (CARD only)
+ * @param $Actor Actor type of the creation
+ * @param $ActorName guest or sim/traffic
+ */
+create or modify microflow Shop.SUB_Order_Place ($TheOrder: Shop.Order, $Lines: List of Shop.CartLine, $Coupon: Shop.Coupon, $Method: Enumeration(Shop.PaymentMethod), $Card: Enumeration(Shop.TestCard), $Actor: Enumeration(Shop.ActorType), $ActorName: String)
+folder 'Orders'
+begin
+  retrieve $Store from Shop.StoreSettings first;
+  declare $Number Integer = $Store/NextOrderNumber;
+  change $Store (NextOrderNumber = $Number + 1);
+  commit $Store without events;
+  $Hash = call microflow Shop.SUB_RandomHex(Length = 7);
+  $Token = call microflow Shop.SUB_RandomHex(Length = 32);
+  declare $Now DateTime = [%CurrentDateTime%];
+  -- snapshot lines
+  declare $Subtotal Decimal = 0;
+  declare $Items Integer = 0;
+  declare $Pizzas Integer = 0;
+  declare $Sort Integer = 0;
+  loop $Line in $Lines
+  begin
+    retrieve $Product from $Line/Shop.CartLine_Product;
+    retrieve $Size from $Line/Shop.CartLine_Size;
+    retrieve $LineAllergens from $Line/Shop.CartLine_Allergen;
+    $AllergenText = call microflow Shop.SUB_AllergenText(Allergens = $LineAllergens);
+    set $Sort = $Sort + 1;
+    declare $SizeLabel String = getCaption($Size/Size);
+    if $Product/Kind != Shop.ProductKind.PIZZA then
+      set $SizeLabel = $Size/ServingDescription;
+    end if;
+    $OLine = create Shop.OrderLine (ProductCode = $Product/Code, ProductName = $Product/Name, RealWorldName = $Product/RealWorldName, ModuleKey = $Product/ModuleKey,
+      Kind = $Product/Kind, Size = $Size/Size, SizeLabel = $SizeLabel, Quantity = $Line/Quantity, UnitPrice = $Line/UnitPrice, LineTotal = $Line/LineTotal,
+      AllergenText = $AllergenText, IsVegetarian = $Line/IsVegetarian, IsVegan = $Line/IsVegan, ConfigText = $Line/ConfigText, SortOrder = $Sort,
+      Shop.OrderLine_Order = $TheOrder, Shop.OrderLine_Product = $Product);
+    commit $OLine without events;
+    set $Subtotal = $Subtotal + $Line/LineTotal;
+    set $Items = $Items + $Line/Quantity;
+    if $Product/Kind = Shop.ProductKind.PIZZA then
+      set $Pizzas = $Pizzas + $Line/Quantity;
+      call microflow Shop.SUB_OrderLine_SnapshotModifiers(OLine = $OLine, Line = $Line);
+    end if;
+  end loop;
+  $Price = call microflow Shop.SUB_Price_Compute(Subtotal = $Subtotal, OrderType = $TheOrder/OrderType, Coupon = $Coupon, Tip = $TheOrder/Tip);
+  retrieve $Zone from $TheOrder/Shop.Order_Zone;
+  declare $Distance Decimal = 0;
+  if $Zone != empty then
+    set $Distance = $Zone/DistanceMiles;
+  end if;
+  change $TheOrder (OrderNumber = $Number, CommitHash = $Hash, TrackingToken = $Token, Payment = Shop.PaymentStatus.UNPAID, PlacedAt = $Now,
+    Subtotal = $Subtotal, DiscountAmount = $Price/Discount, DeliveryFee = $Price/DeliveryFee, FeeWaivedBy = $Price/FeeWaivedBy,
+    TaxRatePercent = $Store/TaxRatePercent, TaxAmount = $Price/Tax, TipAmount = $Price/TipAmount, Total = $Price/Total,
+    ItemCount = $Items, PizzaCount = $Pizzas, DistanceMiles = $Distance, IsOpen = true, TimerProgress = 0, TimerAnchorAt = $Now);
+  if $Price/CouponState = Shop.CouponState.APPLIED then
+    change $TheOrder (Shop.Order_Coupon = $Coupon, CouponCode = $Coupon/Code);
+  end if;
+  commit $TheOrder without events;
+  $Attempt = create Shop.PaymentAttempt (AttemptNumber = 1, Method = $Method, Card = $Card, Amount = $Price/Total, AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = $Now, Shop.PaymentAttempt_Order = $TheOrder);
+  commit $Attempt without events;
+  call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.PAYMENT_PENDING, Actor = $Actor, ActorName = $ActorName, Reason = '');
+  call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'INIT', Message = 'Order MX-' + toString($Number) + ' staged. Commit #' + $Hash + ' signed.', Visible = true);
+  call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'PAYMENT', Message = 'Handshake with payment gateway (simulated)…', Visible = true);
+  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $TheOrder);
+end;
+
+/**
+ * Snapshots the configuration of a pizza line as modifiers: exactly one
+ * CRUST, SAUCE and CHEESE (default marked, surcharge 0 when default), then
+ * one ADD per extra and one REMOVE per removed ingredient.
+ *
+ * @param $OLine The order line
+ * @param $Line The configured cart line
+ */
+create or modify microflow Shop.SUB_OrderLine_SnapshotModifiers ($OLine: Shop.OrderLine, $Line: Shop.CartLine)
+folder 'Orders'
+begin
+  retrieve $Product from $Line/Shop.CartLine_Product;
+  retrieve $Size from $Line/Shop.CartLine_Size;
+  retrieve $DefCrust from $Product/Shop.Product_DefaultCrust;
+  retrieve $DefSauce from $Product/Shop.Product_DefaultSauce;
+  retrieve $DefCheese from $Product/Shop.Product_DefaultCheese;
+  retrieve $Crust from $Line/Shop.CartLine_Crust;
+  retrieve $Sauce from $Line/Shop.CartLine_Sauce;
+  retrieve $Cheese from $Line/Shop.CartLine_Cheese;
+  $MCrust = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CRUST, OptionKey = $Crust/OptionKey, Name = $Crust/Name, Price = if $Crust = $DefCrust then 0 else $Crust/Surcharge, IsDefault = $Crust = $DefCrust, SortOrder = 1, Shop.OrderLineModifier_OrderLine = $OLine);
+  $MSauce = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.SAUCE, OptionKey = $Sauce/OptionKey, Name = $Sauce/Name, Price = if $Sauce = $DefSauce then 0 else $Sauce/Surcharge, IsDefault = $Sauce = $DefSauce, SortOrder = 2, Shop.OrderLineModifier_OrderLine = $OLine);
+  $MCheese = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.CHEESE, OptionKey = $Cheese/OptionKey, Name = $Cheese/Name, Price = if $Cheese = $DefCheese then 0 else $Cheese/Surcharge, IsDefault = $Cheese = $DefCheese, SortOrder = 3, Shop.OrderLineModifier_OrderLine = $OLine);
+  $Mods = create list of Shop.OrderLineModifier;
+  add $MCrust to $Mods;
+  add $MSauce to $Mods;
+  add $MCheese to $Mods;
+  retrieve $Extras from $Line/Shop.CartLine_Extra;
+  $SortedExtras = sort $Extras by SortOrder asc;
+  declare $Sort Integer = 3;
+  loop $Extra in $SortedExtras
+  begin
+    $ExtraPrice = call microflow Shop.SUB_Option_PriceFor(Option = $Extra, Size = $Size/Size);
+    set $Sort = $Sort + 1;
+    $MAdd = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.ADD, OptionKey = $Extra/OptionKey, Name = $Extra/Name, Price = $ExtraPrice, IsDefault = false, SortOrder = $Sort, Shop.OrderLineModifier_OrderLine = $OLine);
+    add $MAdd to $Mods;
+  end loop;
+  retrieve $Removed from $Line/Shop.CartLine_Removed;
+  loop $Ing in $Removed
+  begin
+    set $Sort = $Sort + 1;
+    $MRemove = create Shop.OrderLineModifier (ModifierType = Shop.ModifierType.REMOVE, OptionKey = $Ing/Code, Name = $Ing/Name, Price = 0, IsDefault = false, SortOrder = $Sort, Shop.OrderLineModifier_OrderLine = $OLine);
+    add $MRemove to $Mods;
+  end loop;
+  commit $Mods without events;
+end;
+
+/**
+ * Decides the processing payment attempt of an order (SIM-01, BR-ORD-04):
+ * the test card decides; Apple Pay, Google Pay, 4242 and 4444 succeed
+ * (random failure rate is 0 % in Lite). Performs T-02, T-03 or T-04.
+ *
+ * @param $TheOrder An order in PAYMENT_PENDING whose timer is due
+ */
+create or modify microflow Shop.SUB_Payment_Resolve ($TheOrder: Shop.Order)
+folder 'Orders'
+begin
+  retrieve $Attempt from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder and AttemptStatus = 'PROCESSING'] sort by AttemptNumber desc first;
+  if $Attempt = empty then
+    return;
+  end if;
+  declare $Now DateTime = [%CurrentDateTime%];
+  declare $Code Enumeration(Shop.PaymentFailureCode) = empty;
+  if $Attempt/Method = Shop.PaymentMethod.CARD then
+    if $Attempt/Card = Shop.TestCard.VISA_0002 or $Attempt/Card = empty then
+      set $Code = Shop.PaymentFailureCode.DECLINED;
+    end if;
+    if $Attempt/Card = Shop.TestCard.VISA_9995 then
+      set $Code = Shop.PaymentFailureCode.INSUFFICIENT_FUNDS;
+    end if;
+    if $Attempt/Card = Shop.TestCard.AMEX_0005 then
+      set $Code = Shop.PaymentFailureCode.GATEWAY_TIMEOUT;
+    end if;
+  end if;
+  declare $Number String = 'MX-' + toString($TheOrder/OrderNumber);
+  if $Code = empty then
+    $Hex = call microflow Shop.SUB_RandomHex(Length = 12);
+    change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.SUCCEEDED, TransactionId = 'txn_sim_' + $Hex, FinishedAt = $Now);
+    commit $Attempt without events;
+    change $TheOrder (Payment = Shop.PaymentStatus.PAID, PaidAt = $Now, QueuedAt = $Now);
+    call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.QUEUED, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/payment-gateway', Reason = '');
+    retrieve $Queued from Shop.Order where [OrderStatus = 'QUEUED'];
+    $Position = count $Queued;
+    call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.SUCCESS, Tag = 'PAYMENT', Message = 'Payment confirmed. TxID txn_sim_' + $Hex, Visible = true);
+    call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'KITCHEN', Message = 'Order queued at position ' + toString($Position) + '.', Visible = true);
+    $OkEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': SUCCEEDED', Shop.SimulationEvent_Order = $TheOrder);
+    commit $OkEvent without events;
+    -- T-02 side effect: clear the guest's cart and coupon (BR-ORD-07)
+    retrieve $Placer from $TheOrder/Shop.Order_PlacedBy;
+    if $Placer != empty then
+      retrieve $Cart from Shop.Cart where [Shop.Cart_Owner = $Placer] first;
+      if $Cart != empty then
+        retrieve $CartLines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false];
+        delete $CartLines;
+        change $Cart (Shop.Cart_Coupon = empty, CouponInput = '', CouponFieldError = '');
+        call microflow Shop.SUB_Cart_Recalculate(Cart = $Cart);
+      end if;
+    end if;
+    return;
+  end if;
+  change $Attempt (AttemptStatus = Shop.PaymentAttemptStatus.FAILED, FailureCode = $Code, FinishedAt = $Now);
+  commit $Attempt without events;
+  declare $Text String = getCaption($Code);
+  $FailEvent = create Shop.SimulationEvent (OccurredAt = $Now, EventType = Shop.SimulationEventType.PAYMENT_RESULT, Message = $Number + ' payment attempt ' + toString($Attempt/AttemptNumber) + ': FAILED (' + getKey($Code) + ')', Shop.SimulationEvent_Order = $TheOrder);
+  commit $FailEvent without events;
+  retrieve $Store from Shop.StoreSettings first;
+  call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.ERROR, Tag = 'PAYMENT', Message = 'ERROR 402: ' + $Text + '. Attempt ' + toString($Attempt/AttemptNumber) + ' of 3.', Visible = true);
+  if $Attempt/AttemptNumber >= $Store/MaxPaymentAttempts then
+    change $TheOrder (CancelledAt = $Now, CancelledBy = Shop.ActorType.SYSTEM, CancelReason = 'Payment failed 3 times');
+    call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.CANCELLED, Actor = Shop.ActorType.SYSTEM, ActorName = 'sys/payment-attempts', Reason = 'Payment failed 3 times');
+    call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.ERROR, Tag = 'ROLLBACK', Message = 'Order rolled back: payment failed 3 times.', Visible = true);
+  else
+    call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.PAYMENT_FAILED, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/payment-gateway', Reason = '');
+  end if;
+end;
+
+/**
+ * T-05: retries the payment of an order in PAYMENT_FAILED with a (possibly
+ * different) method and card. Same order, same total (BR-PRICE-12).
+ *
+ * @param $TheOrder The order
+ * @param $Method Payment method
+ * @param $Card Test card (CARD only)
+ * @param $Actor Actor type
+ * @param $ActorName guest or sim/customer
+ * @returns True when a new attempt was created
+ */
+create or modify microflow Shop.SUB_Payment_Retry ($TheOrder: Shop.Order, $Method: Enumeration(Shop.PaymentMethod), $Card: Enumeration(Shop.TestCard), $Actor: Enumeration(Shop.ActorType), $ActorName: String)
+returns Boolean as $Ok
+folder 'Orders'
+begin
+  if $TheOrder/OrderStatus != Shop.OrderStatus.PAYMENT_FAILED then
+    return false;
+  end if;
+  retrieve $Attempts from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder];
+  $Count = count $Attempts;
+  if $Count >= 3 then
+    return false;
+  end if;
+  declare $Next Integer = $Count + 1;
+  $Attempt = create Shop.PaymentAttempt (AttemptNumber = $Next, Method = $Method, Card = if $Method = Shop.PaymentMethod.CARD then $Card else empty, Amount = $TheOrder/Total,
+    AttemptStatus = Shop.PaymentAttemptStatus.PROCESSING, StartedAt = [%CurrentDateTime%], Shop.PaymentAttempt_Order = $TheOrder);
+  commit $Attempt without events;
+  call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.PAYMENT_PENDING, Actor = $Actor, ActorName = $ActorName, Reason = '');
+  call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.INFO, Tag = 'PAYMENT', Message = 'Retrying payment (attempt ' + toString($Next) + ' of 3)…', Visible = true);
+  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $TheOrder);
+  return true;
+end;
+
+/**
+ * Refunds a paid order in full (BR-ORD-10, BR-PRICE-14): the succeeded
+ * attempt becomes REFUNDED with refundedAt and a rfd_sim_ id.
+ *
+ * @param $TheOrder The order
+ */
+create or modify microflow Shop.SUB_Order_Refund ($TheOrder: Shop.Order)
+folder 'Orders'
+begin
+  if $TheOrder/Payment != Shop.PaymentStatus.PAID then
+    return;
+  end if;
+  retrieve $Paid from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder and AttemptStatus = 'SUCCEEDED'] first;
+  if $Paid != empty then
+    $Hex = call microflow Shop.SUB_RandomHex(Length = 12);
+    change $Paid (AttemptStatus = Shop.PaymentAttemptStatus.REFUNDED, RefundedAt = [%CurrentDateTime%], RefundId = 'rfd_sim_' + $Hex);
+    commit $Paid without events;
+  end if;
+  change $TheOrder (Payment = Shop.PaymentStatus.REFUNDED);
+  commit $TheOrder without events;
+end;
+
+/**
+ * Cancels an order (T-04/T-06/T-07/T-09): records who and why, refunds a
+ * paid order, voids a processing attempt and writes the log line.
+ *
+ * @param $TheOrder The order
+ * @param $Actor GUEST or SYSTEM
+ * @param $ActorName guest, sys/timer, …
+ * @param $Reason Reason stored with the order and the status change
+ * @param $LogMessage Customer-visible [ROLLBACK] line
+ */
+create or modify microflow Shop.SUB_Order_Cancel ($TheOrder: Shop.Order, $Actor: Enumeration(Shop.ActorType), $ActorName: String, $Reason: String, $LogMessage: String)
+folder 'Orders'
+begin
+  retrieve $Processing from Shop.PaymentAttempt where [Shop.PaymentAttempt_Order = $TheOrder and AttemptStatus = 'PROCESSING'];
+  loop $Proc in $Processing
+  begin
+    change $Proc (AttemptStatus = Shop.PaymentAttemptStatus.FAILED, FailureCode = Shop.PaymentFailureCode.VOIDED, FinishedAt = [%CurrentDateTime%]);
+  end loop;
+  commit $Processing without events;
+  change $TheOrder (CancelledAt = [%CurrentDateTime%], CancelledBy = $Actor, CancelReason = $Reason);
+  call microflow Shop.SUB_Order_Transition(TheOrder = $TheOrder, ToStatus = Shop.OrderStatus.CANCELLED, Actor = $Actor, ActorName = $ActorName, Reason = $Reason);
+  call microflow Shop.SUB_Order_Refund(TheOrder = $TheOrder);
+  call microflow Shop.SUB_Order_Log(TheOrder = $TheOrder, Level = Shop.LogLevel.ERROR, Tag = 'ROLLBACK', Message = $LogMessage, Visible = true);
+end;
