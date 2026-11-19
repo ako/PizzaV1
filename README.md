@@ -27,13 +27,18 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 
 ## Quality reports
 
-Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. It links:
-- [performance under load](docs/perf/report.html): 400,000 orders, before and after the fixes,
-  with findings, flame-chart pairs and statements;
-- the [architecture views](docs/architecture/report.html): module map with and without the
-  generated seed, health, clusters and recommendations;
-- mxcli's built-in reports: traceability, tests and coverage, security, the scored quality
-  report, the software map, and the built-in renderings of performance and architecture.
+Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. Every report has
+its own page in one shared look:
+- [traceability](docs/traceability/report.html)
+- [tests and coverage](docs/testing/report.html)
+- [performance under load](docs/perf/report.html)
+- [architecture](docs/architecture/report.html)
+- [security](docs/security/report.html)
+- [quality score](docs/quality/report.html)
+- [software map](docs/reports/map.html)
+
+The pages work offline. Each also has mxcli's built-in rendering next to the index.
+[`docs/reports/README.md`](docs/reports/README.md) explains how to rebuild them.
 
 ## Build overview
 

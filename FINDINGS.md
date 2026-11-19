@@ -97,7 +97,10 @@ Each item says how it was verified.
 - `mxcli layout flows` does not move loop boxes, so MPR008 (loop box overlaps)
   remains on SIM_Couriers/Kitchen/Pickups. This only affects the diagram.
 - `report` scoring is 10 per error, 3 per warning and 1 per info, floored at 0
-  per category (inferred from the counts).
+  per category (inferred from the counts). The overall score is a weighted mean, not a plain
+  average: Security 25, Quality 20, Architecture 15, Performance 15, Naming 10, Design 10,
+  Other 5. These weights are inferred: they reproduce the whole-app score and five module
+  scores exactly (`docs/quality/data/score-runs.json`).
 
 ### Quality gates (final run)
 | Gate | Result |
@@ -348,3 +351,27 @@ afterwards, along with the Postgres settings.
   only network request was Google Fonts in the two new reports. Those reports now embed the
   app's own fonts (JetBrains Mono, Geist, OFL) as data URIs via `tools/report_fonts.py`,
   about 140 KB per page, so they look the same offline.
+
+## 2026-11-19 — all reports in one house style
+
+All eight report pages share `tools/report_kit.py`: the overview, traceability, tests,
+performance, architecture, security, quality and the software map (restyled by
+`tools/restyle_map.py`). They embed their fonts, link each other and work offline.
+`docs/reports/README.md` describes the rebuild. Data refreshed on the current model:
+24/24 tests, 11/11 journeys with spans, traceability 109 built / 2 partial.
+
+Found while writing them:
+- **Tests and journeys:**
+  - J9 never removes a single cart line, despite its name, so US-064 is unproven.
+  - The tracking-link grant and its refusal of a bad token have never run in any test or
+    journey.
+  - Microflow tests reach only 5 requirements.
+  - 11 stories count as reached by all 11 journeys, because their flows run on the clock
+    or on every page.
+- **Security:**
+  - CONV008 was untriaged; it is now marked intended.
+  - The SEC001 note now names `Fulfilment.Coupon`.
+  - The report's "reads only" label looks at a flow's own body only. The flows are safe
+    because of the read rules on what they take.
+- **Quality:** brain decision 071314 says no quality rule was switched off, but
+  `.claude/lint-config.yaml` disables CONV002, which lint files under quality.
