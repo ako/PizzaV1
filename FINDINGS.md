@@ -504,3 +504,21 @@ Built from the PR head (`3682d904`) and run against this project's evidence (`do
 3. Readiness says "not given" for a report that was given but failed (tests and traceability after a failed `--run`; performance when the spans file was unreadable). It should say "failed: …".
 4. `--perf-spans` does not read `.gz` (already noted in the PR as a separate limitation).
 5. `report all` reads `<kind>-annotations.yaml` only from the output folder, so `docs/reports/*-annotations.yaml` must be copied there or written into `-o docs/reports`.
+
+## ako/mxcli PR 2458 (verify/lint baseline records the rules that ran), tried 2026-11-19
+
+Built from the PR head (`b6e66cf1`), run on a copy of the project (model, widgets, `.claude/lint-rules`, `.claude/lint-config.yaml`).
+
+| Scenario | Before (main) | PR 2458 |
+|---|---|---|
+| Unchanged, our committed (old-format) baseline | pass | pass, `0 new, 247 known`; the old file still loads |
+| No `.claude/lint-rules/` | 115 "fixed", **pass** | `112 not checked`, warning names the rules, **exit 2** (old and new baseline) |
+| No `lint-config.yaml` | 382 new | flagged "configuration differs", exit 2 |
+| First run after a model change (MPR017 can't run) | bogus warning + 3 "fixed" | `3 not checked`, no bogus finding; same new findings and exit as the second run |
+| Harmless change, only MPR017 failing | wrong counts | exit 2 naming MPR017; second run passes |
+| Guest reads all coupons / entity without access | 18 / 18 with `--fail-on warning` | same, on first and second run |
+
+**Still open:**
+1. Trap: `--update-baseline` while a rule cannot run (first run after a change) records the baseline **without** that rule's findings (MPR017's 3 dropped). It prints a warning but exits 0. The next run shows them as 3 new warnings, which fails a `--fail-on warning` gate. The exit-2 message of the failing run itself advises "re-record with --update-baseline". Better: refuse (exit 2) or carry the old findings over for rules that did not run.
+2. For a rule that *failed*, the advice "Run lint where the project's rules and config are installed" is the wrong remedy (the rule is installed). It should say the rule failed, with its error, and suggest rerunning.
+3. Not in this PR: several scripts still break the check stage (ako/mxcli#2453); the MPR017 catalog cause is #2457; annotations (#2455 part 2); drop-attribute check (#2456).
