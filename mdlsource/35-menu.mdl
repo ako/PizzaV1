@@ -331,9 +331,7 @@ create or modify snippet Shop.SNIP_CodeBlock (Params: ($Product: Catalog.Product
       container cl5 (Class: 'cl') {
         dynamictext c5k (Content: '  toppings: ')
         dynamictext c5o (Content: '[', Class: 'p')
-        listview lvTop (DataSource: MICROFLOW Shop.DS_Product_Recipe(Product = $Product), PageSize: 200, Class: 'code-list') {
-          dynamictext c5v (Content: '''{1}''', ContentParams: ({1} = Catalog.RecipeItem_Ingredient/Name), Class: 's')
-        }
+        dynamictext c5v (Content: '{1}', ContentParams: ({1} = $Product/CodeToppings), Class: 's')
         dynamictext c5c (Content: ']', Class: 'p')
       }
     }

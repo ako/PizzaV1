@@ -12,6 +12,12 @@ const APP = (process.env.APP_URL || 'http://127.0.0.1:8080').replace(/\/$/, '');
 const RUNS = Number(process.env.PERF_RUNS || 6);            // run 0 = warm-up
 const LOG = process.env.MXCLI_JOURNEY_LOG;
 const JOURNEY = 'Guest orders a pizza';
+const LOOKUP = 'Guest finds a past order';
+const crypto = require('crypto');
+const md5 = (t) => crypto.createHash('md5').update(t).digest('hex');
+// A seeded order of docs/perf/tools/seed.sql (g = 100000): MX-200000, perf.lookup@example.com.
+const PAST = { number: 'MX-200000', email: 'perf.lookup@example.com', token: md5('t100000') + md5('u100000').slice(0, 8) };
+const DATABASE = process.env.PERF_DATABASE || 'fresh demo reset (46 seed orders, 25 products) + live simulation traffic';
 
 function log(rec) { if (LOG) fs.appendFileSync(LOG, JSON.stringify(rec) + '\n'); }
 
@@ -31,18 +37,18 @@ function settle(page, quiet = 600, timeout = 30000) {
   });
 }
 
-async function step(page, name, run, action) {
+async function step(page, name, run, action, journey = JOURNEY) {
   const start = new Date();
   const t = Date.now();
   await action();
   await settle(page);
   const end = new Date(Date.now() - 600);                  // the quiet tail is not part of the step
-  log({ journey: JOURNEY, step: name, run, start: start.toISOString(), end: end.toISOString(), browserMs: Date.now() - 600 - t });
+  log({ journey, step: name, run, start: start.toISOString(), end: end.toISOString(), browserMs: Date.now() - 600 - t });
 }
 
 (async () => {
-  if (LOG) fs.appendFileSync(LOG, JSON.stringify({ meta: true, database: 'fresh demo reset (46 seed orders, 25 products) + live simulation traffic',
-    notes: ['auto_explain on for the run (session_preload_libraries, log_min_duration 20ms; restored afterwards)', `${RUNS} runs per step, run 0 warm-up`, 'live poller on (2 s refresh is part of every step)'] }) + '\n');
+  if (LOG) fs.appendFileSync(LOG, JSON.stringify({ meta: true, database: DATABASE,
+    notes: ['pg_stat_statements and auto_explain on for the run (log_min_duration 20ms; restored afterwards)', `${RUNS} runs per step, run 0 warm-up`, 'live poller on (2 s refresh is part of every step)'] }) + '\n');
   const browser = await chromium.launch();
   for (let run = 0; run < RUNS; run++) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, timezoneId: 'America/Los_Angeles' });
@@ -66,6 +72,13 @@ async function step(page, name, run, action) {
       await step(page, '7 address -> zone and totals', run, async () => { await page.locator('.mx-name-tZip input').fill('94105'); await page.locator('.mx-name-tCity input').click(); });
       await step(page, '8 place order and pay', run, async () => { await page.locator('.mx-name-exec').click(); await page.locator('.scr-08').waitFor({ timeout: 30000 }); });
       await step(page, '9 open tracking', run, async () => { await page.locator('.mx-name-fMonitor').click(); await page.locator('.scr-09').waitFor({ timeout: 30000 }); });
+      if (process.env.PERF_LOOKUP !== '0') {
+        await step(page, '1 open order lookup', run, () => page.goto(APP + '/p/track', { waitUntil: 'load' }), LOOKUP);
+        await page.locator('.mx-name-tNo input').fill(PAST.number);
+        await page.locator('.mx-name-tEm input').fill(PAST.email);
+        await step(page, '2 find order by number and email', run, async () => { await page.locator('.mx-name-lBtn').click(); await page.locator('.scr-09').waitFor({ timeout: 30000 }); }, LOOKUP);
+        await step(page, '3 open tracking link', run, async () => { await page.goto(APP + '/p/track/' + PAST.token, { waitUntil: 'load' }); await page.locator('.scr-09').waitFor({ timeout: 30000 }); }, LOOKUP);
+      }
       console.log(`run ${run}: ok`);
     } catch (e) {
       console.log(`run ${run}: ${e.message.split('\n')[0]}`);

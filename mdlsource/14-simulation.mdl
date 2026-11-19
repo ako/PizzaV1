@@ -383,6 +383,10 @@ end;
  * SIM-08 section 7: every 15 minutes removes simulated orders that reached
  * a final state more than retentionHours ago, with all their children, and
  * old simulation events. Guest orders are never removed.
+ * Works in bounded batches (oldest first) so one tick never holds a long
+ * transaction: while a batch comes back full, the run is not marked done and
+ * the next tick continues; a backlog of 800,000 events once kept the clock and
+ * every checkout waiting until the runtime aborted the transaction.
  */
 create or modify microflow Simulation.SIM_Housekeeping ()
 folder 'Simulation'
@@ -394,12 +398,18 @@ begin
       return;
     end if;
   end if;
-  change $Sim (LastHousekeepingAt = $Now) commit without events;
   declare $Cutoff DateTime = addHours($Now, -$Sim/RetentionHours);
-  retrieve $Old from Fulfilment.Order where [Source = 'SIMULATOR' and IsOpen = false and StatusChangedAt < $Cutoff];
-  retrieve $OldEvents from Fulfilment.SimulationEvent where [OccurredAt < $Cutoff];
+  retrieve $Old from Fulfilment.Order where [Source = 'SIMULATOR' and IsOpen = false and StatusChangedAt < $Cutoff]
+    sort by StatusChangedAt asc
+    limit 50;
+  retrieve $OldEvents from Fulfilment.SimulationEvent where [OccurredAt < $Cutoff]
+    sort by OccurredAt asc
+    limit 1000;
   $OrderCount = count $Old;
   $EventCount = count $OldEvents;
+  if $OrderCount < 50 and $EventCount < 1000 then
+    change $Sim (LastHousekeepingAt = $Now) commit without events;
+  end if;
   if $OrderCount = 0 and $EventCount = 0 then
     return;
   end if;

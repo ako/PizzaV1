@@ -68,6 +68,7 @@ create or modify persistent entity Catalog."Product" (
   "CodeCrust": String(60),
   "CodeSauce": String(60),
   "CodeCheese": String(60),
+  "CodeToppings": String(600),
   "RealLine": String(120)
 ) index ("Code") index ("SortOrder");
 
@@ -413,7 +414,7 @@ create or modify persistent entity Fulfilment."Order" (
   "ItemCount": Integer default 0,
   "IsOpen": Boolean default true,
   "PaymentLabel": String(60)
-) index ("OrderNumber") index ("TrackingToken") index ("OrderStatus");
+) index ("OrderNumber") index ("TrackingToken") index ("OrderStatus") index ("CompletedAt") index ("Source", "IsOpen", "StatusChangedAt");
 
 /** Snapshot of one cart line. */
 create or modify persistent entity Fulfilment."OrderLine" (
@@ -493,7 +494,7 @@ create or modify persistent entity Fulfilment."SimulationEvent" (
   "OccurredAt": DateTime,
   "EventType": Enumeration(Fulfilment."SimulationEventType"),
   "Message": String(200)
-);
+) index ("OccurredAt");
 
 /** Failed order lookups per guest (US-136). */
 create or modify persistent entity Shop."LookupAttempt" (

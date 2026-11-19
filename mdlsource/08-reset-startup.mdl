@@ -146,6 +146,8 @@ begin
       call microflow Simulation.SUB_Reset(Trigger = 'initial-seed');
     else
       call microflow Simulation.SUB_Sim_ApplySpeed(Speed = $Speed);
+      -- stored card values follow the current model after an upgrade, not only after a reset
+      call microflow Shop.SUB_Catalog_RecalculateAll();
     end if;
   end if;
   call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;

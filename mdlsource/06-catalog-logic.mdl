@@ -29,6 +29,27 @@ begin
 end;
 
 /**
+ * Whether an option can be chosen for a size, given whether its ingredient is
+ * in stock: active, and the size in its available sizes. No database access,
+ * so loops over many options can decide stock once for all of them.
+ *
+ * @param $Option The option
+ * @param $Size The chosen size
+ * @param $IsInStock Whether the option's ingredient (if any) is in stock today
+ * @returns True when selectable
+ */
+create or modify microflow Catalog.SUB_Option_Selectable ($Option: Catalog.Option, $Size: Enumeration(Catalog.SizeCode), $IsInStock: Boolean)
+returns Boolean as $Ok
+folder 'Catalog'
+begin
+  declare $Ok Boolean = $Option/IsActive and $IsInStock;
+  if ($Size = Catalog.SizeCode.SMALL and not($Option/IsForSmall)) or ($Size = Catalog.SizeCode.MEDIUM and not($Option/IsForMedium)) or ($Size = Catalog.SizeCode.LARGE and not($Option/IsForLarge)) then
+    set $Ok = false;
+  end if;
+  return $Ok;
+end;
+
+/**
  * Whether an option can be chosen for a size today: active, its ingredient
  * in stock (BR-DATA-12), and the size in its available sizes.
  *
@@ -40,16 +61,9 @@ create or modify microflow Catalog.SUB_Option_AvailableFor ($Option: Catalog.Opt
 returns Boolean as $Ok
 folder 'Catalog'
 begin
-  declare $Ok Boolean = $Option/IsActive;
   retrieve $Ing from $Option/Catalog.Option_Ingredient;
-  if $Ing != empty then
-    if not($Ing/IsInStock) then
-      set $Ok = false;
-    end if;
-  end if;
-  if ($Size = Catalog.SizeCode.SMALL and not($Option/IsForSmall)) or ($Size = Catalog.SizeCode.MEDIUM and not($Option/IsForMedium)) or ($Size = Catalog.SizeCode.LARGE and not($Option/IsForLarge)) then
-    set $Ok = false;
-  end if;
+  declare $InStock Boolean = $Ing = empty or $Ing/IsInStock;
+  $Ok = call microflow Catalog.SUB_Option_Selectable(Option = $Option, Size = $Size, IsInStock = $InStock);
   return $Ok;
 end;
 
@@ -157,10 +171,18 @@ begin
     end loop;
     -- remaining default recipe items
     retrieve $Recipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
+    -- one query for the recipe's ingredients and, without removals, one for their allergens;
+    -- each item then finds its ingredient in memory (was two queries per recipe item)
+    retrieve $RecipeIngs from Catalog.Ingredient where [Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product = $Product];
+    $RemovedCount = count $Removed;
+    if $RemovedCount = 0 then
+      retrieve $RecipeAllergens from Catalog.Allergen where [Catalog.Ingredient_Allergen/Catalog.Ingredient/Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product = $Product];
+      add $RecipeAllergens to $Allergens;
+    end if;
     declare $RemovedKey String = '';
     loop $Item in $Recipe
     begin
-      retrieve $Ing from $Item/Catalog.RecipeItem_Ingredient;
+      $Ing = find $RecipeIngs where $currentObject = $Item/Catalog.RecipeItem_Ingredient;
       $IsRemoved = contains $Ing in $Removed;
       if $IsRemoved then
         set $RemovedKey = $RemovedKey + ',' + $Ing/Code;
@@ -169,8 +191,10 @@ begin
         if not($Ing/IsInStock) then
           set $Available = false;
         end if;
-        retrieve $IngAll from $Ing/Catalog.Ingredient_Allergen;
-        add $IngAll to $Allergens;
+        if $RemovedCount > 0 then
+          retrieve $IngAll from $Ing/Catalog.Ingredient_Allergen;
+          add $IngAll to $Allergens;
+        end if;
         if not($Ing/IsVegetarian) then
           set $Veg = false;
         end if;
@@ -305,7 +329,18 @@ begin
     set $Ext = '.md';
     set $Var = 'dessert';
   end if;
-  change $Product (Kcal = $Default/Calories, FileLabel = $Product/ModuleKey + $Ext, CardIcon = if $Product/Kind = Catalog.ProductKind.PIZZA then 'data_object' else 'description', CodeVar = $Var,
+  -- the card's toppings line, stored so the menu needs no data source per card
+  retrieve $CodeRecipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
+  retrieve $CodeIngs from Catalog.Ingredient where [Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product = $Product];
+  declare $Toppings String = '';
+  loop $CR in $CodeRecipe
+  begin
+    $CRIng = find $CodeIngs where $currentObject = $CR/Catalog.RecipeItem_Ingredient;
+    if $CRIng != empty then
+      set $Toppings = $Toppings + (if $Toppings = '' then '' else ', ') + '''' + $CRIng/Name + '''';
+    end if;
+  end loop;
+  change $Product (Kcal = $Default/Calories, CodeToppings = $Toppings, FileLabel = $Product/ModuleKey + $Ext, CardIcon = if $Product/Kind = Catalog.ProductKind.PIZZA then 'data_object' else 'description', CodeVar = $Var,
     RealLine = if $Product/Kind = Catalog.ProductKind.PIZZA then $Product/RealWorldName else $Product/RealWorldName + ' · ' + $Default/ServingDescription,
     CodeCrust = if $DefCrustC = empty then '' else $DefCrustC/Name,
     CodeSauce = if $DefSauceC = empty then '' else if $DefSauceC/Code = 'SA-06' then 'null' else $DefSauceC/Name,

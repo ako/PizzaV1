@@ -1,0 +1,73 @@
+{"meta":true,"database":"volume seed: 400,000 guest orders over 365 days (1.0M lines, 3.2M log lines, 2.4M status changes), 150,000 abandoned carts, steady-state simulation events; seeded 2026-11-19","notes":["pg_stat_statements and auto_explain on for the run (log_min_duration 20ms; restored afterwards)","6 runs per step, run 0 warm-up","live poller on (2 s refresh is part of every step)"]}
+{"journey":"Guest orders a pizza","step":"1 open home","run":0,"start":"2026-11-19T16:26:28.577Z","end":"2026-11-19T16:26:29.945Z","browserMs":1368}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":0,"start":"2026-11-19T16:26:30.545Z","end":"2026-11-19T16:26:30.918Z","browserMs":373}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":0,"start":"2026-11-19T16:26:31.525Z","end":"2026-11-19T16:26:32.023Z","browserMs":498}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":0,"start":"2026-11-19T16:26:32.629Z","end":"2026-11-19T16:26:32.962Z","browserMs":334}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":0,"start":"2026-11-19T16:26:33.563Z","end":"2026-11-19T16:26:34.065Z","browserMs":502}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":0,"start":"2026-11-19T16:26:34.665Z","end":"2026-11-19T16:26:35.647Z","browserMs":982}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":0,"start":"2026-11-19T16:26:36.319Z","end":"2026-11-19T16:26:36.478Z","browserMs":159}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":0,"start":"2026-11-19T16:26:37.078Z","end":"2026-11-19T16:26:42.396Z","browserMs":5318}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":0,"start":"2026-11-19T16:26:42.996Z","end":"2026-11-19T16:26:43.717Z","browserMs":721}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":0,"start":"2026-11-19T16:26:44.317Z","end":"2026-11-19T16:26:44.623Z","browserMs":306}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":0,"start":"2026-11-19T16:26:45.255Z","end":"2026-11-19T16:26:45.495Z","browserMs":240}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":0,"start":"2026-11-19T16:26:46.095Z","end":"2026-11-19T16:26:46.420Z","browserMs":325}
+{"journey":"Guest orders a pizza","step":"1 open home","run":1,"start":"2026-11-19T16:26:47.119Z","end":"2026-11-19T16:26:47.954Z","browserMs":835}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":1,"start":"2026-11-19T16:26:48.554Z","end":"2026-11-19T16:26:48.816Z","browserMs":262}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":1,"start":"2026-11-19T16:26:49.422Z","end":"2026-11-19T16:26:49.914Z","browserMs":492}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":1,"start":"2026-11-19T16:26:50.518Z","end":"2026-11-19T16:26:50.812Z","browserMs":294}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":1,"start":"2026-11-19T16:26:51.412Z","end":"2026-11-19T16:26:51.968Z","browserMs":556}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":1,"start":"2026-11-19T16:26:52.568Z","end":"2026-11-19T16:26:52.792Z","browserMs":224}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":1,"start":"2026-11-19T16:26:53.426Z","end":"2026-11-19T16:26:53.863Z","browserMs":437}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":1,"start":"2026-11-19T16:26:54.463Z","end":"2026-11-19T16:27:00.304Z","browserMs":5841}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":1,"start":"2026-11-19T16:27:00.904Z","end":"2026-11-19T16:27:01.893Z","browserMs":989}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":1,"start":"2026-11-19T16:27:02.493Z","end":"2026-11-19T16:27:02.746Z","browserMs":253}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":1,"start":"2026-11-19T16:27:03.382Z","end":"2026-11-19T16:27:03.624Z","browserMs":242}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":1,"start":"2026-11-19T16:27:04.224Z","end":"2026-11-19T16:27:04.514Z","browserMs":290}
+{"journey":"Guest orders a pizza","step":"1 open home","run":2,"start":"2026-11-19T16:27:05.206Z","end":"2026-11-19T16:27:05.958Z","browserMs":752}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":2,"start":"2026-11-19T16:27:06.558Z","end":"2026-11-19T16:27:06.790Z","browserMs":232}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":2,"start":"2026-11-19T16:27:07.398Z","end":"2026-11-19T16:27:07.916Z","browserMs":518}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":2,"start":"2026-11-19T16:27:08.520Z","end":"2026-11-19T16:27:08.761Z","browserMs":241}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":2,"start":"2026-11-19T16:27:09.362Z","end":"2026-11-19T16:27:09.962Z","browserMs":600}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":2,"start":"2026-11-19T16:27:10.562Z","end":"2026-11-19T16:27:10.796Z","browserMs":234}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":2,"start":"2026-11-19T16:27:11.439Z","end":"2026-11-19T16:27:11.927Z","browserMs":488}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":2,"start":"2026-11-19T16:27:12.528Z","end":"2026-11-19T16:27:16.361Z","browserMs":3833}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":2,"start":"2026-11-19T16:27:16.961Z","end":"2026-11-19T16:27:17.244Z","browserMs":283}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":2,"start":"2026-11-19T16:27:17.844Z","end":"2026-11-19T16:27:18.050Z","browserMs":206}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":2,"start":"2026-11-19T16:27:18.682Z","end":"2026-11-19T16:27:18.860Z","browserMs":178}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":2,"start":"2026-11-19T16:27:19.460Z","end":"2026-11-19T16:27:19.695Z","browserMs":235}
+{"journey":"Guest orders a pizza","step":"1 open home","run":3,"start":"2026-11-19T16:27:20.379Z","end":"2026-11-19T16:27:21.121Z","browserMs":742}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":3,"start":"2026-11-19T16:27:21.721Z","end":"2026-11-19T16:27:21.926Z","browserMs":205}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":3,"start":"2026-11-19T16:27:22.531Z","end":"2026-11-19T16:27:23.057Z","browserMs":526}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":3,"start":"2026-11-19T16:27:23.662Z","end":"2026-11-19T16:27:23.913Z","browserMs":251}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":3,"start":"2026-11-19T16:27:24.513Z","end":"2026-11-19T16:27:25.111Z","browserMs":598}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":3,"start":"2026-11-19T16:27:25.711Z","end":"2026-11-19T16:27:25.942Z","browserMs":231}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":3,"start":"2026-11-19T16:27:26.578Z","end":"2026-11-19T16:27:27.075Z","browserMs":497}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":3,"start":"2026-11-19T16:27:27.675Z","end":"2026-11-19T16:27:31.510Z","browserMs":3835}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":3,"start":"2026-11-19T16:27:32.110Z","end":"2026-11-19T16:27:32.380Z","browserMs":270}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":3,"start":"2026-11-19T16:27:32.980Z","end":"2026-11-19T16:27:33.178Z","browserMs":198}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":3,"start":"2026-11-19T16:27:33.813Z","end":"2026-11-19T16:27:34.022Z","browserMs":209}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":3,"start":"2026-11-19T16:27:34.622Z","end":"2026-11-19T16:27:34.875Z","browserMs":253}
+{"journey":"Guest orders a pizza","step":"1 open home","run":4,"start":"2026-11-19T16:27:35.541Z","end":"2026-11-19T16:27:36.269Z","browserMs":728}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":4,"start":"2026-11-19T16:27:36.869Z","end":"2026-11-19T16:27:37.093Z","browserMs":224}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":4,"start":"2026-11-19T16:27:37.702Z","end":"2026-11-19T16:27:38.198Z","browserMs":496}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":4,"start":"2026-11-19T16:27:38.803Z","end":"2026-11-19T16:27:39.040Z","browserMs":238}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":4,"start":"2026-11-19T16:27:39.641Z","end":"2026-11-19T16:27:40.233Z","browserMs":592}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":4,"start":"2026-11-19T16:27:40.833Z","end":"2026-11-19T16:27:41.007Z","browserMs":174}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":4,"start":"2026-11-19T16:27:41.645Z","end":"2026-11-19T16:27:42.193Z","browserMs":548}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":4,"start":"2026-11-19T16:27:42.793Z","end":"2026-11-19T16:27:48.634Z","browserMs":5841}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":4,"start":"2026-11-19T16:27:49.234Z","end":"2026-11-19T16:27:50.243Z","browserMs":1010}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":4,"start":"2026-11-19T16:27:50.844Z","end":"2026-11-19T16:27:51.033Z","browserMs":189}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":4,"start":"2026-11-19T16:27:51.667Z","end":"2026-11-19T16:27:51.858Z","browserMs":191}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":4,"start":"2026-11-19T16:27:52.458Z","end":"2026-11-19T16:27:52.698Z","browserMs":240}
+{"journey":"Guest orders a pizza","step":"1 open home","run":5,"start":"2026-11-19T16:27:53.373Z","end":"2026-11-19T16:27:54.114Z","browserMs":741}
+{"journey":"Guest orders a pizza","step":"2 open menu","run":5,"start":"2026-11-19T16:27:54.714Z","end":"2026-11-19T16:27:54.924Z","browserMs":210}
+{"journey":"Guest orders a pizza","step":"3 open configurator","run":5,"start":"2026-11-19T16:27:55.530Z","end":"2026-11-19T16:27:56.028Z","browserMs":498}
+{"journey":"Guest orders a pizza","step":"4 choose extra","run":5,"start":"2026-11-19T16:27:56.632Z","end":"2026-11-19T16:27:56.872Z","browserMs":240}
+{"journey":"Guest orders a pizza","step":"5 add to cart","run":5,"start":"2026-11-19T16:27:57.472Z","end":"2026-11-19T16:27:58.078Z","browserMs":606}
+{"journey":"Guest orders a pizza","step":"6 open checkout","run":5,"start":"2026-11-19T16:27:58.678Z","end":"2026-11-19T16:27:58.856Z","browserMs":178}
+{"journey":"Guest orders a pizza","step":"7 address -> zone and totals","run":5,"start":"2026-11-19T16:27:59.485Z","end":"2026-11-19T16:28:00.023Z","browserMs":538}
+{"journey":"Guest orders a pizza","step":"8 place order and pay","run":5,"start":"2026-11-19T16:28:00.623Z","end":"2026-11-19T16:28:06.448Z","browserMs":5825}
+{"journey":"Guest orders a pizza","step":"9 open tracking","run":5,"start":"2026-11-19T16:28:07.048Z","end":"2026-11-19T16:28:08.081Z","browserMs":1034}
+{"journey":"Guest finds a past order","step":"1 open order lookup","run":5,"start":"2026-11-19T16:28:08.682Z","end":"2026-11-19T16:28:08.876Z","browserMs":194}
+{"journey":"Guest finds a past order","step":"2 find order by number and email","run":5,"start":"2026-11-19T16:28:09.507Z","end":"2026-11-19T16:28:09.691Z","browserMs":184}
+{"journey":"Guest finds a past order","step":"3 open tracking link","run":5,"start":"2026-11-19T16:28:10.291Z","end":"2026-11-19T16:28:10.561Z","browserMs":270}

@@ -59,11 +59,13 @@ begin
     $Current = head $Pick;
     $Rest = tail $Pick;
     $Default = head $Rest;
+    -- stock decided once for all options (was two queries per option)
+    retrieve $OutOptions from Catalog.Option where [Catalog.Option_Ingredient/Catalog.Ingredient/IsInStock = false];
     loop $O in $Options
     begin
-      $OAvail = call microflow Catalog.SUB_Option_AvailableFor(Option = $O, Size = $SizeCode);
-      retrieve $OIng from $O/Catalog.Option_Ingredient;
-      declare $InStock Boolean = $OIng = empty or $OIng/IsInStock;
+      $IsOut = contains $O in $OutOptions;
+      declare $InStock Boolean = not($IsOut);
+      $OAvail = call microflow Catalog.SUB_Option_Selectable(Option = $O, Size = $SizeCode, IsInStock = $InStock);
       declare $Sub String = '';
       if not($InStock) then
         set $Sub = 'unavailable today';
@@ -91,9 +93,10 @@ begin
   if $Kind = 'RECIPE' then
     retrieve $Recipe from Catalog.RecipeItem where [Catalog.RecipeItem_Product = $Product] sort by SortOrder asc;
     retrieve $Removed from $Line/Shop.CartLine_Removed;
+    retrieve $RecipeIngs from Catalog.Ingredient where [Catalog.RecipeItem_Ingredient/Catalog.RecipeItem/Catalog.RecipeItem_Product = $Product];
     loop $R in $Recipe
     begin
-      retrieve $RIng from $R/Catalog.RecipeItem_Ingredient;
+      $RIng = find $RecipeIngs where $currentObject = $R/Catalog.RecipeItem_Ingredient;
       $IsRemoved = contains $RIng in $Removed;
       $RC = create Shop.Choice (Kind = 'RECIPE', Title = $RIng/Name, Sub = if $R/Role = Catalog.RecipeRole.FINISH then 'finish' else 'topping',
         IsRemoved = $IsRemoved, IsFixed = not($R/IsRemovable), IsUnavailable = not($RIng/IsInStock), SortOrder = $R/SortOrder, Shop.Choice_Ingredient = $RIng, Shop.Choice_Line = $Line);
@@ -106,10 +109,13 @@ begin
     retrieve $Chosen from $Line/Shop.CartLine_Extra;
     $ChosenCount = count $Chosen;
     declare $Full Boolean = $ChosenCount >= $Product/MaxExtras;
+    retrieve $OutExtras from Catalog.Option where [OptionGroup = 'EXTRA' and Catalog.Option_Ingredient/Catalog.Ingredient/IsInStock = false];
     loop $X in $Extras
     begin
       $XOn = contains $X in $Chosen;
-      $XAvail = call microflow Catalog.SUB_Option_AvailableFor(Option = $X, Size = $SizeCode);
+      $XIsOut = contains $X in $OutExtras;
+      declare $XInStock Boolean = not($XIsOut);
+      $XAvail = call microflow Catalog.SUB_Option_Selectable(Option = $X, Size = $SizeCode, IsInStock = $XInStock);
       $XPrice = call microflow Catalog.SUB_Option_PriceFor(Option = $X, Size = $SizeCode);
       $XPriceText = call microflow Core.SUB_Money(Amount = $XPrice);
       $XC = create Shop.Choice (Kind = 'EXTRA', Title = $X/OptionKey, Sub = $X/Name + ' · ' + (if $XAvail then $X/VersionTag else 'unavailable today'), PriceLabel = '+' + $XPriceText,
