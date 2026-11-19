@@ -258,4 +258,4 @@ create or modify scheduled event Shop."SE_ClockWatchdog" (
   Enabled: true
 );
 
-alter settings runtime ( AfterStartupMicroflow: 'Shop.ASU_Startup', ScheduledEventTimeZoneCode: 'America/Los_Angeles', EnableDataStorageOptimisticLocking: true );
+alter settings runtime ( AfterStartupMicroflow: 'Shop.ASU_Startup', ScheduledEventTimeZoneCode: 'America/Los_Angeles', DefaultTimeZoneCode: 'America/Los_Angeles', EnableDataStorageOptimisticLocking: true );

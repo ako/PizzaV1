@@ -42,7 +42,7 @@ begin
   if $Last != empty then
     set $Seq = $Last/Seq + 1;
   end if;
-  $Entry = create Shop.OrderLogEntry (LoggedAt = [%CurrentDateTime%], Level = $Level, Tag = $Tag, Message = $Message,
+  $Entry = create Shop.OrderLogEntry (LoggedAt = [%CurrentDateTime%], TimeText = formatDateTime([%CurrentDateTime%], 'HH:mm:ss'), Level = $Level, Tag = $Tag, Message = $Message,
     IsCustomerVisible = $Visible and $Level != Shop.LogLevel.DEBUG, Seq = $Seq, Shop.OrderLogEntry_Order = $TheOrder);
   commit $Entry without events;
 end;

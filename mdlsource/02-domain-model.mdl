@@ -328,7 +328,20 @@ create or modify persistent entity Shop."CheckoutForm" (
   "MinimumMessage": String(200),
   "ErrorCount": Integer default 0,
   "ErrorSummary": String(600),
-  "ReadyEstimate": String(10)
+  "ReadyEstimate": String(10),
+  "SubtotalText": String(20),
+  "DiscountText": String(20),
+  "FeeText": String(30),
+  "TaxText": String(20),
+  "TipText": String(20),
+  "TotalText": String(20),
+  "CouponLine": String(250),
+  "CouponCode": String(30),
+  "HasDiscount": Boolean default false,
+  "EtaText": String(40),
+  "CartBlocked": Boolean default false,
+  "IsEmptyCart": Boolean default false,
+  "FieldErrors": String(1000)
 );
 create or modify association Shop."CheckoutForm_Owner" from Shop."CheckoutForm" to System."User" on delete cascade;
 create or modify association Shop."CheckoutForm_Zone" from Shop."CheckoutForm" to Shop."DeliveryZone";
@@ -463,7 +476,9 @@ create or modify persistent entity Shop."OrderLogEntry" (
   "Tag": String(12),
   "Message": String(300),
   "IsCustomerVisible": Boolean default true,
-  "Seq": Integer default 0
+  "Seq": Integer default 0,
+  /** HH:mm:ss in store time (BR-DATA-05), formatted on the server so the browser's zone does not apply. */
+  "TimeText": String(8)
 );
 
 /** Grants one guest (anonymous user) access to one order: placed, looked up or opened via tracking link. */
@@ -592,3 +607,34 @@ create or modify association Shop."Choice_Line" from Shop."Choice" to Shop."Cart
 create or modify association Shop."Choice_Option" from Shop."Choice" to Shop."Option";
 create or modify association Shop."Choice_Size" from Shop."Choice" to Shop."ProductSize";
 create or modify association Shop."Choice_Ingredient" from Shop."Choice" to Shop."Ingredient";
+
+/** Everything SCR-07/08/09 and the home build panel show about one order, calculated on the server per refresh (LITE-SEC-02). */
+create or modify non-persistent entity Shop."TrackView" (
+  "StatusDev": String(20), "StatusPlain": String(40), "StatusCls": String(20),
+  "PlacedText": String(20), "TypeText": String(10),
+  "S1": String(10), "S2": String(10), "S3": String(10), "S4": String(10), "S5": String(10),
+  "T1": String(10), "T2": String(10), "T3": String(10), "T4": String(10), "T5": String(10),
+  "S4Label": String(20), "S5Label": String(20), "S4Sub": String(40), "S5Sub": String(40),
+  "FillBucket": Integer default 0,
+  "ProgressText": String(120), "ProgressBucket": Integer default 0, "ShowProgress": Boolean default false,
+  "EtaLabel": String(20), "EtaCountdown": String(10), "EtaClock": String(10), "ShowEta": Boolean default false,
+  "DistanceText": String(20),
+  "CourierText": String(80), "CourierStatus": String(40), "ShowCourier": Boolean default false,
+  "MapMode": String(10), "CourierBucket": Integer default 0, "MapHelper": String(120), "IsDelivery": Boolean default true,
+  "BannerKind": String(20), "BannerTitle": String(80), "BannerText": String(300), "RefundLine": String(160),
+  "CanRollback": Boolean default false, "RollbackMsg": String(120), "ShowRollback": Boolean default false,
+  "CanRetry": Boolean default false, "IsFinal": Boolean default false,
+  "PayState": String(12), "AttemptText": String(40), "AmountText": String(20), "MethodLabel": String(60), "FailureText": String(200),
+  "TxnText": String(60), "QueueText": String(80), "OvenSummary": String(120), "TrackingUrl": String(300),
+  "TotalText": String(20), "AddressText": String(250), "PickupText": String(200), "ReadyText": String(60),
+  "SubText": String(20), "DiscText": String(20), "FeeText": String(60), "TaxText": String(20), "TipText": String(20), "TipLabel": String(20),
+  "NumberText": String(12)
+);
+create or modify association Shop."TrackView_Order" from Shop."TrackView" to Shop."Order";
+
+/** Order lookup form (SCR-10, US-133). */
+create or modify non-persistent entity Shop."LookupForm" (
+  "OrderNumber": String(20),
+  "Email": String(254),
+  "Error": String(200)
+);

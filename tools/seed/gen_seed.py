@@ -300,7 +300,7 @@ def gen_orders():
               f"Seq = {s['seq']}, Shop.OrderStatusChange_Order = $o);")
             w(f"  commit $s{si} without events;")
         for gi, g in enumerate(o['logEntries']):
-            w(f"  $g{gi} = create Shop.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
+            w(f"  $g{gi} = create Shop.OrderLogEntry (LoggedAt = {at(g['loggedAt'])}, TimeText = formatDateTime({at(g['loggedAt'])}, 'HH:mm:ss'), Level = {enum('LogLevel', g['level'])}, Tag = {q(g['tag'])}, "
               f"Message = {q(g['message'])}, IsCustomerVisible = {b(g['isCustomerVisible'])}, Seq = {g['seq']}, Shop.OrderLogEntry_Order = $o);")
             w(f"  commit $g{gi} without events;")
         w('  call microflow Shop.SUB_Order_RefreshPaymentLabel(TheOrder = $o);')
