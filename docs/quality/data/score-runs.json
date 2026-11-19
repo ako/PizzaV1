@@ -1,0 +1,86 @@
+{
+ "note": "mxcli report --format json run on a scratch copy of the project (same model), once for the whole app and once per module with --modules; only scores kept. Used to reproduce the overall-score weighting.",
+ "runs": [
+  {
+   "scope": "whole app",
+   "overallScore": 47.5,
+   "categories": {
+    "Security": 50,
+    "Quality": 0,
+    "Architecture": 46,
+    "Performance": 64,
+    "Naming": 100,
+    "Design": 52,
+    "Other": 66
+   },
+   "findings": 246
+  },
+  {
+   "scope": "Catalog",
+   "overallScore": 94.5,
+   "categories": {
+    "Security": 89,
+    "Quality": 95,
+    "Architecture": 94,
+    "Performance": 100,
+    "Naming": 100,
+    "Design": 94
+   },
+   "findings": 11
+  },
+  {
+   "scope": "Core",
+   "overallScore": 94.3,
+   "categories": {
+    "Security": 86,
+    "Quality": 100,
+    "Architecture": 91,
+    "Performance": 100,
+    "Naming": 100,
+    "Design": 94
+   },
+   "findings": 8
+  },
+  {
+   "scope": "Fulfilment",
+   "overallScore": 90.3,
+   "categories": {
+    "Security": 94,
+    "Quality": 83,
+    "Architecture": 79,
+    "Performance": 100,
+    "Naming": 100,
+    "Design": 88
+   },
+   "findings": 24
+  },
+  {
+   "scope": "Simulation",
+   "overallScore": 83.7,
+   "categories": {
+    "Security": 94,
+    "Quality": 56,
+    "Architecture": 100,
+    "Performance": 70,
+    "Naming": 100,
+    "Design": 94,
+    "Other": 81
+   },
+   "findings": 41
+  },
+  {
+   "scope": "Shop",
+   "overallScore": 72.4,
+   "categories": {
+    "Security": 94,
+    "Quality": 0,
+    "Architecture": 82,
+    "Performance": 94,
+    "Naming": 100,
+    "Design": 82,
+    "Other": 85
+   },
+   "findings": 157
+  }
+ ]
+}
