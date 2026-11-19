@@ -486,3 +486,21 @@ A baseline is committed in `verify-baseline/` (247 lint findings, 0 mx check err
 4. `mxcli check` does not warn when a script drops an attribute that pages or microflows still use; only mx check catches it.
 5. Minor: the check stage has no baseline unless scripts are passed with `--update-baseline`, so pre-existing script warnings show as "new". The text output also never names them (MPR010 on `Shop.Menu`).
 6. verify does not read `docs/reports/security-annotations.yaml`, so the two triaged SEC007 errors are accepted only through the baseline.
+
+## ako/mxcli PR 2452 (report all inputs, fixes #2451), tried 2026-11-19
+
+Built from the PR head (`3682d904`) and run against this project's evidence (`docs/reports/raw/` journeys, spans and junit; `docs/perf/data/after-*` as the performance run).
+
+**Fixed, confirmed:**
+- Traceability inside `report all` matches the stand-alone report requirement by requirement: 101 of 111 proven (it was 5 before).
+- Tests reads 24 results and 13 journeys; readiness counts tests as assessed.
+- Performance has the 12 real steps from the perf run, and no whole journey is a step over budget any more. Readiness risks went from 57 false "unproven" items to 14 real ones.
+- Readiness's Accepted section explains which acceptances count, and each tile now has a label. With our annotations in the output folder, guest access shows as accepted.
+- All pages load offline without errors.
+
+**Still open (found while testing the PR):**
+1. `--run` always uses Docker; `report all` has no `--local`, so it fails here ("no Docker daemon … pass --local"). The failed run left a `.docker/` folder in the project (removed).
+2. When `--run` fails, tests **and** traceability are both dropped, though the journeys alone could still feed them. The overview gives the reason as "open …/junit.xml: no such file" instead of the test run failing.
+3. Readiness says "not given" for a report that was given but failed (tests and traceability after a failed `--run`; performance when the spans file was unreadable). It should say "failed: …".
+4. `--perf-spans` does not read `.gz` (already noted in the PR as a separate limitation).
+5. `report all` reads `<kind>-annotations.yaml` only from the output folder, so `docs/reports/*-annotations.yaml` must be copied there or written into `-o docs/reports`.
