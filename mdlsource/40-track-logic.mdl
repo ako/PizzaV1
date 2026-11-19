@@ -294,6 +294,11 @@ create or modify microflow Shop.DS_Track ($TheOrder: Shop.Order)
 returns Shop.TrackView as $View
 folder 'Tracking'
 begin
+  -- the order id comes from the client: only orders this guest holds a token for (LITE-SES-03)
+  retrieve $Access from Shop.OrderAccess where [Shop.OrderAccess_Order = $TheOrder and Shop.OrderAccess_User = '[%CurrentUser%]'] first;
+  if $Access = empty then
+    return empty;
+  end if;
   $View = create Shop.TrackView (Shop.TrackView_Order = $TheOrder);
   call microflow Shop.SUB_Track_Fill(View = $View);
   return $View;

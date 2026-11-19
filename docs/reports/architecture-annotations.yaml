@@ -1,0 +1,4 @@
+items:
+  "unused:ACT_Track_Token": {status: intended, note: "deep link /p/track/{Token} (personal tracking link, US-121)"}
+  "unused:FaultProbe": {status: intended, note: "URL /p/fault, opt-in fault injection for the US-282 acceptance test"}
+  "unused:UnexpectedError": {status: intended, note: "URL /p/error, opened by the client error hook (US-282)"}

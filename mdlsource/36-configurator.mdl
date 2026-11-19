@@ -16,6 +16,11 @@ returns List of Shop.Choice as $Choices
 folder 'Configurator'
 begin
   $Choices = create list of Shop.Choice;
+  -- the line id comes from the client: only lines in this guest's own cart
+  retrieve $OwnLine from Shop.CartLine where [id = $Line and Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]'] first;
+  if $OwnLine = empty then
+    return $Choices;
+  end if;
   retrieve $Product from $Line/Shop.CartLine_Product;
   retrieve $Size from $Line/Shop.CartLine_Size;
   declare $SizeCode Enumeration(Shop.SizeCode) = $Size/Size;
@@ -470,6 +475,11 @@ create or modify microflow Shop.DS_Info_Line ($Product: Shop.Product)
 returns Shop.CartLine as $Line
 folder 'Configurator'
 begin
+  -- the product id comes from the client: only published products can be configured (BR-DATA-12)
+  if $Product = empty or $Product/ProductStatus != Shop.ProductStatus.PUBLISHED then
+    return empty;
+  end if;
+  -- the draft line goes into the current guest's own cart
   $Cart = call microflow Shop.SUB_Cart_Current();
   $Line = create Shop.CartLine (Quantity = 1, IsDraft = true, Shop.CartLine_Cart = $Cart, Shop.CartLine_Product = $Product) commit without events;
   return $Line;

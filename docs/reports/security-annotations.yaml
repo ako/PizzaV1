@@ -1,0 +1,10 @@
+# Triage of `mxcli report security` findings (re-measured on every run).
+items:
+  "finding:flow:Shop.DS_Info_Line": {status: fixed, note: "takes only a product: refuses any product that is not PUBLISHED; the draft line is created in the caller's own cart via SUB_Cart_Current ([%CurrentUser%]); the report detects caller checks by name only"}
+  "finding:setting:guest-access": {status: intended, note: "the shop has no sign-in: every visitor is an anonymous guest (LITE-SES-01)"}
+  "rule:SEC001": {status: intended, note: "LookupAttempt, SimCustomer, SimulationEvent, SimulationSettings are server-only; no access rule = no client access"}
+  "rule:SEC004": {status: intended, note: "guest app; every guest read is row-scoped except public catalog reference data (Allergen, StoreSettings display fields)"}
+  "rule:SEC006": {status: intended, note: "SimCustomer (simulated people) is server-only, no client access"}
+  "rule:SEC007": {status: accepted, note: "Allergen (public allergen list on the notice) and StoreSettings (store name, address, phone, prices) are public by design"}
+  "rule:CONV007": {status: accepted, note: "same two public reference entities"}
+  "rule:SEC010": {status: intended, note: "list views show only the rows the guest's XPath allows: own cart, own orders"}

@@ -1,0 +1,2 @@
+items:
+  "gap:Shop": {status: accepted, note: "remaining gaps are UI-state actions (toast close, copy, receipt open), the opt-in fault probe and secondary navigation; logic with rules (pricing, coupons, line configuration) is covered by microflow tests"}

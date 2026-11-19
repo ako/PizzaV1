@@ -1,0 +1,11 @@
+summary: "Measured on the 11 browser journeys after a fresh demo reset (seed: 46 orders, 25 products). Server time per window includes the background simulation clock (Shop.SIM_ClockRun sleeps 1.5 s per tick in its task queue), not guest-facing work: the guest-facing data sources run in 5–20 ms (SUB_Track_Fill about 13 ms per call)."
+items:
+  "candidate:Shop.SIM_Kitchen": {status: fixed, note: "simulation settings and the bake timer are read once before the queue loop"}
+  "candidate:Shop.DS_Config_Choices": {status: accepted, note: "loops over the options of one pizza (at most ~30): bounded"}
+  "candidate:Shop.SUB_Line_Recalculate": {status: accepted, note: "loops over the chosen options and recipe of one line: bounded"}
+  "candidate:Shop.SUB_Cart_Recalculate": {status: accepted, note: "loops over cart lines, max 30 items per cart (BR-CART-03)"}
+  "candidate:Shop.SUB_Order_Place": {status: accepted, note: "snapshot of the cart lines once per order (max 30)"}
+  "candidate:Shop.SIM_Couriers": {status: accepted, note: "background simulation over 5 couriers"}
+  "candidate:Shop.SUB_Oven_FirstFree": {status: accepted, note: "background simulation over 3 ovens"}
+recommendations:
+  - "Before real volume: give the simulation its own scheduled cadence instead of a 1.5 s self-requeueing task, or switch it off outside demos."

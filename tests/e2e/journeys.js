@@ -56,7 +56,8 @@ async function fillDelivery(page) {
       expect(/Payment confirmed/.test(log), 'order log lists the payment');
       expect(!(await page.locator('.mx-dialog-error').count()), 'no platform error dialog');
       await shot(page, 'tracking');
-    } finally { await leave(g); }
+      g.ok = true;
+    } finally { await leave(g, g.ok ? null : 'J1'); }
   });
 
   await test('J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58', async () => {
@@ -134,6 +135,88 @@ async function fillDelivery(page) {
       await context.setOffline(false); await page.waitForTimeout(5000);
       expect(!(await page.evaluate(() => document.documentElement.classList.contains('gp-offline'))), 'banner hidden after reconnect');
       expect(!(await page.locator('.app-header-dv .count-bubble').isVisible()), 'blocked action was not sent later');
+    } finally { await leave(g); }
+  });
+
+  await test('J8 home: featured carousel pages and Configure opens the configurator', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/', 3500);
+      expect(/Git Pizza|git_pizza/i.test(await text(page, 'body')), 'home renders');
+      const first = () => page.locator('.scr-01 .carousel > ul > li').first().innerText();
+      const before = await first();
+      await page.locator('.mx-name-carNext').click(); await page.waitForTimeout(2000);
+      expect((await first()) !== before, 'carousel moved to the next modules');
+      await page.locator('.scr-01 .carousel .mx-name-pConfigure').first().click(); await page.waitForTimeout(2500);
+      expect(await page.locator('.scr-03').count() > 0, 'configurator opened from home');
+    } finally { await leave(g); }
+  });
+
+  await test('J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/p/menu', 3000);
+      await page.locator('.pcard', { hasText: 'Inferno Payload' }).first().waitFor({ state: 'visible', timeout: 30000 });
+      await page.locator('.pcard', { hasText: 'Inferno Payload' }).locator('.mx-name-pConfigure').first().click(); await page.waitForTimeout(2500);
+      await page.locator('.scr-03 .opt', { hasText: 'LARGE' }).first().click(); await page.waitForTimeout(1500);
+      await page.locator('.scr-03 .xopt', { hasText: 'cherry_tomatoes' }).first().click(); await page.waitForTimeout(1500);
+      expect(/\$25\.00/.test(await text(page, '.scr-03')), 'line total $25.00 (Large $22.50 + standard extra $2.50)');
+      await page.locator('.scr-03 .mx-name-deploy').click(); await page.waitForTimeout(3000);
+      expectEqual(await text(page, '.app-header-dv .count-bubble'), '1', 'cart badge after Build & Deploy');
+      await page.locator('.app-header-dv .icon-btn').first().click(); await page.waitForTimeout(2000);
+      await page.locator('.mx-window .mx-name-stPlus').first().click(); await page.waitForTimeout(1500);
+      expect(/\$50\.00/.test(await text(page, '.mx-window')), 'quantity 2 doubles the line ($50.00)');
+      await page.locator('.mx-window .mx-name-stMinus').first().click(); await page.waitForTimeout(1500);
+      expect(/\$25\.00/.test(await text(page, '.mx-window')), 'back to quantity 1');
+      await page.locator('.mx-window .mx-name-clear').click(); await page.waitForTimeout(800);
+      const confirm = page.locator('.modal-dialog button, .mx-dialog button', { hasText: /rm -rf/ });
+      if (await confirm.count()) { await confirm.first().click(); }
+      await page.waitForTimeout(2000);
+      expect(!(await page.locator('.app-header-dv .count-bubble').isVisible()), 'cart cleared');
+    } finally { await leave(g); }
+  });
+
+  await test('J10 menu grep and dietary filters (US-027, US-033)', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/p/menu', 3000);
+      await page.locator('.pcard').first().waitFor({ state: 'visible', timeout: 30000 });
+      await page.locator('.mx-name-q input').fill('pepperoni'); await page.waitForTimeout(2500);
+      const found = await page.locator('.pcard').count();
+      expect(found >= 1 && found < 12, `search narrows the list (${found} cards)`);
+      await page.locator('.mx-name-q input').fill(''); await page.waitForTimeout(2500);
+      await page.locator('.mx-name-fVegan').click(); await page.waitForTimeout(2500);
+      const names = await page.locator('.pcard h3, .pcard .pname, .pcard').allInnerTexts();
+      expect(names.length >= 1 && names.every((t) => /Low-Mem Garden/.test(t)), 'vegan on pizzas.json shows only Low-Mem Garden');
+      await page.locator('.mx-name-fVegan').click(); await page.waitForTimeout(2000);
+      expectEqual(await page.locator('.pcard').count(), 12, 'all 12 pizzas again');
+    } finally { await leave(g); }
+  });
+
+  await test('J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/p/menu', 3000);
+      await addFromMenu(page, 'Binary BBQ');
+      await page.locator('.main-nav .nav-checkout').click();
+      await page.locator('.mx-name-tA1 input').waitFor({ state: 'visible', timeout: 30000 });
+      await fillDelivery(page);
+      await page.locator('.mx-name-t20').click(); await page.waitForTimeout(1500);
+      await page.locator('.mx-name-mPickup').click(); await page.waitForTimeout(2000);
+      const sums = await text(page, '.co-right .sums');
+      expect(!/TRANSIT_FEE/.test(sums) && !/COURIER_TIP/.test(sums), `pickup: no fee, no tip (${sums})`);
+      await page.locator('.mx-name-exec').click(); await page.waitForTimeout(8000);
+      await page.locator('.mx-name-fMonitor').click(); await page.waitForTimeout(2500);
+      await page.locator('.scr-09 .mx-name-rbBtn').click(); await page.waitForTimeout(800);
+      const confirm = page.locator('.mx-dialog button, .mx-dialog .btn', { hasText: /proceed|yes|ok|rollback/i });
+      if (await confirm.count()) { await confirm.first().click(); }
+      await page.waitForTimeout(3000);
+      const head = await text(page, '.scr-09');
+      expect(/ROLLED_BACK|CANCELLED|refund/i.test(head), 'order rolled back with refund');
     } finally { await leave(g); }
   });
 

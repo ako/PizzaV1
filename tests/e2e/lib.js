@@ -24,7 +24,8 @@ async function guest(browser, viewport = DESKTOP) {
  * Ends the guest session. The trial runtime caps concurrent sessions, so every
  * test logs out instead of leaving its session to time out.
  */
-async function leave({ context, page }) {
+async function leave({ context, page }, name) {
+  if (name) { try { await page.screenshot({ path: path.join(OUT, `fail-${name}.png`) }); } catch (e) { /* closed */ } }
   try { await page.evaluate(() => window.mx && mx.logout && mx.logout()); } catch (e) { /* page gone */ }
   await context.close();
 }
@@ -37,14 +38,25 @@ async function open(page, route, settle = 2500) {
 
 const results = [];
 /** Runs one named test and records PASS/FAIL with the message. */
+// With MXCLI_JOURNEY_LOG set (mxcli report tests / performance --journeys-cmd), every
+// test appends {journey, start, end, status} so the report can match server spans to it.
+function logJourney(name, started, ok) {
+  if (!process.env.MXCLI_JOURNEY_LOG) { return; }
+  fs.appendFileSync(process.env.MXCLI_JOURNEY_LOG, JSON.stringify({
+    journey: name, start: new Date(started).toISOString(), end: new Date().toISOString(), status: ok ? 'passed' : 'failed',
+  }) + '\n');
+}
+
 async function test(name, fn) {
   const started = Date.now();
   try {
     await fn();
     results.push({ name, ok: true, ms: Date.now() - started });
+    logJourney(name, started, true);
     console.log(`  PASS  ${name} (${Date.now() - started} ms)`);
   } catch (e) {
     results.push({ name, ok: false, ms: Date.now() - started, error: String(e && e.message || e) });
+    logJourney(name, started, false);
     console.log(`  FAIL  ${name}\n        ${String(e && e.message || e).split('\n')[0]}`);
   }
 }

@@ -70,7 +70,8 @@ create or modify microflow Shop.DS_Home ()
 returns Shop.HomeView as $View
 folder 'Home'
 begin
-  $View = create Shop.HomeView (CarouselStart = 0);
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  $View = create Shop.HomeView (CarouselStart = $Cart/CarouselStart, Shop.HomeView_Cart = $Cart);
   call microflow Shop.SUB_Home_Refresh(View = $View);
   call microflow Shop.SUB_Home_CarouselPos(View = $View);
   return $View;
@@ -95,15 +96,15 @@ end;
  * Featured products for the carousel from the current position (US-022):
  * published and featured, in menu order; never draft or archived.
  *
- * @param $View The home view
+ * @param $Cart The guest's cart (holds the carousel position)
  * @returns The products from the carousel position on
  */
-create or modify microflow Shop.DS_Home_Featured ($View: Shop.HomeView)
+create or modify microflow Shop.DS_Home_Featured ($Cart: Shop.Cart)
 returns List of Shop.Product as $Visible
 folder 'Home'
 begin
   retrieve $Featured from Shop.Product where [IsFeatured = true and ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
-  $Visible = range $Featured offset $View/CarouselStart;
+  $Visible = range $Featured offset $Cart/CarouselStart;
   return $Visible;
 end;
 
@@ -119,6 +120,11 @@ begin
   declare $Max Integer = max(0, $View/FeaturedCount - 3);
   change $View (CarouselStart = max(0, min($Max, $View/CarouselStart + $Step)));
   call microflow Shop.SUB_Home_CarouselPos(View = $View);
+  -- the list's data source reads the cart: committing it with refresh re-runs the list
+  retrieve $Cart from $View/Shop.HomeView_Cart;
+  if $Cart != empty then
+    change $Cart (CarouselStart = $View/CarouselStart) commit without events refresh;
+  end if;
 end;
 
 /**
@@ -289,8 +295,10 @@ create or modify page Shop.Home (
             }
           }
         }
-        listview lvFeatured (DataSource: MICROFLOW Shop.DS_Home_Featured(View = $currentObject), PageSize: 200, Class: 'carousel') {
-          snippetcall scCard (Snippet: Shop.SNIP_FeaturedCard, Params: (Product = $currentObject))
+        dataview dvCarousel (DataSource: $currentObject/Shop.HomeView_Cart, Class: 'carousel-dv') {
+          listview lvFeatured (DataSource: MICROFLOW Shop.DS_Home_Featured(Cart = $currentObject), PageSize: 200, Class: 'carousel') {
+            snippetcall scCard (Snippet: Shop.SNIP_FeaturedCard, Params: (Product = $currentObject))
+          }
         }
       }
       container kpis (Class: 'kpis') {

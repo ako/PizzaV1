@@ -114,6 +114,10 @@ begin
   -- start baking in queue order
   retrieve $Queue from Shop.Order where [OrderStatus = 'QUEUED'] sort by IsPriority desc, QueuedAt asc;
   retrieve $Ovens from Shop.Oven where [OvenStatus = 'ONLINE'] sort by Code asc;
+  -- the bake timer is the same for every order: settings are read once, not per order
+  retrieve $SimS from Shop.SimulationSettings first;
+  $BakeEffReal = call microflow Shop.SUB_Eff(Base = $SimS/Bake);
+  $TimerText = call microflow Shop.SUB_MmSs(Seconds = $BakeEffReal);
   declare $Stop Boolean = false;
   loop $QueuedOrder in $Queue
   begin
@@ -126,9 +130,6 @@ begin
         if $Free = empty then
           set $Stop = true;
         else
-          retrieve $SimS from Shop.SimulationSettings first;
-          $BakeEffReal = call microflow Shop.SUB_Eff(Base = $SimS/Bake);
-          $TimerText = call microflow Shop.SUB_MmSs(Seconds = $BakeEffReal);
           change $QueuedOrder (BakingStartedAt = $Now, Shop.Order_Oven = $Free);
           call microflow Shop.SUB_Order_Transition(TheOrder = $QueuedOrder, ToStatus = Shop.OrderStatus.BAKING, Actor = Shop.ActorType.SIMULATOR, ActorName = 'sim/kitchen-auto', Reason = '');
           call microflow Shop.SUB_Order_Log(TheOrder = $QueuedOrder, Level = Shop.LogLevel.INFO, Tag = 'KITCHEN', Message = 'Dough stretched, toppings injected.', Visible = true);

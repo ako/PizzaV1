@@ -62,32 +62,6 @@ begin
 end;
 
 /**
- * Returns the store settings singleton.
- *
- * @returns StoreSettings
- */
-create or modify microflow Shop.SUB_Store ()
-returns Shop.StoreSettings as $Store
-folder 'Core'
-begin
-  retrieve $Store from Shop.StoreSettings first;
-  return $Store;
-end;
-
-/**
- * Returns the simulation settings singleton.
- *
- * @returns SimulationSettings
- */
-create or modify microflow Shop.SUB_Sim ()
-returns Shop.SimulationSettings as $Sim
-folder 'Core'
-begin
-  retrieve $Sim from Shop.SimulationSettings first;
-  return $Sim;
-end;
-
-/**
  * Effective duration of a simulator timer at the current speed:
  * ceil(base / factor) seconds, minimum 1 (order-lifecycle 7.2).
  *

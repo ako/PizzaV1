@@ -1,0 +1,756 @@
+{
+  "kind": "architecture",
+  "schema": 1,
+  "project": "GitPizza",
+  "generated": "2026-11-19 09:57",
+  "mxcli": "nightly-20261118-9d764483c",
+  "method": [
+    "Every number is read from the mxcli catalog (`refresh catalog full`, plus the `communities` pass for clusters, layers and centrality). Each section is a query over `CATALOG.REFS` or a `CATALOG.GRAPH_*` view and can be re-run by hand.",
+    "The app is the project's own modules: Marketplace modules, `System` and the test runner's `MxTest` are outside unless `--include-marketplace` or `--modules` says otherwise. Their edges from app modules are listed under \"Outside the app\".",
+    "Domain dependencies are every reference kind except screen wiring (`layout`, `show_page`, `menu_item`, `home_page`, `widget`, `snippet_call`). The map, layers, matrix and cycles use domain edges only; navigation is reported separately.",
+    "A module's layer is the longest path from it down the condensed domain graph to a module with no dependencies; modules in a cycle share a layer.",
+    "Cohesion is internal references divided by internal plus outbound references, over every kind.",
+    "Clusters are Leiden communities over the structural kinds (`CATALOG.GRAPH_ANALYSIS_SCOPE`), restricted to app modules; clusters smaller than three documents are counted, not shown."
+  ],
+  "limits": [
+    "References made from Java actions are not in the graph (ako/mxcli#1819): a microflow called only from Java reads as unused, and a dependency through Java is invisible.",
+    "A name in a string — a constant's value, a `call microflow` by name, a URL — is not a reference. Such documents are marked \"verify\", never \"used\".",
+    "Layers and cycles are about module dependencies, not runtime behaviour: a cycle closed by one reference is as much a cycle as one closed by a hundred.",
+    "Cluster labels are derived (dominant module, then most central member); they are not names. Name them with `--annotations`."
+  ],
+  "data": {
+    "scope": {
+      "app": [
+        "Shop",
+        "Simulation"
+      ],
+      "outside": [
+        "Administration",
+        "Atlas_Core",
+        "Atlas_Web_Content",
+        "DataWidgets",
+        "FeedbackModule",
+        "NanoflowCommons",
+        "System",
+        "WebActions"
+      ]
+    },
+    "navigationKinds": [
+      "layout",
+      "show_page",
+      "menu_item",
+      "home_page",
+      "widget",
+      "snippet_call"
+    ],
+    "modules": [
+      {
+        "name": "Shop",
+        "purpose": "Git Pizza MxDev guest ordering: catalog, cart, checkout, simulated payment, order tracking and the system pages.",
+        "layer": 0,
+        "documents": 465,
+        "internal": 12693,
+        "externalOut": 9,
+        "externalIn": 0,
+        "cohesion": 99.9,
+        "fanIn": 0,
+        "fanOut": 0,
+        "navShare": 0,
+        "inCycle": false
+      },
+      {
+        "name": "Simulation",
+        "purpose": "Demo simulation: clock, kitchen, ovens, couriers, payments, traffic and the daily demo reset (SIM-01 … SIM-08).",
+        "layer": 0,
+        "documents": 2,
+        "internal": 0,
+        "externalOut": 0,
+        "externalIn": 0,
+        "cohesion": -1,
+        "fanIn": 0,
+        "fanOut": 0,
+        "navShare": 0,
+        "inCycle": false
+      }
+    ],
+    "domainEdges": null,
+    "navigationEdges": null,
+    "outsideEdges": [
+      {
+        "from": "Shop",
+        "to": "System",
+        "refs": 9,
+        "kinds": [
+          "associate",
+          "member",
+          "retrieve"
+        ],
+        "samples": [
+          "Shop.SUB_Toast_Broadcast → System.Session (retrieve)",
+          "Shop.SUB_Toast_Broadcast → System.Session_User (retrieve)",
+          "Shop.Cart_Owner → System.User (associate)"
+        ]
+      }
+    ],
+    "cycles": null,
+    "modulesInCyclesWithNavigation": 0,
+    "communitiesComputed": true,
+    "communities": [
+      {
+        "key": "cluster:Shop.Cart",
+        "label": "Shop · Cart",
+        "ambiguous": true,
+        "size": 121,
+        "keyMember": "Shop.Cart",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 121
+          }
+        ],
+        "members": [
+          "Shop.Cart",
+          "Shop.CartLine",
+          "Shop.CheckoutForm",
+          "Shop.Toast",
+          "Shop.SUB_Cart_Current",
+          "Shop.SUB_Toast",
+          "Shop.SUB_Cart_Recalculate",
+          "Shop.SUB_Money",
+          "Shop.Choice",
+          "Shop.ACT_Nav_Cart",
+          "Shop.PriceResult",
+          "Shop.SUB_Checkout_Recalculate"
+        ]
+      },
+      {
+        "key": "cluster:Shop.Order",
+        "label": "Shop · Order",
+        "ambiguous": true,
+        "size": 66,
+        "keyMember": "Shop.Order",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 66
+          }
+        ],
+        "members": [
+          "Shop.Order",
+          "Shop.SUB_RandomHex",
+          "Shop.Courier",
+          "Shop.SUB_Order_RefreshPaymentLabel",
+          "Shop.Oven",
+          "Shop.DeliveryZone",
+          "Shop.SUB_Order_Refund",
+          "Shop.Order_Oven",
+          "Shop.Order_Courier",
+          "Shop.Order_Zone",
+          "Shop.SEED_Orders",
+          "Shop.SUB_Oven_FirstFree"
+        ]
+      },
+      {
+        "key": "cluster:Shop.Product",
+        "label": "Shop · Product",
+        "ambiguous": true,
+        "size": 59,
+        "keyMember": "Shop.Product",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 59
+          }
+        ],
+        "members": [
+          "Shop.Product",
+          "Shop.OrderLineModifier",
+          "Shop.OrderLine",
+          "Shop.DS_Menu_Products",
+          "Shop.SEED_Order_1023_Lines",
+          "Shop.SEED_Order_1027_Lines",
+          "Shop.SEED_Order_1043_Lines",
+          "Shop.SEED_Order_1044_Lines",
+          "Shop.SEED_Order_1046_Lines",
+          "Shop.SEED_Order_1004_Lines",
+          "Shop.SEED_Order_1009_Lines",
+          "Shop.SEED_Order_1011_Lines"
+        ]
+      },
+      {
+        "key": "cluster:Shop.TrackView",
+        "label": "Shop · TrackView",
+        "ambiguous": true,
+        "size": 51,
+        "keyMember": "Shop.TrackView",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 51
+          }
+        ],
+        "members": [
+          "Shop.TrackView",
+          "Shop.SimulationSettings",
+          "Shop.SUB_Eff",
+          "Shop.SIM_ClockRun",
+          "Shop.TrackView_Order",
+          "Shop.SUB_Track_Fill",
+          "Shop.SimulationEvent",
+          "Shop.SUB_Order_Log",
+          "Shop.JA_Sleep",
+          "Shop.SIM_Tick",
+          "Shop.SUB_Order_Transition",
+          "Shop.SUB_Timer_Progress"
+        ]
+      },
+      {
+        "key": "cluster:Shop.OrderStatusChange",
+        "label": "Shop · OrderStatusChange",
+        "ambiguous": true,
+        "size": 50,
+        "keyMember": "Shop.OrderStatusChange",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 50
+          }
+        ],
+        "members": [
+          "Shop.OrderStatusChange",
+          "Shop.PaymentAttempt",
+          "Shop.SEED_Order_1023_History",
+          "Shop.SEED_Order_1027_History",
+          "Shop.SEED_Order_1043_History",
+          "Shop.SEED_Order_1044_History",
+          "Shop.SEED_Order_1046_History",
+          "Shop.SEED_Order_1004_History",
+          "Shop.SEED_Order_1009_History",
+          "Shop.SEED_Order_1011_History",
+          "Shop.SEED_Order_1015_History",
+          "Shop.SEED_Order_1020_History"
+        ]
+      },
+      {
+        "key": "cluster:Shop.OrderLogEntry",
+        "label": "Shop · OrderLogEntry",
+        "ambiguous": true,
+        "size": 48,
+        "keyMember": "Shop.OrderLogEntry",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 48
+          }
+        ],
+        "members": [
+          "Shop.OrderLogEntry",
+          "Shop.SEED_Order_1023_Log",
+          "Shop.SEED_Order_1027_Log",
+          "Shop.SEED_Order_1043_Log",
+          "Shop.SEED_Order_1044_Log",
+          "Shop.SEED_Order_1046_Log",
+          "Shop.SEED_Order_1004_Log",
+          "Shop.SEED_Order_1009_Log",
+          "Shop.SEED_Order_1011_Log",
+          "Shop.SEED_Order_1015_Log",
+          "Shop.SEED_Order_1020_Log",
+          "Shop.SEED_Order_1021_Log"
+        ]
+      },
+      {
+        "key": "cluster:Shop.OrderAccess",
+        "label": "Shop · OrderAccess",
+        "ambiguous": true,
+        "size": 19,
+        "keyMember": "Shop.OrderAccess",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 19
+          }
+        ],
+        "members": [
+          "Shop.OrderAccess",
+          "Shop.LookupForm",
+          "Shop.SUB_Order_Grant",
+          "Shop.SUB_Nav_Track",
+          "Shop.SUB_Track_Token",
+          "Shop.LookupAttempt",
+          "Shop.OrderAccess_Order",
+          "Shop.SUB_Lookup",
+          "Shop.SE_DailyReset",
+          "Shop.SUB_Toast_Broadcast",
+          "Shop.Order_PlacedBy",
+          "Shop.ACT_Lookup"
+        ]
+      },
+      {
+        "key": "cluster:Shop.MenuView",
+        "label": "Shop · MenuView",
+        "ambiguous": true,
+        "size": 16,
+        "keyMember": "Shop.MenuView",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 16
+          }
+        ],
+        "members": [
+          "Shop.MenuView",
+          "Shop.MenuView_Cart",
+          "Shop.SUB_Menu_Refresh",
+          "Shop.SUB_Menu_ClearSearch",
+          "Shop.SUB_Menu_Filter",
+          "Shop.SUB_Menu_Refresh_Do",
+          "Shop.SUB_Menu_Search",
+          "Shop.SUB_Menu_ShowAll",
+          "Shop.SUB_Menu_Tab",
+          "Shop.ACT_Menu_ClearSearch",
+          "Shop.ACT_Menu_Filter",
+          "Shop.ACT_Menu_Refresh"
+        ]
+      },
+      {
+        "key": "cluster:Shop.Option",
+        "label": "Shop · Option",
+        "ambiguous": true,
+        "size": 14,
+        "keyMember": "Shop.Option",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 14
+          }
+        ],
+        "members": [
+          "Shop.Option",
+          "Shop.Ingredient",
+          "Shop.Allergen",
+          "Shop.ProductSize",
+          "Shop.Coupon",
+          "Shop.RecipeItem",
+          "Shop.Category",
+          "Shop.SUB_Reset",
+          "Shop.SimCustomer",
+          "Shop.SEED_Catalog",
+          "Shop.ASU_Startup",
+          "Shop.Order_Coupon"
+        ]
+      },
+      {
+        "key": "cluster:Shop.HomeView",
+        "label": "Shop · HomeView",
+        "ambiguous": true,
+        "size": 7,
+        "keyMember": "Shop.HomeView",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 7
+          }
+        ],
+        "members": [
+          "Shop.HomeView",
+          "Shop.SUB_Home_Refresh",
+          "Shop.SUB_Home_CarouselPos",
+          "Shop.SUB_Home_Carousel",
+          "Shop.ACT_Home_Carousel",
+          "Shop.ACT_Home_Refresh",
+          "Shop.DS_Home"
+        ]
+      },
+      {
+        "key": "cluster:Shop.ErrorView",
+        "label": "Shop · ErrorView",
+        "ambiguous": true,
+        "size": 3,
+        "keyMember": "Shop.ErrorView",
+        "modules": [
+          {
+            "module": "Shop",
+            "count": 3
+          }
+        ],
+        "members": [
+          "Shop.ErrorView",
+          "Shop.DS_Error",
+          "Shop.DS_FaultProbe"
+        ]
+      }
+    ],
+    "smallCommunities": 3,
+    "godNodes": [
+      {
+        "name": "Shop.OrderLogEntry",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 961,
+        "out": 7,
+        "degree": 968,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.SEED_Catalog",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 837,
+        "degree": 838,
+        "betweenness": 6
+      },
+      {
+        "name": "Shop.OrderStatusChange",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 501,
+        "out": 7,
+        "degree": 508,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.Order",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 421,
+        "out": 10,
+        "degree": 431,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.OrderLineModifier",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 382,
+        "out": 8,
+        "degree": 390,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.Product",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 251,
+        "out": 5,
+        "degree": 256,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.OrderLine",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 244,
+        "out": 7,
+        "degree": 251,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.Option",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 140,
+        "out": 3,
+        "degree": 143,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.Ingredient",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 132,
+        "out": 9,
+        "degree": 141,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.SUB_Track_Fill",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 9,
+        "out": 128,
+        "degree": 137,
+        "betweenness": 155.7
+      },
+      {
+        "name": "Shop.PaymentAttempt",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 124,
+        "out": 9,
+        "degree": 133,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.RecipeItem",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 112,
+        "out": 5,
+        "degree": 117,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.CartLine",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 106,
+        "out": 3,
+        "degree": 109,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.ProductSize",
+        "type": "ENTITY",
+        "module": "Shop",
+        "in": 100,
+        "out": 5,
+        "degree": 105,
+        "betweenness": 0
+      },
+      {
+        "name": "Shop.DS_Config_Choices",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 87,
+        "degree": 88,
+        "betweenness": 0
+      }
+    ],
+    "bridges": [
+      {
+        "name": "Shop.SUB_Line_Recalculate",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 12,
+        "out": 62,
+        "degree": 74,
+        "betweenness": 1110.6
+      },
+      {
+        "name": "Shop.SUB_Cart_Recalculate",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 13,
+        "out": 47,
+        "degree": 60,
+        "betweenness": 952.5
+      },
+      {
+        "name": "Shop.SEED_Orders",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 46,
+        "degree": 47,
+        "betweenness": 571.9
+      },
+      {
+        "name": "Shop.SUB_Reset",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 3,
+        "out": 62,
+        "degree": 65,
+        "betweenness": 473.9
+      },
+      {
+        "name": "Shop.SUB_Checkout_Recalculate",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 5,
+        "out": 5,
+        "degree": 10,
+        "betweenness": 297
+      },
+      {
+        "name": "Shop.SIM_Tick",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 10,
+        "degree": 11,
+        "betweenness": 262.1
+      },
+      {
+        "name": "Shop.SUB_Traffic_Spawn",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 49,
+        "degree": 50,
+        "betweenness": 193.2
+      },
+      {
+        "name": "Shop.SIM_ClockRun",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 4,
+        "out": 3,
+        "degree": 7,
+        "betweenness": 190.1
+      },
+      {
+        "name": "Shop.ACT_Nav_Cart",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 10,
+        "out": 3,
+        "degree": 13,
+        "betweenness": 175
+      },
+      {
+        "name": "Shop.SUB_Track_Fill",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 9,
+        "out": 128,
+        "degree": 137,
+        "betweenness": 155.7
+      },
+      {
+        "name": "Shop.SIM_Traffic",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 12,
+        "degree": 13,
+        "betweenness": 152.2
+      },
+      {
+        "name": "Shop.SUB_Product_Add",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 1,
+        "out": 12,
+        "degree": 13,
+        "betweenness": 148
+      },
+      {
+        "name": "Shop.SUB_Order_Place",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 2,
+        "out": 85,
+        "degree": 87,
+        "betweenness": 141.2
+      },
+      {
+        "name": "Shop.SUB_Cart_AddLine",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 2,
+        "out": 37,
+        "degree": 39,
+        "betweenness": 122.2
+      },
+      {
+        "name": "Shop.SUB_Price_Compute",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "in": 3,
+        "out": 27,
+        "degree": 30,
+        "betweenness": 115
+      }
+    ],
+    "hotspots": [
+      {
+        "entity": "Shop.Order",
+        "flows": 218,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.Product",
+        "flows": 66,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.PaymentAttempt",
+        "flows": 54,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.OrderLine",
+        "flows": 49,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.OrderLineModifier",
+        "flows": 47,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.OrderLogEntry",
+        "flows": 47,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.OrderStatusChange",
+        "flows": 47,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.Oven",
+        "flows": 41,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.DeliveryZone",
+        "flows": 37,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.CartLine",
+        "flows": 34,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.Cart",
+        "flows": 28,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.Courier",
+        "flows": 28,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.TrackView",
+        "flows": 18,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.CheckoutForm",
+        "flows": 16,
+        "modules": "Shop"
+      },
+      {
+        "entity": "Shop.MenuView",
+        "flows": 14,
+        "modules": "Shop"
+      }
+    ],
+    "unused": [
+      {
+        "name": "Shop.ACT_Track_Token",
+        "type": "MICROFLOW",
+        "module": "Shop",
+        "verdict": "unused"
+      },
+      {
+        "name": "Shop.FaultProbe",
+        "type": "PAGE",
+        "module": "Shop",
+        "verdict": "unused"
+      },
+      {
+        "name": "Shop.UnexpectedError",
+        "type": "PAGE",
+        "module": "Shop",
+        "verdict": "unused"
+      }
+    ]
+  }
+}
