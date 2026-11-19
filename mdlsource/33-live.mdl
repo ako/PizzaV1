@@ -17,17 +17,72 @@ create or modify javascript action Shop."JS_LivePoller" (
 as $$
     if (window.__gpPoller) { return true; }
     var failures = 0, offline = false, busy = false;
-    function toast(text) {
+    function toast(text, kind) {
         var box = document.querySelector('.toasts');
         if (!box) { return; }
         var t = document.createElement('div');
-        t.className = 'toast gp-client-toast';
-        t.setAttribute('role', 'status');
-        t.innerHTML = '<span class="ms md" aria-hidden="true">check_circle</span><span></span>';
+        t.className = 'toast gp-client-toast' + (kind ? ' ' + kind : '');
+        t.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+        t.innerHTML = '<span class="ms md" aria-hidden="true"></span><span></span>';
+        t.firstChild.textContent = kind === 'error' ? 'error' : kind === 'info' ? 'info' : 'check_circle';
         t.lastChild.textContent = text;
         box.appendChild(t);
-        setTimeout(function () { t.remove(); }, 4000);
+        setTimeout(function () { t.remove(); }, kind === 'error' ? 6000 : 4000);
     }
+    function userId() {
+        try { return String(window.mx && mx.session && mx.session.getUserId ? mx.session.getUserId() : ''); } catch (e) { return ''; }
+    }
+    function store(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked */ } }
+    function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+    // US-286 AC3 (TXT-ERR-20): a new guest session after a non-empty cart was lost.
+    function trackSession() {
+        var uid = userId();
+        if (!uid) { return; }
+        var badge = document.querySelector('.count-bubble');
+        var count = badge ? parseInt(badge.textContent, 10) || 0 : 0;
+        var prev = load('gp-session');
+        if (prev) {
+            var parts = prev.split('|');
+            if (parts[0] !== uid && parseInt(parts[1], 10) > 0) {
+                toast('Your session expired. Your manifest was cleared.', 'info');
+            }
+        }
+        store('gp-session', uid + '|' + count);
+    }
+    // US-282 / US-289 AC3: the platform's default error dialog is replaced by SCR-41.
+    function showIncident() {
+        if (/^\/p\/error/.test(location.pathname)) { return; }
+        try { sessionStorage.setItem('gp-failed-url', location.pathname + location.search); } catch (e) { /* storage blocked */ }
+        location.assign('/p/error');
+    }
+    function watchDialogs() {
+        new MutationObserver(function () {
+            if (offline) {
+                // US-287: lost-connection dialogs become the banner plus a toast.
+                document.querySelectorAll('.mx-dialog, .modal-dialog').forEach(function (d) {
+                    if (d.closest('.gp-app')) { return; }
+                    var close = d.querySelector('.close, .mx-dialog-close, button');
+                    if (close) { close.click(); }
+                });
+                return;
+            }
+            var dlg = document.querySelector('.mx-dialog-error, .modal-dialog.mx-dialog-error, [class*="dialog-error"]');
+            if (dlg) { dlg.style.visibility = 'hidden'; showIncident(); }
+        }).observe(document.body, { childList: true, subtree: true });
+    }
+    // US-287 AC3: an action pressed while offline is not sent; the guest is told.
+    function guardOffline(e) {
+        if (!offline || !e.isTrusted) { return; }
+        if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') { return; }
+        var el = e.target && e.target.closest ? e.target.closest('button, a, [role=button], .mx-link, .mx-button, [tabindex]') : null;
+        if (!el) { return; }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toast('Could not reach the server. Check your connection and try again.', 'error');
+    }
+    document.addEventListener('click', guardOffline, true);
+    document.addEventListener('keydown', guardOffline, true);
+    watchDialogs();
     async function beat() {
         if (busy) { return; }
         busy = true;
@@ -48,6 +103,7 @@ as $$
                 document.documentElement.classList.remove('gp-offline');
                 toast('Connection restored. Live updates resumed.');
             }
+            trackSession();
             if (document.hidden) { return; }
             document.querySelectorAll('.gp-poll').forEach(function (el) { el.click(); });
         } finally { busy = false; }

@@ -260,6 +260,11 @@ create or modify layout Shop.Layout_Guest (
   }
 };
 
+/** Starts the client guard (error dialogs, offline, session) on minimal pages, which have no header. */
+create or modify snippet Shop.SNIP_LiveGuard {
+  dataview dvLiveMin (DataSource: NANOFLOW Shop.DS_Shell_Live, Class: 'gp-live-min') { }
+};
+
 /** Minimal frame of the error pages (SCR-40/41): DEMO MODE banner and the page. */
 create or modify layout Shop.Layout_Minimal (
   layouttype: 'Responsive',
@@ -268,6 +273,8 @@ create or modify layout Shop.Layout_Minimal (
   scrollcontainer gpScrollMin {
     region center (Class: 'gp-region') {
       snippetcall scBannerMin (Snippet: Shop.SNIP_DemoBanner)
+      -- starts the client guard (error dialogs, offline, session) on minimal pages too
+      snippetcall scLiveMin (Snippet: Shop.SNIP_LiveGuard)
       placeholder Main
       snippetcall scToastsMin (Snippet: Shop.SNIP_Toasts)
     }
