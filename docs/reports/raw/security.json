@@ -2,7 +2,7 @@
   "kind": "security",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 12:36",
+  "generated": "2026-11-19 14:27",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "A review of the model, read from the mxcli catalog (`refresh catalog full` and `source`) and the project security settings. Nothing ran against the app.",

@@ -204,3 +204,31 @@ Found along the way:
 
 Result: mx check 0 errors; tests 24/24, journeys 11/11, visual 12/12 (same scores);
 security 0 open high/medium; report 48/100 (unchanged; Security 49 -> 50).
+
+## 2026-11-19 — HTML quality reports
+
+`docs/reports/index.html` is an overview generated from the reports' own JSON by
+`tools/reports_index.py`. It links the seven mxcli HTML reports: architecture,
+traceability, tests, performance, security, quality and map.
+
+- **Traceability needed the requirements in the brain.** All 111 user stories were
+  captured as requirements (one slice per epic, 4 milestones) and promoted.
+  Anchors came from the story IDs cited in the model's doc comments (81
+  stories) plus hand-mapped implementing elements (30). `brain check`: 251
+  anchors, all resolving. US-288 (busy states) is recorded as *partly met*:
+  server-side double-submit guards exist, but there is no busy indicator on
+  buttons.
+- **Performance measurement.** `tests/perf/journeys.js` runs 9 steps × 6 runs
+  (run 0 is warm-up). `auto_explain` was turned on through
+  `session_preload_libraries` and a reload (no Postgres restart), then reset;
+  `postgresql.auto.conf` is empty again. The live poller stays on, because the
+  payment sheet advances through it. "Place order and pay" (~3.8 s) is the
+  simulated gateway's deliberate delay.
+- **Coverage.** 121 of 169 non-startup microflows are reached (72%). Seed,
+  simulation and scheduled flows run at startup or on a schedule and are not gaps.
+- **mxcli bug:** the scored report's HTML (`report --format html`) emits score-bar
+  fills with widths but no CSS, so every bar shows an empty grey track.
+  `tools/fix_quality_html.py` adds the three missing rules.
+- **Annotation keys** for unused documents need the module prefix
+  (`unused:Shop.FaultProbe`); otherwise the page lists them under "annotations
+  that matched nothing".

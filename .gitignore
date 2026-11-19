@@ -37,3 +37,4 @@ mxcli.exe
 __pycache__/
 demo/out/
 demo/voice/**/*.wav
+docs/reports/raw/spans.jsonl

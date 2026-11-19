@@ -25,6 +25,13 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 - **Mendix:** 11.16.1. MDL scripts are `mdl 1` (each starts with `mdl 1;`) and live
   in `mdlsource/`.
 
+## Quality reports
+
+Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. It links the
+full mxcli reports, all HTML: architecture (layered module diagram), traceability (all 111
+user stories per milestone), tests and coverage, performance (per-step flame charts and
+Postgres plans), security, the scored quality report, and the interactive software map.
+
 ## Journey videos
 
 Narrated walkthroughs of the two main guest journeys, recorded against the running

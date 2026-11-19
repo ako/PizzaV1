@@ -1,4 +1,19 @@
+title: GitPizza architecture
+summary: "Five modules in four layers after the module split: Simulation drives Shop (the storefront), which sits on Fulfilment (the order domain without UI), which sits on Catalog and Core. Every dependency points down; there are no domain cycles."
 items:
-  "unused:ACT_Track_Token": {status: intended, note: "deep link /p/track/{Token} (personal tracking link, US-121)"}
-  "unused:FaultProbe": {status: intended, note: "URL /p/fault, opt-in fault injection for the US-282 acceptance test"}
-  "unused:UnexpectedError": {status: intended, note: "URL /p/error, opened by the client error hook (US-282)"}
+  "cluster:Shop.CartLine": {name: "Configurator and cart lines", note: "configuring a pizza into a cart line: choices, pricing, allergens"}
+  "cluster:Fulfilment.Order": {name: "Order lifecycle", note: "placing, paying, transitions; the simulation drives most of it"}
+  "cluster:Catalog.Product": {name: "Menu and catalog seed", note: "products as the menu shows them and as the demo seed creates them"}
+  "cluster:Shop.Cart": {name: "Cart and coupons", note: "the guest's cart, quantities, coupons, checkout hand-off"}
+  "cluster:Fulfilment.OrderStatusChange": {name: "Order status history", note: "audit trail of transitions (mostly seed and simulation)"}
+  "cluster:Fulfilment.OrderLogEntry": {name: "Order terminal log", note: "the customer-visible log lines"}
+  "cluster:Shop.TrackView": {name: "Tracking and payment screens", note: "confirmation, tracking, payment sheet view model"}
+  "cluster:Catalog.Option": {name: "Options and pricing", note: "crusts, sauces, cheeses, extras and their prices"}
+  "cluster:Simulation.SE_DailyReset": {name: "Daily demo reset", note: "scheduled reset of the demo data (SIM-08)"}
+  "cluster:Shop.ErrorView": {name: "Error pages", note: "SCR-41 incident page and the fault probe"}
+  "unused:Shop.ACT_Track_Token": {status: intended, note: "deep link /p/track/{Token} (personal tracking link, US-121)"}
+  "unused:Shop.FaultProbe": {status: intended, note: "URL /p/fault, opt-in fault injection for the US-282 acceptance test"}
+  "unused:Shop.UnexpectedError": {status: intended, note: "URL /p/error, opened by the client error hook (US-282)"}
+recommendations:
+  - "Simulation's low cohesion is by design: its job is to drive Shop and Fulfilment; most of its references point down."
+  - "Shop.SUB_Track_Fill (184 activities) is the next refactor inside the storefront."

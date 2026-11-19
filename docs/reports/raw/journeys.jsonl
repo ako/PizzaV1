@@ -1,0 +1,11 @@
+{"journey":"J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)","start":"2026-11-19T14:21:51.391Z","end":"2026-11-19T14:22:11.434Z","status":"passed"}
+{"journey":"J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58","start":"2026-11-19T14:22:11.434Z","end":"2026-11-19T14:22:28.656Z","status":"passed"}
+{"journey":"J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)","start":"2026-11-19T14:22:28.656Z","end":"2026-11-19T14:22:59.222Z","status":"passed"}
+{"journey":"J4 order lookup rejects an unknown order without revealing which field was wrong","start":"2026-11-19T14:22:59.222Z","end":"2026-11-19T14:23:04.466Z","status":"passed"}
+{"journey":"J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN","start":"2026-11-19T14:23:04.466Z","end":"2026-11-19T14:23:07.133Z","status":"passed"}
+{"journey":"J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast","start":"2026-11-19T14:23:07.133Z","end":"2026-11-19T14:23:23.664Z","status":"passed"}
+{"journey":"J8 home: featured carousel pages and Configure opens the configurator","start":"2026-11-19T14:23:23.664Z","end":"2026-11-19T14:23:31.913Z","status":"passed"}
+{"journey":"J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove and clear","start":"2026-11-19T14:23:31.913Z","end":"2026-11-19T14:23:51.711Z","status":"passed"}
+{"journey":"J10 menu grep and dietary filters (US-027, US-033)","start":"2026-11-19T14:23:51.712Z","end":"2026-11-19T14:24:04.519Z","status":"passed"}
+{"journey":"J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)","start":"2026-11-19T14:24:04.519Z","end":"2026-11-19T14:24:30.035Z","status":"passed"}
+{"journey":"J7 phone: bottom navigation and menu cards render at 390 px","start":"2026-11-19T14:24:30.035Z","end":"2026-11-19T14:24:33.714Z","status":"passed"}

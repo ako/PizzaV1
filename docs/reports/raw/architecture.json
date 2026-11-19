@@ -2,7 +2,7 @@
   "kind": "architecture",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 12:36",
+  "generated": "2026-11-19 14:25",
   "mxcli": "nightly-20261118-9d764483c",
   "method": [
     "Every number is read from the mxcli catalog (`refresh catalog full`, plus the `communities` pass for clusters, layers and centrality). Each section is a query over `CATALOG.REFS` or a `CATALOG.GRAPH_*` view and can be re-run by hand.",
