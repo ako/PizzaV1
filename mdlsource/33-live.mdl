@@ -1,0 +1,88 @@
+mdl 1;
+-- Live updates (BR-ORD-20, US-124, US-287). Mendix has no built-in timer widget
+-- in this project and the Marketplace is not reachable from the build, so one
+-- small JavaScript action drives refreshes. It holds no business logic: every
+-- live page declares a `.gp-poll` container whose On click microflow refreshes
+-- that page's data, and the poller only clicks those containers every 2 s. It
+-- also detects a lost connection (two failed heartbeats) and toggles the
+-- CONNECTION_LOST banner (TXT-NAV-30/31), which is client-side by nature.
+
+/**
+ * Starts the page poller once per browser tab (idempotent).
+ */
+create or modify javascript action Shop."JS_LivePoller" (
+  /** Interval in milliseconds between refreshes (≥ 1000). */
+  IntervalMs: Integer not null
+) returns Boolean
+as $$
+    if (window.__gpPoller) { return true; }
+    var failures = 0, offline = false, busy = false;
+    function toast(text) {
+        var box = document.querySelector('.toasts');
+        if (!box) { return; }
+        var t = document.createElement('div');
+        t.className = 'toast gp-client-toast';
+        t.setAttribute('role', 'status');
+        t.innerHTML = '<span class="ms md" aria-hidden="true">check_circle</span><span></span>';
+        t.lastChild.textContent = text;
+        box.appendChild(t);
+        setTimeout(function () { t.remove(); }, 4000);
+    }
+    async function beat() {
+        if (busy) { return; }
+        busy = true;
+        try {
+            var ok = true;
+            try {
+                var r = await fetch('/', { method: 'HEAD', cache: 'no-store' });
+                ok = r.ok || r.status < 500;
+            } catch (e) { ok = false; }
+            if (!ok) {
+                failures++;
+                if (failures >= 2 && !offline) { offline = true; document.documentElement.classList.add('gp-offline'); }
+                return;
+            }
+            failures = 0;
+            if (offline) {
+                offline = false;
+                document.documentElement.classList.remove('gp-offline');
+                toast('Connection restored. Live updates resumed.');
+            }
+            if (document.hidden) { return; }
+            document.querySelectorAll('.gp-poll').forEach(function (el) { el.click(); });
+        } finally { busy = false; }
+    }
+    window.__gpPoller = setInterval(beat, Math.max(1000, intervalMs));
+    return true;
+$$;
+
+/**
+ * Data source of the header: starts the live poller and returns the guest's cart.
+ *
+ * @returns The guest's cart
+ */
+create or modify nanoflow Shop.DS_Shell_Live ()
+returns Shop.Cart as $Cart
+folder 'Shell'
+begin
+  $Started = call javascript action Shop.JS_LivePoller(IntervalMs = 2000);
+  $Cart = call microflow Shop.DS_Shell_Cart();
+  return $Cart;
+end;
+
+/**
+ * Shell refresh beat: keeps the header counters current and removes expired
+ * toasts (4 s success/info, 6 s warning; errors stay until closed).
+ *
+ * @param $Cart The guest's cart
+ */
+create or modify microflow Shop.ACT_Shell_Refresh ($Cart: Shop.Cart)
+folder 'Shell'
+begin
+  retrieve $Expired from Shop.Toast where [Shop.Toast_Owner = '[%CurrentUser%]' and ExpiresAt < '[%CurrentDateTime%]'];
+  delete $Expired refresh;
+  retrieve $Fresh from Shop.Cart where [Shop.Cart_Owner = '[%CurrentUser%]'] first;
+  if $Fresh != empty then
+    commit $Fresh without events refresh;
+  end if;
+end;
