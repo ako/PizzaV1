@@ -184,7 +184,7 @@ Should and Could stories:
 | KI-01 | Major | `RUN/start.ps1` and `RUN/stop.ps1` were not run on Windows PowerShell 5.1 by the contractor. The commands they run (`mxcli run --local --setup/--detach --db-type hsqldb`, `mxcli run stop`) were run and checked on Linux with the same arguments | Run `RUN/start.ps1 -SpeedFactor 10 -ResetOnStartup $true` on Windows | Run the commands in `RUN/operations.md` section 1 by hand | all, if the scripts fail |
 | KI-02 | Minor | `RUN/start.ps1` downloads the rolling `nightly` mxcli release when no `mxcli.exe` is present; a later nightly may behave differently from the one used (nightly-20261118) | Fresh clone without `mxcli.exe` | Put a known `mxcli.exe` in the repository root or set `MXCLI` | all |
 | KI-03 | Minor | The local runtime has no licence, so it limits concurrent sessions ("The current licence does not allow more users to sign in"). Each browser context is a new anonymous session | Open many separate browser sessions at once | Log out (`mx.logout()`) or close sessions after each test; restart with `RUN/stop.ps1` + `RUN/start.ps1` | browser tests that open many sessions |
-| KI-04 | Cosmetic | `assets/illustrations/no-results.png` does not exist (A-14); the no-results state of SCR-02 shows a broken image instead of the placeholder block | Search the menu for `zzz` | none; the text works alone | visual checks of SCR-02 no-results |
+| KI-04 | Resolved | `assets/illustrations/no-results.png` does not exist (A-14). The no-results state of SCR-02 used to show a broken image; it now shows a dashed placeholder block with a search icon | Search the menu for `zzz` | none needed | none |
 | KI-05 | Cosmetic | `mx check` reports 53 warnings, mostly empty validation templates in the Marketplace Administration module (CW0263) and `CW9509` on the tracking-link microflow `Shop.ACT_Track_Token` | `mx check GitPizza.mpr --warnings` | none needed | none |
 
 ## 7. Contradictions and gaps found in the package
@@ -211,7 +211,7 @@ Should and Could stories:
 | A-08 | yes | Always open; no intake pause |
 | A-11 | yes | One shared dataset; carts per session |
 | A-12 | yes | Traffic always on; `SPAWN` lines in the server log |
-| A-14 | no | All product photos present; the missing `no-results.png` shows a broken image instead of the placeholder (KI-04) |
+| A-14 | no | All product photos present; `no-results.png` is missing, so SCR-02's no-results state shows a drawn placeholder block instead (KI-04, resolved) |
 | A-15 | yes | `--font-body` is Geist, the rest JetBrains Mono (vendored fonts) |
 | A-16 | yes | Housekeeping every 15 min removes finished simulated orders older than 24 h |
 | A-17 | yes | Cancel and rollback only in `QUEUED` (and `PAYMENT_FAILED`); journey J11 |

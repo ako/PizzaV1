@@ -230,7 +230,9 @@ html.gp-offline .gp-app .gp-region > .mx-scrollcontainer-wrapper::before {
 .gp-app .filter-chip { cursor: pointer; }
 .gp-app .filter-chip.on { color: var(--primary-light); border-color: var(--primary); background: var(--primary-subtle); }
 .gp-app .no-results { text-align: center; margin-top: 16px; }
-.gp-app .no-results .no-res-img { margin: 0 auto; max-width: 320px; }
+.gp-app .no-results .no-res-img { margin: 0 auto; max-width: 320px; height: 140px; display: flex; align-items: center; justify-content: center;
+  border: 2px dashed var(--border-strong); border-radius: var(--r-lg); color: var(--text-muted); }
+.gp-app .no-results .no-res-img .ms { font-size: 48px; }
 .gp-app .scr-02 .debugger-dv { display: block; }
 .gp-app .scr-02 .debugger-dv > .mx-dataview-content { height: 100%; }
 @media (max-width: 1199px) { .gp-app .scr-02 .debugger-dv .debugger { display: none; } }

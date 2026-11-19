@@ -493,7 +493,7 @@ create or modify page Shop.Menu (
                 snippetcall card (Snippet: Shop.SNIP_MenuCard, Params: (Product = $currentObject))
               }
               container noRes (Class: 'panel panel-pad no-results', Visible: $dvMenu/HasNoResults) {
-                image noResImg (ImageType: imageUrl, ImageUrl: '/assets/illustrations/no-results.png', AlternativeText: '', Class: 'no-res-img')
+                container noResImg (Class: 'no-res-img') { dynamictext noResIcon (Content: 'search_off', Class: 'ms') }
                 dynamictext noResH (Content: '{1}', ContentParams: ({1} = $dvMenu/EmptyText), RenderMode: H2, Class: 't-h3 mt-16')
                 dynamictext noResP (Content: 'Try another dish, ingredient or module name, or clear the search.', Class: 't-small c-muted')
                 actionbutton noResClear (Caption: 'Clear search', Action: CALL MICROFLOW Shop.ACT_Menu_ClearSearch(View = $dvMenu), Class: 'btn btn-secondary mt-8')

@@ -149,7 +149,7 @@ Static files are served from `theme/web/assets/` under the URL `/assets/`:
 |---|---|---|
 | Product photo | `theme/web/assets/products/` | The `imageFile` name in `09-demo-data/` (for example `pz-01-root-pizza.jpg`) |
 | Brand file | `theme/web/assets/brand/` | As in `assets/brand/` (for example `logo-horizontal.svg`) |
-| Illustration | `theme/web/assets/illustrations/` | As in `assets/illustrations/` (for example `no-results.png`, which is still missing) |
+| Illustration | `theme/web/assets/illustrations/` | As in `assets/illustrations/` (`no-results.png` is still missing; the page draws a placeholder instead) |
 
 To add or replace a file:
 

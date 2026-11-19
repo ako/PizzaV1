@@ -460,3 +460,29 @@ Not verified:
 - mxcheck counted 0 findings, while a direct `mx check` gives 53 warnings, so it seems to track errors only.
 - After `--update-baseline` (kept in the scratchpad, not committed), a rerun passed with 0 new findings and exit 0.
 - It covers only static gates; unit tests, journeys and the running app are still separate steps.
+
+## mxcli verify put to work (main build, 2026-11-19)
+
+A baseline is committed in `verify-baseline/` (247 lint findings, 0 mx check errors). Run it with the main build: `mxcli verify -p GitPizza.mpr [script.mdl]`.
+
+**Real changes, gated by verify:**
+- `Simulation.SIM_ClockRun`: the 1.5 s sleep used "rollback" error handling, so a failed sleep stopped the clock for good. The sleep and the tick now both have custom handlers that log a warning and continue, so the next beat is always queued. The first attempt (`on error continue`) was flagged by verify as a new CONV014 while CONV013 stayed. The final version: 0 new, 2 fixed.
+- KI-04: the menu's no-results state showed a broken `no-results.png`. It is now a dashed placeholder with a `search_off` icon, checked in the running app (no broken images).
+- Gates: check passed, exec twice (second unchanged), lint 244 → 2E/97W/145I, report 48, docker check 0 errors, tests 24/24, journeys 13/13.
+
+**Deliberate regressions, on a copy of the project:**
+
+| Change | Caught by | Exit |
+|---|---|---|
+| Script with an unknown entity | check stage | 17 |
+| Guest read on all coupons (no XPath) | lint, SEC007 error | 18 |
+| New entity without access rules | passes by default; lint fails with `--fail-on warning` (SEC001) | 0 / 18 |
+| Drop `Catalog.Product.CodeToppings`, still used by a microflow and a page | **only** mx check (CE1613); `mxcli check` passed it, and exec only printed a warning | 20 |
+
+**Problems found in verify / mxcli:**
+1. Several scripts (`verify a.mdl b.mdl`): the check stage fails with "--format json writes one document for one script". The help advertises `[script.mdl...]`.
+2. Flaky MPR017: on the first verify after a model change it logs "could not read their attributes". Its 3 findings then count as "fixed" and a bogus new warning appears. A second run is correct.
+3. Lint configuration is not part of the baseline. With `.claude/lint-config.yaml` missing, 383 Marketplace findings appear as "new"; with `.claude/lint-rules/` missing, 115 findings show as "fixed" and the gate passes.
+4. `mxcli check` does not warn when a script drops an attribute that pages or microflows still use; only mx check catches it.
+5. Minor: the check stage has no baseline unless scripts are passed with `--update-baseline`, so pre-existing script warnings show as "new". The text output also never names them (MPR010 on `Shop.Menu`).
+6. verify does not read `docs/reports/security-annotations.yaml`, so the two triaged SEC007 errors are accepted only through the baseline.

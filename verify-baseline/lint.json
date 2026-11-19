@@ -1,0 +1,1619 @@
+{
+  "version": 1,
+  "findings": [
+    {
+      "rule": "ARCH001",
+      "document": "Shop.ItemInfo",
+      "documentType": "PAGE",
+      "message": "Widget 'dvInfo' in 'Shop.ItemInfo' references entity 'Catalog.Product' from module 'Catalog'. Use a view entity or microflow instead."
+    },
+    {
+      "rule": "ARCH001",
+      "document": "Shop.SNIP_Toasts",
+      "documentType": "SNIPPET",
+      "message": "Widget 'lvToasts' in 'Shop.SNIP_Toasts' references entity 'Core.Toast' from module 'Core'. Use a view entity or microflow instead."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Catalog.ProductSize",
+      "documentType": "Entity",
+      "message": "Entity 'ProductSize' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Catalog.RecipeItem",
+      "documentType": "Entity",
+      "message": "Entity 'RecipeItem' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Core.SimulationSettings",
+      "documentType": "Entity",
+      "message": "Entity 'SimulationSettings' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Core.StoreSettings",
+      "documentType": "Entity",
+      "message": "Entity 'StoreSettings' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Core.Toast",
+      "documentType": "Entity",
+      "message": "Entity 'Toast' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.OrderAccess",
+      "documentType": "Entity",
+      "message": "Entity 'OrderAccess' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.OrderLine",
+      "documentType": "Entity",
+      "message": "Entity 'OrderLine' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.OrderLineModifier",
+      "documentType": "Entity",
+      "message": "Entity 'OrderLineModifier' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.OrderLogEntry",
+      "documentType": "Entity",
+      "message": "Entity 'OrderLogEntry' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.OrderStatusChange",
+      "documentType": "Entity",
+      "message": "Entity 'OrderStatusChange' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.PaymentAttempt",
+      "documentType": "Entity",
+      "message": "Entity 'PaymentAttempt' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Fulfilment.SimulationEvent",
+      "documentType": "Entity",
+      "message": "Entity 'SimulationEvent' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Shop.Cart",
+      "documentType": "Entity",
+      "message": "Entity 'Cart' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Shop.CartLine",
+      "documentType": "Entity",
+      "message": "Entity 'CartLine' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Shop.CheckoutForm",
+      "documentType": "Entity",
+      "message": "Entity 'CheckoutForm' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "ARCH003",
+      "document": "Shop.LookupAttempt",
+      "documentType": "Entity",
+      "message": "Entity 'LookupAttempt' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
+    },
+    {
+      "rule": "CONV007",
+      "document": "Catalog.Allergen",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Allergen' has unconstrained READ access for role 'Catalog.Guest' - all rows are accessible"
+    },
+    {
+      "rule": "CONV007",
+      "document": "Core.StoreSettings",
+      "documentType": "Entity",
+      "message": "Entity 'Core.StoreSettings' has unconstrained READ access for role 'Core.Guest' - all rows are accessible"
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'Catalog.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'Core.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'Fulfilment.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'Shop.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Fulfilment.SUB_Coupon_Evaluate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Coupon_Evaluate' has 18 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Fulfilment.SUB_Order_TimerBase",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Order_TimerBase' has 23 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Fulfilment.SUB_Price_Compute",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Price_Compute' has 35 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.DS_Config_Choices",
+      "documentType": "Microflow",
+      "message": "Microflow 'DS_Config_Choices' has 64 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.DS_Menu_Products",
+      "documentType": "Microflow",
+      "message": "Microflow 'DS_Menu_Products' has 19 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Cart_AddLine",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Cart_AddLine' has 33 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Cart_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Cart_Recalculate' has 37 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Checkout_Compute",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Checkout_Compute' has 51 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Checkout_Place",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Checkout_Place' has 70 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Config_Choose",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Config_Choose' has 38 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Config_Commit",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Config_Commit' has 35 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Home_Refresh",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Home_Refresh' has 33 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Line_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Line_Recalculate' has 65 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Lookup",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Lookup' has 17 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Menu_Refresh",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Menu_Refresh' has 33 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_OrderLine_SnapshotModifiers",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_OrderLine_SnapshotModifiers' has 22 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Order_Place",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Order_Place' has 25 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Payment_Resolve",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Payment_Resolve' has 40 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Product_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Product_Recalculate' has 54 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Shop.SUB_Track_Fill",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Track_Fill' has 184 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SEED_Catalog",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Catalog' has 376 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SEED_Order_1017_Lines",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Order_1017_Lines' has 19 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SEED_Order_1022_Log",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Order_1022_Log' has 19 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SEED_Order_1026_Log",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Order_1026_Log' has 16 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SEED_Orders",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Orders' has 46 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SUB_Reset",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Reset' has 59 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.SUB_Traffic_Spawn",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Traffic_Spawn' has 22 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Shop.SUB_Cart_Recalculate",
+      "documentId": "6fb82efd-c31a-4550-b6bc-362caedb34c6",
+      "documentType": "microflow",
+      "message": "Microflow 'Shop.SUB_Cart_Recalculate' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Shop.SUB_Order_Place",
+      "documentId": "40806b02-3611-4b2f-8157-6128ae014275",
+      "documentType": "microflow",
+      "message": "Microflow 'Shop.SUB_Order_Place' has a Create object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Create object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Create object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Couriers' has a Create object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Kitchen",
+      "documentId": "db7dac3a-8eff-481c-af99-fd90d0b70dff",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Kitchen' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Kitchen",
+      "documentId": "db7dac3a-8eff-481c-af99-fd90d0b70dff",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Kitchen' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV011",
+      "document": "Simulation.SIM_Pickups",
+      "documentId": "8d8386c0-ef2f-4838-98ac-c899d42b7b17",
+      "documentType": "microflow",
+      "message": "Microflow 'Simulation.SIM_Pickups' has a Create object action with Commit enabled inside a loop. This causes N+1 database operations."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV014",
+      "document": "Simulation.SIM_Tick",
+      "documentId": "9ed68335-29b2-44d5-a592-c31cb65d88b0",
+      "documentType": "microflow",
+      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_Tick' uses 'Continue' error handling, which silently swallows errors."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Catalog.Allergen",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Allergen' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Catalog.Category",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Category' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Catalog.Ingredient",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Ingredient' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Catalog.Option",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Option' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Catalog.Product",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Product' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Fulfilment.Coupon",
+      "documentType": "Entity",
+      "message": "Entity 'Fulfilment.Coupon' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Fulfilment.Courier",
+      "documentType": "Entity",
+      "message": "Entity 'Fulfilment.Courier' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Fulfilment.DeliveryZone",
+      "documentType": "Entity",
+      "message": "Entity 'Fulfilment.DeliveryZone' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Fulfilment.Order",
+      "documentType": "Entity",
+      "message": "Entity 'Fulfilment.Order' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Fulfilment.Oven",
+      "documentType": "Entity",
+      "message": "Entity 'Fulfilment.Oven' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "CONV015",
+      "document": "Simulation.SimCustomer",
+      "documentType": "Entity",
+      "message": "Entity 'Simulation.SimCustomer' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Catalog.Option",
+      "documentType": "Entity",
+      "message": "Entity 'Option' has 16 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Catalog.Product",
+      "documentType": "Entity",
+      "message": "Entity 'Product' has 46 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Core.SimulationSettings",
+      "documentType": "Entity",
+      "message": "Entity 'SimulationSettings' has 24 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Core.StoreSettings",
+      "documentType": "Entity",
+      "message": "Entity 'StoreSettings' has 11 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Fulfilment.Courier",
+      "documentType": "Entity",
+      "message": "Entity 'Courier' has 12 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Fulfilment.Order",
+      "documentType": "Entity",
+      "message": "Entity 'Order' has 51 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Fulfilment.OrderLine",
+      "documentType": "Entity",
+      "message": "Entity 'OrderLine' has 15 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Fulfilment.PaymentAttempt",
+      "documentType": "Entity",
+      "message": "Entity 'PaymentAttempt' has 12 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.Cart",
+      "documentType": "Entity",
+      "message": "Entity 'Cart' has 28 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.CartLine",
+      "documentType": "Entity",
+      "message": "Entity 'CartLine' has 21 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.CheckoutForm",
+      "documentType": "Entity",
+      "message": "Entity 'CheckoutForm' has 46 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.Choice",
+      "documentType": "Entity",
+      "message": "Entity 'Choice' has 11 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.HomeView",
+      "documentType": "Entity",
+      "message": "Entity 'HomeView' has 17 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Shop.TrackView",
+      "documentType": "Entity",
+      "message": "Entity 'TrackView' has 64 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "DESIGN001",
+      "document": "Simulation.SimCustomer",
+      "documentType": "Entity",
+      "message": "Entity 'SimCustomer' has 12 attributes (max: 10). Consider splitting into smaller entities."
+    },
+    {
+      "rule": "MDL-FLOW01",
+      "document": "Simulation.SIM_Housekeeping",
+      "documentId": "98a24c1e-623f-4bad-95d3-03bbf1be674d",
+      "documentType": "microflow",
+      "message": "'Simulation.SIM_Housekeeping': 2 branches of a decision at (680, 200) rejoin at one shared point before the decision's own merge, so the block cannot be nested. DESCRIBE renders it as nested IFs and drops the path that enters the shared part early — the described flow is not the flow you drew [recombinable, overlap 15 node(s)]"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Checkout",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "documentType": "page",
+      "message": "CONTAINER 'md1' in Shop.Checkout is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Checkout",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "documentType": "page",
+      "message": "CONTAINER 'md2' in Shop.Checkout is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Checkout",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "documentType": "page",
+      "message": "CONTAINER 'md3' in Shop.Checkout is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Configurator",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "documentType": "page",
+      "message": "CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Configurator",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "documentType": "page",
+      "message": "CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Configurator",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "documentType": "page",
+      "message": "CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Configurator",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "documentType": "page",
+      "message": "CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Configurator",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "documentType": "page",
+      "message": "CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Confirmation",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "documentType": "page",
+      "message": "CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'dot1' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'dot2' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'dot3' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'envDot' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'glow1' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'glow2' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'kpi1Dot' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'liveHome' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'pb1' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'pb2' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'pb3' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'pb4' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'pb5' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px0' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px1' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px10' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px11' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px12' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px13' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px14' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px15' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px16' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px17' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px18' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px19' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px2' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px20' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px21' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px22' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px23' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px24' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px25' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px26' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px27' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px28' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px29' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px3' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px30' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px31' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px32' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px33' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px34' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px35' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px36' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px37' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px38' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px39' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px4' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px5' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px6' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px7' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px8' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'px9' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Home",
+      "documentId": "4560f3f8-a30d-40c5-b72b-ce08721ae018",
+      "documentType": "page",
+      "message": "CONTAINER 'tCursor' in Shop.Home is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Menu",
+      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "documentType": "page",
+      "message": "CONTAINER 'de2c' in Shop.Menu is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Menu",
+      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "documentType": "page",
+      "message": "CONTAINER 'menuPoll' in Shop.Menu is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.NotFound",
+      "documentId": "b44701dc-0edd-41fb-8c18-36be09aa3c4f",
+      "documentType": "page",
+      "message": "CONTAINER 'td1' in Shop.NotFound is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.NotFound",
+      "documentId": "b44701dc-0edd-41fb-8c18-36be09aa3c4f",
+      "documentType": "page",
+      "message": "CONTAINER 'td2' in Shop.NotFound is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.NotFound",
+      "documentId": "b44701dc-0edd-41fb-8c18-36be09aa3c4f",
+      "documentType": "page",
+      "message": "CONTAINER 'td3' in Shop.NotFound is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.NotFound",
+      "documentId": "b44701dc-0edd-41fb-8c18-36be09aa3c4f",
+      "documentType": "page",
+      "message": "CONTAINER 'titleC' in Shop.NotFound is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.PaymentSheet",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentType": "page",
+      "message": "CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.PaymentSheet",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentType": "page",
+      "message": "CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.PaymentSheet",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentType": "page",
+      "message": "CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.PaymentSheet",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentType": "page",
+      "message": "CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.PaymentSheet",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "documentType": "page",
+      "message": "CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.SNIP_Header",
+      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
+      "documentType": "snippet",
+      "message": "CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.SNIP_HomeActiveOrder",
+      "documentId": "0703651d-5adb-430d-ad8b-50043038a813",
+      "documentType": "snippet",
+      "message": "CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.SNIP_Stepper",
+      "documentId": "56fb5992-c0e4-477d-93b1-fb71e5b98553",
+      "documentType": "snippet",
+      "message": "CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'dFill' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'l1' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'l2' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'l3' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'prC' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'route' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'thLiveDot' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.Tracking",
+      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
+      "documentType": "page",
+      "message": "CONTAINER 'trkPoll' in Shop.Tracking is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.UnexpectedError",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "documentType": "page",
+      "message": "CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.UnexpectedError",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "documentType": "page",
+      "message": "CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.UnexpectedError",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "documentType": "page",
+      "message": "CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR006",
+      "document": "Shop.UnexpectedError",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "documentType": "page",
+      "message": "CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended"
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1305,2975, 2010x310) overlaps '(end)' (2250,2975) in microflow 'Simulation.SIM_Couriers'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Couriers",
+      "documentId": "2a88157f-d4b8-499f-abe2-9b5521a0dbc7",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1305,2975, 2010x310) overlaps '(unnamed)' (360,2975) in microflow 'Simulation.SIM_Couriers'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Kitchen",
+      "documentId": "db7dac3a-8eff-481c-af99-fd90d0b70dff",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1715,1900, 2350x760) overlaps '(end)' (2750,1900) in microflow 'Simulation.SIM_Kitchen'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Kitchen",
+      "documentId": "db7dac3a-8eff-481c-af99-fd90d0b70dff",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1715,1900, 2350x760) overlaps '(unnamed)' (520,1900) in microflow 'Simulation.SIM_Kitchen'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Kitchen",
+      "documentId": "db7dac3a-8eff-481c-af99-fd90d0b70dff",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1715,1900, 2350x760) overlaps '(unnamed)' (680,1900) in microflow 'Simulation.SIM_Kitchen'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR008",
+      "document": "Simulation.SIM_Pickups",
+      "documentId": "8d8386c0-ef2f-4838-98ac-c899d42b7b17",
+      "documentType": "microflow",
+      "message": "The box of loop '(loop)' (1065,200, 1370x310) overlaps '(unnamed)' (360,200) in microflow 'Simulation.SIM_Pickups'. A loop's box grows with its body, so a gap sized for an ordinary activity is not enough."
+    },
+    {
+      "rule": "MPR010",
+      "document": "Shop.Cart_Drawer",
+      "documentId": "cb7012dd-d779-4345-8769-fdb91a28a96c",
+      "documentType": "page",
+      "message": "DataView 'dvCart' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
+    },
+    {
+      "rule": "MPR010",
+      "document": "Shop.Checkout",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "documentType": "page",
+      "message": "DataView 'dvForm' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
+    },
+    {
+      "rule": "MPR010",
+      "document": "Shop.Menu",
+      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "documentType": "page",
+      "message": "DataView 'dvTabs' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
+    },
+    {
+      "rule": "MPR010",
+      "document": "Shop.SNIP_Header",
+      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
+      "documentType": "snippet",
+      "message": "DataView 'dvHeader' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
+    },
+    {
+      "rule": "MPR010",
+      "document": "Shop.TrackLookup",
+      "documentId": "7ccf3bae-e1a1-4766-86c8-577152a84d96",
+      "documentType": "page",
+      "message": "DataView 'dvLookup' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
+    },
+    {
+      "rule": "MPR017",
+      "document": "Catalog.Option",
+      "documentId": "7edf4e92-289e-4836-8813-a6c40cc6efe3",
+      "documentType": "entity",
+      "message": "Attribute 'Catalog.Option.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
+    },
+    {
+      "rule": "MPR017",
+      "document": "Fulfilment.Coupon",
+      "documentId": "6da88d7f-478b-406d-8183-95bd8e339b90",
+      "documentType": "entity",
+      "message": "Attribute 'Fulfilment.Coupon.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
+    },
+    {
+      "rule": "MPR017",
+      "document": "Fulfilment.DeliveryZone",
+      "documentId": "65cde48c-f5e5-4375-bcaa-32972f788edd",
+      "documentType": "entity",
+      "message": "Attribute 'Fulfilment.DeliveryZone.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Fulfilment.SUB_Order_TimerBase",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Order_TimerBase' has complexity 11 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Fulfilment.SUB_Price_Compute",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Price_Compute' has complexity 12 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.DS_Config_Choices",
+      "documentType": "Microflow",
+      "message": "Microflow 'DS_Config_Choices' has complexity 21 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Cart_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Cart_Recalculate' has complexity 14 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Checkout_Place",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Checkout_Place' has complexity 16 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Config_Choose",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Config_Choose' has complexity 14 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Line_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Line_Recalculate' has complexity 21 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Product_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Product_Recalculate' has complexity 14 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Shop.SUB_Track_Fill",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Track_Fill' has complexity 38 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Simulation.SIM_Couriers",
+      "documentType": "Microflow",
+      "message": "Microflow 'SIM_Couriers' has complexity 17 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL001",
+      "document": "Simulation.SIM_Kitchen",
+      "documentType": "Microflow",
+      "message": "Microflow 'SIM_Kitchen' has complexity 13 (max: 10). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Fulfilment.SUB_Price_Compute",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Price_Compute' has 35 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.DS_Config_Choices",
+      "documentType": "Microflow",
+      "message": "Microflow 'DS_Config_Choices' has 64 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Cart_AddLine",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Cart_AddLine' has 33 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Cart_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Cart_Recalculate' has 37 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Checkout_Compute",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Checkout_Compute' has 51 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Checkout_Place",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Checkout_Place' has 70 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Config_Choose",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Config_Choose' has 38 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Config_Commit",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Config_Commit' has 35 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Home_Refresh",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Home_Refresh' has 33 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Line_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Line_Recalculate' has 65 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Menu_Refresh",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Menu_Refresh' has 33 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Payment_Resolve",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Payment_Resolve' has 40 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Product_Recalculate",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Product_Recalculate' has 54 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Shop.SUB_Track_Fill",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Track_Fill' has 184 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Simulation.SEED_Catalog",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Catalog' has 376 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Simulation.SEED_Orders",
+      "documentType": "Microflow",
+      "message": "Microflow 'SEED_Orders' has 46 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL003",
+      "document": "Simulation.SUB_Reset",
+      "documentType": "Microflow",
+      "message": "Microflow 'SUB_Reset' has 59 activities (max: 25). Consider splitting into smaller microflows."
+    },
+    {
+      "rule": "QUAL004",
+      "document": "Shop.DS_Product_Recipe",
+      "documentType": "Microflow",
+      "message": "Microflow 'DS_Product_Recipe' is not called from anywhere."
+    },
+    {
+      "rule": "QUAL004",
+      "document": "Shop.FaultProbe",
+      "documentType": "Page",
+      "message": "Page 'FaultProbe' is not shown from any microflow."
+    },
+    {
+      "rule": "QUAL004",
+      "document": "Shop.UnexpectedError",
+      "documentType": "Page",
+      "message": "Page 'UnexpectedError' is not shown from any microflow."
+    },
+    {
+      "rule": "SEC001",
+      "document": "Core.SimulationSettings",
+      "documentId": "2db6363b-3b42-438e-aab4-c5fbade35003",
+      "documentType": "entity",
+      "message": "Persistent entity 'Core.SimulationSettings' has no access rules"
+    },
+    {
+      "rule": "SEC001",
+      "document": "Fulfilment.Coupon",
+      "documentId": "6da88d7f-478b-406d-8183-95bd8e339b90",
+      "documentType": "entity",
+      "message": "Persistent entity 'Fulfilment.Coupon' has no access rules"
+    },
+    {
+      "rule": "SEC001",
+      "document": "Fulfilment.SimulationEvent",
+      "documentId": "2ee45a3a-0fbf-4414-8bc9-df91514d5366",
+      "documentType": "entity",
+      "message": "Persistent entity 'Fulfilment.SimulationEvent' has no access rules"
+    },
+    {
+      "rule": "SEC001",
+      "document": "Shop.LookupAttempt",
+      "documentId": "8873053f-10f8-4cbb-97e3-cdadf862924c",
+      "documentType": "entity",
+      "message": "Persistent entity 'Shop.LookupAttempt' has no access rules"
+    },
+    {
+      "rule": "SEC001",
+      "document": "Simulation.SimCustomer",
+      "documentId": "7e6d2429-2957-43cf-b803-7874142fb9c3",
+      "documentType": "entity",
+      "message": "Persistent entity 'Simulation.SimCustomer' has no access rules"
+    },
+    {
+      "rule": "SEC004",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Guest access is enabled. Review entity access rules granted to the anonymous user role - any unconstrained READ exposes data to unauthenticated users (DIVD-2022-00019)."
+    },
+    {
+      "rule": "SEC006",
+      "document": "Simulation.SimCustomer",
+      "documentType": "Entity",
+      "message": "Entity 'Simulation.SimCustomer' has PII-sounding attributes (Email) but no access rules."
+    },
+    {
+      "rule": "SEC007",
+      "document": "Catalog.Allergen",
+      "documentType": "Entity",
+      "message": "Entity 'Catalog.Allergen' is readable by anonymous users (via role 'Catalog.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)"
+    },
+    {
+      "rule": "SEC007",
+      "document": "Core.StoreSettings",
+      "documentType": "Entity",
+      "message": "Entity 'Core.StoreSettings' is readable by anonymous users (via role 'Core.Guest') with no XPath constraint — all rows exposed to unauthenticated users. (DIVD-2022-00019)"
+    },
+    {
+      "rule": "SEC010",
+      "document": "Shop.Cart_Drawer",
+      "documentType": "page",
+      "message": "List view 'lvLines' on page Shop.Cart_Drawer lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
+    },
+    {
+      "rule": "SEC010",
+      "document": "Shop.Checkout",
+      "documentType": "page",
+      "message": "List view 'lvSum' on page Shop.Checkout lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
+    },
+    {
+      "rule": "SEC010",
+      "document": "Shop.Menu",
+      "documentType": "page",
+      "message": "List view 'lvDbg' on page Shop.Menu lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
+    }
+  ]
+}

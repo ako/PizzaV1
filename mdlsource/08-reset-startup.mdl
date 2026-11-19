@@ -223,13 +223,18 @@ end;
 /**
  * One beat of the simulation clock (SIM-09): waits 1.5 s, advances every
  * simulation to now, and queues the next beat. Runs as a chain of short
- * background tasks so each tick is its own transaction.
+ * background tasks so each tick is its own transaction. A failed sleep or
+ * tick is logged and skipped, never allowed to stop the chain.
  */
 create or modify microflow Simulation.SIM_ClockRun ()
 folder 'Simulation'
 begin
-  $Slept = call java action Simulation.JA_Sleep(Millis = 1500);
-  call microflow Simulation.SIM_Tick() on error continue;
+  $Slept = call java action Simulation.JA_Sleep(Millis = 1500) on error without rollback begin
+    log warning node 'Simulation' 'Clock sleep failed; ticking without the pause' with stacktrace;
+  end error;
+  call microflow Simulation.SIM_Tick() on error without rollback begin
+    log warning node 'Simulation' 'Clock tick failed; the next beat is still queued' with stacktrace;
+  end error;
   call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;
 end;
 
