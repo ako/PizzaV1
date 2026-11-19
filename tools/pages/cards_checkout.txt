@@ -1,0 +1,25 @@
+            container coc0 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_4242 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_4242')) {
+              dynamictext coc0i (Content: 'credit_card', Class: 'ms')
+              dynamictext coc0t (Content: 'Visa •••• 4242', Class: 'o-title')
+              dynamictext coc0o (Content: 'APPROVES', Class: 'chip tag-badge pay-outcome')
+            }
+            container coc1 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.MASTERCARD_4444 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'MASTERCARD_4444')) {
+              dynamictext coc1i (Content: 'credit_card', Class: 'ms')
+              dynamictext coc1t (Content: 'Mastercard •••• 4444', Class: 'o-title')
+              dynamictext coc1o (Content: 'APPROVES', Class: 'chip tag-badge pay-outcome')
+            }
+            container coc2 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_0002 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_0002')) {
+              dynamictext coc2i (Content: 'credit_card', Class: 'ms')
+              dynamictext coc2t (Content: 'Visa •••• 0002', Class: 'o-title')
+              dynamictext coc2o (Content: 'DECLINED', Class: 'chip tag-spice pay-outcome')
+            }
+            container coc3 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.VISA_9995 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'VISA_9995')) {
+              dynamictext coc3i (Content: 'credit_card', Class: 'ms')
+              dynamictext coc3t (Content: 'Visa •••• 9995', Class: 'o-title')
+              dynamictext coc3o (Content: 'INSUFFICIENT FUNDS', Class: 'chip tag-spice pay-outcome')
+            }
+            container coc4 (Class: 'opt pay-card', DynamicClasses: if $currentObject/Card = Shop.TestCard.AMEX_0005 then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = 'AMEX_0005')) {
+              dynamictext coc4i (Content: 'credit_card', Class: 'ms')
+              dynamictext coc4t (Content: 'Amex •••• 0005', Class: 'o-title')
+              dynamictext coc4o (Content: 'GATEWAY TIMEOUT', Class: 'chip tag-spice pay-outcome')
+            }

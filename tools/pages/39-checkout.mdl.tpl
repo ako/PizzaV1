@@ -1,0 +1,225 @@
+mdl 1;
+-- SCR-06 checkout_config.json (EP-05, US-101). GENERATED from
+-- tools/pages/39-checkout.mdl.tpl by tools/pages/gen_pages.py — edit the template.
+
+/** Payment method and demo test cards, shared by checkout and the payment sheet (US-101). */
+create or modify snippet Shop.SNIP_PaymentChoice (Params: ($Form: Shop.CheckoutForm)) {
+  dataview dvPay (DataSource: $Form, Class: 'pay-dv') {
+    container payList (Class: 'pay-list mt-16') {
+      container pmCard (Class: 'opt pay-method', DynamicClasses: if $currentObject/Method = Shop.PaymentMethod.CARD then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'CARD', Card = '')) {
+        dynamictext pmCardI (Content: 'credit_card', Class: 'ms')
+        container pmCardT { dynamictext pmCardT1 (Content: 'Card', Class: 'o-title') dynamictext pmCardT2 (Content: 'choose a demo test card', Class: 'o-sub') }
+      }
+      container pmApple (Class: 'opt pay-method', DynamicClasses: if $currentObject/Method = Shop.PaymentMethod.APPLE_PAY then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'APPLE_PAY', Card = '')) {
+        dynamictext pmAppleI (Content: 'smartphone', Class: 'ms')
+        container pmAppleT { dynamictext pmAppleT1 (Content: 'Apple Pay', Class: 'o-title') dynamictext pmAppleT2 (Content: 'simulated wallet — always approves', Class: 'o-sub') }
+      }
+      container pmGoogle (Class: 'opt pay-method', DynamicClasses: if $currentObject/Method = Shop.PaymentMethod.GOOGLE_PAY then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Pay(Form = $currentObject, Method = 'GOOGLE_PAY', Card = '')) {
+        dynamictext pmGoogleI (Content: 'account_balance_wallet', Class: 'ms')
+        container pmGoogleT { dynamictext pmGoogleT1 (Content: 'Google Pay', Class: 'o-title') dynamictext pmGoogleT2 (Content: 'simulated wallet — always approves', Class: 'o-sub') }
+      }
+    }
+    container cardBlock (Visible: $currentObject/Method = Shop.PaymentMethod.CARD) {
+      dynamictext cardLbl (Content: 'Demo test card', Class: 'field-label mt-16')
+      container cards (Class: 'pay-list mt-8') {
+%%CARDS%%
+      }
+    }
+    dynamictext payNote (Content: 'No card number is ever entered. The chosen test card decides the simulated outcome, so failed payments can be demonstrated.', Class: 't-micro c-muted mt-16')
+  }
+};
+
+/** SCR-06 checkout. */
+create or modify page Shop.Checkout (
+  Title: 'Checkout — Git Pizza MxDev',
+  Layout: Shop.Layout_Guest,
+  Url: 'checkout'
+) {
+  dataview dvForm (DataSource: MICROFLOW Shop.DS_Checkout, Class: 'page-dv') {
+    container page (Class: 'page scr-06') {
+      container emptyState (Class: 'panel panel-pad empty-co', Visible: $currentObject/IsEmptyCart) {
+        dynamictext esI (Content: 'inventory_2', Class: 'ms xl c-warn')
+        dynamictext esH (Content: '{1} is empty', ContentParams: ({1} = 'MANIFEST.LOCK'), RenderMode: H2, Class: 't-h2 mt-16')
+        dynamictext esP (Content: '{1} is empty. Import a module first.', ContentParams: ({1} = 'MANIFEST.LOCK'), Class: 't-small c-muted')
+        actionbutton esBtn (Caption: 'git checkout menu', Action: CALL MICROFLOW Shop.ACT_Nav_Menu(Category = 'PIZZAS'), Class: 'btn btn-primary')
+      }
+      container full (Visible: not($currentObject/IsEmptyCart)) {
+        dynamictext path (Content: 'src/pizza-mxdev/checkout_config.json', Class: 't-micro c-muted')
+        dynamictext title (Content: '{1}', ContentParams: ({1} = 'checkout_config.json'), RenderMode: H1, Class: 't-display c-primary mt-8')
+        dynamictext intro (Content: 'Configure your deployment parameters, then execute the order. Payment, kitchen and delivery are simulated.', Class: 't-body-long')
+        container blocked (Class: 'notice error mt-16', Visible: $currentObject/CartBlocked) {
+          dynamictext blI (Content: 'block', Class: 'ms')
+          dynamictext blT (Content: 'Remove unavailable items from your manifest first.')
+        }
+        container errSummary (Class: 'notice error mt-16', Visible: $currentObject/ErrorCount > 0) {
+          dynamictext esumI (Content: 'error', Class: 'ms')
+          dynamictext esumT (Content: '{1}', ContentParams: ({1} = ErrorSummary))
+        }
+        container co (Class: 'co') {
+          container coLeft (Class: 'stack-lg') {
+            container methodPanel (Class: 'panel panel-pad') {
+              container methodCode (Class: 'code-line t-small') {
+                dynamictext mc1 (Content: 'const', Class: 'k')
+                dynamictext mc2 (Content: ' method ')
+                dynamictext mc3 (Content: '=', Class: 'p')
+                dynamictext mc4 (Content: ' ''{1}''', ContentParams: ({1} = if $currentObject/OrderType = Shop.OrderType.DELIVERY then 'delivery' else 'pickup'), Class: 's')
+                dynamictext mc5 (Content: ';', Class: 'p')
+              }
+              container method (Class: 'method mt-16') {
+                container mDelivery (Class: 'opt', DynamicClasses: if $currentObject/OrderType = Shop.OrderType.DELIVERY then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Type(Form = $currentObject, Type = 'DELIVERY')) {
+                  dynamictext mdI (Content: 'local_shipping', Class: 'ms')
+                  dynamictext mdT (Content: 'DELIVERY', Class: 'o-title')
+                  dynamictext mdS (Content: 'to an address in San Francisco · $3.99, free from $40.00', Class: 'o-sub')
+                }
+                container mPickup (Class: 'opt', DynamicClasses: if $currentObject/OrderType = Shop.OrderType.PICKUP then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Type(Form = $currentObject, Type = 'PICKUP')) {
+                  dynamictext mpI (Content: 'storefront', Class: 'ms')
+                  dynamictext mpT (Content: 'PICKUP', Class: 'o-title')
+                  dynamictext mpS (Content: 'at Mission Kitchen · no fee, no minimum', Class: 'o-sub')
+                }
+              }
+            }
+            container addrPanel (Class: 'panel panel-pad', Visible: $currentObject/OrderType = Shop.OrderType.DELIVERY) {
+              container addrH (Class: 'section-label') { dynamictext ahI (Content: 'terminal', Class: 'ms') dynamictext ahT (Content: 'Environment variables (destination)') }
+              container fgrid (Class: 'fgrid') {
+                container fA1 (Class: 's6 field') {
+                  dynamictext fA1L (Content: 'ADDRESS_LINE_1 *', Class: 'field-label')
+                  textbox tA1 (Attribute: AddressLine1, Placeholder: 'Street and number', OnChange: CALL MICROFLOW Shop.ACT_Checkout_Changed(Form = $currentObject), Class: 'gp-input')
+                  dynamictext fA1H (Content: 'Street and number', Class: 'hint')
+                }
+                container fA2 (Class: 's6 field') {
+                  dynamictext fA2L (Content: 'ADDRESS_LINE_2', Class: 'field-label')
+                  textbox tA2 (Attribute: AddressLine2, Placeholder: 'Apartment, floor (optional)', Class: 'gp-input')
+                }
+                container fCity (Class: 's3 field') {
+                  dynamictext fCityL (Content: 'CITY *', Class: 'field-label')
+                  textbox tCity (Attribute: City, OnChange: CALL MICROFLOW Shop.ACT_Checkout_Changed(Form = $currentObject), Class: 'gp-input')
+                }
+                container fState (Class: 's1 field') {
+                  dynamictext fStateL (Content: 'STATE *', Class: 'field-label')
+                  textbox tState (Attribute: StateCode, OnChange: CALL MICROFLOW Shop.ACT_Checkout_Changed(Form = $currentObject), Class: 'gp-input')
+                }
+                container fZip (Class: 's2 field') {
+                  dynamictext fZipL (Content: 'ZIP_CODE *', Class: 'field-label')
+                  textbox tZip (Attribute: Zip, OnChange: CALL MICROFLOW Shop.ACT_Checkout_Changed(Form = $currentObject), Class: 'gp-input')
+                }
+                container fNotes (Class: 's6 field') {
+                  dynamictext fNotesL (Content: 'DELIVERY_NOTES', Class: 'field-label')
+                  textbox tNotes (Attribute: DeliveryNotes, Placeholder: 'Gate code, floor … (optional)', Class: 'gp-input')
+                }
+              }
+              container zoneOk (Class: 'field-ok mt-16', Visible: $currentObject/ZoneOk) {
+                dynamictext zoI (Content: 'check_circle', Class: 'ms sm')
+                dynamictext zoT (Content: '{1}', ContentParams: ({1} = ZoneMessage))
+              }
+              container zoneBad (Class: 'notice error mt-16', Visible: $currentObject/ZoneOutside) {
+                dynamictext zbI (Content: 'wrong_location', Class: 'ms')
+                container zbBody {
+                  dynamictext zbT (Content: '{1}', ContentParams: ({1} = ZoneMessage))
+                  actionbutton zbBtn (Caption: 'Switch to pickup', Action: CALL MICROFLOW Shop.ACT_Checkout_Pickup(Form = $currentObject), Class: 'btn btn-secondary btn-sm mt-8')
+                }
+              }
+              container minWarn (Class: 'notice warn mt-16', Visible: $currentObject/MinimumMessage != empty and $currentObject/MinimumMessage != '') {
+                dynamictext mwI (Content: 'warning', Class: 'ms')
+                dynamictext mwT (Content: '{1}', ContentParams: ({1} = MinimumMessage))
+              }
+            }
+            container pickupPanel (Class: 'panel panel-pad', Visible: $currentObject/OrderType = Shop.OrderType.PICKUP) {
+              container puH (Class: 'section-label') { dynamictext puI (Content: 'storefront', Class: 'ms') dynamictext puT (Content: 'Pickup at the counter') }
+              dynamictext puName (Content: 'Git Pizza MxDev — Mission Kitchen', Class: 'c-primary pu-name')
+              dynamictext puAddr (Content: '2140 Folsom Street, San Francisco, CA 94110 · (415) 555-0142', Class: 't-small c-secondary')
+              dynamictext puReady (Content: 'READY_AT · ~{1}', ContentParams: ({1} = ReadyEstimate), Class: 't-small c-green mt-8')
+            }
+            container contactPanel (Class: 'panel panel-pad') {
+              container ctH (Class: 'section-label') { dynamictext ctI (Content: 'badge', Class: 'ms') dynamictext ctT (Content: 'Contact') }
+              container cgrid (Class: 'fgrid') {
+                container fName (Class: 's6 field') {
+                  dynamictext fNameL (Content: 'CONTACT_NAME *', Class: 'field-label')
+                  textbox tName (Attribute: ContactName, Class: 'gp-input')
+                }
+                container fEmail (Class: 's3 field') {
+                  dynamictext fEmailL (Content: 'CONTACT_EMAIL *', Class: 'field-label')
+                  textbox tEmail (Attribute: ContactEmail, Class: 'gp-input')
+                }
+                container fPhone (Class: 's3 field') {
+                  dynamictext fPhoneL (Content: 'CONTACT_PHONE *', Class: 'field-label')
+                  textbox tPhone (Attribute: ContactPhone, Class: 'gp-input')
+                }
+              }
+              dynamictext ctNote (Content: 'You can find this order later with the order number and this email.', Class: 't-micro c-muted mt-8')
+            }
+            container payPanel (Class: 'panel panel-pad') {
+              container payH (Class: 'between') {
+                container payHL (Class: 'section-label') { dynamictext payI (Content: 'lock', Class: 'ms') dynamictext payT (Content: 'PAYMENT_PROTOCOL') }
+                dynamictext paySim (Content: 'SIMULATED', Class: 'chip tag-badge')
+              }
+              snippetcall payChoice (Snippet: Shop.SNIP_PaymentChoice, Params: (Form = $currentObject))
+            }
+            container tipPanel (Class: 'panel panel-pad', Visible: $currentObject/OrderType = Shop.OrderType.DELIVERY) {
+              container tipH (Class: 'section-label') { dynamictext tipI (Content: 'volunteer_activism', Class: 'ms') dynamictext tipT (Content: 'Courier tip') }
+              container tips (Class: 'tips') {
+                container t0 (Class: 'opt', DynamicClasses: if $currentObject/Tip = Shop.TipOption.NONE then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Tip(Form = $currentObject, Tip = 'NONE')) { dynamictext t0a (Content: '0 %', Class: 'o-title') dynamictext t0b (Content: '{1}', ContentParams: ({1} = Tip0Label), Class: 'o-sub') }
+                container t10 (Class: 'opt', DynamicClasses: if $currentObject/Tip = Shop.TipOption.TEN then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Tip(Form = $currentObject, Tip = 'TEN')) { dynamictext t10a (Content: '10 %', Class: 'o-title') dynamictext t10b (Content: '{1}', ContentParams: ({1} = Tip10Label), Class: 'o-sub') }
+                container t15 (Class: 'opt', DynamicClasses: if $currentObject/Tip = Shop.TipOption.FIFTEEN then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Tip(Form = $currentObject, Tip = 'FIFTEEN')) { dynamictext t15a (Content: '15 %', Class: 'o-title') dynamictext t15b (Content: '{1}', ContentParams: ({1} = Tip15Label), Class: 'o-sub') }
+                container t20 (Class: 'opt', DynamicClasses: if $currentObject/Tip = Shop.TipOption.TWENTY then 'selected' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Tip(Form = $currentObject, Tip = 'TWENTY')) { dynamictext t20a (Content: '20 %', Class: 'o-title') dynamictext t20b (Content: '{1}', ContentParams: ({1} = Tip20Label), Class: 'o-sub') }
+              }
+              dynamictext tipNote (Content: 'Percent of subtotal after discount. Tips go to the courier (simulated).', Class: 't-micro c-muted mt-8')
+            }
+          }
+          container coRight (Class: 'co-right') {
+            container mapTerm (Class: 'term', Visible: $currentObject/OrderType = Shop.OrderType.DELIVERY) {
+              container mapBar (Class: 'term-bar') {
+                container mdots (Class: 'dots') { container md1 (Class: 'dot') { } container md2 (Class: 'dot') { } container md3 (Class: 'dot') { } }
+                dynamictext mapName (Content: 'live_route_preview')
+              }
+              container mapWell (Class: 'map-well') {
+                image mapBase (ImageType: imageUrl, ImageUrl: '/assets/illustrations/map-sf-dark.jpg', AlternativeText: 'Simulated map of San Francisco', Class: 'map-base')
+                container pinStore (Class: 'map-pin store') { container pinStoreMk (Class: 'mk') { dynamictext pinStoreI (Content: 'local_pizza', Class: 'ms sm') } dynamictext pinStoreN (Content: 'MISSION_KITCHEN', Class: 'nm') }
+                container pinDest (Class: 'map-pin dest', Visible: $currentObject/ZoneOk) { container pinDestMk (Class: 'mk') { dynamictext pinDestI (Content: 'location_on', Class: 'ms sm') } dynamictext pinDestN (Content: 'DESTINATION_LOCK', Class: 'nm') }
+              }
+              container mapEta (Class: 'between map-eta') {
+                dynamictext meL (Content: 'ESTIMATED_ETA', Class: 't-label')
+                dynamictext meV (Content: '{1}', ContentParams: ({1} = EtaText), Class: 'c-green')
+              }
+            }
+            container summary (Class: 'panel panel-pad') {
+              container sumH (Class: 'between') {
+                container sumHL (Class: 'section-label') { dynamictext shI (Content: 'inventory_2', Class: 'ms') dynamictext shT (Content: 'PACKAGE_MANIFEST') }
+                linkbutton sumEdit (Caption: 'edit', Action: CALL MICROFLOW Shop.ACT_Nav_Cart, Class: 't-small c-primary')
+              }
+              listview lvSum (DataSource: DATABASE Shop.CartLine WHERE [Shop.CartLine_Cart/Shop.Cart/Shop.Cart_Owner = '[%CurrentUser%]' and IsDraft = false] SORT BY CreatedAt ASC, PageSize: 200, Class: 'sum-lv') {
+                container sumLine (Class: 'sum-line') {
+                  dynamictext slQ (Content: '{1}×', ContentParams: ({1} = Quantity), Class: 'q')
+                  container slMid (Class: 'sl-mid') {
+                    dynamictext slN (Content: '{1}', ContentParams: ({1} = Shop.CartLine_Product/Name))
+                    dynamictext slS (Content: '{1}{2}', ContentParams: ({1} = SizeText, {2} = if $currentObject/ConfigText = empty or $currentObject/ConfigText = '' then '' else ' · ' + $currentObject/ConfigText), Class: 't-micro c-muted')
+                  }
+                  dynamictext slT (Content: '{1}', ContentParams: ({1} = LineTotalText), Class: 'sl-total')
+                }
+              }
+              container sums (Class: 'sums mt-16') {
+                container sSub (Class: 'sum-row') { dynamictext sSubL (Content: 'SUBTOTAL_PAYLOAD', Class: 'lbl') dynamictext sSubV (Content: '{1}', ContentParams: ({1} = SubtotalText)) }
+                container sDisc (Class: 'sum-row discount', Visible: $currentObject/HasDiscount) { dynamictext sDiscL (Content: 'DISCOUNT ({1})', ContentParams: ({1} = CouponCode), Class: 'lbl') dynamictext sDiscV (Content: '{1}', ContentParams: ({1} = DiscountText)) }
+                container sFee (Class: 'sum-row', Visible: $currentObject/OrderType = Shop.OrderType.DELIVERY) {
+                  dynamictext sFeeL (Content: 'PIPELINE_TRANSIT_FEE', Class: 'lbl')
+                  container sFeeR { dynamictext sFeeV (Content: '{1}', ContentParams: ({1} = FeeText)) dynamictext sFeeN (Content: ' {1}', ContentParams: ({1} = FeeNote), Class: 't-micro c-green') }
+                }
+                container sTax (Class: 'sum-row') { dynamictext sTaxL (Content: 'SALES_TAX (8.625%)', Class: 'lbl') dynamictext sTaxV (Content: '{1}', ContentParams: ({1} = TaxText)) }
+                container sTip (Class: 'sum-row', Visible: $currentObject/OrderType = Shop.OrderType.DELIVERY) { dynamictext sTipL (Content: 'COURIER_TIP ({1}%)', ContentParams: ({1} = TipPercent), Class: 'lbl') dynamictext sTipV (Content: '{1}', ContentParams: ({1} = TipText)) }
+                dynamictext sCoupon (Content: '{1}', ContentParams: ({1} = CouponLine), Class: 't-micro c-secondary mt-8', Visible: $currentObject/CouponLine != empty and $currentObject/CouponLine != '')
+              }
+              container total (Class: 'sum-total') {
+                dynamictext totL (Content: 'EXEC_TOTAL', Class: 't-label')
+                dynamictext totV (Content: '{1}', ContentParams: ({1} = TotalText), Class: 't-price-lg c-primary')
+              }
+              container exec (Class: 'btn btn-primary btn-lg btn-block mt-16', DynamicClasses: if $currentObject/CartBlocked then 'is-disabled' else '', OnClick: CALL MICROFLOW Shop.ACT_Checkout_Place(Form = $currentObject) with (ProgressBar: NonBlocking)) {
+                dynamictext exI (Content: 'bolt', Class: 'ms')
+                dynamictext exT (Content: 'Execute Order --force')
+              }
+              dynamictext exNote (Content: 'Executing creates the order and starts the simulated payment. No real charge is made.', Class: 't-micro c-muted mt-8')
+            }
+          }
+        }
+      }
+    }
+  }
+};

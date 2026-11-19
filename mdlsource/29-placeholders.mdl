@@ -17,3 +17,4 @@ create page if not exists Shop.NotFound (Title: 'NotFound', Layout: Atlas_Core.A
 create page if not exists Shop.UnexpectedError (Title: 'UnexpectedError', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
 create page if not exists Shop.AllergenNotice (Title: 'AllergenNotice', Layout: Atlas_Core.PopupLayout) { dynamictext ph (Content: '…') };
 create snippet if not exists Shop.SNIP_HomeActiveOrder { container ph { } };
+create page if not exists Shop.TrackInvalid (Title: 'TrackInvalid', Layout: Atlas_Core.Atlas_Default) { dynamictext ph (Content: '…') };
