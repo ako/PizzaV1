@@ -522,3 +522,18 @@ Built from the PR head (`b6e66cf1`), run on a copy of the project (model, widget
 1. Trap: `--update-baseline` while a rule cannot run (first run after a change) records the baseline **without** that rule's findings (MPR017's 3 dropped). It prints a warning but exits 0. The next run shows them as 3 new warnings, which fails a `--fail-on warning` gate. The exit-2 message of the failing run itself advises "re-record with --update-baseline". Better: refuse (exit 2) or carry the old findings over for rules that did not run.
 2. For a rule that *failed*, the advice "Run lint where the project's rules and config are installed" is the wrong remedy (the rule is installed). It should say the rule failed, with its error, and suggest rerunning.
 3. Not in this PR: several scripts still break the check stage (ako/mxcli#2453); the MPR017 catalog cause is #2457; annotations (#2455 part 2); drop-attribute check (#2456).
+
+## Retest of PR 2452 (`019c1d82`) and PR 2458 (`5a4e94b8`) after review fixes, 2026-11-20
+
+**PR 2458:**
+- `lint --update-baseline` and `verify --update-baseline` both refuse while MPR017 cannot run: exit 2, naming the rule and its error. The baseline file stays byte-identical.
+- The stage message for a failed rule now gives the rule's own error and suggests running again ("run verify again, and report the rule if it keeps failing").
+- Nit: the refusal message repeats the reason and misses a full stop before "A rule that ran into an error…".
+- Still open, by the author's own note: re-recording where the custom rules are *missing* (not failing) still shrinks the baseline. It's the owner's call whether that needs a guard.
+
+**PR 2452:**
+- `--run --local` ran the 24 unit tests on mxcli's own runtime, into `<out>/junit.xml`. Traceability proves 101/111 with `hasTests`; tests reads 24 results and 13 journeys.
+- `--perf-spans after-spans.jsonl.gz` is read directly: 12 perf steps.
+- `--annotations-dir docs/reports`: the overview lists the four annotation files read, and readiness shows 1 accepted.
+- A failed `--run` (no `--local`, no Docker): tests and traceability still render (101 proven from the journeys). Readiness says "`mxcli test` did not finish cleanly … add --local" instead of "not given".
+- **Still open:** the failed Docker run still leaves `.docker/` (docker-compose.yml, `.env`, `.env.example`) in the project directory (removed by hand).
