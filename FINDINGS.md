@@ -538,7 +538,7 @@ Built from the PR head (`b6e66cf1`), run on a copy of the project (model, widget
 - A failed `--run` (no `--local`, no Docker): tests and traceability still render (101 proven from the journeys). Readiness says "`mxcli test` did not finish cleanly … add --local" instead of "not given".
 - **Still open:** the failed Docker run still leaves `.docker/` (docker-compose.yml, `.env`, `.env.example`) in the project directory (removed by hand).
 
-## Why Studio Pro 11.16.1 asked to convert the project (commit efcd980), 2026-11-20
+## Why Studio Pro 11.16.1 asked to convert the project (commit efcd980), 2026-11-20 — filed as ako/mxcli#2467
 
 The `.mpr` metadata is unchanged by the conversion (`_ProductVersion`/`_BuildVersion` 11.16.1, the same `_SchemaHash`), so the version stamp is not the trigger. Studio Pro changed:
 
