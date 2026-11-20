@@ -7,6 +7,7 @@ const path = require('path');
 const { chromium, OUT, PHONE, guest, leave, open, test, expect, expectEqual, finish } = require('./lib');
 
 const shot = (page, name) => page.screenshot({ path: path.join(OUT, `journey-${name}.png`), fullPage: false });
+const text2 = async (page, sel) => (await page.locator(sel).first().innerText()).replace(/\s+/g, ' ').trim();
 const text = async (page, sel) => (await page.locator(sel).first().innerText()).replace(/\s+/g, ' ').trim();
 
 async function addFromMenu(page, product) {
@@ -312,6 +313,58 @@ async function fillDelivery(page) {
       const out = await mapAt('90210');
       expect(out.store && !out.dest && out.distance === '', `90210: store only, no destination or distance (${JSON.stringify(out)})`);
     } finally { await leave(g); }
+  });
+
+  await test('J15 pizza chat: product card adds to the cart, delivery map card, order card for a placed order (slice 16-pizza-chat)', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      // asks the assistant and waits for its answer (the model takes a few seconds; cards load from the app)
+      const ask = async (q) => {
+        const before = await page.locator('.pc-root').count();
+        await page.locator('.layout-chat-popup textarea').first().fill(q);
+        await page.locator('.layout-chat-popup .mx-name-btnSendMessage').first().click();
+        await page.waitForFunction((b) => {
+          const r = [...document.querySelectorAll('.layout-chat-popup .pc-root')];
+          return r.length > b && !r[r.length - 1].querySelector('.pc-pending') && !document.querySelector('.layout-chat-popup [aria-busy="true"]');
+        }, before, { timeout: 120000 });
+        await page.waitForTimeout(2500);
+        return page.locator('.layout-chat-popup .pc-root').last();
+      };
+      await open(page, '/p/menu', 3000);
+      await page.locator('.btn-chat-popup').click();
+      await page.locator('.layout-chat-popup textarea').first().waitFor({ state: 'visible', timeout: 30000 });
+      let answer = await ask('Which vegan pizzas do you have? Show them as a card.');
+      const text = await answer.innerText();
+      if (/not available right now/.test(text)) { console.log('        (skipped: the app runs without a GenAI key)'); g.ok = true; return; }
+      const product = answer.locator('.pc-product', { hasText: 'Low-Mem Garden' }).first();
+      expect(await product.count(), `a products card shows Low-Mem Garden (answer: ${text.slice(0, 160)})`);
+      expect(/\$\d+\.\d\d/.test(await product.innerText()), 'the card shows the price from the app');
+      await product.locator('.pc-btn-primary').click();
+      await page.locator('.pc-result.pc-ok').first().waitFor({ timeout: 15000 });
+      expect(/Added 1 x Low-Mem Garden/.test(await page.locator('.pc-result.pc-ok').first().innerText()), 'Add to cart says what it added');
+      answer = await ask('Do you deliver to ZIP 94105? Show it on a map.');
+      const zone = answer.locator('.pc-type-zone').first();
+      await zone.locator('.pc-distance').first().waitFor({ timeout: 20000 });
+      expectEqual((await zone.locator('.pc-distance').first().innerText()).trim(), '2.8 mi', 'zone card distance from the app');
+      await shot(page, 'chat');
+      // place an order with what the chat added, then ask where it is
+      await page.goto(page.url().replace(/\/p\/.*$/, '/p/checkout'), { waitUntil: 'load' }); await page.waitForTimeout(3000);
+      await page.locator('.mx-name-tA1 input').waitFor({ state: 'visible', timeout: 30000 });
+      await fillDelivery(page);
+      await page.locator('.mx-name-exec').click(); await page.waitForTimeout(8000);
+      const conf = await text2(page, '.scr-08');
+      const number = (conf.match(/MX-(\d{4})/) || [])[1];
+      expect(number, 'the order was placed');
+      await page.locator('.btn-chat-popup').click();
+      await page.locator('.layout-chat-popup textarea').first().waitFor({ state: 'visible', timeout: 30000 });
+      answer = await ask(`Where is my order MX-${number}? Show the order card.`);
+      const order = answer.locator('.pc-type-order').first();
+      await order.locator('.pc-status').first().waitFor({ timeout: 20000 });
+      expect((await order.innerText()).includes(`MX-${number}`), 'the order card shows the order from the app');
+      expect(!(await page.locator('.mx-dialog-error').count()), 'no platform error dialog');
+      g.ok = true;
+    } finally { await leave(g, g.ok ? null : 'J15'); }
   });
 
   await test('J7 phone: bottom navigation and menu cards render at 390 px', async () => {

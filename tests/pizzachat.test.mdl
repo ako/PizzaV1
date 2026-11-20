@@ -1,0 +1,86 @@
+/**
+ * Pizza chat (slice 16-pizza-chat): the agent's tools and the card API answer
+ * from the shop's own data, and only show orders this visitor may see.
+ */
+
+/**
+ * @test SearchMenu with diet vegan finds the vegan pizza
+ * @expect contains($A, 'Low-Mem Garden') = true
+ */
+$A = call microflow PizzaChat.Tool_SearchMenu(Query = '', Diet = 'vegan');
+/
+
+/**
+ * @test SearchMenu with an unknown word says nothing matches
+ * @expect startsWith($A, 'No menu items match') = true
+ */
+$A = call microflow PizzaChat.Tool_SearchMenu(Query = 'zzzz', Diet = '');
+/
+
+/**
+ * @test GetProduct states the allergens
+ * @expect contains($A, 'Allergens:') = true
+ */
+$A = call microflow PizzaChat.Tool_GetProduct(Code = 'pz-10');
+/
+
+/**
+ * @test CheckDelivery inside the zone gives the distance
+ * @expect contains($A, '2.8 mi') = true
+ */
+$A = call microflow PizzaChat.Tool_CheckDelivery(Zip = '94105');
+/
+
+/**
+ * @test CheckDelivery outside the zone offers pickup
+ * @expect contains($A, 'outside the delivery zone') = true
+ */
+$A = call microflow PizzaChat.Tool_CheckDelivery(Zip = '90210');
+/
+
+/**
+ * @test GetOrder refuses an order this visitor may not see
+ * @expect contains($A, 'is not one of this visitor') = true
+ */
+$A = call microflow PizzaChat.Tool_GetOrder(OrderNumber = 'MX-1001');
+/
+
+/**
+ * @test FindOrder with a wrong email does not say which field is wrong
+ * @expect $A = 'No order matches this order number and email.'
+ */
+$A = call microflow PizzaChat.Tool_FindOrder(OrderNumber = 'MX-1001', Email = 'nobody@example.com');
+/
+
+/**
+ * @test The products API returns a known code and leaves out an unknown one
+ * @expect $N = 1
+ */
+$L = call microflow PizzaChat.REST_GetProducts(codes = 'PZ-10,XX-99');
+retrieve $Items from $L/PizzaChat.ProductView_ProductList;
+$N = count $Items;
+/
+
+/**
+ * @test The zone API gives map coordinates for a ZIP in the zone
+ * @expect $Z/Ok = true
+ * @expect $Z/DestLat > 37
+ * @expect $Z/Distance = '2.8 mi'
+ */
+$Z = call microflow PizzaChat.REST_GetZone(zip = '94105');
+/
+
+/**
+ * @test The order API does not show an order this visitor may not see
+ * @expect $O/Found = false
+ */
+$O = call microflow PizzaChat.REST_GetOrder(number = '1001');
+/
+
+/**
+ * @test The action API refuses anything but add
+ * @expect $R/Ok = false
+ */
+$Req = create PizzaChat.ActionRequest (Action = 'pay', Code = 'PZ-10', Quantity = 1);
+$R = call microflow PizzaChat.REST_PostAction(Request = $Req);
+/

@@ -1,0 +1,110 @@
+/* Pizza chat messages and cards, in the shop's terminal look. Colours come from the
+   GitPizza theme tokens (theme/web), with fallbacks so the widget renders anywhere. */
+.pc-root { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pc-md { overflow-wrap: anywhere; }
+.pc-md p { margin: 0 0 6px; }
+.pc-md p:last-child { margin-bottom: 0; }
+.pc-md ul, .pc-md ol { margin: 4px 0 6px 18px; padding: 0; }
+.pc-md code { font-family: var(--font-mono, "JetBrains Mono", monospace); font-size: .92em; }
+
+.pc-cards { display: flex; flex-direction: column; gap: 10px; }
+.pc-card {
+  border: 1px solid var(--border, #30363d); border-left: 3px solid var(--primary, #ff9d00);
+  border-radius: var(--r-md, 8px); background: var(--surface-container, #161b22);
+  padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+}
+.pc-tone-good { border-left-color: var(--success, #3fb950); }
+.pc-tone-warning { border-left-color: var(--warning, #d29922); }
+.pc-tone-critical { border-left-color: var(--error, #f85149); }
+.pc-tone-info { border-left-color: var(--info, #58a6ff); }
+.pc-pending { color: var(--text-muted, #8b949e); font-size: 13px; }
+.pc-card-head { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.pc-card-heading { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pc-eyebrow { font: 600 11px/1 var(--font-mono, "JetBrains Mono", monospace); letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted, #8b949e); }
+.pc-title { font-weight: 700; color: var(--text-primary, #e6edf3); }
+.pc-subtitle { font-size: 13px; color: var(--text-secondary, #b1bac4); }
+.pc-status { font: 600 11px var(--font-mono, "JetBrains Mono", monospace); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-strong, #484f58); color: var(--text-secondary, #b1bac4); white-space: nowrap; }
+.pc-note { margin: 0; font-size: 13px; color: var(--text-secondary, #b1bac4); }
+.pc-warn { color: var(--warning, #d29922); }
+.pc-muted { margin: 0; font-size: 13px; color: var(--text-muted, #8b949e); }
+
+.pc-products { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pc-product { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: start; }
+.pc-soldout { opacity: .6; }
+.pc-product-img { width: 76px; height: 76px; object-fit: cover; border-radius: var(--r-md, 8px); background: var(--surface-low, #0d1117); }
+.pc-product-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pc-product-top { display: flex; justify-content: space-between; gap: 8px; }
+.pc-product-name { font-weight: 700; color: var(--text-primary, #e6edf3); }
+.pc-price { font: 700 13px var(--font-mono, "JetBrains Mono", monospace); color: var(--success, #3fb950); white-space: nowrap; }
+.pc-product-sub { font-size: 12px; color: var(--text-secondary, #b1bac4); }
+.pc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.pc-tag { font: 600 10px var(--font-mono, "JetBrains Mono", monospace); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border, #30363d); color: var(--text-secondary, #b1bac4); text-transform: lowercase; }
+.pc-tag-vegan, .pc-tag-vegetarian { color: var(--success, #3fb950); border-color: var(--success, #3fb950); }
+.pc-tag-spicy { color: var(--error, #f85149); border-color: var(--error, #f85149); }
+.pc-allergens { font-size: 12px; color: var(--text-muted, #8b949e); }
+
+.pc-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pc-lines li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: baseline; }
+.pc-unavailable { opacity: .55; text-decoration: line-through; }
+.pc-qty, .pc-amount { font-family: var(--font-mono, "JetBrains Mono", monospace); font-size: 13px; }
+.pc-qty { color: var(--success, #3fb950); }
+.pc-line-name { display: flex; flex-direction: column; min-width: 0; }
+.pc-line-detail { font-size: 12px; color: var(--text-muted, #8b949e); }
+.pc-fields { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); gap: 6px 12px; }
+.pc-field { display: flex; flex-direction: column; min-width: 0; }
+.pc-field dt { font: 600 11px var(--font-mono, "JetBrains Mono", monospace); text-transform: uppercase; color: var(--text-muted, #8b949e); }
+.pc-field dd { margin: 0; overflow-wrap: anywhere; }
+.pc-items { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.pc-item-title { font-weight: 600; }
+.pc-item-text, .pc-item-value { margin-left: 6px; color: var(--text-secondary, #b1bac4); }
+
+.pc-timeline { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 2px solid var(--border, #30363d); display: flex; flex-direction: column; gap: 4px; }
+.pc-timeline li { display: flex; gap: 8px; font-size: 13px; color: var(--text-secondary, #b1bac4); }
+.pc-timeline time { font-family: var(--font-mono, "JetBrains Mono", monospace); color: var(--text-muted, #8b949e); }
+.pc-timeline .pc-latest { color: var(--text-primary, #e6edf3); font-weight: 600; }
+
+.pc-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pc-add { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pc-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 12px;
+  border-radius: var(--r-md, 8px); border: 1px solid var(--border-strong, #484f58);
+  background: transparent; color: var(--text-primary, #e6edf3); font: 600 13px var(--font-mono, "JetBrains Mono", monospace); cursor: pointer;
+}
+.pc-btn .ms { font-size: 18px; }
+.pc-btn:hover:not(:disabled) { border-color: var(--primary, #ff9d00); }
+.pc-btn:focus-visible, .pc-chip:focus-visible { outline: 2px solid var(--primary, #ff9d00); outline-offset: 2px; }
+.pc-btn:disabled { opacity: .5; cursor: default; }
+.pc-btn-primary { background: var(--primary, #ff9d00); border-color: var(--primary, #ff9d00); color: var(--primary-on, #1a1206); }
+.pc-result { font-size: 12px; }
+.pc-ok { color: var(--success, #3fb950); }
+.pc-bad { color: var(--error, #f85149); }
+
+.pc-suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+.pc-chip {
+  border: 1px solid var(--border-strong, #484f58); border-radius: 999px; background: transparent;
+  color: var(--text-secondary, #b1bac4); padding: 4px 10px; font-size: 12px; cursor: pointer; text-align: left;
+}
+.pc-chip:hover { color: var(--text-primary, #e6edf3); border-color: var(--primary, #ff9d00); }
+
+.pc-map-box { width: 100%; border-radius: var(--r-md, 8px); overflow: hidden; background: var(--surface-lowest, #0d1117) url("/assets/illustrations/map-sf-dark.jpg") center / cover no-repeat; }
+.pc-map--offline .leaflet-tile-pane { display: none; }
+.pc-map-box .leaflet-control-attribution { font-size: 9px; background: rgba(13, 17, 23, .75); color: var(--text-muted, #8b949e); }
+.pc-map-box .leaflet-control-attribution a { color: var(--text-muted, #8b949e); }
+.pc-pin { background: none; border: 0; }
+.pc-pin-inner { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pc-mk { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); }
+.pc-mk .ms { font-size: 17px; }
+.pc-pin--store .pc-mk { background: var(--primary, #ff9d00); color: var(--primary-on, #1a1206); }
+.pc-pin--dest .pc-mk { background: var(--success, #3fb950); color: var(--success-on, #04260f); }
+.pc-pin--courier .pc-mk { width: 24px; height: 24px; border-radius: 50%; background: var(--info, #58a6ff); color: var(--info-on, #04121f); }
+.pc-nm { font: 700 10px var(--font-mono, "JetBrains Mono", monospace); color: var(--text-primary, #e6edf3); background: rgba(13, 17, 23, .8); padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
+.leaflet-tooltip.pc-distance { font: 700 11px var(--font-mono, "JetBrains Mono", monospace); background: var(--surface-container, #161b22); color: var(--text-primary, #e6edf3); border: 1px solid var(--border, #30363d); box-shadow: none; }
+.leaflet-tooltip.pc-distance::before { display: none; }
+
+/* The chat window is outside the shop's .gp-app wrapper, so the icon font and image sizes are set here. */
+.pc-root .ms, .pc-pin .ms {
+  font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal;
+  text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; overflow: hidden;
+}
+.pc-root img.pc-product-img { width: 76px !important; height: 76px !important; max-width: none !important; max-height: none !important; margin: 0; }

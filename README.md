@@ -18,12 +18,35 @@ order traffic are run by an in-app simulator; nothing is really charged or deliv
 - **Who logs in:** nobody — a single `Guest` role mapped to Anonymous; an
   `Administrator` exists only for the Mendix runtime.
 - **Theme:** `console` (dark), restyled with the prototype's design tokens.
-- **Modules** (layered, no cycles; see `FINDINGS.md`): `Simulation` (simulation, reset,
+- **Modules** (layered, no cycles; see `FINDINGS.md`): `PizzaChat` (the pizza assistant) and `Simulation` (simulation, reset,
   seed) → `Shop` (storefront: cart, checkout, pages) → `Fulfilment` (orders, payments,
   couriers, pricing) → `Catalog` (products and options) and `Core` (settings, toasts,
   helpers).
 - **Mendix:** 11.16.1. MDL scripts are `mdl 1` (each starts with `mdl 1;`) and live
   in `mdlsource/`.
+
+## Pizza chat (optional)
+
+A pizza assistant on every page (floating chat button, bottom right): it searches the
+menu, explains diets and allergens, checks delivery to a ZIP code and follows the
+guest's own orders, answering with cards: products with an Add to cart button, the
+live cart with Checkout, a delivery map and an order card with its timeline and map.
+The assistant only reads and proposes; the guest presses the buttons. Built like
+`ako/ChatV2` (Agents Kit, Conversational UI, an Agent Editor agent on Mendix Cloud
+GenAI, the `PizzaChatText` card widget in `widgets-src/PizzaChat`). See
+`docs/brain/modules/PizzaChat.md` and `mdlsource/50`–`52`.
+
+It needs a Mendix Cloud GenAI text key in `GENAI_TEXT_KEY` and an encryption key; both
+are passed per run, never stored in the model:
+
+```bash
+python3 -c "import secrets,string; print(''.join(secrets.choice(string.ascii_letters+string.digits) for _ in range(32)), end='')" > .mxcli/encryption.key
+./mxcli run --local --detach --ensure-db -p GitPizza.mpr --constant Encryption.EncryptionKey=@file:.mxcli/encryption.key --constant PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY
+```
+
+Open the app on **http://localhost:8080** (not 127.0.0.1: Conversational UI's streaming
+picks its session cookie by host name). Without the key the app runs as usual and the
+chat answers that the assistant is not available.
 
 ## Quality reports
 

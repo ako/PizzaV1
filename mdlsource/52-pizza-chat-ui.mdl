@@ -10,3 +10,37 @@ create or modify snippet PizzaChat.SNIP_ChatLauncher {
     snippetcall scFloatingChat (Snippet: ConversationalUI.Snippet_FloatingChatButton, Params: (ChatContext = $currentObject))
   }
 };
+
+-- Rich chat answers: both Markdown viewers in Conversational UI's message snippet
+-- (the answer and its sub-messages) become the app's PizzaChatText widget
+-- (widgets-src/PizzaChat). It renders markdown the same way (raw HTML escaped) and
+-- turns ```card and ```suggestions blocks into cards and follow-up chips.
+--
+-- THIS CUSTOMISES A MARKETPLACE MODULE. Updating Conversational UI overwrites the
+-- snippet and brings the Markdown viewer back: run this script again afterwards.
+-- The widget keeps the original's name, binding, class, spacing and visibility.
+alter snippet ConversationalUI.Snippet_Message_Content {
+  replace markdownViewer2 with {
+    pluggablewidget 'com.gitpizza.widgets.pizzachattext.PizzaChatText' markdownViewer2 (
+      stringAttribute: Content,
+      Class: 'chat-listview-stylingless',
+      DesignProperties: ('Spacing': ('margin-bottom': 'None')),
+      Visible: @ConversationalUI.EnableMarkdownViewer and trim($currentObject/Content) != ''
+    )
+  };
+  replace markdownViewer1 with {
+    pluggablewidget 'com.gitpizza.widgets.pizzachattext.PizzaChatText' markdownViewer1 (
+      stringAttribute: $Message."Content",
+      Class: 'chat-listview-stylingless convui-markdown',
+      DesignProperties: ('Spacing': ('margin-bottom': 'None')),
+      Visible: $Message/Role = GenAICommons.ENUM_MessageRole.assistant
+        and @ConversationalUI.EnableMarkdownViewer
+        and trim($Message/Content) != ''
+    )
+  };
+};
+
+-- The chat window's title (Conversational UI's pop-up page; same caveat: an update of the module resets it).
+alter page ConversationalUI.ConversationalUI_PopUp {
+  SET (Title: 'Pizza assistant');
+};

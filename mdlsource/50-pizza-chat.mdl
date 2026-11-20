@@ -15,6 +15,7 @@ mdl 1;
 --   --constant PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY
 -- Without it the chat answers that the assistant is not available.
 
+/** The pizza assistant: a chat agent that helps guests choose, build a cart, check delivery and track orders (slice 16-pizza-chat). */
 create or modify module PizzaChat;
 create or modify module role PizzaChat.Guest description 'Every visitor: chats with the pizza assistant about the menu, their cart and their own orders';
 
@@ -177,6 +178,10 @@ create or modify microflow PizzaChat.SUB_Order_Visible ($Number: Integer)
 returns Fulfilment.Order as $Order
 folder 'Agent tools'
 begin
+  -- no user (a system session, e.g. a test): no order is visible
+  if $currentUser = empty then
+    return empty;
+  end if;
   retrieve $O from Fulfilment.Order where [OrderNumber = $Number][Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] first;
   return $O;
 end;
@@ -221,6 +226,9 @@ create or modify microflow PizzaChat.Tool_MyOrders ()
 returns String as $Answer
 folder 'Agent tools'
 begin
+  if $currentUser = empty then
+    return 'This visitor has no orders in this session.';
+  end if;
   retrieve $Orders from Fulfilment.Order where [Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by OrderNumber desc limit 5;
   $N = count $Orders;
   if $N = 0 then
@@ -270,6 +278,10 @@ create or modify microflow PizzaChat.Tool_FindOrder ($OrderNumber: String, $Emai
 returns String as $Answer
 folder 'Agent tools'
 begin
+  -- no user (a system session, e.g. a test): nothing to find for
+  if $currentUser = empty then
+    return 'No order matches this order number and email.';
+  end if;
   declare $Raw String = if $OrderNumber = empty then '' else toUpperCase(trim($OrderNumber));
   declare $Mail String = if $Email = empty then '' else toLowerCase(trim($Email));
   if $Raw = '' or $Mail = '' then
@@ -485,3 +497,32 @@ end;
 
 grant execute on microflow PizzaChat.DS_Chat to PizzaChat.Guest;
 grant execute on microflow PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow to PizzaChat.Guest;
+
+-- ---------------------------------------------------------------- housekeeping
+
+/**
+ * Removes pizza chats and usage counters older than a day. Every guest gets a
+ * chat the first time a page shows the chat button, and anonymous sessions come
+ * and go; this keeps their chats from piling up. Batched, like the simulator's
+ * housekeeping (F1): at most 200 chats per run.
+ */
+create or modify microflow PizzaChat.SE_ChatCleanup ()
+folder 'Chat'
+begin
+  declare $Before DateTime = addDays([%CurrentDateTime%], -1);
+  retrieve $Old from ConversationalUI.ChatContext where [createdDate < $Before][ConversationalUI.ChatContext_ProviderConfig_Active/ConversationalUI.ProviderConfig/ActionMicroflow = 'PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow'] limit 200;
+  $N = count $Old;
+  delete $Old;
+  retrieve $Usage from PizzaChat.ChatUsage where [WindowStart < $Before] limit 500;
+  delete $Usage;
+  log info node 'PizzaChat' 'Chat cleanup removed {1} chat(s)' with ({1} = toString($N));
+end;
+
+create or modify scheduled event PizzaChat."SE_ChatCleanup" (
+  Microflow: PizzaChat.SE_ChatCleanup,
+  Repeat: Daily,
+  HourOfDay: 4,
+  MinuteOfHour: 30,
+  TimeZone: Server,
+  Enabled: true
+);

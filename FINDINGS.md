@@ -649,3 +649,50 @@ US-097's map was the prototype's static `map-sf-dark.jpg` with CSS pins at fixed
 - **Gates:** every script's second exec writes nothing; verify 0 new (lint 246 known, mx check 0); report 47; tests 24/24; journeys 14/14 (second run); visual 12/12; brain check OK, plan 111/111 built.
 - **Spec status:** US-097 is now "changed", not "partly met". Decision `632277` replaces `13ee26`; DEV-01 is CHANGED. The browser now needs `server.arcgisonline.com` for tiles (delivery notes §2, operations).
 - **Flaky J1:** J1 fails on the first journey run after an app restart: the cart badge does not appear after the first add, so the `.count-bubble` wait times out. It passes on the next run. This was seen before this change too (the first run after switching binaries), so it is unrelated to the map; it is still open.
+
+## Pizza chat: a rich-card chat assistant, after ako/ChatV2 (2026-11-20)
+
+A pizza assistant on every page, at the product owner's request (slice `16-pizza-chat`, 5 requirements, all built). The design decisions are in `docs/brain/modules/PizzaChat.md`.
+
+**Built:**
+- **Agents Kit**, ChatV2's versions: CommunityCommons 11.5.1, Encryption 11.1.2, GenAI Commons 7.3.0, Mendix Cloud GenAI Connector 7.4.0, MCP Client 4.4.0, Agent Commons 4.4.0, Conversational UI 7.4.0, Agent Editor 2.7.0 (plus the `modules/AgentEditor.mxmodule` add-on), and the Markdown viewer and Events widgets they need (CE0462).
+- **`PizzaChat` module** (`mdlsource/50`–`52`):
+  - agent `PizzaAssistant` on Mendix Cloud GenAI;
+  - seven read-only microflow tools: menu search, product, cart, delivery check, my orders, order, find order;
+  - the card API `rest/pizzachat/v1` (products, cart, zone, order, and a POST for "add");
+  - a per-visitor limit of 30 messages an hour, and a daily clean-up of chats older than a day;
+  - a floating chat launcher in `Layout_Guest`.
+- **`widgets-src/PizzaChat` → `PizzaChatText`**, a trimmed port of ChatV2's ChatRichText:
+  - markdown, plus products, cart, zone, order and info cards, and suggestion chips;
+  - cards name things and fetch the facts from the app;
+  - Leaflet mini-maps on Esri tiles;
+  - swapped into Conversational UI's message snippet;
+  - unit tests 5/5.
+
+**Gotchas met (and how they were verified):**
+- **The installer drops Studio Pro's conversion again.** `marketplace install` runs `mx update-widgets`, which rewrote `Projects$ProjectConversion` without `UseMeToSetupNodeConversion`. That is the conversion of ako/mxcli#2467, so Studio Pro would have prompted again. The unit was restored from HEAD and `mxcli fix hashes --repair` fixed the index.
+- **Agents load only at startup.** The agent existed in the model, but `ChatContext_Create_ForAgentDocument` said "Agent object … does not exist" until `ASU_Startup` called `AgentEditorCommons.ASU_AgentEditor()`.
+- **127.0.0.1 breaks streaming.** Every answer was "Error" (`InitAsyncStreamHandler … name is null`) on `http://127.0.0.1:8080`; on `http://localhost:8080` it works. Conversational UI reads `XASSESSIONID` only when the host contains "localhost" (also in ChatV2's FINDINGS).
+- **The shop's dialog CSS broke the chat window.** Three things went wrong:
+  - the floating button sat off-screen (`left: -43px`);
+  - the window collapsed to 104 px;
+  - the message list collapsed to 0 px.
+  Our theme sizes every `.mx-window` to its content and hides its header, and Conversational UI needs `height: 100%` all the way down. Fixed in `_gitpizza-app.scss` (pizza chat section), and checked in the browser at 1440 and 390 px. On phones the launcher hides while the chat is open.
+- **Icons outside the shop wrapper.** The chat window is outside `.gp-app`, so `.ms` icons rendered as words ("location_on"). The widget now sets the icon font itself.
+- **Unit tests run in a system session.** `[%CurrentUser%]` is not allowed there, so the order tools threw. They now check `$currentUser = empty` first: no user, no orders.
+- **A splice that would not fit.** `exec` refused to splice a guard into `Tool_FindOrder` ("no free room for the return … drawn across the flow"). Moving the guard to the start of the microflow worked.
+- **`REST_GetCart` took two runs to settle:** the first exec after an expression change wrote, the second wrote again, and the third wrote nothing.
+- **MPR017 went silent.** Its three `IsActive` findings disappeared once the Agents Kit was installed, although nothing in our model changed. The installed modules' generic Java actions can set attributes by name, so the rule can no longer prove `IsActive` is never set to false. The open decision about `IsActive` still stands.
+
+**Verified:**
+- **Unit tests** 35/35, including 11 new ones for the tools and API: diet search, allergens, zone in and out, order visibility refused, find-order miss, unknown codes left out, "pay" refused.
+- **Journeys** 15/15. The new J15 checks four things:
+  - the products card shows Low-Mem Garden with its price;
+  - Add to cart answers "Added 1 x Low-Mem Garden";
+  - the zone card shows "2.8 mi";
+  - an order placed in the session shows on an order card.
+  It passed on two runs on Postgres and once on HSQLDB, with the same arguments as `RUN/start.ps1`. J1 still fails on the first run after a restart and passes on the next (known).
+- **Visual** 12/12.
+- **Gates:** verify 0 new (baseline re-recorded: 269); mx check 0 errors; report 46 (26 new info findings: names that follow the Agents Kit's and the JSON's conventions, and the module-role mapping).
+- **Accepted by brain decisions:** SEC001/ARCH003 on `ChatUsage`, DESIGN001 on the card views.
+- **Without the keys:** the app starts, and the chat answers "The assistant is not available right now…".

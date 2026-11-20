@@ -98,12 +98,32 @@ $ErrorActionPreference = 'Continue'
 & $mxcli run --local --setup --db-type hsqldb -p $mpr | Out-Host
 if ($LASTEXITCODE -ne 0) { Fail "preparing MxBuild and the runtime failed (exit $LASTEXITCODE)" }
 
+# ---- the pizza chat (optional): only with a Mendix Cloud GenAI key in GENAI_TEXT_KEY.
+# The key is passed from the environment, never written down; the Encryption module's
+# key is generated once into .mxcli-bin\encryption.key (git-ignored). Without the key the
+# app runs as usual and the chat says the assistant is not available.
+$chat = @()
+if ($env:GENAI_TEXT_KEY) {
+    $keyFile = Join-Path $root '.mxcli-bin\encryption.key'
+    if (-not (Test-Path $keyFile)) {
+        New-Item -ItemType Directory -Force -Path (Split-Path $keyFile) | Out-Null
+        $chars = [char[]]'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+        $bytes = New-Object byte[] 32
+        $rng.GetBytes($bytes)
+        $key = -join ($bytes | ForEach-Object { $chars[$_ % $chars.Length] })
+        [System.IO.File]::WriteAllText($keyFile, $key)
+    }
+    $chat = @('--constant', "Encryption.EncryptionKey=@file:$keyFile", '--constant', 'PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY')
+}
+
 # ---- build and start; --detach returns once the app serves
+# (localhost, not 127.0.0.1: the chat's streaming needs it, see RUN/operations.md)
 $baseUrl = "http://localhost:$Port"
 & $mxcli run --local --detach --db-type hsqldb -p $mpr --app-port $Port `
     --constant "Simulation.SpeedFactor=$SpeedFactor" `
     --constant "Simulation.ResetOnStartup=$reset" `
-    --constant "Shop.AppUrl=$baseUrl/" | Out-Host
+    --constant "Shop.AppUrl=$baseUrl/" @chat | Out-Host
 if ($LASTEXITCODE -ne 0) {
     Fail "the app could not be built or started (exit $LASTEXITCODE); see .mxcli\run.log and .mxcli\runtime.log"
 }

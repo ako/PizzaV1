@@ -62,6 +62,17 @@ by itself and logs `RESET start by initial-seed`. Alternatively, start with
 ./mxcli run stop -p GitPizza.mpr
 ```
 
+### The pizza chat (optional)
+
+`RUN/start.ps1` turns the pizza assistant on when the environment variable `GENAI_TEXT_KEY`
+holds a Mendix Cloud GenAI text key: it generates an encryption key once into
+`.mxcli-bin\encryption.key` and passes both to the run (`--constant
+PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY`); the key is never written to a file. Open the app
+on `http://localhost:<port>`, not `127.0.0.1`, or every chat answer shows "Error" (Conversational
+UI reads its session cookie by host name). Each visitor may send 30 messages an hour
+(`PizzaChat.MessagesPerHour`); chats older than a day are removed every night at 04:30
+(`PizzaChat.SE_ChatCleanup`).
+
 ## 2. Constants
 
 | Constant | Default in the project | Set by the scripts |

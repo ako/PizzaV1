@@ -469,3 +469,44 @@ html:not(.gp-kbd) .gp-app .btn:focus-visible { outline: none !important; box-sha
 /* Delivery map (US-097): the DeliveryMap widget fills the well; the well no longer sets a 16:10 picture ratio. */
 .gp-app .map-well.map-live { aspect-ratio: auto; }
 .gp-app .map-well.map-live .map-helper { z-index: 500; }
+
+/* ───────── Pizza chat (52-pizza-chat-ui.mdl): Conversational UI's floating button and chat window.
+   The shop's dialog rules above size every window to its content and hide its header; the chat
+   needs a fixed-size window with its header (title and minimise), bottom right, above the shell. */
+.btn.btn-chat-popup {
+  position: fixed !important; right: 24px; bottom: 24px; left: auto !important; z-index: 400;
+  width: 56px; height: 56px; border-radius: 50%; padding: 0;
+  background: var(--primary); border-color: var(--primary); color: var(--primary-on);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .45);
+}
+.btn.btn-chat-popup img { width: 28px; height: 28px; margin: 0; filter: brightness(0); }
+.btn.btn-chat-popup:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+@media (max-width: 767px) { .has-bottom-nav .btn.btn-chat-popup { bottom: 84px; right: 16px; } }
+
+.modal-dialog.mx-window.layout-chat-popup {
+  right: 24px !important; bottom: 92px !important; top: auto !important; left: auto !important;
+  width: min(440px, calc(100vw - 32px)) !important; height: min(640px, calc(100vh - 140px)) !important; max-height: none;
+  z-index: 450; display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-dialog.mx-window.layout-chat-popup .modal-content { height: 100% !important; display: flex; flex-direction: column; }
+.modal-dialog.mx-window.layout-chat-popup .mx-window-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 10px 14px;
+  background: var(--surface-container); border-bottom: 1px solid var(--border);
+}
+.modal-dialog.mx-window.layout-chat-popup .mx-window-header h4 { margin: 0; color: var(--text-primary); font: 700 14px var(--font-mono); }
+.modal-dialog.mx-window.layout-chat-popup .mx-window-header .close { opacity: 1; text-shadow: none; }
+.modal-dialog.mx-window.layout-chat-popup .mx-window-header .close::after { color: var(--text-secondary); }
+.modal-dialog.mx-window.layout-chat-popup .modal-body.mx-window-body { flex: 1 1 0; height: auto; min-height: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+/* Conversational UI sizes its chat by height: 100% down the chain; every level between the body and the chat must fill */
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body > .mx-placeholder { flex: 1 1 0; min-height: 0; height: auto; }
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .mx-layoutgrid,
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .mx-layoutgrid > .row,
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .mx-layoutgrid > .row > [class*="col"],
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .chat-dataview--display-contents,
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .chat-container { height: 100%; min-height: 0; }
+.modal-dialog.mx-window.layout-chat-popup .mx-window-body .chat-container { flex: 1 1 0; flex-direction: column; }
+@media (max-width: 767px) {
+  .modal-dialog.mx-window.layout-chat-popup { right: 0 !important; left: 0 !important; bottom: 0 !important; width: 100% !important; height: calc(100vh - 56px) !important; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+}
+/* On a phone the open chat fills the screen: the launcher would sit on top of it (minimise closes the chat). */
+@media (max-width: 767px) { body:has(.layout-chat-popup) .btn.btn-chat-popup { display: none; } }

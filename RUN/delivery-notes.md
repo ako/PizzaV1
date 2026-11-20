@@ -61,6 +61,7 @@ Times in this file are UTC.
 | Domain | Purpose |
 |---|---|
 | server.arcgisonline.com | Map tiles for the delivery map (Esri Dark Gray Canvas, keyless), loaded by the browser on checkout and tracking. Without it the map shows the simulated map image instead. Fonts, icons, product photos and illustrations are served by the app itself; no payment or analytics service is called |
+| Mendix Cloud GenAI (the endpoint the key names) | The pizza assistant's model, called by the server; only when `GENAI_TEXT_KEY` is given |
 
 ## 3. How the main mechanisms work (short)
 
@@ -163,6 +164,7 @@ Everything the app does differently from the package, including every Should not
 | DEV-09 | INTERPRETATION | US-033 (Could), SCR-02 | The story asks for dietary quick filters; the prototype of SCR-02 has none | Built as filter chips above the menu list: Vegetarian, Vegan, Spicy, and Show all | The story wins over the prototype | visual comparison of SCR-02 (chips hidden there) |
 | DEV-10 | INTERPRETATION | BR-DATA-05, SIM-07 | All times in store time America/Los_Angeles | The runtime's default time zone is America/Los_Angeles; order-log times are formatted on the server and stored as text, because dates formatted in the browser follow the browser's zone | Store time for every visitor | SCR-09 log timestamps |
 | DEV-11 | INTERPRETATION | SIM-09, NFR-07 | Clock tick at most every 2 s | A self-requeueing task-queue chain with a 1.5 s wait, plus a minutely watchdog; Mendix scheduled events cannot run more often than once a minute | Platform limit | none |
+| DEV-12 | ADDED | none (beyond the package) | — | A pizza assistant chat on every page (floating button): menu advice with diets and allergens, Add to cart from product cards, delivery check with a map card, tracking of the guest's own orders. Runs on Mendix Cloud GenAI and only with a key (`GENAI_TEXT_KEY`); otherwise it says it is not available. The assistant never changes the cart, orders or pays: the guest presses card buttons | Asked for by the product owner (2026-11-20) | J15 |
 
 Should and Could stories:
 

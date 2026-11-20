@@ -174,6 +174,42 @@
       "message": "Entity 'LookupAttempt' has no business key. Add a UNIQUE NOT NULL attribute for cross-system identification."
     },
     {
+      "rule": "CONV001",
+      "document": "PizzaChat.ActionResult",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'ActionResult.Ok' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
+      "rule": "CONV001",
+      "document": "PizzaChat.CartLineView",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'CartLineView.Available' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
+      "rule": "CONV001",
+      "document": "PizzaChat.OrderView",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'OrderView.Delivery' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
+      "rule": "CONV001",
+      "document": "PizzaChat.OrderView",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'OrderView.Found' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
+      "rule": "CONV001",
+      "document": "PizzaChat.ProductView",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'ProductView.Orderable' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
+      "rule": "CONV001",
+      "document": "PizzaChat.ZoneView",
+      "documentType": "Entity",
+      "message": "Boolean attribute 'ZoneView.Ok' should start with Is, Has, Can, Should, Was, or Will"
+    },
+    {
       "rule": "CONV007",
       "document": "Catalog.Allergen",
       "documentType": "Entity",
@@ -195,6 +231,12 @@
       "rule": "CONV008",
       "document": "ProjectSecurity",
       "documentType": "security",
+      "message": "Module role 'ConversationalUI.User' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
       "message": "Module role 'Core.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
     },
     {
@@ -202,6 +244,24 @@
       "document": "ProjectSecurity",
       "documentType": "security",
       "message": "Module role 'Fulfilment.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'GenAICommons.User' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'MxGenAIConnector.User' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
+    },
+    {
+      "rule": "CONV008",
+      "document": "ProjectSecurity",
+      "documentType": "security",
+      "message": "Module role 'PizzaChat.Guest' is mapped to 2 user roles: Administrator, Anonymous. Each module role should map to exactly one user role."
     },
     {
       "rule": "CONV008",
@@ -226,6 +286,18 @@
       "document": "Fulfilment.SUB_Price_Compute",
       "documentType": "Microflow",
       "message": "Microflow 'SUB_Price_Compute' has 35 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "PizzaChat.REST_GetOrder",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_GetOrder' has 21 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "PizzaChat.REST_PostAction",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_PostAction' has 16 activities (convention max: 15). Split into sub-microflows."
     },
     {
       "rule": "CONV009",
@@ -255,7 +327,7 @@
       "rule": "CONV009",
       "document": "Shop.SUB_Checkout_Compute",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Checkout_Compute' has 51 activities (convention max: 15). Split into sub-microflows."
+      "message": "Microflow 'SUB_Checkout_Compute' has 57 activities (convention max: 15). Split into sub-microflows."
     },
     {
       "rule": "CONV009",
@@ -327,7 +399,13 @@
       "rule": "CONV009",
       "document": "Shop.SUB_Track_Fill",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Track_Fill' has 184 activities (convention max: 15). Split into sub-microflows."
+      "message": "Microflow 'SUB_Track_Fill' has 189 activities (convention max: 15). Split into sub-microflows."
+    },
+    {
+      "rule": "CONV009",
+      "document": "Simulation.ASU_Startup",
+      "documentType": "Microflow",
+      "message": "Microflow 'ASU_Startup' has 17 activities (convention max: 15). Split into sub-microflows."
     },
     {
       "rule": "CONV009",
@@ -363,7 +441,7 @@
       "rule": "CONV009",
       "document": "Simulation.SUB_Reset",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Reset' has 59 activities (convention max: 15). Split into sub-microflows."
+      "message": "Microflow 'SUB_Reset' has 60 activities (convention max: 15). Split into sub-microflows."
     },
     {
       "rule": "CONV009",
@@ -564,6 +642,84 @@
       "message": "Entity 'Simulation.SimCustomer' has 2 validation rule(s). Use VAL_ microflows for validation logic instead."
     },
     {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow",
+      "documentType": "Microflow",
+      "message": "Microflow 'ChatContext_PizzaAssistant_ActionMicroflow' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.REST_GetCart",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_GetCart' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.REST_GetOrder",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_GetOrder' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.REST_GetProducts",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_GetProducts' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.REST_GetZone",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_GetZone' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.REST_PostAction",
+      "documentType": "Microflow",
+      "message": "Microflow 'REST_PostAction' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_CheckDelivery",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_CheckDelivery' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_FindOrder",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_FindOrder' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_GetCart",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_GetCart' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_GetOrder",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_GetOrder' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_GetProduct",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_GetProduct' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_MyOrders",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_MyOrders' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
+      "rule": "CUSTOM002",
+      "document": "PizzaChat.Tool_SearchMenu",
+      "documentType": "Microflow",
+      "message": "Microflow 'Tool_SearchMenu' should start with a standard prefix (ACT_, SUB_, DS_, VAL_, SCH_, IVK_, OCH_, NF_, SIM_, SE_, SEED_, ASU_)"
+    },
+    {
       "rule": "DESIGN001",
       "document": "Catalog.Option",
       "documentType": "Entity",
@@ -585,7 +741,7 @@
       "rule": "DESIGN001",
       "document": "Core.StoreSettings",
       "documentType": "Entity",
-      "message": "Entity 'StoreSettings' has 11 attributes (max: 10). Consider splitting into smaller entities."
+      "message": "Entity 'StoreSettings' has 13 attributes (max: 10). Consider splitting into smaller entities."
     },
     {
       "rule": "DESIGN001",
@@ -627,7 +783,7 @@
       "rule": "DESIGN001",
       "document": "Shop.CheckoutForm",
       "documentType": "Entity",
-      "message": "Entity 'CheckoutForm' has 46 attributes (max: 10). Consider splitting into smaller entities."
+      "message": "Entity 'CheckoutForm' has 51 attributes (max: 10). Consider splitting into smaller entities."
     },
     {
       "rule": "DESIGN001",
@@ -645,7 +801,7 @@
       "rule": "DESIGN001",
       "document": "Shop.TrackView",
       "documentType": "Entity",
-      "message": "Entity 'TrackView' has 64 attributes (max: 10). Consider splitting into smaller entities."
+      "message": "Entity 'TrackView' has 69 attributes (max: 10). Consider splitting into smaller entities."
     },
     {
       "rule": "DESIGN001",
@@ -1274,13 +1430,6 @@
       "document": "Shop.Tracking",
       "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
       "documentType": "page",
-      "message": "CONTAINER 'route' in Shop.Tracking is empty — valid and it renders, but probably unintended"
-    },
-    {
-      "rule": "MPR006",
-      "document": "Shop.Tracking",
-      "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
-      "documentType": "page",
       "message": "CONTAINER 'thLiveDot' in Shop.Tracking is empty — valid and it renders, but probably unintended"
     },
     {
@@ -1396,27 +1545,6 @@
       "message": "DataView 'dvLookup' contains input fields but is not inside a layout grid — label and input widths only render correctly inside a layoutgrid"
     },
     {
-      "rule": "MPR017",
-      "document": "Catalog.Option",
-      "documentId": "7edf4e92-289e-4836-8813-a6c40cc6efe3",
-      "documentType": "entity",
-      "message": "Attribute 'Catalog.Option.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
-    },
-    {
-      "rule": "MPR017",
-      "document": "Fulfilment.Coupon",
-      "documentId": "6da88d7f-478b-406d-8183-95bd8e339b90",
-      "documentType": "entity",
-      "message": "Attribute 'Fulfilment.Coupon.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
-    },
-    {
-      "rule": "MPR017",
-      "document": "Fulfilment.DeliveryZone",
-      "documentId": "65cde48c-f5e5-4375-bcaa-32972f788edd",
-      "documentType": "entity",
-      "message": "Attribute 'Fulfilment.DeliveryZone.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable."
-    },
-    {
       "rule": "QUAL001",
       "document": "Fulfilment.SUB_Order_TimerBase",
       "documentType": "Microflow",
@@ -1510,7 +1638,7 @@
       "rule": "QUAL003",
       "document": "Shop.SUB_Checkout_Compute",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Checkout_Compute' has 51 activities (max: 25). Consider splitting into smaller microflows."
+      "message": "Microflow 'SUB_Checkout_Compute' has 57 activities (max: 25). Consider splitting into smaller microflows."
     },
     {
       "rule": "QUAL003",
@@ -1564,7 +1692,7 @@
       "rule": "QUAL003",
       "document": "Shop.SUB_Track_Fill",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Track_Fill' has 184 activities (max: 25). Consider splitting into smaller microflows."
+      "message": "Microflow 'SUB_Track_Fill' has 189 activities (max: 25). Consider splitting into smaller microflows."
     },
     {
       "rule": "QUAL003",
@@ -1582,7 +1710,7 @@
       "rule": "QUAL003",
       "document": "Simulation.SUB_Reset",
       "documentType": "Microflow",
-      "message": "Microflow 'SUB_Reset' has 59 activities (max: 25). Consider splitting into smaller microflows."
+      "message": "Microflow 'SUB_Reset' has 60 activities (max: 25). Consider splitting into smaller microflows."
     },
     {
       "rule": "QUAL004",

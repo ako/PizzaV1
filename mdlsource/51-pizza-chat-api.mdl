@@ -14,7 +14,9 @@ mdl 1;
 -- configuration, the same as the menu's quick add.
 
 -- ---------------------------------------------------------------- views
+/** The answer of rest/pizzachat/v1/products: the menu items a products card names. */
 create or modify non-persistent entity PizzaChat."ProductList" ();
+/** One menu item on a products card: name, price, photo, diet and allergens from the catalog. */
 create or modify non-persistent entity PizzaChat."ProductView" (
   "Code": String(10), "Name": String(80), "Subtitle": String(120), "Kind": String(20),
   "Price": String(40), "Image": String(200), "ImageAlt": String(200), "Diet": String(20),
@@ -22,21 +24,25 @@ create or modify non-persistent entity PizzaChat."ProductView" (
 );
 create or modify association PizzaChat."ProductView_ProductList" from PizzaChat."ProductView" to PizzaChat."ProductList";
 
+/** The answer of rest/pizzachat/v1/cart: the guest's cart for a cart card. */
 create or modify non-persistent entity PizzaChat."CartView" (
   "Count": Integer default 0, "Subtotal": String(20), "Total": String(20),
   "Coupon": String(60), "Block": String(300), "CanCheckout": Boolean default false
 );
+/** One cart line on a cart card. */
 create or modify non-persistent entity PizzaChat."CartLineView" (
   "Name": String(120), "Detail": String(400), "Quantity": Integer default 0, "Amount": String(20), "Available": Boolean default true
 );
 create or modify association PizzaChat."CartLineView_CartView" from PizzaChat."CartLineView" to PizzaChat."CartView";
 
+/** The answer of rest/pizzachat/v1/zone: a ZIP against the delivery zone, with map coordinates. */
 create or modify non-persistent entity PizzaChat."ZoneView" (
   "Zip": String(5), "Ok": Boolean default false, "Neighborhood": String(40), "Distance": String(20),
   "Message": String(300), "StoreLat": Decimal default 0, "StoreLon": Decimal default 0,
   "DestLat": Decimal default 0, "DestLon": Decimal default 0
 );
 
+/** The answer of rest/pizzachat/v1/order: one of the guest's orders with its map values. */
 create or modify non-persistent entity PizzaChat."OrderView" (
   "Found": Boolean default false, "Number": String(12), "Status": String(30), "StatusPlain": String(80),
   "Tone": String(10), "Delivery": Boolean default false, "Address": String(120), "Items": String(40),
@@ -44,10 +50,13 @@ create or modify non-persistent entity PizzaChat."OrderView" (
   "StoreLat": Decimal default 0, "StoreLon": Decimal default 0, "DestLat": Decimal default 0, "DestLon": Decimal default 0,
   "Courier": Decimal default -1
 );
+/** One timeline line of an order card. */
 create or modify non-persistent entity PizzaChat."EventView" ("At": String(10), "Text": String(80));
 create or modify association PizzaChat."EventView_OrderView" from PizzaChat."EventView" to PizzaChat."OrderView";
 
+/** A card button the guest pressed (POST rest/pizzachat/v1/actions). */
 create or modify non-persistent entity PizzaChat."ActionRequest" ("Action": String(20), "Code": String(10), "Quantity": Integer default 1);
+/** What a card button did, shown under the button. */
 create or modify non-persistent entity PizzaChat."ActionResult" ("Ok": Boolean default false, "Message": String(300), "Count": Integer default 0);
 
 grant read *, write * on entity PizzaChat."ProductList" to PizzaChat.Guest;
@@ -61,19 +70,26 @@ grant read *, write * on entity PizzaChat."ActionRequest" to PizzaChat.Guest;
 grant read *, write * on entity PizzaChat."ActionResult" to PizzaChat.Guest;
 
 -- ---------------------------------------------------------------- JSON
+/** JSON of the products card API. */
 create or modify json structure PizzaChat."JSON_ProductList" folder 'Card API'
   sample '{"products": [{"code": "P-01", "name": "The Root Pizza", "subtitle": "Margherita", "kind": "Pizza", "price": "$14.99", "image": "/assets/products/root.jpg", "imageAlt": "A pizza", "diet": "vegetarian", "spice": "MILD", "allergens": "Gluten, Milk", "orderable": true}]}';
+/** JSON of the cart card API. */
 create or modify json structure PizzaChat."JSON_Cart" folder 'Card API'
   sample '{"count": 2, "subtotal": "$34.98", "total": "$34.98", "coupon": "HOTFIX10", "block": "", "canCheckout": true, "lines": [{"name": "The Root Pizza", "detail": "Medium 12\"", "quantity": 1, "amount": "$14.99", "available": true}]}';
+/** JSON of the zone card API. */
 create or modify json structure PizzaChat."JSON_Zone" folder 'Card API'
   sample '{"zip": "94105", "ok": true, "neighborhood": "Rincon Hill", "distance": "2.8 mi", "message": "Text", "storeLat": 37.7633, "storeLon": -122.4152, "destLat": 37.789, "destLon": -122.395}';
+/** JSON of the order card API. */
 create or modify json structure PizzaChat."JSON_Order" folder 'Card API'
   sample '{"found": true, "number": "MX-1061", "status": "BAKING", "statusPlain": "in the oven", "tone": "info", "delivery": true, "address": "500 Howard Street", "items": "2 items", "total": "$47.24", "distance": "2.8 mi", "trackUrl": "p/track/abc", "storeLat": 37.7633, "storeLon": -122.4152, "destLat": 37.789, "destLon": -122.395, "courier": 0.4, "events": [{"at": "18:04", "text": "Order placed"}]}';
+/** JSON a card button posts. */
 create or modify json structure PizzaChat."JSON_ActionRequest" folder 'Card API'
   sample '{"action": "add", "code": "P-01", "quantity": 1}';
+/** JSON a card button gets back. */
 create or modify json structure PizzaChat."JSON_ActionResult" folder 'Card API'
   sample '{"ok": true, "message": "Added 1 x The Root Pizza to your cart.", "count": 3}';
 
+/** Products card API answer. */
 create or modify export mapping PizzaChat."EMM_ProductList" folder 'Card API'
   with json structure PizzaChat."JSON_ProductList"
 {
@@ -84,6 +100,7 @@ create or modify export mapping PizzaChat."EMM_ProductList" folder 'Card API'
     }
   }
 };
+/** Cart card API answer. */
 create or modify export mapping PizzaChat."EMM_Cart" folder 'Card API'
   with json structure PizzaChat."JSON_Cart"
 {
@@ -94,6 +111,7 @@ create or modify export mapping PizzaChat."EMM_Cart" folder 'Card API'
     }
   }
 };
+/** Zone card API answer. */
 create or modify export mapping PizzaChat."EMM_Zone" folder 'Card API'
   with json structure PizzaChat."JSON_Zone"
 {
@@ -102,6 +120,7 @@ create or modify export mapping PizzaChat."EMM_Zone" folder 'Card API'
     storeLat = "StoreLat", storeLon = "StoreLon", destLat = "DestLat", destLon = "DestLon"
   }
 };
+/** Order card API answer. */
 create or modify export mapping PizzaChat."EMM_Order" folder 'Card API'
   with json structure PizzaChat."JSON_Order"
 {
@@ -114,6 +133,7 @@ create or modify export mapping PizzaChat."EMM_Order" folder 'Card API'
     }
   }
 };
+/** Reads a card button's request. */
 create or modify import mapping PizzaChat."IMM_ActionRequest" folder 'Card API'
   with json structure PizzaChat."JSON_ActionRequest"
 {
@@ -123,6 +143,7 @@ create or modify import mapping PizzaChat."IMM_ActionRequest" folder 'Card API'
     "Quantity" = quantity
   }
 };
+/** Card button answer. */
 create or modify export mapping PizzaChat."EMM_ActionResult" folder 'Card API'
   with json structure PizzaChat."JSON_ActionResult"
 {
@@ -179,7 +200,7 @@ begin
   loop $L in $Lines
   begin
     create PizzaChat.CartLineView (Name = if $L/DisplayName = empty then '' else $L/DisplayName,
-      Detail = (if $L/SizeText = empty then '' else $L/SizeText) + (if $L/ConfigText = empty or $L/ConfigText = '' then '' else ' · ' + $L/ConfigText),
+      Detail = if $L/ConfigText = empty then '' else $L/ConfigText,
       Quantity = $L/Quantity, Amount = if $L/LineTotalText = empty then '' else $L/LineTotalText, Available = $L/IsAvailable,
       PizzaChat.CartLineView_CartView = $View);
   end loop;
@@ -307,6 +328,7 @@ begin
   return $Answer;
 end;
 
+/** Card data and card actions for the pizza chat widget, with the guest's own session. */
 create or modify published rest service PizzaChat."PizzaChatApi" (
   Path: 'rest/pizzachat/v1',
   Version: '1.0.0',
