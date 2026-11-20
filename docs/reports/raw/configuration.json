@@ -2,7 +2,7 @@
   "kind": "configuration",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-20 11:43",
+  "generated": "2026-11-20 11:57",
   "mxcli": "nightly-75-g7efedabd",
   "method": [
     "Read from the model through the mxcli catalog: constants and their run-configuration values, consumed REST services (`CATALOG.CONSUMED_REST_SERVICES`, base URL literal or constant), scheduled events, published REST and OData services, and microflow source (`CATALOG.SOURCE`) for constant uses (`@Module.Name`), REST call locations and literal credentials.",

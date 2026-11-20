@@ -2,7 +2,7 @@
   "kind": "dependencies",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-20 11:43",
+  "generated": "2026-11-20 11:59",
   "mxcli": "nightly-75-g7efedabd",
   "method": [
     "The Mendix version is the project's; its release line (LTS, MTS or a monthly release) comes from mxcli's version registry, which records the lines but no support dates.",
@@ -25,50 +25,62 @@
         "name": "Administration",
         "installed": "4.3.2",
         "versionId": "2059615c-c6f1-4103-aedb-14820c077a1c",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 23513,
+        "latest": "4.5.0",
+        "latestCompatible": "4.5.0",
+        "status": "newer available"
       },
       {
         "name": "Atlas_Core",
         "installed": "4.1.3",
         "versionId": "7509f6c7-3ea7-46ee-8d80-62562c9296ca",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 117187,
+        "latest": "4.7.1",
+        "latestCompatible": "4.7.1",
+        "status": "newer available"
       },
       {
         "name": "Atlas_Web_Content",
         "installed": "4.1.0",
         "versionId": "4aae86a0-1c89-4a98-979f-f18fe295e0f7",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 117183,
+        "latest": "4.4.0",
+        "latestCompatible": "4.4.0",
+        "status": "newer available"
       },
       {
         "name": "DataWidgets",
         "installed": "3.5.0",
         "versionId": "225ac9cf-f84a-4559-bc18-a6a217414c5e",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 116540,
+        "latest": "3.11.10",
+        "latestCompatible": "3.11.10",
+        "status": "newer available"
       },
       {
         "name": "FeedbackModule",
         "installed": "4.0.2",
         "versionId": "7f8db04e-3aeb-456d-8289-0d67e1076dc4",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 205506,
+        "latest": "5.0.0",
+        "latestCompatible": "5.0.0",
+        "status": "newer available"
       },
       {
         "name": "NanoflowCommons",
         "installed": "6.0.0",
         "versionId": "fbe19914-6248-4c40-8871-650074e864c6",
         "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "note": "content 109515 (\"Nanoflow Commons\") has this name but does not publish the installed version: withdrawn, or another publisher's module; its newest compatible version is 7.4.1"
       },
       {
         "name": "WebActions",
         "installed": "2.11.0",
         "versionId": "7b3e3f82-d071-403f-b385-99fb32ce8703",
-        "status": "not identified",
-        "note": "no catalog item publishes the version the module records (private or removed content)"
+        "contentId": 114337,
+        "latest": "2.11.2",
+        "latestCompatible": "2.11.2",
+        "status": "newer available"
       }
     ],
     "widgets": [

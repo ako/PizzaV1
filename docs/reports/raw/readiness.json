@@ -2,7 +2,7 @@
   "kind": "readiness",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-20 11:43",
+  "generated": "2026-11-20 11:57",
   "mxcli": "nightly-75-g7efedabd",
   "method": [
     "Rolled up from the other reports' JSON, as `mxcli report all` writes them (or run for this page): quality (with Mendix's consistency check), release, dependencies, configuration, security, tests, traceability, performance and architecture. Each item names the report it came from; open that report for the evidence.",

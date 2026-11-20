@@ -152,7 +152,7 @@ cards = [
               f'{len(CF["scheduled"])} scheduled events to switch on or off']),
     card('dependencies.html', None, 'Dependencies',
          'Mendix release line, Marketplace modules and widgets against their newest versions, and known vulnerabilities (OSV).',
-         '', [f'{sum(1 for w in DP["widgets"] if w["status"] == "newer available")} of {len(DP["widgets"])} widgets have a newer version · {sum(1 for m in DP["modules"] if m["status"] == "not identified")} of {len(DP["modules"])} modules not identified in the catalog',
+         '', [f'{sum(1 for m in DP["modules"] if m["status"] == "newer available")} of {len(DP["modules"])} Marketplace modules and {sum(1 for w in DP["widgets"] if w["status"] == "newer available")} of {len(DP["widgets"])} widgets have a newer version',
               'vulnerabilities checked against OSV: none found' if DP.get('vulnChecked') else 'vulnerabilities not checked']),
     card('map.html', None, 'Software map',
          'Interactive guide for a newcomer: features per slice, module map, page flows per role, data across modules, conventions, background work and an index.',

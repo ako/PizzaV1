@@ -71,4 +71,11 @@ These three are taken from one `report all` run into a scratch folder; `report a
   --perf-journeys ../perf/data/after-journeys.jsonl --perf-spans ../perf/data/after-spans.jsonl.gz
 ```
 
-Copy `readiness`, `configuration` and `dependencies` (`.html` into this folder, `.json` into `raw/`), then run `python3 tools/reports_index.py`. The release report is left out: it needs a deployed revision (`--against`), and this app has none.
+Copy `readiness` and `configuration` (`.html` into this folder, `.json` into `raw/`). Write dependencies **standalone**: under `report all` it gets no context, so every Marketplace version lookup fails and all modules read "not identified" (and a cold catalog cache panics; ako/mxcli#2481, #2482):
+
+```bash
+./mxcli report dependencies -p GitPizza.mpr -f json -o docs/reports/raw/dependencies.json
+./mxcli report dependencies -p GitPizza.mpr --from docs/reports/raw/dependencies.json -o docs/reports/dependencies.html
+```
+
+Then run `python3 tools/reports_index.py`. The release report is left out: it needs a deployed revision (`--against`), and this app has none.
