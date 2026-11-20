@@ -13,6 +13,7 @@ Studio Pro is not needed to build or run the app.
 
 - Windows PowerShell 5.1.
 - A JDK 21, with `java.exe` on `PATH` or `JAVA_HOME` set. The project's Java version is 21.
+- The browser loads the delivery map's tiles from `server.arcgisonline.com`. Without that host the map shows the simulated map image instead; everything else works.
 - Internet access on the first run. `mxcli.exe` is downloaded once to `.mxcli-bin\` unless it is
   already in the repository root, on `PATH`, or named by `MXCLI`. MxBuild and the runtime are
   downloaded once to `%USERPROFILE%\.mxcli\mxbuild\11.16.1\`.

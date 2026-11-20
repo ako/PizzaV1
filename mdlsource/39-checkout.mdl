@@ -195,10 +195,10 @@ create or modify page Shop.Checkout (
                 container mdots (Class: 'dots') { container md1 (Class: 'dot') { } container md2 (Class: 'dot') { } container md3 (Class: 'dot') { } }
                 dynamictext mapName (Content: 'live_route_preview')
               }
-              container mapWell (Class: 'map-well') {
-                image mapBase (ImageType: imageUrl, ImageUrl: '/assets/illustrations/map-sf-dark.jpg', AlternativeText: 'Simulated map of San Francisco', Class: 'map-base')
-                container pinStore (Class: 'map-pin store') { container pinStoreMk (Class: 'mk') { dynamictext pinStoreI (Content: 'local_pizza', Class: 'ms sm') } dynamictext pinStoreN (Content: 'MISSION_KITCHEN', Class: 'nm') }
-                container pinDest (Class: 'map-pin dest', Visible: $currentObject/IsZoneOk) { container pinDestMk (Class: 'mk') { dynamictext pinDestI (Content: 'location_on', Class: 'ms sm') } dynamictext pinDestN (Content: 'DESTINATION_LOCK', Class: 'nm') }
+              container mapWell (Class: 'map-well map-live') {
+                deliverymap coMap (storeLat: $currentObject/MapStoreLat, storeLon: $currentObject/MapStoreLon, storeLabel: '''MISSION_KITCHEN''',
+                  destLat: $currentObject/MapDestLat, destLon: $currentObject/MapDestLon, destLabel: '''DESTINATION_LOCK''',
+                  distanceText: $currentObject/MapDistance, height: 260)
               }
               container mapEta (Class: 'between map-eta') {
                 dynamictext meL (Content: 'ESTIMATED_ETA', Class: 't-label')

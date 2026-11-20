@@ -283,6 +283,37 @@ async function fillDelivery(page) {
     } finally { await leave(g); }
   });
 
+  await test('J14 delivery map: store and destination per zone with the distance; no destination outside the zone (US-097)', async () => {
+    const g = await guest(browser);
+    try {
+      const { page } = g;
+      await open(page, '/p/menu', 3000);
+      await addFromMenu(page, 'The Root Pizza');
+      await page.locator('.main-nav .nav-checkout').click();
+      await page.locator('.mx-name-tZip input').waitFor({ state: 'visible', timeout: 30000 });
+      const mapAt = async (zip) => {
+        await page.locator('.mx-name-tZip input').fill(zip);
+        await page.locator('.mx-name-tName input').click(); await page.waitForTimeout(3000);
+        return page.evaluate(() => {
+          const m = document.querySelector('.mx-name-coMap');
+          const pos = (k) => { const e = m && m.querySelector('.gdm-pin--' + k); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round(r.x), Math.round(r.y)]; };
+          const box = m ? m.getBoundingClientRect() : null;
+          const inside = (p) => p && box && p[0] >= box.left - 20 && p[0] <= box.right && p[1] >= box.top - 20 && p[1] <= box.bottom;
+          return { map: !!m, store: pos('store'), dest: pos('dest'), destInside: inside(pos('dest')), distance: ((m && m.querySelector('.gdm-distance')) || {}).textContent || '' };
+        });
+      };
+      const far = await mapAt('94105');
+      expect(far.map && far.store && far.dest, `94105: store and destination drawn (${JSON.stringify(far)})`);
+      expect(far.destInside, 'the map fits the destination into view');
+      expectEqual(far.distance, '2.8 mi', 'distance for 94105');
+      const near = await mapAt('94110');
+      expectEqual(near.distance, '0.8 mi', 'distance for 94110');
+      expect(near.dest && (Math.abs(near.dest[0] - far.dest[0]) + Math.abs(near.dest[1] - far.dest[1])) > 20, 'the destination moves with the zone');
+      const out = await mapAt('90210');
+      expect(out.store && !out.dest && out.distance === '', `90210: store only, no destination or distance (${JSON.stringify(out)})`);
+    } finally { await leave(g); }
+  });
+
   await test('J7 phone: bottom navigation and menu cards render at 390 px', async () => {
     const g = await guest(browser, PHONE);
     try {

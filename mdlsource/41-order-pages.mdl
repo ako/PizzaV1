@@ -508,12 +508,10 @@ create or modify page Shop.Tracking (
         container trkRight (Class: 'stack-lg') {
           container geo (Class: 'panel geo', Visible: $currentObject/IsDelivery) {
             container geoH (Class: 'between geo-h') { dynamictext geoT (Content: 'GEOLOCATION', Class: 't-label') dynamictext geoM (Content: '{1}', ContentParams: ({1} = MapMode), Class: 'chip') }
-            container mapWell (Class: 'map-well') {
-              image mapBase (ImageType: imageUrl, ImageUrl: '/assets/illustrations/map-sf-dark.jpg', AlternativeText: 'Simulated map of San Francisco', Class: 'map-base')
-              container route (Class: 'map-route') { }
-              container pinStore (Class: 'map-pin store') { container psMk (Class: 'mk') { dynamictext psI (Content: 'local_pizza', Class: 'ms sm') } dynamictext psN (Content: 'MISSION_KITCHEN', Class: 'nm') }
-              container pinDest (Class: 'map-pin dest') { container pdMk (Class: 'mk') { dynamictext pdI (Content: 'location_on', Class: 'ms sm') } dynamictext pdN (Content: '{1}', ContentParams: ({1} = $TheOrder/AddressLine1), Class: 'nm') }
-              container pinCourier (Class: 'map-pin courier', DynamicClasses: 'cpos-' + toString($currentObject/CourierBucket), Visible: $currentObject/MapMode != 'STANDBY') { container pcMk (Class: 'mk') { dynamictext pcI (Content: 'electric_moped', Class: 'ms sm') } }
+            container mapWell (Class: 'map-well map-live') {
+              deliverymap trMap (storeLat: $currentObject/MapStoreLat, storeLon: $currentObject/MapStoreLon, storeLabel: '''MISSION_KITCHEN''',
+                destLat: $currentObject/MapDestLat, destLon: $currentObject/MapDestLon, destLabel: $TheOrder/AddressLine1,
+                distanceText: $currentObject/DistanceText, courierProgress: $currentObject/MapCourierProgress, height: 280)
               dynamictext mapHelper (Content: '{1}', ContentParams: ({1} = MapHelper), Class: 'map-helper', Visible: $currentObject/MapHelper != '')
             }
             container etaRow (Class: 'eta-row', Visible: $currentObject/ShouldShowEta) {

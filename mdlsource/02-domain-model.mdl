@@ -139,6 +139,9 @@ create or modify persistent entity Fulfilment."DeliveryZone" (
   "Zip": String(5) not null unique,
   "Neighborhood": String(40),
   "DistanceMiles": Decimal default 0,
+  /** Centre of the ZIP area (WGS84), for the delivery map. */
+  "Latitude": Decimal default 0,
+  "Longitude": Decimal default 0,
   "IsActive": Boolean default true
 ) index ("Zip");
 
@@ -168,7 +171,10 @@ create or modify persistent entity Core."StoreSettings" (
   "MaxQuantityPerLine": Integer default 10,
   "MaxItemsPerOrder": Integer default 30,
   "MaxPaymentAttempts": Integer default 3,
-  "NextOrderNumber": Integer default 1000
+  "NextOrderNumber": Integer default 1000,
+  /** Where the store is (WGS84), for the delivery map. */
+  "Latitude": Decimal default 0,
+  "Longitude": Decimal default 0
 );
 
 /** A courier of the simulated fleet. */
@@ -344,7 +350,11 @@ create or modify persistent entity Shop."CheckoutForm" (
   "EtaText": String(40),
   "IsCartBlocked": Boolean default false,
   "IsEmptyCart": Boolean default false,
-  "FieldErrors": String(1000)
+  "FieldErrors": String(1000),
+  /** Delivery map (US-097): store and destination (0 = none) and the distance label. */
+  "MapStoreLat": Decimal default 0, "MapStoreLon": Decimal default 0,
+  "MapDestLat": Decimal default 0, "MapDestLon": Decimal default 0,
+  "MapDistance": String(20)
 );
 create or modify association Shop."CheckoutForm_Owner" from Shop."CheckoutForm" to System."User" on delete cascade;
 create or modify association Shop."CheckoutForm_Zone" from Shop."CheckoutForm" to Fulfilment."DeliveryZone";
@@ -617,7 +627,10 @@ create or modify non-persistent entity Shop."TrackView" (
   "TxnText": String(60), "QueueText": String(80), "OvenSummary": String(120), "TrackingUrl": String(300),
   "TotalText": String(20), "AddressText": String(250), "PickupText": String(200), "ReadyText": String(60),
   "SubText": String(20), "DiscText": String(20), "FeeText": String(60), "TaxText": String(20), "TipText": String(20), "TipLabel": String(20),
-  "NumberText": String(12)
+  "NumberText": String(12),
+  "MapStoreLat": Decimal default 0, "MapStoreLon": Decimal default 0,
+  "MapDestLat": Decimal default 0, "MapDestLon": Decimal default 0,
+  "MapCourierProgress": Decimal default -1
 );
 create or modify association Shop."TrackView_Order" from Shop."TrackView" to Fulfilment."Order";
 

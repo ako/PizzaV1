@@ -99,6 +99,7 @@ begin
   call microflow Simulation.SEED_Catalog(T = $T);
   call microflow Simulation.SEED_Orders(T = $T);
   call microflow Shop.SUB_Catalog_RecalculateAll();
+  call microflow Simulation.SUB_Geo_Ensure();
   retrieve $Highest from Fulfilment.Order sort by OrderNumber desc first;
   retrieve $Store from Core.StoreSettings first;
   change $Store (NextOrderNumber = $Highest/OrderNumber + 1) commit without events;
@@ -117,6 +118,45 @@ begin
   $Event = create Fulfilment.SimulationEvent (OccurredAt = $T, EventType = Fulfilment.SimulationEventType.RESET, Message = 'Demo data reset by ' + $By) commit without events;
   declare $Duration Integer = round(secondsBetween($Start, [%CurrentDateTime%]));
   log info node 'Simulation' 'RESET end orders=' + toString($Deleted) + ' duration=' + toString($Duration) + 's';
+end;
+
+/**
+ * Places one delivery zone on the map (US-097): the centre of its ZIP area
+ * (WGS84). Changes nothing when the coordinates are already right.
+ *
+ * @param $Zip ZIP code of the zone
+ * @param $Latitude Latitude of the ZIP area's centre
+ * @param $Longitude Longitude of the ZIP area's centre
+ */
+create or modify microflow Simulation.SUB_Geo_Zone ($Zip: String, $Latitude: Decimal, $Longitude: Decimal)
+folder 'Simulation'
+begin
+  retrieve $Zone from Fulfilment.DeliveryZone where [Zip = $Zip] first;
+  if $Zone != empty and ($Zone/Latitude != $Latitude or $Zone/Longitude != $Longitude) then
+    change $Zone (Latitude = $Latitude, Longitude = $Longitude) commit without events;
+  end if;
+end;
+
+/**
+ * Puts the store and the eight delivery zones on the map (US-097). Runs after
+ * every demo reset and on a normal startup, so an existing database gets the
+ * coordinates too. Repeatable.
+ */
+create or modify microflow Simulation.SUB_Geo_Ensure ()
+folder 'Simulation'
+begin
+  retrieve $Store from Core.StoreSettings first;
+  if $Store != empty and ($Store/Latitude != 37.7633 or $Store/Longitude != -122.4152) then
+    change $Store (Latitude = 37.7633, Longitude = -122.4152) commit without events;
+  end if;
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94110', Latitude = 37.7499, Longitude = -122.4153);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94103', Latitude = 37.7727, Longitude = -122.4110);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94114', Latitude = 37.7587, Longitude = -122.4350);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94107', Latitude = 37.7618, Longitude = -122.3985);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94102', Latitude = 37.7794, Longitude = -122.4194);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94158', Latitude = 37.7700, Longitude = -122.3870);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94117', Latitude = 37.7700, Longitude = -122.4460);
+  call microflow Simulation.SUB_Geo_Zone(Zip = '94105', Latitude = 37.7890, Longitude = -122.3950);
 end;
 
 /**
@@ -148,6 +188,7 @@ begin
       call microflow Simulation.SUB_Sim_ApplySpeed(Speed = $Speed);
       -- stored card values follow the current model after an upgrade, not only after a reset
       call microflow Shop.SUB_Catalog_RecalculateAll();
+      call microflow Simulation.SUB_Geo_Ensure();
     end if;
   end if;
   call microflow Simulation.SIM_ClockRun() in queue Simulation.SimulationClock;

@@ -377,7 +377,7 @@
       "id": "US-097",
       "status": "partial",
       "where": "SCR-06 Checkout; Shop.Checkout",
-      "notes": "US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone. (DEV-01)"
+      "notes": "see delivery-notes.md (DEV-01)"
     },
     {
       "id": "US-101",

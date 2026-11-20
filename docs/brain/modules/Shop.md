@@ -57,12 +57,6 @@ Anchors: `@Shop.DS_Order_Log`, `@Shop.DS_Product_Recipe`, `@Shop.SNIP_Toasts`, `
 
 Anchors: `@Shop.ACT_Checkout_Place`, `@Shop.SUB_Checkout_Place` · id `c7be68` · 2026-11-19
 
-## US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone.
-
-Anchors: `@Shop.Checkout` · id `13ee26` · 2026-11-19
-
-Partly meets requirement `86ff90`: no distance label; fixed destination pin
-
 ## Commits deviate from the PRD convention 'US-xxx: <title>' per story: stories that share documents were committed together, with all their ids in the message (Notes: commits list stories built inside another).
 
 Anchors: `@Shop` · id `fad15d` · 2026-11-19
@@ -76,3 +70,9 @@ Resolves: PRD delivery files not produced yet: RUN/journal.md, RUN/self-assessme
 ## The menu card's toppings line is stored on the product (Catalog.Product.CodeToppings) by Shop.SUB_Product_Recalculate, and the catalog's stored card values are recalculated at every start, not only at a reset: the per-card recipe data source cost 12 calls per menu render (docs/perf/report.html F4). Shop.DS_Product_Recipe is unused since; re-anchor US-026 before deleting it.
 
 Anchors: `@Shop.SUB_Product_Recalculate`, `@Simulation.ASU_Startup` · id `da951c` · 2026-11-19
+
+## Delivery map is a real map: the DeliveryMap widget (widgets-src/DeliveryMap, Leaflet on Esri's keyless Dark Gray tiles, as in ako/ChatV2) draws the store, the zone's destination with the route and its distance, and the courier along the route on the tracking page; the static map-sf-dark.jpg is only the fallback when tiles cannot load. Asked for by the product owner on 2026-11-20. The browser now loads map tiles from server.arcgisonline.com.
+
+Anchors: `@Shop.Checkout`, `@Shop.Tracking`, `@Simulation.SUB_Geo_Ensure` · id `632277` · 2026-11-20
+
+Changes requirement `86ff90`: a real map (Leaflet, Esri tiles) instead of the simulated map image, which remains the offline fallback; store and destination markers per zone and the distance as asked

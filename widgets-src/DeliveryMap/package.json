@@ -1,0 +1,38 @@
+{
+  "name": "delivery-map",
+  "widgetName": "DeliveryMap",
+  "version": "1.0.0",
+  "description": "Delivery map for GitPizza: store, destination, route and courier on a Leaflet map (Esri dark tiles), with the simulated map image as fallback.",
+  "license": "Apache-2.0",
+  "config": {
+    "projectPath": "../../",
+    "mendixHost": "http://localhost:8080",
+    "developmentPort": 3000
+  },
+  "packagePath": "com.gitpizza.widgets",
+  "scripts": {
+    "build": "pluggable-widgets-tools release:web",
+    "test": "tsc src/components/geo.ts --outDir build-test --module es2022 --target es2020 --skipLibCheck && mv build-test/geo.js build-test/geo.mjs && node --test test/geo.test.mjs"
+  },
+  "devDependencies": {
+    "@mendix/pluggable-widgets-tools": "11.16.0"
+  },
+  "dependencies": {
+    "@types/leaflet": "1.9.12",
+    "leaflet": "1.9.4"
+  },
+  "resolutions": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0"
+  },
+  "overrides": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "minimatch@7.0.0 - 11.0.0": "^11.0.1",
+    "glob@9.0.0 - 14.0.1": "^14.0.2"
+  }
+}

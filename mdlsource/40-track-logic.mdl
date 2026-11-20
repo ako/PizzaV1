@@ -153,6 +153,10 @@ begin
   declare $MapMode String = 'STANDBY';
   declare $MapHelper String = '';
   declare $CourierBucket Integer = 0;
+  -- the delivery map: store, destination zone, courier along the route (-1 = not shown)
+  retrieve $MapStore from Core.StoreSettings first;
+  retrieve $MapZone from $O/Fulfilment.Order_Zone;
+  declare $CourierAt Decimal = -1;
   if $Courier != empty then
     set $CourierText = $Courier/NodeHandle + ' · ' + getKey($Courier/Vehicle);
     set $CourierStatus = if $Courier/CourierStatus = Fulfilment.CourierStatus.TO_STORE then 'On the way to the store' else if $Courier/CourierStatus = Fulfilment.CourierStatus.AT_STORE then 'At the store' else if $Courier/CourierStatus = Fulfilment.CourierStatus.DELIVERING then 'Courier on the way' else 'Delivered';
@@ -160,10 +164,12 @@ begin
   if $St = Fulfilment.OrderStatus.OUT_FOR_DELIVERY then
     set $MapMode = 'LIVE';
     set $CourierBucket = round($O/RouteProgressPercent div 5);
+    set $CourierAt = $O/RouteProgressPercent div 100;
   else
     if $St = Fulfilment.OrderStatus.DELIVERED then
       set $MapMode = 'DONE';
       set $CourierBucket = 20;
+      set $CourierAt = 1;
     else
       set $MapHelper = 'The live map starts when the courier picks up your order.';
     end if;
@@ -272,6 +278,9 @@ begin
     DistanceText = formatDecimal(round($O/DistanceMiles * (100 - $O/RouteProgressPercent) div 100, 1), '0.0') + ' mi',
     CourierText = $CourierText, CourierStatus = $CourierStatus, ShouldShowCourier = $Courier != empty and $Delivery,
     MapMode = $MapMode, CourierBucket = $CourierBucket, MapHelper = $MapHelper, IsDelivery = $Delivery,
+    MapStoreLat = if $MapStore = empty then 0 else $MapStore/Latitude, MapStoreLon = if $MapStore = empty then 0 else $MapStore/Longitude,
+    MapDestLat = if $MapZone = empty then 0 else $MapZone/Latitude, MapDestLon = if $MapZone = empty then 0 else $MapZone/Longitude,
+    MapCourierProgress = $CourierAt,
     BannerKind = $BannerKind, BannerTitle = $BannerTitle, BannerText = $BannerText, RefundLine = $Refund,
     CanRollback = $St = Fulfilment.OrderStatus.QUEUED, RollbackMsg = $RollbackMsg, ShouldShowRollback = not($Final) and $St != Fulfilment.OrderStatus.PAYMENT_PENDING and $St != Fulfilment.OrderStatus.PAYMENT_FAILED,
     CanRetry = $St = Fulfilment.OrderStatus.PAYMENT_FAILED, IsFinal = $Final,

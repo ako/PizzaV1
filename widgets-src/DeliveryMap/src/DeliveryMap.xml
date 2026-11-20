@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="com.gitpizza.widgets.deliverymap.DeliveryMap" pluginWidget="true" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+        xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Delivery map</name>
+    <description>Store, destination and courier on a map, with the route between them.</description>
+    <properties>
+        <propertyGroup caption="General">
+            <propertyGroup caption="Store">
+                <property key="storeLat" type="expression" required="true">
+                    <caption>Store latitude</caption>
+                    <description>WGS84 latitude of the store.</description>
+                    <returnType type="Decimal"/>
+                </property>
+                <property key="storeLon" type="expression" required="true">
+                    <caption>Store longitude</caption>
+                    <description>WGS84 longitude of the store.</description>
+                    <returnType type="Decimal"/>
+                </property>
+                <property key="storeLabel" type="expression" required="false">
+                    <caption>Store label</caption>
+                    <description>Shown next to the store marker.</description>
+                    <returnType type="String"/>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Destination">
+                <property key="destLat" type="expression" required="false">
+                    <caption>Destination latitude</caption>
+                    <description>0 or empty: no destination is drawn.</description>
+                    <returnType type="Decimal"/>
+                </property>
+                <property key="destLon" type="expression" required="false">
+                    <caption>Destination longitude</caption>
+                    <description>0 or empty: no destination is drawn.</description>
+                    <returnType type="Decimal"/>
+                </property>
+                <property key="destLabel" type="expression" required="false">
+                    <caption>Destination label</caption>
+                    <description>Shown next to the destination marker.</description>
+                    <returnType type="String"/>
+                </property>
+                <property key="distanceText" type="expression" required="false">
+                    <caption>Distance</caption>
+                    <description>Shown on the route, e.g. 2.8 mi.</description>
+                    <returnType type="String"/>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Courier">
+                <property key="courierProgress" type="expression" required="false">
+                    <caption>Courier progress</caption>
+                    <description>0 to 1 along the route from the store; below 0 or empty: no courier.</description>
+                    <returnType type="Decimal"/>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Display">
+                <property key="height" type="integer" defaultValue="260">
+                    <caption>Height</caption>
+                    <description>Height of the map in pixels.</description>
+                </property>
+                <property key="fallbackImage" type="string" required="false" defaultValue="/assets/illustrations/map-sf-dark.jpg">
+                    <caption>Fallback image</caption>
+                    <description>Shown under the markers when the map tiles cannot be loaded (offline).</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Conditional visibility">
+                <systemProperty key="Visibility"/>
+            </propertyGroup>
+        </propertyGroup>
+    </properties>
+</widget>

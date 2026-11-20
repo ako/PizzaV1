@@ -42,12 +42,18 @@ begin
   declare $IsZoneOk Boolean = false;
   declare $Outside Boolean = false;
   declare $Trip Integer = 0;
+  declare $DestLat Decimal = 0;
+  declare $DestLon Decimal = 0;
+  declare $Distance String = '';
   if isMatch($Zip, '[0-9]{5}') then
     retrieve $Zone from Fulfilment.DeliveryZone where [Zip = $Zip and IsActive = true] first;
     if $Zone != empty then
       set $IsZoneOk = true;
       set $ZoneMsg = 'ZONE_OK // ZIP ' + $Zip + ' · ' + $Zone/Neighborhood + ' · ' + formatDecimal($Zone/DistanceMiles, '0.0') + ' mi';
       set $Trip = round($Sim/TravelBase + $Sim/TravelPerMile * $Zone/DistanceMiles);
+      set $DestLat = $Zone/Latitude;
+      set $DestLon = $Zone/Longitude;
+      set $Distance = formatDecimal($Zone/DistanceMiles, '0.0') + ' mi';
       change $Form (Shop.CheckoutForm_Zone = $Zone);
     else
       set $Outside = true;
@@ -97,7 +103,8 @@ begin
     SubtotalText = $SubText, DiscountText = $DiscText, FeeText = if $Delivery then $FeeMoney else 'FREE', TaxText = $TaxText, TipText = $TipText, TotalText = $TotalText,
     CouponLine = $CouponLine, CouponCode = if $Coupon = empty then '' else $Coupon/Code, HasDiscount = $Price/Discount > 0,
     ReadyEstimate = formatDateTime($ReadyAt, 'HH:mm'), EtaText = '~' + toString($Minutes) + ' min after payment',
-    IsCartBlocked = $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' and $Cart/ItemCount > 0, IsEmptyCart = $Cart/ItemCount = 0);
+    IsCartBlocked = $Cart/CheckoutBlock != empty and $Cart/CheckoutBlock != '' and $Cart/ItemCount > 0, IsEmptyCart = $Cart/ItemCount = 0,
+    MapStoreLat = $Store/Latitude, MapStoreLon = $Store/Longitude, MapDestLat = $DestLat, MapDestLon = $DestLon, MapDistance = $Distance);
 end;
 
 /**

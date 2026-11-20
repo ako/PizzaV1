@@ -60,7 +60,7 @@ Times in this file are UTC.
 
 | Domain | Purpose |
 |---|---|
-| none | Fonts, icons, product photos, illustrations and the map image are served by the app itself; no payment, map or analytics service is called |
+| server.arcgisonline.com | Map tiles for the delivery map (Esri Dark Gray Canvas, keyless), loaded by the browser on checkout and tracking. Without it the map shows the simulated map image instead. Fonts, icons, product photos and illustrations are served by the app itself; no payment or analytics service is called |
 
 ## 3. How the main mechanisms work (short)
 
@@ -152,7 +152,7 @@ Everything the app does differently from the package, including every Should not
 
 | ID | Type | Package reference | Package says | App does | Reason | Affected tests |
 |---|---|---|---|---|---|---|
-| DEV-01 | PARTIAL | US-097 (Could), SCR-06 | Delivery preview map with store and destination markers and the distance (e.g. `2.8 mi`) | Shows the store marker, and a destination marker only for an in-zone ZIP; no distance text, and the destination pin has one fixed position instead of one per zone | Could story; the rest of checkout came first | TCs of US-097 |
+| DEV-01 | CHANGED | US-097 (Could), SCR-06, SCR-08 | The simulated map image (`illustrations/map-sf-dark.jpg`) with the store marker, a destination marker for the zone and the distance (e.g. `2.8 mi`); no destination outside the zone | A real map: the DeliveryMap widget (Leaflet on Esri's keyless dark tiles) draws the store, the zone's destination with the route and its distance, and on tracking the courier along the route; outside the zone only the store. Without map tiles it falls back to the simulated image | Asked for by the product owner (2026-11-20), after the map in ako/ChatV2 | J14 (checkout map per zone, distance, outside the zone) |
 | DEV-02 | PARTIAL | US-288 | Busy states on buttons and protection against double submits | A second payment retry or rollback is refused on the server (the second tab gets a toast), so nothing is paid or refunded twice; buttons show no busy state of their own | Server-side guard first; the client busy state was not built | TCs of US-288 |
 | DEV-03 | PARTIAL | A-91, `07-design-system/accessibility.md` | Blink and pulse animations run in bursts of at most 5 s (WCAG 2.2.2) | The cursor blink and live-dot pulse run continuously; they stop only when the browser asks for reduced motion | Found while writing these notes; not fixed yet | accessibility checks of animations |
 | DEV-04 | CHANGED | LITE-CFG-02, information model 7.6 and 9 | `SimulationSettings.speedFactor` is the enumeration `X1`/`X2`/`X5`/`X10` | Stored as the integer 1, 2, 5 or 10, the value of the constant | The constant is an integer; one representation avoids conversion. Behaviour is the same | none |
@@ -173,7 +173,7 @@ Should and Could stories:
 | US-052 Price breakdown | Should | yes |
 | US-053 Phone layout with sticky price bar | Should | yes |
 | US-093 Pickup details | Should | yes |
-| US-097 Delivery preview map | Could | partly (DEV-01) |
+| US-097 Delivery preview map | Could | yes, changed: real map instead of the image (DEV-01) |
 | US-136 Lookup abuse protection | Should | yes |
 | US-167 Print the receipt | Should | yes |
 

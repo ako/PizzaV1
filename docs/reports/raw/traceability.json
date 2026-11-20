@@ -2,7 +2,7 @@
   "kind": "traceability",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-20 11:20",
+  "generated": "2026-11-20 18:21",
   "mxcli": "nightly-75-g7efedabd",
   "method": [
     "Requirements, decisions and open questions are read from the project brain (`docs/brain/`) with `brain list`; each requirement's anchor resolutions come from the same check `brain plan` uses, so \"built\" is defined in one place.",
@@ -2020,7 +2020,7 @@
             ],
             "decisions": [
               "e77a06: US-083..US-094 checkout: field changes recalculate in memory and only explicit actions commit, after quick typing caused optimistic-locking conflicts.",
-              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+              "632277: Delivery map is a real map: the DeliveryMap widget (widgets-src/DeliveryMap, Leaflet on Esri's keyless Dark Gray tiles, as in ako/ChatV2) draws the store, the zone's destination with the route and its distance, and the courier along the route on the tracking page; the static map-sf-dark.jpg is only the fallback when tiles cannot load. Asked for by the product owner on 2026-11-20. The browser now loads map tiles from server.arcgisonline.com."
             ],
             "questions": null
           },
@@ -2125,7 +2125,7 @@
               "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)"
             ],
             "decisions": [
-              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+              "632277: Delivery map is a real map: the DeliveryMap widget (widgets-src/DeliveryMap, Leaflet on Esri's keyless Dark Gray tiles, as in ako/ChatV2) draws the store, the zone's destination with the route and its distance, and the courier along the route on the tracking page; the static map-sf-dark.jpg is only the fallback when tiles cannot load. Asked for by the product owner on 2026-11-20. The browser now loads map tiles from server.arcgisonline.com."
             ],
             "questions": null
           },
@@ -2334,7 +2334,7 @@
               "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)"
             ],
             "decisions": [
-              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+              "632277: Delivery map is a real map: the DeliveryMap widget (widgets-src/DeliveryMap, Leaflet on Esri's keyless Dark Gray tiles, as in ako/ChatV2) draws the store, the zone's destination with the route and its distance, and the courier along the route on the tracking page; the static map-sf-dark.jpg is only the fallback when tiles cannot load. Asked for by the product owner on 2026-11-20. The browser now loads map tiles from server.arcgisonline.com."
             ],
             "questions": null
           },
@@ -2464,8 +2464,8 @@
             "id": "86ff90",
             "slice": "05-checkout",
             "title": "US-097 Delivery preview map",
-            "status": "partial",
-            "statusReason": "decision 13ee26: no distance label; fixed destination pin",
+            "status": "changed",
+            "statusReason": "decision 632277: a real map (Leaflet, Esri tiles) instead of the simulated map image, which remains the offline fallback; store and destination markers per zone and the distance as asked",
             "anchors": [
               {
                 "anchor": "@Shop.Checkout",
@@ -2487,6 +2487,7 @@
               "Shop.ACT_Nav_Menu",
               "Shop.DS_Checkout",
               "Simulation.SEED_Catalog",
+              "Simulation.SUB_Geo_Zone",
               "Simulation.SUB_Reset"
             ],
             "tests": null,
@@ -2500,7 +2501,7 @@
             ],
             "decisions": [
               "968fd2: Security: guest read on Coupon removed (no page reads it; the code shows as text on the cart); DeliveryZone readable only for the guest's own orders. This also closed the one Fulfilment\u003c-\u003eShop cycle.",
-              "13ee26: US-097 partly met: the checkout map shows the store marker and a destination marker only for an in-zone ZIP, but no distance text (e.g. 2.8 mi) and the destination pin has a fixed position rather than one per zone."
+              "632277: Delivery map is a real map: the DeliveryMap widget (widgets-src/DeliveryMap, Leaflet on Esri's keyless Dark Gray tiles, as in ako/ChatV2) draws the store, the zone's destination with the route and its distance, and the courier along the route on the tracking page; the static map-sf-dark.jpg is only the fallback when tiles cannot load. Asked for by the product owner on 2026-11-20. The browser now loads map tiles from server.arcgisonline.com."
             ],
             "questions": null
           }

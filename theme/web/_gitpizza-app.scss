@@ -465,3 +465,7 @@ html:not(.gp-kbd) .gp-app .btn:focus-visible { outline: none !important; box-sha
    container: position:sticky (sidebar, debugger, configurator image, checkout summary)
    then sticks to it instead of the viewport. The document is the only scroller here. */
 .gp-app .mx-dataview-content, .gp-app .mx-placeholder > .mx-dataview > .mx-dataview-content { overflow: visible; }
+
+/* Delivery map (US-097): the DeliveryMap widget fills the well; the well no longer sets a 16:10 picture ratio. */
+.gp-app .map-well.map-live { aspect-ratio: auto; }
+.gp-app .map-well.map-live .map-helper { z-index: 500; }

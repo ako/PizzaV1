@@ -1,0 +1,18 @@
+/* Delivery map: dark, matching the app's terminal look. Colours come from the theme's tokens. */
+.gdm { position: relative; }
+.gdm-map { width: 100%; border-radius: var(--r-md, 8px); overflow: hidden; background: var(--surface-lowest, #0d1117) center / cover no-repeat; }
+.gdm-map .leaflet-control-attribution { font-size: 10px; background: rgba(13, 17, 23, .75); color: var(--text-muted, #8b949e); }
+.gdm-map .leaflet-control-attribution a { color: var(--text-muted, #8b949e); }
+.gdm-map .leaflet-bar a { background: var(--surface-container, #161b22); color: var(--text-primary, #e6edf3); border-color: var(--border, #30363d); }
+.gdm--offline .leaflet-tile-pane { display: none; }
+.gdm-pin { background: none; border: 0; }
+.gdm-pin-inner { display: flex; flex-direction: column; align-items: center; gap: 4px; transform: translateY(-2px); }
+.gdm-mk { width: 34px; height: 34px; border-radius: var(--r-md, 8px); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+.gdm-mk .ms { font-size: 20px; }
+.gdm-pin--store .gdm-mk { background: var(--primary, #ff9d00); color: var(--primary-on, #1a1206); }
+.gdm-pin--dest .gdm-mk { background: var(--success, #3fb950); color: var(--success-on, #04260f); }
+.gdm-pin--courier .gdm-mk { width: 28px; height: 28px; border-radius: 50%; background: var(--info, #58a6ff); color: var(--info-on, #04121f); }
+.gdm-nm { font: 700 11px/1.2 var(--font-mono, "JetBrains Mono", monospace); color: var(--text-primary, #e6edf3); background: rgba(13, 17, 23, .8); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.leaflet-tooltip.gdm-distance { font: 700 12px var(--font-mono, "JetBrains Mono", monospace); background: var(--surface-container, #161b22); color: var(--text-primary, #e6edf3); border: 1px solid var(--border, #30363d); box-shadow: none; }
+.leaflet-tooltip.gdm-distance::before { display: none; }
+.gdm-note { margin: 6px 0 0; font-size: 12px; color: var(--text-muted, #8b949e); }

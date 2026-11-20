@@ -633,3 +633,19 @@ All 8 points fixed, checked on the same before/after runs (annotations: F1/F3 `s
 8. The bars sit on their own line at 390 px.
 
 Nit: at 390 px, the per-milestone labels are still cut with an ellipsis ("M3 — Simulated kitchen and co…") although the bar now has its own line. No page errors or overflow at 1280/390 px.
+
+## Delivery map: a real map widget, after ako/ChatV2 (2026-11-20)
+
+US-097's map was the prototype's static `map-sf-dark.jpg` with CSS pins at fixed positions: one destination spot for every zone, and no distance. At the product owner's request it is now a real map, built the way ako/ChatV2 builds its map cards.
+- **Widget:** `widgets-src/DeliveryMap` → `widgets/com.gitpizza.widgets.DeliveryMap.mpk`. It is a pluggable widget with Leaflet 1.9.4 on Esri's keyless Dark Gray Canvas tiles plus their label layer (CARTO needs a key now; see ChatV2's FINDINGS). It draws the store, the destination, a dashed route in the theme's primary colour with the distance, and the courier along the route (`courierProgress` 0..1). When no tile loads, it shows `map-sf-dark.jpg` under the markers instead. Labels are set as text, not HTML. Unit tests for the geometry: 3/3.
+- **Model:** `Latitude`/`Longitude` on `Core.StoreSettings` (2140 Folsom St) and `Fulfilment.DeliveryZone` (ZIP centres). `Simulation.SUB_Geo_Ensure` sets them after every reset and on a normal startup, so an existing database gets them too. `SUB_Checkout_Compute` and `SUB_Track_Fill` fill `Map*` attributes on the view models; the tracking courier is at `RouteProgressPercent`, at the destination when delivered, and hidden before dispatch.
+- **Pages:** `Shop.Checkout` (store, destination per zone, "2.8 mi"; store only outside the zone) and `Shop.Tracking` (store, the order's address, distance remaining, courier).
+- **mxcli gotcha:** an `expression` property of a pluggable widget is stored as expression text. `storeLabel: 'MISSION_KITCHEN'` became the expression `MISSION_KITCHEN`; `check` passed it and only mx check failed it (CE0117). A string literal needs doubled quotes: `'''MISSION_KITCHEN'''`.
+- **Widget gotcha:** the first fit ran before the map knew its size, so 94105's pin was off-screen. The widget now refits on every resize.
+- **Verified in the browser:**
+  - Checkout: 94105 puts the destination in view with "2.8 mi"; 94110 puts it elsewhere with "0.8 mi"; 90210 shows the store only.
+  - Tracking: a live order went QUEUED → BAKING → QA_CHECK → DISPATCH → LIVE, and the courier moved between refreshes with the distance remaining counting down.
+  - New journey J14 covers the checkout cases.
+- **Gates:** every script's second exec writes nothing; verify 0 new (lint 246 known, mx check 0); report 47; tests 24/24; journeys 14/14 (second run); visual 12/12; brain check OK, plan 111/111 built.
+- **Spec status:** US-097 is now "changed", not "partly met". Decision `632277` replaces `13ee26`; DEV-01 is CHANGED. The browser now needs `server.arcgisonline.com` for tiles (delivery notes §2, operations).
+- **Flaky J1:** J1 fails on the first journey run after an app restart: the cart badge does not appear after the first add, so the `.count-bubble` wait times out. It passes on the next run. This was seen before this change too (the first run after switching binaries), so it is unrelated to the map; it is still open.
