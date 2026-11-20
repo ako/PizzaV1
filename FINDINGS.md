@@ -551,3 +551,17 @@ The `.mpr` metadata is unchanged by the conversion (`_ProductVersion`/`_BuildVer
 **Reproduced:** `mx convert --in-place` on the commit before (`efcd980~1`) gives byte-identical results for all of change 2 and 3; it differs from Studio Pro only in change 1.
 
 **After the conversion:** re-executing scripts `35`, `08` and `02` writes nothing (mxcli compares content, not key order), and mx check reports 0 errors. A unit mxcli *does* modify is written back in mxcli's key order, a cosmetic diff that Studio Pro reads without a prompt.
+
+## ako/mxcli main `7efedabd` (nightly-75), tried 2026-11-20
+
+It merges PRs 2452, 2458, 2457, 2459 (#2456) and 2447 (`verify --apply/--through`). Tested on a clean `git worktree` of this project; a hand-made copy without `themesource/` gives 900 bogus CE0535 errors, so copies must be full checkouts.
+
+| Issue | Result on main |
+|---|---|
+| #2451 report all inputs | fixed (tested on the PR) |
+| #2453 several scripts | **fixed**: "2 scripts checked as one set"; the bad reference in one is reported; warnings are printed by name. The issue is still open |
+| #2454 / #2457 MPR017 after a change | **fixed**: the first lint after `exec` gives the right counts (3 runs). #2454 is still open |
+| #2455 baseline rule set and config | fixed (tested on the PR). The annotations part is still not done |
+| #2456 drop of a used attribute | **partly**: `check` now rejects dropping `Product.CodeToppings` (MDL108, names the microflow). But references from a **snippet through its parameter** (`$Product/CodeToppings` in `SNIP_CodeBlock`; `$Card/Title` in a minimal repro) are not in the catalog, so `show references` and MDL108 miss them. `check` passes; mx check fails with CE0117. Affects every `SNIP_*` here (`CardPriceLabel` lists only `Shop.ItemInfo`, not `SNIP_MenuCard`/`SNIP_FeaturedCard`) |
+| `verify --apply` | a failed check writes nothing; a passing one execs, lints and mx-checks. When mx check then fails, the change stays written (documented: "Writes the project"; git is the undo), and the output does not say so |
+| Committed `verify-baseline/` | still valid on main: 0 new, 247 known, mx check passes |
