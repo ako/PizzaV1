@@ -1,6 +1,6 @@
 # Findings
 
-Mendix 11.16.1 · mxcli nightly-20261118-9d764483c · MDL scripts `mdl 1`.
+Mendix 11.16.1 · mxcli nightly-75-g7efedabd (ako/mxcli main, since 2026-11-20; nightly-20261118-9d764483c before) · MDL scripts `mdl 1`.
 
 ## 2026-11-19 — bootstrap
 
@@ -565,3 +565,12 @@ It merges PRs 2452, 2458, 2457, 2459 (#2456) and 2447 (`verify --apply/--through
 | #2456 drop of a used attribute | **partly** (snippet gap filed as ako/mxcli#2468): `check` now rejects dropping `Product.CodeToppings` (MDL108, names the microflow). But references from a **snippet through its parameter** (`$Product/CodeToppings` in `SNIP_CodeBlock`; `$Card/Title` in a minimal repro) are not in the catalog, so `show references` and MDL108 miss them. `check` passes; mx check fails with CE0117. Affects every `SNIP_*` here (`CardPriceLabel` lists only `Shop.ItemInfo`, not `SNIP_MenuCard`/`SNIP_FeaturedCard`) |
 | `verify --apply` | a failed check writes nothing; a passing one execs, lints and mx-checks. When mx check then fails, the change stays written (documented: "Writes the project"; git is the undo), and the output does not say so |
 | Committed `verify-baseline/` | still valid on main: 0 new, 247 known, mx check passes |
+
+## Switched the project to mxcli nightly-75-g7efedabd (ako/mxcli main), 2026-11-20
+
+- `./mxcli` is the ako/mxcli main build `7efedabd` (built here). The old binary was `nightly-20261118-9d764483c`.
+- `mxcli init --sync-skills .` refreshed 14 skill files and added 5 report skills (configuration, dependencies, quality, readiness, release). It also refreshed the mxcli section of `CLAUDE.md`/`AGENTS.md`: the gate list now uses `verify` (lint plus mx check against `verify-baseline/`) instead of separate `lint` and `docker check`. The tooling stamp is now `nightly-75-g7efedabd`.
+- `verify-baseline/lint.json` was re-recorded in the new format (61 rules ran, plus the lint-config fingerprint; 247 findings, unchanged).
+- **Compatibility:** all 28 scripts pass `check`. The new binary also reports 12 MDL-PERF01 and 5 MPR010 warnings at check time; these are the same commit-in-loop (CONV011) and layout-grid findings already in the baseline. Re-executing all 28 scripts wrote nothing.
+- **Gates:** verify 0 new / 247 known, mx check 0 errors; report 47 (48 with the old binary, a scoring difference); tests 24/24; visual 12/12; journeys 13/13 on 2 of 3 runs (the first run after boot had one failure, not captured; the model is unchanged).
+- **Fresh sessions:** the binary is git-ignored. `.claude/bootstrap-mxcli.sh` downloads `mendixlabs/mxcli` `nightly`, currently `nightly-20261119-32a67fa4a`, which predates these fixes. The stamp is a dev version, so the bootstrap does not loop, but `init --sync-skills` will refuse to downgrade. A fresh session therefore runs the older binary with this newer guidance (e.g. `verify --apply`) until a nightly includes main's fixes. `RUN/start.ps1` downloads the same nightly (KI-02).

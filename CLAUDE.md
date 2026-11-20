@@ -57,15 +57,14 @@ result: the whole list after every edit proves nothing the one run at the end do
 ```bash
 ./mxcli check script.mdl -p GitPizza.mpr      # syntax + references, no apply (~2s)
 ./mxcli exec script.mdl -p GitPizza.mpr       # apply
-./mxcli lint -p GitPizza.mpr                  # rules (~3s)
+./mxcli verify -p GitPizza.mpr                # lint + mx check, new findings only (~10s)
 ./mxcli report -p GitPizza.mpr                # scored quality report
-./mxcli docker check -p GitPizza.mpr          # mxbuild, the slow one (~25s)
 ./mxcli test tests/ -p GitPizza.mpr --local   # microflow tests (~30s cold, ~2s warm)
 ./mxcli run --local --watch --detach -p GitPizza.mpr   # the app, backgrounded; then `run wait`/`status`/`stop`
 ```
 
-**`lint` printing no errors is not a pass** — read the warning count, and read
-`report`'s score. A green `check` proves nothing about behaviour or about how
+**`verify` reports what is new, not what is good** — read the pre-existing count it
+prints and `report`'s score. A green `check` proves nothing about behaviour or about how
 a page renders: logic needs `test`, and anything visual needs the app actually running.
 
 Set `mx` up once with `./mxcli setup mxbuild -p GitPizza.mpr`. To call it directly,
