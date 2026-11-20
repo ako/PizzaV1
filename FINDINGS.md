@@ -589,3 +589,25 @@ Fresh evidence, following `docs/reports/README.md`: the app was started with a d
 | Performance (same "after" volume recording, re-analysed) | 6,569 ms server over 12 steps; step 8 "place order and pay" 4,884 ms | 1,706 ms; step 8 280 ms | the new analysis counts only traces rooted in an app request (`attribution: requests`), so the simulation's 1.5 s clock tick no longer lands in a step. Its query counts now match our own guest-only analysis (`docs/perf/data/after.json`) within 3 per step |
 
 The perf house page (`docs/perf/report.html`) is unchanged: it is built from our own analysis of `docs/perf/data/`, not from mxcli's figures. The annotation for `finding:flow:Shop.DS_Info_Line` is now stale (no such finding any more).
+
+## ako/mxcli PR 2475 (perf ranges and findings, traceability table), tried 2026-11-20
+
+Built from `def69a53`. Performance: before and after volume runs re-analysed (`docs/perf/data`, `--baseline`), with F1–F8 annotated as `finding:Fn` and six steps tagged `{finding: Fn}`. Traceability: rendered from `docs/reports/raw/traceability.json`. Desktop and 390 px, offline: no page errors, no page overflow.
+
+**Works:**
+- Ranges: `144 (122–299) → 78 (55–117)`. A change inside the spread stays uncoloured (open home server 504 → 461); one outside it is coloured (configurator browser 395 → 498, red: the ranges do not overlap).
+- Finding cards list each targeted step's before → after (F5: three steps, 307 → 197, 299 → 189, 466 → 318 queries). Findings named by no step say so (F1, F3, F6, F7).
+- Background work is listed apart from step time (4.7 s on "place order and pay").
+- "Every requirement": 111 rows (milestone, epic, requirement, status, proven by).
+
+**Points:**
+1. The finding cards give server time and queries but not database time, where F2's effect is (KPI query 63 → 5 ms). They also omit the ranges the table shows, so noise (F2's 504 → 461 server) reads as an improvement.
+2. "No step names this finding" reads as a mistake for findings that are not about a step (F1/F3 housekeeping, background). A way to mark them background/not-a-step would help.
+3. There is no status for "by design" (F8 renders as open).
+4. The Note column repeats the ID when the note starts with it ("finding F2: F2: …").
+5. The "plans dominated by JIT 0 of 0" tile shows when no plans were read.
+6. Traceability table at 390 px: status and "proven by", the useful columns, are scrolled off to the right (inner scroll). Milestone and epic repeat on every row.
+7. Rows with no footprint (US-004 DEMO MODE banner: no microflow, so nothing can "reach" it) show a plain "nothing", unlike the 9 highlighted untested rows, with no reason. UI-only requirements can never be proven this way, although every journey shows the banner.
+8. Per-epic bars at 390 px shrink to slivers (the label column takes the width). This predates the PR.
+
+Our own `docs/reports/performance-annotations.yaml` summary was stale (it said server time includes the background clock); it is corrected and `docs/reports/performance.html` re-rendered.
