@@ -1,0 +1,12 @@
+mdl 1;
+
+-- The pizza chat in the shop (slice 16-pizza-chat): a floating chat button on
+-- every guest page (Layout_Guest), opening Conversational UI's chat panel on the
+-- guest's own chat with the pizza assistant (PizzaChat.DS_Chat).
+
+/** Floating chat button on every guest page: the guest's chat with the pizza assistant. */
+create or modify snippet PizzaChat.SNIP_ChatLauncher {
+  dataview dvPizzaChat (DataSource: MICROFLOW PizzaChat.DS_Chat, Class: 'pizza-chat-launcher') {
+    snippetcall scFloatingChat (Snippet: ConversationalUI.Snippet_FloatingChatButton, Params: (ChatContext = $currentObject))
+  }
+};

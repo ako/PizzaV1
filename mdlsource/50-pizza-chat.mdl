@@ -1,0 +1,487 @@
+mdl 1;
+
+-- Pizza chat (slice 16-pizza-chat): a chat assistant that helps a guest choose
+-- pizzas, build a cart, check delivery and track orders. Built like ako/ChatV2:
+-- Conversational UI for the chat, an Agent Editor agent on Mendix Cloud GenAI,
+-- microflow tools, and the PizzaChat widget (widgets-src/PizzaChat) rendering
+-- ```card blocks as cards (51-pizza-chat-api.mdl, 52-pizza-chat-ui.mdl).
+--
+-- The agent only reads and proposes. Everything that changes something (adding
+-- to the cart, checkout, payment) is a button the guest presses, run by a fixed
+-- microflow with the guest's own session. Tools see only what this guest may see:
+-- their own cart, and orders this session placed or found by number and email.
+--
+-- The key is not in the model; pass it per run:
+--   --constant PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY
+-- Without it the chat answers that the assistant is not available.
+
+create or modify module PizzaChat;
+create or modify module role PizzaChat.Guest description 'Every visitor: chats with the pizza assistant about the menu, their cart and their own orders';
+
+/** Mendix Cloud GenAI text generation key. Never commit a value; pass it per run or per environment. */
+create or modify constant PizzaChat."MxGenAIKey" folder 'Agent' (
+  Type: String,
+  DefaultValue: ''
+);
+
+/** Messages one guest may send per hour: the chat is open to anonymous visitors. */
+create or modify constant PizzaChat."MessagesPerHour" folder 'Agent' (
+  Type: Integer,
+  DefaultValue: 30
+);
+
+create or modify ai model PizzaChat."ChatModel" folder 'Agent' (
+  Provider: MxCloudGenAI,
+  Key: @PizzaChat."MxGenAIKey"
+);
+
+/** Messages a guest sent to the assistant in the current hour (the per-session limit). */
+create or modify persistent entity PizzaChat."ChatUsage" (
+  "WindowStart": DateTime,
+  "MessageCount": Integer default 0
+);
+create or modify association PizzaChat."ChatUsage_User" from PizzaChat."ChatUsage" to System."User" on delete cascade;
+
+-- ---------------------------------------------------------------- tools
+
+/**
+ * Agent tool: searches the published menu by a word (name, ingredient, kind)
+ * and an optional diet filter. Lists code, name, kind, price and diet tags.
+ *
+ * @param $Query A word to search for, e.g. mushroom, bbq, drinks; empty for everything
+ * @param $Diet vegetarian, vegan, spicy or empty
+ */
+create or modify microflow PizzaChat.Tool_SearchMenu ($Query: String, $Diet: String)
+returns String as $Answer
+folder 'Agent tools'
+begin
+  declare $Q String = if $Query = empty then '' else toLowerCase(trim($Query));
+  declare $D String = if $Diet = empty then '' else toLowerCase(trim($Diet));
+  retrieve $Products from Catalog.Product where [ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
+  declare $Out String = '';
+  declare $Count Integer = 0;
+  loop $P in $Products
+  begin
+    declare $Hay String = toLowerCase((if $P/SearchText = empty then '' else $P/SearchText) + ' ' + $P/Name + ' ' + getCaption($P/Kind));
+    declare $Match Boolean = $Q = '' or contains($Hay, $Q);
+    declare $DietOk Boolean = $D = '' or ($D = 'vegetarian' and $P/IsVegetarian) or ($D = 'vegan' and $P/IsVegan) or ($D = 'spicy' and $P/Spice != Catalog.SpiceLevel.NONE);
+    if $Match and $DietOk and $Count < 15 then
+      set $Count = $Count + 1;
+      set $Out = $Out + $P/Code + ' | ' + $P/Name + (if $P/RealWorldName = empty then '' else ' (' + $P/RealWorldName + ')') + ' | ' + getCaption($P/Kind)
+        + ' | ' + (if $P/CardPriceLabel = empty then '' else $P/CardPriceLabel)
+        + (if $P/IsVegan then ' | vegan' else if $P/IsVegetarian then ' | vegetarian' else '')
+        + (if $P/Spice = empty or $P/Spice = Catalog.SpiceLevel.NONE then '' else ' | spicy ' + getCaption($P/Spice))
+        + (if $P/IsOrderable then '' else ' | sold out') + '
+';
+    end if;
+  end loop;
+  if $Count = 0 then
+    return 'No menu items match "' + $Q + '"' + (if $D = '' then '' else ' with diet ' + $D) + '.';
+  end if;
+  return toString($Count) + ' menu item(s): code | name | kind | price | diet
+' + $Out;
+end;
+
+/**
+ * Agent tool: one menu item by its code: description, toppings, allergens,
+ * price, size, calories and whether it can be ordered now.
+ *
+ * @param $Code The product code, e.g. P-01
+ */
+create or modify microflow PizzaChat.Tool_GetProduct ($Code: String)
+returns String as $Answer
+folder 'Agent tools'
+begin
+  declare $C String = if $Code = empty then '' else toUpperCase(trim($Code));
+  retrieve $P from Catalog.Product where [Code = $C and ProductStatus = 'PUBLISHED'] first;
+  if $P = empty then
+    return 'No menu item with code ' + $C + '. Use SearchMenu to find codes.';
+  end if;
+  return $P/Code + ': ' + $P/Name + (if $P/RealWorldName = empty then '' else ' (' + $P/RealWorldName + ')')
+    + '. Kind: ' + getCaption($P/Kind)
+    + '. Price: ' + (if $P/CardPriceLabel = empty then 'see the menu' else $P/CardPriceLabel)
+    + (if $P/CardSizeLabel = empty then '' else ' (' + $P/CardSizeLabel + ')')
+    + '. Description: ' + (if $P/Description = empty then (if $P/ShortDescription = empty then '-' else $P/ShortDescription) else $P/Description)
+    + (if $P/CodeToppings = empty then '' else '. Toppings: ' + $P/CodeToppings)
+    + '. Allergens: ' + (if $P/AllergenText = empty or $P/AllergenText = '' then 'none declared' else $P/AllergenText)
+    + (if $P/IsVegan then '. Vegan' else if $P/IsVegetarian then '. Vegetarian' else '. Not vegetarian')
+    + (if $P/Spice = empty or $P/Spice = Catalog.SpiceLevel.NONE then '' else '. Spice: ' + getCaption($P/Spice))
+    + (if $P/Kcal > 0 then '. About ' + toString($P/Kcal) + ' kcal' else '')
+    + (if $P/IsOrderable then '. Can be ordered now.' else '. Sold out today.')
+    + (if $P/Kind = Catalog.ProductKind.PIZZA then ' Adding it from the chat adds the default configuration (medium); size, crust and extras are changed in the configurator.' else '');
+end;
+
+/** Agent tool: the guest's cart: lines, quantities and prices, totals and anything that blocks checkout. */
+create or modify microflow PizzaChat.Tool_GetCart ()
+returns String as $Answer
+folder 'Agent tools'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false] sort by CreatedAt asc;
+  $N = count $Lines;
+  if $N = 0 then
+    return 'The cart is empty.';
+  end if;
+  declare $Out String = '';
+  loop $L in $Lines
+  begin
+    set $Out = $Out + toString($L/Quantity) + ' x ' + (if $L/DisplayName = empty then '?' else $L/DisplayName)
+      + (if $L/SizeText = empty then '' else ' (' + $L/SizeText + ')')
+      + (if $L/ConfigText = empty or $L/ConfigText = '' then '' else ', ' + $L/ConfigText)
+      + ' | ' + (if $L/LineTotalText = empty then '' else $L/LineTotalText)
+      + (if $L/IsAvailable then '' else ' | unavailable') + '
+';
+  end loop;
+  return 'Cart (' + toString($Cart/ItemCount) + ' items):
+' + $Out
+    + 'Subtotal: ' + (if $Cart/SubtotalText = empty then '' else $Cart/SubtotalText)
+    + (if $Cart/CouponCode = empty or $Cart/CouponCode = '' then '' else '. Coupon: ' + $Cart/CouponCode + (if $Cart/CouponMessage = empty then '' else ' (' + $Cart/CouponMessage + ')'))
+    + (if $Cart/CheckoutBlock = empty or $Cart/CheckoutBlock = '' then '' else '. Checkout is blocked: ' + $Cart/CheckoutBlock)
+    + '.';
+end;
+
+/**
+ * Agent tool: whether the store delivers to a ZIP code, with the distance and
+ * an estimate of the delivery time.
+ *
+ * @param $Zip A five-digit ZIP code
+ */
+create or modify microflow PizzaChat.Tool_CheckDelivery ($Zip: String)
+returns String as $Answer
+folder 'Agent tools'
+begin
+  declare $Z String = if $Zip = empty then '' else trim($Zip);
+  if not(isMatch($Z, '[0-9]{5}')) then
+    return 'A ZIP code has five digits.';
+  end if;
+  retrieve $Zone from Fulfilment.DeliveryZone where [Zip = $Z and IsActive = true] first;
+  retrieve $Zones from Fulfilment.DeliveryZone where [IsActive = true] sort by Zip asc;
+  declare $All String = '';
+  loop $Each in $Zones
+  begin
+    set $All = $All + (if $All = '' then '' else ', ') + $Each/Zip;
+  end loop;
+  if $Zone = empty then
+    return 'ZIP ' + $Z + ' is outside the delivery zone. Delivery goes to ' + $All + '. Pickup at the store (2140 Folsom Street) is always possible.';
+  end if;
+  retrieve $Sim from Core.SimulationSettings first;
+  declare $Trip Integer = if $Sim = empty then 140 else round($Sim/TravelBase + $Sim/TravelPerMile * $Zone/DistanceMiles);
+  declare $Base Integer = if $Sim = empty then 300 else $Sim/QueueWait + $Sim/Bake + $Sim/Qa + $Sim/CourierToStore + $Sim/Handover;
+  $Eff = call microflow Core.SUB_Eff(Base = $Base + $Trip);
+  return 'ZIP ' + $Z + ' (' + $Zone/Neighborhood + ') is in the delivery zone, ' + formatDecimal($Zone/DistanceMiles, '0.0') + ' mi from the store. Delivery takes about '
+    + toString(max(1, round($Eff div 60))) + ' minutes after payment (simulated time).';
+end;
+
+/** The orders this guest may see: placed in this session, or found with number and email. Newest first. */
+create or modify microflow PizzaChat.SUB_Order_Visible ($Number: Integer)
+returns Fulfilment.Order as $Order
+folder 'Agent tools'
+begin
+  retrieve $O from Fulfilment.Order where [OrderNumber = $Number][Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] first;
+  return $O;
+end;
+
+/** Plain words for an order status. */
+create or modify microflow PizzaChat.SUB_Status_Plain ($Status: Fulfilment.OrderStatus)
+returns String as $Text
+folder 'Agent tools'
+begin
+  return if $Status = Fulfilment.OrderStatus.PAYMENT_PENDING then 'waiting for payment'
+    else if $Status = Fulfilment.OrderStatus.PAYMENT_FAILED then 'payment failed (it can be retried on the tracking page)'
+    else if $Status = Fulfilment.OrderStatus.QUEUED then 'queued in the kitchen'
+    else if $Status = Fulfilment.OrderStatus.BAKING then 'in the oven'
+    else if $Status = Fulfilment.OrderStatus.QA_CHECK then 'quality check and packing'
+    else if $Status = Fulfilment.OrderStatus.READY_FOR_DISPATCH then 'ready, waiting for a courier'
+    else if $Status = Fulfilment.OrderStatus.READY_FOR_PICKUP then 'ready for pickup'
+    else if $Status = Fulfilment.OrderStatus.OUT_FOR_DELIVERY then 'out for delivery'
+    else if $Status = Fulfilment.OrderStatus.DELIVERED then 'delivered'
+    else if $Status = Fulfilment.OrderStatus.PICKED_UP then 'picked up'
+    else if $Status = Fulfilment.OrderStatus.CANCELLED then 'cancelled'
+    else 'unknown';
+end;
+
+/** One order as the tools describe it. */
+create or modify microflow PizzaChat.SUB_Order_Describe ($Order: Fulfilment.Order)
+returns String as $Text
+folder 'Agent tools'
+begin
+  $Plain = call microflow PizzaChat.SUB_Status_Plain(Status = $Order/OrderStatus);
+  $Total = call microflow Core.SUB_Money(Amount = $Order/Total);
+  declare $Delivery Boolean = $Order/OrderType = Fulfilment.OrderType.DELIVERY;
+  return 'Order MX-' + toString($Order/OrderNumber) + ': ' + $Plain
+    + '. ' + (if $Delivery then 'Delivery to ' + (if $Order/AddressLine1 = empty then '' else $Order/AddressLine1) + ', ' + formatDecimal($Order/DistanceMiles, '0.0') + ' mi' else 'Pickup at the store')
+    + '. ' + toString($Order/ItemCount) + ' item(s), total ' + $Total
+    + (if $Order/PlacedAt = empty then '' else '. Placed ' + formatDateTime($Order/PlacedAt, 'yyyy-MM-dd HH:mm'))
+    + (if $Delivery and $Order/OrderStatus = Fulfilment.OrderStatus.OUT_FOR_DELIVERY then '. The courier has covered ' + toString($Order/RouteProgressPercent) + '% of the route' else '')
+    + '.';
+end;
+
+/** Agent tool: the orders this guest placed in this session or found by number and email, newest first. */
+create or modify microflow PizzaChat.Tool_MyOrders ()
+returns String as $Answer
+folder 'Agent tools'
+begin
+  retrieve $Orders from Fulfilment.Order where [Fulfilment.OrderAccess_Order/Fulfilment.OrderAccess/Fulfilment.OrderAccess_User = '[%CurrentUser%]'] sort by OrderNumber desc limit 5;
+  $N = count $Orders;
+  if $N = 0 then
+    return 'This visitor has no orders in this session. An earlier order can be found with its order number and the email used at checkout (FindOrder).';
+  end if;
+  declare $Out String = '';
+  loop $O in $Orders
+  begin
+    $Line = call microflow PizzaChat.SUB_Order_Describe(Order = $O);
+    set $Out = $Out + $Line + '
+';
+  end loop;
+  return $Out;
+end;
+
+/**
+ * Agent tool: one of this guest's orders by its number.
+ *
+ * @param $OrderNumber The order number, e.g. MX-1061 or 1061
+ */
+create or modify microflow PizzaChat.Tool_GetOrder ($OrderNumber: String)
+returns String as $Answer
+folder 'Agent tools'
+begin
+  declare $Digits String = if $OrderNumber = empty then '' else replaceAll(replaceFirst(toUpperCase(trim($OrderNumber)), '^MX-', ''), '[^0-9]', '');
+  if not(isMatch($Digits, '[0-9]{1,9}')) then
+    return 'An order number looks like MX-1061.';
+  end if;
+  $O = call microflow PizzaChat.SUB_Order_Visible(Number = parseInteger($Digits));
+  if $O = empty then
+    return 'Order MX-' + $Digits + ' is not one of this visitor''s orders. Ask for the order number and the email used at checkout, then use FindOrder.';
+  end if;
+  $Text = call microflow PizzaChat.SUB_Order_Describe(Order = $O);
+  return $Text;
+end;
+
+/**
+ * Agent tool: finds a guest order by number and the email used at checkout, the
+ * same rules as the order lookup page (US-133): a miss never says which field is
+ * wrong, and after 5 misses in 10 minutes lookups are refused for 10 minutes. A
+ * hit lets this visitor see the order.
+ *
+ * @param $OrderNumber The order number, e.g. MX-1061
+ * @param $Email The email used at checkout
+ */
+create or modify microflow PizzaChat.Tool_FindOrder ($OrderNumber: String, $Email: String)
+returns String as $Answer
+folder 'Agent tools'
+begin
+  declare $Raw String = if $OrderNumber = empty then '' else toUpperCase(trim($OrderNumber));
+  declare $Mail String = if $Email = empty then '' else toLowerCase(trim($Email));
+  if $Raw = '' or $Mail = '' then
+    return 'Both the order number and the email used at checkout are needed.';
+  end if;
+  declare $Since DateTime = addMinutes([%CurrentDateTime%], -10);
+  retrieve $Misses from Shop.LookupAttempt where [Shop.LookupAttempt_User = '[%CurrentUser%]' and AttemptedAt > $Since];
+  $MissCount = count $Misses;
+  if $MissCount >= 5 then
+    return 'Too many attempts. Lookups are possible again in 10 minutes.';
+  end if;
+  declare $Digits String = replaceAll(replaceFirst($Raw, '^MX-', ''), '[^0-9]', '');
+  declare $Number Integer = if isMatch($Digits, '[0-9]{1,9}') then parseInteger($Digits) else -1;
+  retrieve $O from Fulfilment.Order where [OrderNumber = $Number and Source = 'GUEST'] first;
+  if $O = empty or toLowerCase($O/ContactEmail) != $Mail then
+    $Miss = create Shop.LookupAttempt (AttemptedAt = [%CurrentDateTime%], Shop.LookupAttempt_User = [%CurrentUser%]) commit without events;
+    return 'No order matches this order number and email.';
+  end if;
+  call microflow Shop.SUB_Order_Grant(TheOrder = $O);
+  $Text = call microflow PizzaChat.SUB_Order_Describe(Order = $O);
+  return 'Found. ' + $Text;
+end;
+
+-- ---------------------------------------------------------------- the agent
+
+/** The pizza assistant: helps a guest choose, build a cart, check delivery and track orders. */
+create or modify agent PizzaChat."PizzaAssistant" folder 'Agent' (
+  UsageType: Chat,
+  Model: PizzaChat."ChatModel",
+  SelectedModel: 'eu.anthropic.claude-sonnet-5-5',
+  Description: 'Helps guests of Git Pizza choose pizzas, build a cart, check delivery and track their orders.',
+  ToolChoice: Auto,
+  EnableBackendStreaming: true,
+  EnableUIStreaming: true,
+  SystemPrompt: $$You are the order assistant of Git Pizza MxDev, a pizza place in San Francisco with a developer theme (pizzas have code names such as The Root Pizza or Binary BBQ). You help guests choose pizzas, sides and drinks, build their cart, check delivery to their ZIP code and follow their orders. This is a demo: payments, kitchen and delivery are simulated.
+
+What you can and cannot do:
+- You read with your tools and propose. You never change the cart, place an order or pay: the guest presses a button on a card for that. Never say something was added or ordered; say the button does it.
+- Only use facts from your tools: names, prices, allergens, delivery zone, order status. If a tool does not say it, say you do not know.
+- Allergens matter: always state the allergens from GetProduct when a guest asks about allergies or diets, and suggest checking the product page.
+- Orders: you see only orders this visitor placed in this session, or found with FindOrder (order number and the email used at checkout). Never guess or reveal other orders.
+- Keep answers short and friendly, in the guest's language. Use plain markdown.
+
+Cards (the chat shows them): put a fenced block with the language `card` holding one JSON object, or `cards` with an array. Cards name things; the app fills in the facts (photo, price, status, map). Types:
+```card
+{"type":"products","title":"Two vegetarian picks","codes":["P-03","P-07"]}
+```
+- products: up to 6 product codes from SearchMenu or GetProduct. Each shows a photo, price, diet and an Add to cart button.
+- cart: {"type":"cart","title":"Your cart"} shows the live cart with a Checkout button.
+- zone: {"type":"zone","zip":"94105"} shows a map with the store, the destination and the distance, after CheckDelivery.
+- order: {"type":"order","order":"1061"} shows the status, timeline and live map of one of the visitor's orders.
+- info: {"type":"info","title":"...","fields":[{"label":"...","value":"..."}],"note":"..."} for anything else.
+- actions on any card, at most two: {"label":"Go to checkout","action":"checkout"}, {"label":"Track order","action":"track","order":"1061"}, {"label":"Open the menu","action":"menu"}, {"label":"Add 2","action":"add","code":"P-01","quantity":2}.
+Add at most two short sentences next to a card; do not repeat what the card shows.
+
+Follow-up questions: end every answer that is not just a greeting with a suggestions block of two or three short questions the guest is likely to ask next, phrased as the guest would type them:
+```suggestions
+["What is vegan?", "Do you deliver to 94110?"]
+```$$
+)
+{
+  tool SearchMenu (
+    Document: PizzaChat.Tool_SearchMenu,
+    Description: 'Searches the menu. Inputs: Query (a word such as mushroom, bbq, drinks, or empty for all) and Diet (vegetarian, vegan, spicy or empty). Returns code, name, kind, price and diet.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Searching the menu'
+  )
+  tool GetProduct (
+    Document: PizzaChat.Tool_GetProduct,
+    Description: 'One menu item by code (e.g. P-01): description, toppings, allergens, price, calories and whether it can be ordered now.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Reading the product'
+  )
+  tool GetCart (
+    Document: PizzaChat.Tool_GetCart,
+    Description: 'The guest''s cart: lines, quantities, prices, subtotal, coupon and anything that blocks checkout. No inputs.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Looking at your cart'
+  )
+  tool CheckDelivery (
+    Document: PizzaChat.Tool_CheckDelivery,
+    Description: 'Whether the store delivers to a five-digit ZIP code, the distance and the estimated delivery time. Input: Zip.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Checking delivery'
+  )
+  tool MyOrders (
+    Document: PizzaChat.Tool_MyOrders,
+    Description: 'The orders this visitor placed in this session or found with FindOrder, newest first: number, status, delivery or pickup, total. No inputs.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Looking up your orders'
+  )
+  tool GetOrder (
+    Document: PizzaChat.Tool_GetOrder,
+    Description: 'One of this visitor''s orders by its number (MX-1061 or 1061): status, delivery, items, total and courier progress.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Checking the order'
+  )
+  tool FindOrder (
+    Document: PizzaChat.Tool_FindOrder,
+    Description: 'Finds an earlier order by its number and the email used at checkout, so this visitor can see it. Inputs: OrderNumber, Email.',
+    Enabled: true,
+    UserAccessApproval: VisibleForUser,
+    DisplayTitle: 'Finding your order'
+  )
+};
+
+-- ---------------------------------------------------------------- the chat
+
+/**
+ * Whether this guest may send another message: at most MessagesPerHour per
+ * hour, counted per user (an anonymous guest is one session).
+ */
+create or modify microflow PizzaChat.SUB_Usage_Allow ()
+returns Boolean as $Allowed
+folder 'Chat'
+begin
+  declare $Now DateTime = [%CurrentDateTime%];
+  retrieve $Usage from PizzaChat.ChatUsage where [PizzaChat.ChatUsage_User = '[%CurrentUser%]'] first;
+  if $Usage = empty then
+    $New = create PizzaChat.ChatUsage (WindowStart = $Now, MessageCount = 1, PizzaChat.ChatUsage_User = [%CurrentUser%]) commit without events;
+    return true;
+  end if;
+  if $Usage/WindowStart = empty or $Usage/WindowStart < addHours($Now, -1) then
+    change $Usage (WindowStart = $Now, MessageCount = 1) commit without events;
+    return true;
+  end if;
+  if $Usage/MessageCount >= @PizzaChat.MessagesPerHour then
+    return false;
+  end if;
+  change $Usage (MessageCount = $Usage/MessageCount + 1) commit without events;
+  return true;
+end;
+
+/** Puts a fixed reply into the answer the chat is waiting for, without calling the model. */
+create or modify microflow PizzaChat.SUB_Chat_Reply ($ChatContext: ConversationalUI.ChatContext, $Reply: String)
+folder 'Chat'
+begin
+  retrieve $Pending from ConversationalUI.Message where [ConversationalUI.Message_ChatContext = $ChatContext][Role = 'assistant'][Status = 'Loading'] sort by createdDate desc first;
+  if $Pending != empty then
+    change $Pending (Content = $Reply, Status = ConversationalUI.ENUM_MessageStatus.Success) commit refresh;
+  end if;
+  change $ChatContext (Status = ConversationalUI.ENUM_ChatContextStatus.Ready) commit refresh;
+end;
+
+/** Conversational UI action microflow: sends the conversation to the pizza assistant and stores its answer. */
+create or modify microflow PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow ($ChatContext: ConversationalUI.ChatContext)
+returns Boolean as $Success
+folder 'Chat'
+begin
+  $Allowed = call microflow PizzaChat.SUB_Usage_Allow();
+  if not($Allowed) then
+    call microflow PizzaChat.SUB_Chat_Reply(ChatContext = $ChatContext, Reply = 'You have sent a lot of messages this hour, so the assistant is taking a break. The menu, cart and tracking pages work as usual.');
+    return true;
+  end if;
+  if @PizzaChat.MxGenAIKey = '' then
+    call microflow PizzaChat.SUB_Chat_Reply(ChatContext = $ChatContext, Reply = 'The assistant is not available right now. The menu, cart and tracking pages work as usual.');
+    return true;
+  end if;
+  $Request = call microflow ConversationalUI.ChatContext_Preprocessing(ChatContext = $ChatContext);
+  if $Request = empty then
+    return false;
+  end if;
+  $Response = call java action AgentEditorCommons.Agent_CallDocument_WithHistory(Agent = 'PizzaChat.PizzaAssistant', Request = $Request, OptionalContextObject = empty) on error without rollback begin
+    log error node 'PizzaChat' 'Pizza assistant call failed: {1}' with ({1} = $latestError/Message);
+    return false;
+  end error;
+  if $Response = empty then
+    return false;
+  end if;
+  retrieve $Message from $Response/GenAICommons.Response_Message;
+  if $Message = empty then
+    return false;
+  end if;
+  call microflow ConversationalUI.ChatContext_UpdateAssistantResponse(ChatContext = $ChatContext, MessageStatus = ConversationalUI.ENUM_MessageStatus.Success, Response = $Response);
+  return true;
+end;
+
+/** A new chat with the pizza assistant, stored at once so the guest returns to it on every page. */
+create or modify microflow PizzaChat.SUB_Chat_Create ()
+returns ConversationalUI.ChatContext as $ChatContext
+folder 'Chat'
+begin
+  $ChatContext = call java action AgentEditorCommons.ChatContext_Create_ForAgentDocument(Agent = 'PizzaChat.PizzaAssistant', ActionMicroflow = 'PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow', ContextObject = empty) on error without rollback begin
+    log error node 'PizzaChat' 'Could not start a chat with the pizza assistant: {1}' with ({1} = $latestError/Message);
+    return empty;
+  end error;
+  call microflow ConversationalUI.ChatContext_CommitProviderConfigList(ChatContext = $ChatContext);
+  commit $ChatContext;
+  return $ChatContext;
+end;
+
+/** This guest's chat with the pizza assistant, or a new one. */
+create or modify microflow PizzaChat.DS_Chat ()
+returns ConversationalUI.ChatContext as $ChatContext
+folder 'Chat'
+begin
+  if $currentUser = empty then
+    return empty;
+  end if;
+  retrieve $Latest from ConversationalUI.ChatContext where [System.owner = '[%CurrentUser%]'][ConversationalUI.ChatContext_ProviderConfig_Active/ConversationalUI.ProviderConfig/ActionMicroflow = 'PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow'] sort by createdDate desc first;
+  if $Latest != empty then
+    return $Latest;
+  end if;
+  $New = call microflow PizzaChat.SUB_Chat_Create();
+  return $New;
+end;
+
+grant execute on microflow PizzaChat.DS_Chat to PizzaChat.Guest;
+grant execute on microflow PizzaChat.ChatContext_PizzaAssistant_ActionMicroflow to PizzaChat.Guest;

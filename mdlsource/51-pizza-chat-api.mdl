@@ -1,0 +1,338 @@
+mdl 1;
+
+-- The pizza chat's card data and card actions (slice 16-pizza-chat):
+--   GET  rest/pizzachat/v1/products?codes=P-01,P-07   menu items for a products card
+--   GET  rest/pizzachat/v1/cart                       the guest's cart for a cart card
+--   GET  rest/pizzachat/v1/zone?zip=94105             the delivery zone with map coordinates
+--   GET  rest/pizzachat/v1/order?number=1061          one of the guest's orders, timeline and map
+--   POST rest/pizzachat/v1/actions                    a card button: add to cart
+--
+-- Cards name things; these answer with the facts, with the guest's own session
+-- (Authentication: session, so the CSRF token is required). An order is only
+-- returned when this visitor may see it (Fulfilment.OrderAccess). The only
+-- action that changes data is "add": SUB_Product_Add with the product's default
+-- configuration, the same as the menu's quick add.
+
+-- ---------------------------------------------------------------- views
+create or modify non-persistent entity PizzaChat."ProductList" ();
+create or modify non-persistent entity PizzaChat."ProductView" (
+  "Code": String(10), "Name": String(80), "Subtitle": String(120), "Kind": String(20),
+  "Price": String(40), "Image": String(200), "ImageAlt": String(200), "Diet": String(20),
+  "Spice": String(30), "Allergens": String(300), "Orderable": Boolean default false
+);
+create or modify association PizzaChat."ProductView_ProductList" from PizzaChat."ProductView" to PizzaChat."ProductList";
+
+create or modify non-persistent entity PizzaChat."CartView" (
+  "Count": Integer default 0, "Subtotal": String(20), "Total": String(20),
+  "Coupon": String(60), "Block": String(300), "CanCheckout": Boolean default false
+);
+create or modify non-persistent entity PizzaChat."CartLineView" (
+  "Name": String(120), "Detail": String(400), "Quantity": Integer default 0, "Amount": String(20), "Available": Boolean default true
+);
+create or modify association PizzaChat."CartLineView_CartView" from PizzaChat."CartLineView" to PizzaChat."CartView";
+
+create or modify non-persistent entity PizzaChat."ZoneView" (
+  "Zip": String(5), "Ok": Boolean default false, "Neighborhood": String(40), "Distance": String(20),
+  "Message": String(300), "StoreLat": Decimal default 0, "StoreLon": Decimal default 0,
+  "DestLat": Decimal default 0, "DestLon": Decimal default 0
+);
+
+create or modify non-persistent entity PizzaChat."OrderView" (
+  "Found": Boolean default false, "Number": String(12), "Status": String(30), "StatusPlain": String(80),
+  "Tone": String(10), "Delivery": Boolean default false, "Address": String(120), "Items": String(40),
+  "Total": String(20), "Distance": String(20), "TrackUrl": String(200),
+  "StoreLat": Decimal default 0, "StoreLon": Decimal default 0, "DestLat": Decimal default 0, "DestLon": Decimal default 0,
+  "Courier": Decimal default -1
+);
+create or modify non-persistent entity PizzaChat."EventView" ("At": String(10), "Text": String(80));
+create or modify association PizzaChat."EventView_OrderView" from PizzaChat."EventView" to PizzaChat."OrderView";
+
+create or modify non-persistent entity PizzaChat."ActionRequest" ("Action": String(20), "Code": String(10), "Quantity": Integer default 1);
+create or modify non-persistent entity PizzaChat."ActionResult" ("Ok": Boolean default false, "Message": String(300), "Count": Integer default 0);
+
+grant read *, write * on entity PizzaChat."ProductList" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."ProductView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."CartView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."CartLineView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."ZoneView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."OrderView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."EventView" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."ActionRequest" to PizzaChat.Guest;
+grant read *, write * on entity PizzaChat."ActionResult" to PizzaChat.Guest;
+
+-- ---------------------------------------------------------------- JSON
+create or modify json structure PizzaChat."JSON_ProductList" folder 'Card API'
+  sample '{"products": [{"code": "P-01", "name": "The Root Pizza", "subtitle": "Margherita", "kind": "Pizza", "price": "$14.99", "image": "/assets/products/root.jpg", "imageAlt": "A pizza", "diet": "vegetarian", "spice": "MILD", "allergens": "Gluten, Milk", "orderable": true}]}';
+create or modify json structure PizzaChat."JSON_Cart" folder 'Card API'
+  sample '{"count": 2, "subtotal": "$34.98", "total": "$34.98", "coupon": "HOTFIX10", "block": "", "canCheckout": true, "lines": [{"name": "The Root Pizza", "detail": "Medium 12\"", "quantity": 1, "amount": "$14.99", "available": true}]}';
+create or modify json structure PizzaChat."JSON_Zone" folder 'Card API'
+  sample '{"zip": "94105", "ok": true, "neighborhood": "Rincon Hill", "distance": "2.8 mi", "message": "Text", "storeLat": 37.7633, "storeLon": -122.4152, "destLat": 37.789, "destLon": -122.395}';
+create or modify json structure PizzaChat."JSON_Order" folder 'Card API'
+  sample '{"found": true, "number": "MX-1061", "status": "BAKING", "statusPlain": "in the oven", "tone": "info", "delivery": true, "address": "500 Howard Street", "items": "2 items", "total": "$47.24", "distance": "2.8 mi", "trackUrl": "p/track/abc", "storeLat": 37.7633, "storeLon": -122.4152, "destLat": 37.789, "destLon": -122.395, "courier": 0.4, "events": [{"at": "18:04", "text": "Order placed"}]}';
+create or modify json structure PizzaChat."JSON_ActionRequest" folder 'Card API'
+  sample '{"action": "add", "code": "P-01", "quantity": 1}';
+create or modify json structure PizzaChat."JSON_ActionResult" folder 'Card API'
+  sample '{"ok": true, "message": "Added 1 x The Root Pizza to your cart.", "count": 3}';
+
+create or modify export mapping PizzaChat."EMM_ProductList" folder 'Card API'
+  with json structure PizzaChat."JSON_ProductList"
+{
+  PizzaChat."ProductList" {
+    PizzaChat."ProductView_ProductList"/PizzaChat."ProductView" as products {
+      code = "Code", name = "Name", subtitle = "Subtitle", kind = "Kind", price = "Price", image = "Image", imageAlt = "ImageAlt",
+      diet = "Diet", spice = "Spice", allergens = "Allergens", orderable = "Orderable"
+    }
+  }
+};
+create or modify export mapping PizzaChat."EMM_Cart" folder 'Card API'
+  with json structure PizzaChat."JSON_Cart"
+{
+  PizzaChat."CartView" {
+    count = "Count", subtotal = "Subtotal", total = "Total", coupon = "Coupon", block = "Block", canCheckout = "CanCheckout",
+    PizzaChat."CartLineView_CartView"/PizzaChat."CartLineView" as lines {
+      name = "Name", detail = "Detail", quantity = "Quantity", amount = "Amount", available = "Available"
+    }
+  }
+};
+create or modify export mapping PizzaChat."EMM_Zone" folder 'Card API'
+  with json structure PizzaChat."JSON_Zone"
+{
+  PizzaChat."ZoneView" {
+    zip = "Zip", ok = "Ok", neighborhood = "Neighborhood", distance = "Distance", message = "Message",
+    storeLat = "StoreLat", storeLon = "StoreLon", destLat = "DestLat", destLon = "DestLon"
+  }
+};
+create or modify export mapping PizzaChat."EMM_Order" folder 'Card API'
+  with json structure PizzaChat."JSON_Order"
+{
+  PizzaChat."OrderView" {
+    found = "Found", number = "Number", status = "Status", statusPlain = "StatusPlain", tone = "Tone", delivery = "Delivery",
+    address = "Address", items = "Items", total = "Total", distance = "Distance", trackUrl = "TrackUrl",
+    storeLat = "StoreLat", storeLon = "StoreLon", destLat = "DestLat", destLon = "DestLon", courier = "Courier",
+    PizzaChat."EventView_OrderView"/PizzaChat."EventView" as events {
+      at = "At", text = "Text"
+    }
+  }
+};
+create or modify import mapping PizzaChat."IMM_ActionRequest" folder 'Card API'
+  with json structure PizzaChat."JSON_ActionRequest"
+{
+  create PizzaChat."ActionRequest" {
+    "Action" = action,
+    "Code" = code,
+    "Quantity" = quantity
+  }
+};
+create or modify export mapping PizzaChat."EMM_ActionResult" folder 'Card API'
+  with json structure PizzaChat."JSON_ActionResult"
+{
+  PizzaChat."ActionResult" {
+    ok = "Ok", message = "Message", count = "Count"
+  }
+};
+
+-- ---------------------------------------------------------------- microflows
+
+/**
+ * Menu items for a products card, in the order the card names them. Only
+ * published products; an unknown code is left out.
+ *
+ * @param $codes Comma-separated product codes, e.g. P-01,P-07
+ */
+create or modify microflow PizzaChat.REST_GetProducts ($codes: String)
+returns PizzaChat.ProductList as $Result
+folder 'Card API'
+begin
+  $List = create PizzaChat.ProductList ();
+  if $codes = empty or trim($codes) = '' then
+    return $List;
+  end if;
+  declare $Wanted String = ',' + toUpperCase(replaceAll($codes, '\s', '')) + ',';
+  retrieve $Products from Catalog.Product where [ProductStatus = 'PUBLISHED'] sort by SortOrder asc;
+  declare $N Integer = 0;
+  loop $P in $Products
+  begin
+    if contains($Wanted, ',' + $P/Code + ',') and $N < 6 then
+      set $N = $N + 1;
+      create PizzaChat.ProductView (Code = $P/Code, Name = $P/Name, Subtitle = if $P/RealWorldName = empty then '' else $P/RealWorldName,
+        Kind = getCaption($P/Kind), Price = if $P/CardPriceLabel = empty then '' else $P/CardPriceLabel,
+        Image = if $P/ImageFile = empty or $P/ImageFile = '' then '' else '/assets/products/' + $P/ImageFile, ImageAlt = if $P/ImageAlt = empty then $P/Name else $P/ImageAlt,
+        Diet = if $P/IsVegan then 'vegan' else if $P/IsVegetarian then 'vegetarian' else '',
+        Spice = if $P/Spice = empty or $P/Spice = Catalog.SpiceLevel.NONE then '' else getCaption($P/Spice),
+        Allergens = if $P/AllergenText = empty then '' else $P/AllergenText, Orderable = $P/IsOrderable, PizzaChat.ProductView_ProductList = $List);
+    end if;
+  end loop;
+  return $List;
+end;
+
+/** The guest's cart for a cart card. */
+create or modify microflow PizzaChat.REST_GetCart ()
+returns PizzaChat.CartView as $Result
+folder 'Card API'
+begin
+  $Cart = call microflow Shop.SUB_Cart_Current();
+  $View = create PizzaChat.CartView (Count = $Cart/ItemCount, Subtotal = if $Cart/SubtotalText = empty then '' else $Cart/SubtotalText,
+    Total = if $Cart/TotalText = empty then '' else $Cart/TotalText, Coupon = if $Cart/CouponCode = empty then '' else $Cart/CouponCode,
+    Block = if $Cart/CheckoutBlock = empty then '' else $Cart/CheckoutBlock,
+    CanCheckout = $Cart/ItemCount > 0 and ($Cart/CheckoutBlock = empty or $Cart/CheckoutBlock = ''));
+  retrieve $Lines from Shop.CartLine where [Shop.CartLine_Cart = $Cart and IsDraft = false] sort by CreatedAt asc;
+  loop $L in $Lines
+  begin
+    create PizzaChat.CartLineView (Name = if $L/DisplayName = empty then '' else $L/DisplayName,
+      Detail = (if $L/SizeText = empty then '' else $L/SizeText) + (if $L/ConfigText = empty or $L/ConfigText = '' then '' else ' · ' + $L/ConfigText),
+      Quantity = $L/Quantity, Amount = if $L/LineTotalText = empty then '' else $L/LineTotalText, Available = $L/IsAvailable,
+      PizzaChat.CartLineView_CartView = $View);
+  end loop;
+  return $View;
+end;
+
+/**
+ * A ZIP code against the delivery zone, with the store and destination
+ * coordinates for the map.
+ *
+ * @param $zip A five-digit ZIP code
+ */
+create or modify microflow PizzaChat.REST_GetZone ($zip: String)
+returns PizzaChat.ZoneView as $Result
+folder 'Card API'
+begin
+  declare $Z String = if $zip = empty then '' else trim($zip);
+  retrieve $Store from Core.StoreSettings first;
+  $View = create PizzaChat.ZoneView (Zip = $Z, StoreLat = if $Store = empty then 0 else $Store/Latitude, StoreLon = if $Store = empty then 0 else $Store/Longitude);
+  if not(isMatch($Z, '[0-9]{5}')) then
+    change $View (Message = 'A ZIP code has five digits.');
+    return $View;
+  end if;
+  retrieve $Zone from Fulfilment.DeliveryZone where [Zip = $Z and IsActive = true] first;
+  if $Zone = empty then
+    change $View (Message = $Z + ' is outside the delivery zone. Pickup at the store is always possible.');
+    return $View;
+  end if;
+  change $View (Ok = true, Neighborhood = $Zone/Neighborhood, Distance = formatDecimal($Zone/DistanceMiles, '0.0') + ' mi',
+    DestLat = $Zone/Latitude, DestLon = $Zone/Longitude, Message = 'We deliver to ' + $Z + ' (' + $Zone/Neighborhood + ').');
+  return $View;
+end;
+
+/** One timeline line of an order card, when the moment exists. */
+create or modify microflow PizzaChat.SUB_Event_Add ($View: PizzaChat.OrderView, $At: DateTime, $Text: String)
+folder 'Card API'
+begin
+  if $At != empty then
+    create PizzaChat.EventView (At = formatDateTime($At, 'HH:mm'), Text = $Text, PizzaChat.EventView_OrderView = $View);
+  end if;
+end;
+
+/**
+ * One of the guest's orders for an order card: status, timeline, the map's
+ * store, destination and courier, and the personal tracking link. An order
+ * this visitor may not see answers found = false.
+ *
+ * @param $number The order number, e.g. 1061 or MX-1061
+ */
+create or modify microflow PizzaChat.REST_GetOrder ($number: String)
+returns PizzaChat.OrderView as $Result
+folder 'Card API'
+begin
+  $View = create PizzaChat.OrderView (Found = false);
+  declare $Digits String = if $number = empty then '' else replaceAll(replaceFirst(toUpperCase(trim($number)), '^MX-', ''), '[^0-9]', '');
+  if not(isMatch($Digits, '[0-9]{1,9}')) then
+    return $View;
+  end if;
+  $O = call microflow PizzaChat.SUB_Order_Visible(Number = parseInteger($Digits));
+  if $O = empty then
+    return $View;
+  end if;
+  $Plain = call microflow PizzaChat.SUB_Status_Plain(Status = $O/OrderStatus);
+  $Total = call microflow Core.SUB_Money(Amount = $O/Total);
+  retrieve $Store from Core.StoreSettings first;
+  retrieve $Zone from $O/Fulfilment.Order_Zone;
+  declare $Delivery Boolean = $O/OrderType = Fulfilment.OrderType.DELIVERY;
+  declare $St enum Fulfilment.OrderStatus = $O/OrderStatus;
+  declare $Courier Decimal = if $St = Fulfilment.OrderStatus.OUT_FOR_DELIVERY then $O/RouteProgressPercent div 100 else if $St = Fulfilment.OrderStatus.DELIVERED then 1 else -1;
+  change $View (Found = true, Number = 'MX-' + toString($O/OrderNumber), Status = getCaption($St), StatusPlain = $Plain,
+    Tone = if $St = Fulfilment.OrderStatus.PAYMENT_FAILED or $St = Fulfilment.OrderStatus.CANCELLED then 'critical' else if $St = Fulfilment.OrderStatus.DELIVERED or $St = Fulfilment.OrderStatus.PICKED_UP then 'good' else 'info',
+    Delivery = $Delivery, Address = if $Delivery and $O/AddressLine1 != empty then $O/AddressLine1 else 'Pickup at the store',
+    Items = toString($O/ItemCount) + (if $O/ItemCount = 1 then ' item' else ' items'), Total = $Total,
+    Distance = if $Delivery then formatDecimal($O/DistanceMiles, '0.0') + ' mi' else '',
+    TrackUrl = if $O/Source = Fulfilment.OrderSource.GUEST and $O/TrackingToken != empty then 'p/track/' + $O/TrackingToken else '',
+    StoreLat = if $Store = empty then 0 else $Store/Latitude, StoreLon = if $Store = empty then 0 else $Store/Longitude,
+    DestLat = if $Delivery and $Zone != empty then $Zone/Latitude else 0, DestLon = if $Delivery and $Zone != empty then $Zone/Longitude else 0,
+    Courier = if $Delivery then $Courier else -1);
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/PlacedAt, Text = 'Order placed');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/PaidAt, Text = 'Payment confirmed');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/BakingStartedAt, Text = 'In the oven');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/QaStartedAt, Text = 'Quality check');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/ReadyAt, Text = if $Delivery then 'Ready for the courier' else 'Ready for pickup');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/DispatchedAt, Text = 'Out for delivery');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/CompletedAt, Text = if $Delivery then 'Delivered' else 'Picked up');
+  call microflow PizzaChat.SUB_Event_Add(View = $View, At = $O/CancelledAt, Text = 'Cancelled');
+  return $View;
+end;
+
+/**
+ * A card button. Only "add" changes data: the product's default
+ * configuration in a quantity (1–10), as the menu's quick add, with the cart's
+ * own limits; the answer says what happened.
+ *
+ * @param $Request The action the guest pressed
+ */
+create or modify microflow PizzaChat.REST_PostAction ($Request: PizzaChat.ActionRequest)
+returns PizzaChat.ActionResult as $Result
+folder 'Card API'
+begin
+  $Answer = create PizzaChat.ActionResult (Ok = false, Message = 'This action is not available.');
+  if $Request = empty or $Request/Action != 'add' then
+    return $Answer;
+  end if;
+  declare $C String = if $Request/Code = empty then '' else toUpperCase(trim($Request/Code));
+  declare $Q Integer = if $Request/Quantity = empty or $Request/Quantity < 1 then 1 else min(10, $Request/Quantity);
+  retrieve $P from Catalog.Product where [Code = $C and ProductStatus = 'PUBLISHED'] first;
+  if $P = empty then
+    change $Answer (Message = 'This item is not on the menu.');
+    return $Answer;
+  end if;
+  if not($P/IsOrderable) then
+    change $Answer (Message = $P/Name + ' is sold out today.');
+    return $Answer;
+  end if;
+  $Before = call microflow Shop.SUB_Cart_Current();
+  declare $CountBefore Integer = $Before/ItemCount;
+  call microflow Shop.SUB_Product_Add(Product = $P, Quantity = $Q);
+  $After = call microflow Shop.SUB_Cart_Current();
+  if $After/ItemCount > $CountBefore then
+    change $Answer (Ok = true, Count = $After/ItemCount, Message = 'Added ' + toString($After/ItemCount - $CountBefore) + ' x ' + $P/Name + ' to your cart.');
+  else
+    change $Answer (Count = $After/ItemCount, Message = 'Could not add ' + $P/Name + ': the cart holds at most 30 items and 10 of one kind.');
+  end if;
+  return $Answer;
+end;
+
+create or modify published rest service PizzaChat."PizzaChatApi" (
+  Path: 'rest/pizzachat/v1',
+  Version: '1.0.0',
+  ServiceName: 'Pizza chat cards',
+  Authentication: (session)
+)
+{
+  resource 'products' {
+    get '' microflow PizzaChat.REST_GetProducts export mapping PizzaChat.EMM_ProductList;
+  }
+  resource 'cart' {
+    get '' microflow PizzaChat.REST_GetCart export mapping PizzaChat.EMM_Cart;
+  }
+  resource 'zone' {
+    get '' microflow PizzaChat.REST_GetZone export mapping PizzaChat.EMM_Zone;
+  }
+  resource 'order' {
+    get '' microflow PizzaChat.REST_GetOrder export mapping PizzaChat.EMM_Order;
+  }
+  resource 'actions' {
+    post '' microflow PizzaChat.REST_PostAction import mapping PizzaChat.IMM_ActionRequest export mapping PizzaChat.EMM_ActionResult commit No;
+  }
+};
+grant access on published rest service PizzaChat."PizzaChatApi" to PizzaChat.Guest;
+grant execute on microflow PizzaChat.REST_GetProducts to PizzaChat.Guest;
+grant execute on microflow PizzaChat.REST_GetCart to PizzaChat.Guest;
+grant execute on microflow PizzaChat.REST_GetZone to PizzaChat.Guest;
+grant execute on microflow PizzaChat.REST_GetOrder to PizzaChat.Guest;
+grant execute on microflow PizzaChat.REST_PostAction to PizzaChat.Guest;

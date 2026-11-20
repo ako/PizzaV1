@@ -289,6 +289,7 @@ create or modify layout Shop.Layout_Guest (
       snippetcall scFooter (Snippet: Shop.SNIP_Footer)
       snippetcall scBottom (Snippet: Shop.SNIP_BottomNav)
       snippetcall scToasts (Snippet: Shop.SNIP_Toasts)
+      snippetcall scPizzaChat (Snippet: PizzaChat.SNIP_ChatLauncher)
     }
   }
 };

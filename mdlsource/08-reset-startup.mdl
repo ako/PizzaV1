@@ -178,6 +178,10 @@ begin
     set $Speed = 1;
   end if;
   log info node 'Simulation' 'CONFIG SpeedFactor=' + toString($Speed) + ' ResetOnStartup=' + toString($Reset);
+  -- the pizza chat (50-pizza-chat.mdl): load the Agent Editor documents into Agent Commons; never blocks the shop
+  $AgentsLoaded = call microflow AgentEditorCommons.ASU_AgentEditor() on error without rollback begin
+    log warning node 'PizzaChat' 'Agent Editor documents not loaded; the chat is unavailable' with stacktrace;
+  end error;
   retrieve $Store from Core.StoreSettings first;
   if $Reset then
     call microflow Simulation.SUB_Reset(Trigger = 'startup');
