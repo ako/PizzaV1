@@ -696,3 +696,10 @@ A pizza assistant on every page, at the product owner's request (slice `16-pizza
 - **Gates:** verify 0 new (baseline re-recorded: 269); mx check 0 errors; report 46 (26 new info findings: names that follow the Agents Kit's and the JSON's conventions, and the module-role mapping).
 - **Accepted by brain decisions:** SEC001/ARCH003 on `ChatUsage`, DESIGN001 on the card views.
 - **Without the keys:** the app starts, and the chat answers "The assistant is not available right now…".
+
+## Studio Pro's local configuration (commit 89fa674, 2026-11-21)
+
+- **`pgdev` configuration:** PostgreSQL `localhost:5438`, database `pizzadb`, app port 8083, `ApplicationRootUrl` `http://localhost:8083/`.
+- **No key values in the project.** `PizzaChat.MxGenAIKey` and `Encryption.EncryptionKey` are `Settings$PrivateValue`s, which have no value field in the unit (checked by parsing it). Studio Pro keeps the values on the developer's machine.
+- **Studio Pro filled in the AI model document** with the selected key's labels: KeyName, KeyId, Environment, ResourceName and DeepLinkURL. `create or modify ai model` without them would have stripped them again (`mxcli diff` showed the ChatModel unit as modified). `mdlsource/50-pizza-chat.mdl` now carries them as `describe ai model` prints them, and the diff is empty.
+- **Rest of the model:** the project conversion still holds `UseMeToSetupNodeConversion` (120 conversions), the hash index matches, and verify reports 0 new findings with mx check passing.

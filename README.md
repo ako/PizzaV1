@@ -48,6 +48,18 @@ Open the app on **http://localhost:8080** (not 127.0.0.1: Conversational UI's st
 picks its session cookie by host name). Without the key the app runs as usual and the
 chat answers that the assistant is not available.
 
+### Studio Pro on your laptop
+
+The project has a **pgdev** configuration (App > Settings > Configurations) for running
+from Studio Pro against a local PostgreSQL: `localhost:5438`, database `pizzadb`, user
+`postgres`, app on http://localhost:8083. Make it the active configuration and run locally.
+
+For the pizza chat, set two constants on its **Constants** tab: `PizzaChat.MxGenAIKey`
+(your Mendix Cloud GenAI text key) and `Encryption.EncryptionKey` (any 32 letters or
+digits, the same every run). They are **private values**: Studio Pro keeps them on your
+machine, not in the project, so they never reach git. Without them the app runs and the
+chat says the assistant is not available.
+
 ## Quality reports
 
 Open [`docs/reports/index.html`](docs/reports/index.html) for the overview. Every report has

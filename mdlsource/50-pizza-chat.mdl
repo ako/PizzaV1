@@ -31,9 +31,17 @@ create or modify constant PizzaChat."MessagesPerHour" folder 'Agent' (
   DefaultValue: 30
 );
 
+-- KeyName … DeepLinkURL describe the GenAI key that Studio Pro selected for the
+-- model (labels, not the key itself; the key is the constant's private value).
+-- They come from Studio Pro: keep them in step with `describe ai model`.
 create or modify ai model PizzaChat."ChatModel" folder 'Agent' (
   Provider: MxCloudGenAI,
-  Key: @PizzaChat."MxGenAIKey"
+  Key: @PizzaChat."MxGenAIKey",
+  KeyName: 'chat-test-mxcli',
+  KeyId: 'd353b7b9-ac91-4aad-bccc-dd61a5980ce2',
+  Environment: 'Development',
+  ResourceName: 'Andrej Koelewijn - Text Generation',
+  DeepLinkURL: 'http://genai.home.mendix.com/p/resources/18d82b98-d49d-472c-bcd8-2b0202d7990b/settings'
 );
 
 /** Messages a guest sent to the assistant in the current hour (the per-session limit). */
