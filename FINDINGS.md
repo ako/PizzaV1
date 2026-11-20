@@ -537,3 +537,17 @@ Built from the PR head (`b6e66cf1`), run on a copy of the project (model, widget
 - `--annotations-dir docs/reports`: the overview lists the four annotation files read, and readiness shows 1 accepted.
 - A failed `--run` (no `--local`, no Docker): tests and traceability still render (101 proven from the journeys). Readiness says "`mxcli test` did not finish cleanly … add --local" instead of "not given".
 - **Still open:** the failed Docker run still leaves `.docker/` (docker-compose.yml, `.env`, `.env.example`) in the project directory (removed by hand).
+
+## Why Studio Pro 11.16.1 asked to convert the project (commit efcd980), 2026-11-20
+
+The `.mpr` metadata is unchanged by the conversion (`_ProductVersion`/`_BuildVersion` 11.16.1, the same `_SchemaHash`), so the version stamp is not the trigger. Studio Pro changed:
+
+1. **One one-time conversion, the actual trigger.** `Projects$ProjectConversion` gained `UseMeToSetupNodeConversion` (119 → 120 conversions). A new unit `Projects$SetupSettings` was added (`mprcontents/bd/49/bd49d28c-…`): the App Explorer setup node, with a shortcut to `FeedbackModule.FeedbackWidget` and Pages/Nanoflows/Microflows folders. `mx` 11.16.1 does not know this conversion: a project fresh from `mx create-project` has the same 119 conversions and no SetupSettings unit, and `mx convert` does not add it. So every project made by mxcli/mx gets this prompt once in Studio Pro.
+2. **462 units re-saved with only a new key order.** Studio Pro writes `$ID`, `$Type`, then the other keys alphabetically; mxcli writes its own order (e.g. `ChangeActionItem`: mxcli `Attribute, Association, …`, Studio Pro `Association, Attribute, …`). That affects 89 object types (ChangeActionItem 15,706 objects, SequenceFlow 4,827, ActionActivity 3,558, …). The content is identical (BSON compared ignoring order). All rewritten units are ones mxcli wrote (363 microflows, 28 enumerations, 16 pages, 15 snippets, …). `mx convert` on a fresh `mx create-project` project changes no unit.
+3. **Two list-marker fixes** (the integer that opens a BSON list):
+   - an empty `Security$ModuleSecurity.ModuleRoles`: mxcli wrote 1, Studio Pro writes 3 (as every Studio Pro-made ModuleSecurity has);
+   - `Microflows$JavaScriptActionCallAction.ParameterMappings` in 3 nanoflows (`DS_Shell_Live`, `NF_CopyLink`, `NF_CopyHash`): mxcli wrote 3, Studio Pro writes 2 (as for every ParameterMappings list).
+
+**Reproduced:** `mx convert --in-place` on the commit before (`efcd980~1`) gives byte-identical results for all of change 2 and 3; it differs from Studio Pro only in change 1.
+
+**After the conversion:** re-executing scripts `35`, `08` and `02` writes nothing (mxcli compares content, not key order), and mx check reports 0 errors. A unit mxcli *does* modify is written back in mxcli's key order, a cosmetic diff that Studio Pro reads without a prompt.
