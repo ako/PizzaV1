@@ -574,3 +574,18 @@ It merges PRs 2452, 2458, 2457, 2459 (#2456) and 2447 (`verify --apply/--through
 - **Compatibility:** all 28 scripts pass `check`. The new binary also reports 12 MDL-PERF01 and 5 MPR010 warnings at check time; these are the same commit-in-loop (CONV011) and layout-grid findings already in the baseline. Re-executing all 28 scripts wrote nothing.
 - **Gates:** verify 0 new / 247 known, mx check 0 errors; report 47 (48 with the old binary, a scoring difference); tests 24/24; visual 12/12; journeys 13/13 on 2 of 3 runs (the first run after boot had one failure, not captured; the model is unchanged).
 - **Fresh sessions:** the binary is git-ignored. `.claude/bootstrap-mxcli.sh` downloads `mendixlabs/mxcli` `nightly`, currently `nightly-20261119-32a67fa4a`, which predates these fixes. The stamp is a dev version, so the bootstrap does not loop, but `init --sync-skills` will refuse to downgrade. A fresh session therefore runs the older binary with this newer guidance (e.g. `verify --apply`) until a nightly includes main's fixes. `RUN/start.ps1` downloads the same nightly (KI-02).
+
+## Reports regenerated with mxcli nightly-75-g7efedabd, 2026-11-20
+
+Fresh evidence, following `docs/reports/README.md`: the app was started with a demo reset and tracing (64k spans), then the 13 journeys (13/13) and 24 unit tests (24/24) ran. Every JSON and page was regenerated; the pages load offline at 390 px with no errors.
+
+| Report | Old binary (11-18) | New binary | Why |
+|---|---|---|---|
+| Tests | 24 tests, 13 journeys; 363 microflows: 11 both, 117 journeys only, 193 startup, 42 neither | **same** | new: the gaps split into 29 "callable by a role" and 13 "called by other logic"; startup and scheduled-event flows are listed |
+| Traceability | 109 built, 2 partial, 101 proven (5 by tests, 101 by journeys) | **same** | the fresh run reproduces the evidence |
+| Security | 1 high finding (`Shop.DS_Info_Line`, already annotated as a false alarm), 34 medium flows | 0 high; `DS_Info_Line` now medium ("reads an object the client chose"); `ACT_Configure_FromHome` medium → low (caller check in a sub-microflow) | the analysis follows sub-microflows: each medium flow now names the sub-microflow that writes. New: a constants section |
+| Quality | 47.5, 246 findings | 47.4, 247 findings | CONV013 and one CONV014 gone (the SIM_ClockRun fix); new rule MPR017 adds 3 warnings (`IsActive` never set false). `docs/quality/tools/gen_quality.py` now maps MPR017 to Other and triages it as an open decision |
+| Architecture | — | **identical** data | |
+| Performance (same "after" volume recording, re-analysed) | 6,569 ms server over 12 steps; step 8 "place order and pay" 4,884 ms | 1,706 ms; step 8 280 ms | the new analysis counts only traces rooted in an app request (`attribution: requests`), so the simulation's 1.5 s clock tick no longer lands in a step. Its query counts now match our own guest-only analysis (`docs/perf/data/after.json`) within 3 per step |
+
+The perf house page (`docs/perf/report.html`) is unchanged: it is built from our own analysis of `docs/perf/data/`, not from mxcli's figures. The annotation for `finding:flow:Shop.DS_Info_Line` is now stale (no such finding any more).

@@ -2,19 +2,19 @@
   "kind": "security",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 18:24",
-  "mxcli": "nightly-20261118-9d764483c",
+  "generated": "2026-11-20 11:20",
+  "mxcli": "nightly-75-g7efedabd",
   "method": [
     "A review of the model, read from the mxcli catalog (`refresh catalog full` and `source`) and the project security settings. Nothing ran against the app.",
     "Who can read what: each user role's module roles (`CATALOG.ROLE_MAPPINGS`) joined to entity access rules (`CATALOG.PERMISSIONS`). A rule's XPath is classified as own rows (`[System.owner = '[%CurrentUser%]']`), via user (any other path to the current user), filtered (a constraint not about the user) or all (no constraint); a cell shows the widest.",
-    "Client-callable flows: microflows granted to a user role that take a persistent object or list. A flow checks its caller when its body (`CATALOG.SOURCE`) uses `$currentUser` or `[%CurrentUser%]`.",
+    "Client-callable flows: microflows granted to a user role that take a persistent object or list. A flow checks its caller when its body (`CATALOG.SOURCE`) uses `$currentUser` or `[%CurrentUser%]`; a sub-microflow it calls that does so on an entity the flow takes is named as a check to confirm. A flow writes when it or a sub-microflow changes, creates, deletes or commits an entity it takes. With entity access off, a write is high only when the granted roles read every object of that entity: the client can pass only what it may read.",
     "Unsafe defaults: string constants whose default (or a committed configuration value) looks like key material — base64 of 16/24/32/64 bytes, a 128/192/256-bit hex string, a PEM block — or that are named like a secret; boolean constants named like test switches that default to `true`; the security level, demo users, guest access, strict mode and password policy.",
     "Lint security rules are grouped per rule with a verdict slot, so the score is explained rather than alarming."
   ],
   "limits": [
     "This is a model review, not a penetration test. Hosting (HTTPS, headers, TLS), Marketplace module vulnerabilities, rate limiting and the deployment's own constant values are not covered.",
     "Object parameters versus association values: an object parameter is a plain id, so a caller can substitute any object it may read; a forged association value is rejected by the runtime (\"Hash is invalid\"), and with strict mode `mx.data.get` is refused. Only the first is flagged here — confirm a flagged flow before fixing it.",
-    "A caller check is detected by name (`$currentUser`); a check through a sub-microflow or a Java action is not seen, and such a flow is shown as trusting its caller.",
+    "A caller check is detected by name (`$currentUser`), in the flow or a sub-microflow it calls; whether that check constrains the object the page passed in is not proven, so a flow checked through a sub names it. A check in a Java action is not seen, and such a flow is shown as trusting its caller.",
     "Access through Java actions, OQL datasets, published services' own authentication and nanoflows is not analysed.",
     "Demo accounts: dropping a demo user from the model does not delete its account from an existing database, and the runtime does not reactivate a deactivated demo account. Check each environment's database."
   ],
@@ -53,13 +53,6 @@
       ]
     },
     "findings": [
-      {
-        "id": "flow:Shop.DS_Info_Line",
-        "severity": "high",
-        "title": "Caller-trusting flow `Shop.DS_Info_Line`",
-        "detail": "Changes an object the client chose, with entity access off: no access rule stops a substituted id. Callable by Administrator, Anonymous.",
-        "fix": "Derive the acting user or object in the microflow (`$currentUser`, a retrieve constrained by `[%CurrentUser%]`), or turn on entity access and constrain the parameter's entity."
-      },
       {
         "id": "setting:guest-access",
         "severity": "info",
@@ -410,9 +403,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Cart_Clear",
@@ -426,9 +420,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Clear",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Clear`)"
       },
       {
         "name": "Shop.ACT_Cart_Edit",
@@ -442,9 +437,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Configure_Edit",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Configure_Edit`)"
       },
       {
         "name": "Shop.ACT_Checkout_Changed",
@@ -458,9 +454,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Checkout_Compute",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Compute`)"
       },
       {
         "name": "Shop.ACT_Checkout_Pay",
@@ -474,9 +471,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Checkout_Pay",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Pay`)"
       },
       {
         "name": "Shop.ACT_Checkout_Pickup",
@@ -490,9 +488,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Checkout_Compute",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Compute`)"
       },
       {
         "name": "Shop.ACT_Checkout_Place",
@@ -506,9 +505,11 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "checkedBy": "Shop.SUB_Checkout_Place",
+        "writesVia": "Shop.SUB_Checkout_Compute",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Compute`); `Shop.SUB_Checkout_Place` checks the caller on the same entity — if that check covers the object passed in, this is a false alarm"
       },
       {
         "name": "Shop.ACT_Checkout_Tip",
@@ -522,9 +523,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Checkout_Compute",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Compute`)"
       },
       {
         "name": "Shop.ACT_Checkout_Type",
@@ -538,9 +540,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Checkout_Compute",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Checkout_Compute`)"
       },
       {
         "name": "Shop.ACT_Config_Back",
@@ -554,9 +557,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Config_Commit",
@@ -570,9 +574,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_AddLine",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_AddLine`)"
       },
       {
         "name": "Shop.ACT_Config_Qty",
@@ -586,9 +591,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Config_Qty",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Config_Qty`)"
       },
       {
         "name": "Shop.ACT_Configure_Edit",
@@ -602,9 +608,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Configure_Edit",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Configure_Edit`)"
       },
       {
         "name": "Shop.ACT_Configure_FromHome",
@@ -619,8 +626,9 @@
         "checksCaller": false,
         "takesUser": false,
         "writes": false,
-        "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "checkedBy": "Shop.SUB_Configure_FromHome",
+        "risk": "low",
+        "triage": "a sub-microflow, `Shop.SUB_Configure_FromHome`, checks the caller on the same entity — confirm it constrains the object passed in, not only the caller's own"
       },
       {
         "name": "Shop.ACT_Configure_Open",
@@ -650,9 +658,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Coupon_Remove",
@@ -666,9 +675,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Info_Add",
@@ -682,9 +692,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_AddLine",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_AddLine`)"
       },
       {
         "name": "Shop.ACT_Line_Decrease",
@@ -698,9 +709,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Line_Increase",
@@ -714,9 +726,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Line_Remove",
@@ -730,9 +743,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Cart_Recalculate",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Cart_Recalculate`)"
       },
       {
         "name": "Shop.ACT_Nav_Search",
@@ -746,9 +760,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Shop.SUB_Nav_Search",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Nav_Search`)"
       },
       {
         "name": "Shop.ACT_Product_Add",
@@ -826,9 +841,11 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "checkedBy": "Shop.SUB_Shell_Refresh",
+        "writesVia": "Shop.SUB_Shell_Refresh",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Shop.SUB_Shell_Refresh`); `Shop.SUB_Shell_Refresh` checks the caller on the same entity — if that check covers the object passed in, this is a false alarm"
       },
       {
         "name": "Shop.ACT_Toast_Close",
@@ -842,9 +859,10 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": false,
+        "writes": true,
+        "writesVia": "Core.SUB_Toast_Close",
         "risk": "medium",
-        "triage": "reads an object the client chose, with entity access off"
+        "triage": "changes an object the client chose, with entity access off: a substituted id is limited to what the granted roles read (via user), so it relies on that read rule (it writes through `Core.SUB_Toast_Close`)"
       },
       {
         "name": "Shop.ACT_Track_Open",
@@ -890,7 +908,7 @@
         "applyEntityAccess": false,
         "checksCaller": true,
         "takesUser": false,
-        "writes": true,
+        "writes": false,
         "risk": "ok",
         "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
       },
@@ -922,9 +940,9 @@
         "applyEntityAccess": false,
         "checksCaller": false,
         "takesUser": false,
-        "writes": true,
-        "risk": "high",
-        "triage": "changes an object the client chose, with entity access off: no access rule stops a substituted id"
+        "writes": false,
+        "risk": "medium",
+        "triage": "reads an object the client chose, with entity access off"
       },
       {
         "name": "Shop.DS_Line_Allergens",
@@ -1114,7 +1132,7 @@
         "applyEntityAccess": false,
         "checksCaller": true,
         "takesUser": false,
-        "writes": true,
+        "writes": false,
         "risk": "ok",
         "triage": "checks the caller in its own body ($currentUser / [%CurrentUser%])"
       }
@@ -1186,6 +1204,28 @@
           "Shop.Menu: List view 'lvDbg' on page Shop.Menu lists Shop.CartLine, which user roles 'Administrator', 'Anonymous' may read only through an XPath-constrained rule — it renders just the rows the constraint allows"
         ],
         "hint": "Fires when a page's role may not read a listed entity. Often intended when access is row-level by design; real when a role sees an empty page."
+      }
+    ],
+    "constants": [
+      {
+        "name": "Shop.AppUrl",
+        "type": "String",
+        "default": "http://localhost:8080/"
+      },
+      {
+        "name": "Shop.FaultInjection",
+        "type": "Boolean",
+        "default": "False"
+      },
+      {
+        "name": "Simulation.ResetOnStartup",
+        "type": "Boolean",
+        "default": "False"
+      },
+      {
+        "name": "Simulation.SpeedFactor",
+        "type": "Integer",
+        "default": "1"
       }
     ]
   }

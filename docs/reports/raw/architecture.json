@@ -2,8 +2,8 @@
   "kind": "architecture",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 18:24",
-  "mxcli": "nightly-20261118-9d764483c",
+  "generated": "2026-11-20 11:21",
+  "mxcli": "nightly-75-g7efedabd",
   "method": [
     "Every number is read from the mxcli catalog (`refresh catalog full`, plus the `communities` pass for clusters, layers and centrality). Each section is a query over `CATALOG.REFS` or a `CATALOG.GRAPH_*` view and can be re-run by hand.",
     "The app is the project's own modules: Marketplace modules, `System` and the test runner's `MxTest` are outside unless `--include-marketplace` or `--modules` says otherwise. Their edges from app modules are listed under \"Outside the app\".",
@@ -138,9 +138,9 @@
           "xpath"
         ],
         "samples": [
-          "Simulation.SEED_Catalog → Fulfilment.DeliveryZone (create)",
-          "Simulation.SEED_Catalog → Fulfilment.DeliveryZone (commit)",
-          "Simulation.SEED_Catalog → Fulfilment.Coupon (create)"
+          "Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (parameter)",
+          "Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (change)",
+          "Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (commit)"
         ]
       },
       {
@@ -158,9 +158,9 @@
           "xpath"
         ],
         "samples": [
-          "Simulation.SEED_Catalog → Catalog.Ingredient (create)",
-          "Simulation.SEED_Catalog → Catalog.Ingredient (change)",
-          "Simulation.SEED_Catalog → Catalog.Ingredient (commit)"
+          "Simulation.SUB_Traffic_Spawn → Catalog.Product (retrieve)",
+          "Simulation.SUB_Reset → Catalog.Product (retrieve)",
+          "Simulation.SUB_Reset → Catalog.Product (delete)"
         ]
       },
       {
@@ -182,9 +182,9 @@
           "xpath"
         ],
         "samples": [
-          "Shop.SUB_Pay_Retry → Fulfilment.SUB_Payment_Retry (call)",
-          "Shop.SUB_Pay_Cancel → Fulfilment.SUB_Order_Cancel (call)",
-          "Shop.SNIP_PaymentChoice → Fulfilment.PaymentMethod.APPLE_PAY (value)"
+          "Shop.SUB_Order_Place → Fulfilment.Order (parameter)",
+          "Shop.SUB_Order_Place → Fulfilment.Coupon (parameter)",
+          "Shop.SUB_Order_Place → Fulfilment.OrderLine (create)"
         ]
       },
       {
@@ -227,9 +227,9 @@
           "value"
         ],
         "samples": [
-          "Simulation.SE_ClockWatchdog → Core.SimulationSettings (retrieve)",
-          "Simulation.SUB_Toast_Broadcast → Core.Toast (create)",
-          "Simulation.SUB_Toast_Broadcast → Core.Toast_Owner (member)"
+          "Simulation.SIM_Traffic → Core.SimulationSettings (retrieve)",
+          "Simulation.SIM_Traffic → Core.SUB_Eff (call)",
+          "Simulation.SIM_Traffic → Core.SimulationSettings (change)"
         ]
       },
       {
@@ -251,7 +251,7 @@
         "samples": [
           "Shop.ACT_Toast_Close → Core.Toast (parameter)",
           "Shop.ACT_Toast_Close → Core.SUB_Toast_Close (call)",
-          "Shop.ACT_Nav_Checkout → Core.SUB_Toast (call)"
+          "Shop.SUB_Product_Recalculate → Core.SUB_Money (call)"
         ]
       },
       {
@@ -281,9 +281,9 @@
           "retrieve"
         ],
         "samples": [
-          "Fulfilment.SUB_Timer_Progress → Core.SUB_Eff (call)",
           "Fulfilment.SUB_Coupon_Evaluate → Core.SUB_Money (call)",
-          "Fulfilment.SUB_Price_Compute → Core.StoreSettings (retrieve)"
+          "Fulfilment.SUB_Price_Compute → Core.StoreSettings (retrieve)",
+          "Fulfilment.SUB_Order_Refund → Core.SUB_RandomHex (call)"
         ]
       },
       {
@@ -947,7 +947,7 @@
       {
         "entity": "Fulfilment.Order",
         "flows": 223,
-        "modules": "Fulfilment,Simulation,Shop"
+        "modules": "Shop,Simulation,Fulfilment"
       },
       {
         "entity": "Catalog.Product",
@@ -957,7 +957,7 @@
       {
         "entity": "Fulfilment.PaymentAttempt",
         "flows": 55,
-        "modules": "Fulfilment,Shop,Simulation"
+        "modules": "Shop,Simulation,Fulfilment"
       },
       {
         "entity": "Fulfilment.OrderLine",
@@ -972,22 +972,22 @@
       {
         "entity": "Fulfilment.OrderLogEntry",
         "flows": 48,
-        "modules": "Fulfilment,Simulation,Shop"
+        "modules": "Shop,Simulation,Fulfilment"
       },
       {
         "entity": "Fulfilment.OrderStatusChange",
         "flows": 48,
-        "modules": "Fulfilment,Simulation,Shop"
+        "modules": "Shop,Simulation,Fulfilment"
       },
       {
         "entity": "Fulfilment.Oven",
         "flows": 41,
-        "modules": "Simulation,Shop"
+        "modules": "Shop,Simulation"
       },
       {
         "entity": "Fulfilment.DeliveryZone",
         "flows": 37,
-        "modules": "Simulation,Shop"
+        "modules": "Shop,Simulation"
       },
       {
         "entity": "Shop.CartLine",
@@ -1002,7 +1002,7 @@
       {
         "entity": "Fulfilment.Courier",
         "flows": 28,
-        "modules": "Simulation,Shop"
+        "modules": "Shop,Simulation"
       },
       {
         "entity": "Shop.TrackView",

@@ -102,37 +102,37 @@ ul.recs { display: grid; gap: 10px; padding-left: 20px; max-width: 80ch; margin:
   pages and snippets, persistent entities, and cohesion: the share of a module's references that stay inside it. Hover a box or an arrow for details.</p>
   <div class="panel"><svg class="map" viewBox="0 0 1000 590" role="img" aria-label="Layered module map"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="mk"/></marker></defs><text x="14" y="64" class="lay">layer 3</text><line x1="70" x2="980" y1="117.0" y2="117.0" class="lg"/><text x="14" y="209" class="lay">layer 2</text><line x1="70" x2="980" y1="262.0" y2="262.0" class="lg"/><text x="14" y="354" class="lay">layer 1</text><line x1="70" x2="980" y1="407.0" y2="407.0" class="lg"/><text x="14" y="514" class="lay">layer 0</text><path class="e seed" d="M542,95 C542,194 678,216 678,315" stroke-width="7.7" marker-end="url(#ah)"><title>Simulation → Fulfilment: 8,824 references (271 without the seed flows)
 kinds: call, change, commit, create, delete, member, parameter, retrieve
-e.g. Simulation.SEED_Catalog → Fulfilment.DeliveryZone (create)
-Simulation.SEED_Catalog → Fulfilment.DeliveryZone (commit)
-Simulation.SEED_Catalog → Fulfilment.Coupon (create)</title></path><path class="e seed" d="M380,95 C60,125 60,405 220,475" stroke-width="6.1" marker-end="url(#ah)"><title>Simulation → Catalog: 1,038 references (16 without the seed flows)
+e.g. Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (parameter)
+Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (change)
+Simulation.SUB_Courier_SetStatus → Fulfilment.Courier (commit)</title></path><path class="e seed" d="M380,95 C60,125 60,405 220,475" stroke-width="6.1" marker-end="url(#ah)"><title>Simulation → Catalog: 1,038 references (16 without the seed flows)
 kinds: change, commit, create, delete, member, retrieve, value, xpath
-e.g. Simulation.SEED_Catalog → Catalog.Ingredient (create)
-Simulation.SEED_Catalog → Catalog.Ingredient (change)
-Simulation.SEED_Catalog → Catalog.Ingredient (commit)</title></path><path class="e" d="M374,240 C374,274 647,281 647,315" stroke-width="5.5" marker-end="url(#ah)"><title>Shop → Fulfilment: 434 references
+e.g. Simulation.SUB_Traffic_Spawn → Catalog.Product (retrieve)
+Simulation.SUB_Reset → Catalog.Product (retrieve)
+Simulation.SUB_Reset → Catalog.Product (delete)</title></path><path class="e" d="M374,240 C374,274 647,281 647,315" stroke-width="5.5" marker-end="url(#ah)"><title>Shop → Fulfilment: 434 references
 kinds: associate, call, change, commit, create, member, parameter, retrieve
-e.g. Shop.SUB_Pay_Retry → Fulfilment.SUB_Payment_Retry (call)
-Shop.SUB_Pay_Cancel → Fulfilment.SUB_Order_Cancel (call)
-Shop.SNIP_PaymentChoice → Fulfilment.PaymentMethod.APPLE_PAY (value)</title></path><path class="e" d="M290,240 C290,346 290,369 290,475" stroke-width="5.2" marker-end="url(#ah)"><title>Shop → Catalog: 284 references
+e.g. Shop.SUB_Order_Place → Fulfilment.Order (parameter)
+Shop.SUB_Order_Place → Fulfilment.Coupon (parameter)
+Shop.SUB_Order_Place → Fulfilment.OrderLine (create)</title></path><path class="e" d="M290,240 C290,346 290,369 290,475" stroke-width="5.2" marker-end="url(#ah)"><title>Shop → Catalog: 284 references
 kinds: associate, call, change, commit, datasource, member, parameter, retrieve
 e.g. Shop.SUB_Line_ApplyDefaults → Catalog.Product (parameter)
 Shop.SUB_Line_ApplyDefaults → Catalog.ProductSize (retrieve)
 Shop.SUB_Line_ApplyDefaults → Catalog.Product_DefaultCrust (retrieve)</title></path><path class="e" d="M620,95 C940,125 940,405 780,475" stroke-width="4.7" marker-end="url(#ah)"><title>Simulation → Core: 141 references (63 without the seed flows)
 kinds: call, change, commit, create, delete, member, retrieve, type
-e.g. Simulation.SE_ClockWatchdog → Core.SimulationSettings (retrieve)
-Simulation.SUB_Toast_Broadcast → Core.Toast (create)
-Simulation.SUB_Toast_Broadcast → Core.Toast_Owner (member)</title></path><path class="e" d="M374,240 C374,346 647,369 647,475" stroke-width="4.6" marker-end="url(#ah)"><title>Shop → Core: 125 references
+e.g. Simulation.SIM_Traffic → Core.SimulationSettings (retrieve)
+Simulation.SIM_Traffic → Core.SUB_Eff (call)
+Simulation.SIM_Traffic → Core.SimulationSettings (change)</title></path><path class="e" d="M374,240 C374,346 647,369 647,475" stroke-width="4.6" marker-end="url(#ah)"><title>Shop → Core: 125 references
 kinds: call, change, commit, datasource, delete, member, parameter, retrieve
 e.g. Shop.ACT_Toast_Close → Core.Toast (parameter)
 Shop.ACT_Toast_Close → Core.SUB_Toast_Close (call)
-Shop.ACT_Nav_Checkout → Core.SUB_Toast (call)</title></path><path class="e" d="M458,95 C458,129 322,136 322,170" stroke-width="3.1" marker-end="url(#ah)"><title>Simulation → Shop: 17 references
+Shop.SUB_Product_Recalculate → Core.SUB_Money (call)</title></path><path class="e" d="M458,95 C458,129 322,136 322,170" stroke-width="3.1" marker-end="url(#ah)"><title>Simulation → Shop: 17 references
 kinds: call, create, delete, member, retrieve, type
 e.g. Simulation.SIM_Payments → Shop.SUB_Payment_Resolve (call)
 Simulation.SUB_Traffic_Spawn → Shop.CartLine (create)
 Simulation.SUB_Traffic_Spawn → Shop.SUB_Line_ApplyDefaults (call)</title></path><path class="e" d="M710,385 C710,426 710,434 710,475" stroke-width="2.3" marker-end="url(#ah)"><title>Fulfilment → Core: 5 references
 kinds: call, retrieve
-e.g. Fulfilment.SUB_Timer_Progress → Core.SUB_Eff (call)
-Fulfilment.SUB_Coupon_Evaluate → Core.SUB_Money (call)
-Fulfilment.SUB_Price_Compute → Core.StoreSettings (retrieve)</title></path><path class="e" d="M626,385 C626,426 353,434 353,475" stroke-width="2.0" marker-end="url(#ah)"><title>Fulfilment → Catalog: 3 references
+e.g. Fulfilment.SUB_Coupon_Evaluate → Core.SUB_Money (call)
+Fulfilment.SUB_Price_Compute → Core.StoreSettings (retrieve)
+Fulfilment.SUB_Order_Refund → Core.SUB_RandomHex (call)</title></path><path class="e" d="M626,385 C626,426 353,434 353,475" stroke-width="2.0" marker-end="url(#ah)"><title>Fulfilment → Catalog: 3 references
 kinds: associate, type
 e.g. Fulfilment.OrderLine_Product → Catalog.Product (associate)
 Fulfilment.OrderLine → Catalog.ProductKind (type)
@@ -189,7 +189,7 @@ uses: 0 modules · used by: 3</title><rect x="575.0" y="475.0" width="270" heigh
   hand-written code, <code>Fulfilment.Order</code> is the centre.</p><div class="scroll"><table><thead><tr><th>Element</th><th>Kind</th><th>In</th><th>Out</th></tr></thead><tbody><tr><td><code>Fulfilment.OrderLogEntry</code></td><td>entity</td><td>962</td><td>7</td></tr><tr><td><code>Simulation.SEED_Catalog</code></td><td>microflow</td><td>1</td><td>837</td></tr><tr><td><code>Fulfilment.OrderStatusChange</code></td><td>entity</td><td>502</td><td>7</td></tr><tr><td><code>Fulfilment.Order</code></td><td>entity</td><td>430</td><td>10</td></tr><tr><td><code>Fulfilment.OrderLineModifier</code></td><td>entity</td><td>383</td><td>8</td></tr><tr><td><code>Catalog.Product</code></td><td>entity</td><td>255</td><td>5</td></tr><tr><td><code>Fulfilment.OrderLine</code></td><td>entity</td><td>246</td><td>7</td></tr><tr><td><code>Catalog.Option</code></td><td>entity</td><td>144</td><td>3</td></tr></tbody></table></div></div>
   <div><h3>Bridges</h3><p class="note">Microflows on the most shortest paths between others: pricing and cart recalculation connect configurator, cart, checkout and the
   traffic generator.</p><div class="scroll"><table><thead><tr><th>Microflow</th><th>Betweenness</th><th>Callers</th><th>Calls</th></tr></thead><tbody><tr><td><code>Shop.SUB_Line_Recalculate</code></td><td>1,126</td><td>12</td><td>67</td></tr><tr><td><code>Shop.SUB_Cart_Recalculate</code></td><td>954</td><td>13</td><td>47</td></tr><tr><td><code>Simulation.SEED_Orders</code></td><td>572</td><td>1</td><td>46</td></tr><tr><td><code>Simulation.SUB_Reset</code></td><td>448</td><td>3</td><td>62</td></tr><tr><td><code>Shop.SUB_Checkout_Recalculate</code></td><td>298</td><td>5</td><td>5</td></tr><tr><td><code>Simulation.SIM_Tick</code></td><td>262</td><td>1</td><td>10</td></tr><tr><td><code>Simulation.SUB_Traffic_Spawn</code></td><td>193</td><td>1</td><td>49</td></tr><tr><td><code>Simulation.SIM_ClockRun</code></td><td>190</td><td>4</td><td>3</td></tr></tbody></table></div></div>
-  <div><h3>Entity hotspots</h3><p class="note">Entities read or written by the most microflows, and from how many modules.</p><div class="scroll"><table><thead><tr><th>Entity</th><th>Flows</th><th>Modules</th></tr></thead><tbody><tr><td><code>Fulfilment.Order</code></td><td>223</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Catalog.Product</code></td><td>68</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.PaymentAttempt</code></td><td>55</td><td>Fulfilment, Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLine</code></td><td>51</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLineModifier</code></td><td>48</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLogEntry</code></td><td>48</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Fulfilment.OrderStatusChange</code></td><td>48</td><td>Fulfilment, Simulation, Shop</td></tr><tr><td><code>Fulfilment.Oven</code></td><td>41</td><td>Simulation, Shop</td></tr></tbody></table></div></div>
+  <div><h3>Entity hotspots</h3><p class="note">Entities read or written by the most microflows, and from how many modules.</p><div class="scroll"><table><thead><tr><th>Entity</th><th>Flows</th><th>Modules</th></tr></thead><tbody><tr><td><code>Fulfilment.Order</code></td><td>223</td><td>Shop, Simulation, Fulfilment</td></tr><tr><td><code>Catalog.Product</code></td><td>68</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.PaymentAttempt</code></td><td>55</td><td>Shop, Simulation, Fulfilment</td></tr><tr><td><code>Fulfilment.OrderLine</code></td><td>51</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLineModifier</code></td><td>48</td><td>Shop, Simulation</td></tr><tr><td><code>Fulfilment.OrderLogEntry</code></td><td>48</td><td>Shop, Simulation, Fulfilment</td></tr><tr><td><code>Fulfilment.OrderStatusChange</code></td><td>48</td><td>Shop, Simulation, Fulfilment</td></tr><tr><td><code>Fulfilment.Oven</code></td><td>41</td><td>Shop, Simulation</td></tr></tbody></table></div></div>
 </section>
 
 <section>

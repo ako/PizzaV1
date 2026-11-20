@@ -45,7 +45,7 @@ RULE_CAT = {
     'ARCH003': 'Architecture', 'ARCH001': 'Architecture',
     'CONV011': 'Performance',
     'DESIGN001': 'Design', 'CONV013': 'Design',
-    'MPR008': 'Other', 'MPR010': 'Other', 'MDL-FLOW01': 'Other',
+    'MPR008': 'Other', 'MPR010': 'Other', 'MDL-FLOW01': 'Other', 'MPR017': 'Other',
 }
 # Overall = weighted mean of the category scores (weights renormalised over the categories present).
 # Reproduced exactly on six runs (whole app + each module, data/score-runs.json); a plain mean gives 54.0.
@@ -118,6 +118,7 @@ WHY = {
     'conv014': '<code>SIM_Tick</code> and <code>SIM_ClockRun</code> continue past a failing step on purpose, so one broken step cannot stop the simulator, but nothing is logged: keep going, and log the error.',
     'conv013': 'The clock\'s Java action rolls back on error and the minutely watchdog restarts the clock (brain <code>1ee26b</code>).',
     'mpr008': '<code>mxcli layout flows</code> does not move loop boxes (FINDINGS.md); only the diagram is affected.',
+    'mpr017': 'Nothing in the app sets <code>IsActive</code> to false on coupons, options or delivery zones, so the branch that checks it never runs. Open decision: add a back-office switch, or record that the switch is only changed in the database.',
     'mpr010': 'Forms are laid out by the prototype\'s CSS ported into the theme (brain <code>e95c42</code>), not by a layout grid.',
     'flow01': 'The flow runs; mxcli\'s DESCRIBE cannot render its branch shape as nested if/else.',
 }
@@ -146,6 +147,7 @@ def verdict(v):
     if r == 'CONV013': return 'by design', 'conv013'
     if r == 'MPR008': return 'tool limit', 'mpr008'
     if r == 'MPR010': return 'by design', 'mpr010'
+    if r == 'MPR017': return 'fix', 'mpr017'
     if r == 'MDL-FLOW01': return 'tool limit', 'flow01'
     raise KeyError(r)
 

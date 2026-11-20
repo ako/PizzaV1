@@ -2,8 +2,8 @@
   "kind": "traceability",
   "schema": 1,
   "project": "GitPizza",
-  "generated": "2026-11-19 18:53",
-  "mxcli": "nightly-20261118-9d764483c",
+  "generated": "2026-11-20 11:20",
+  "mxcli": "nightly-75-g7efedabd",
   "method": [
     "Requirements, decisions and open questions are read from the project brain (`docs/brain/`) with `brain list`; each requirement's anchor resolutions come from the same check `brain plan` uses, so \"built\" is defined in one place.",
     "Status is derived, never ticked off: built when every anchor resolves in the model; not built when one does not; not traceable without anchors; partial or changed when a decision says ``Partly meets requirement `\u003cid\u003e`: …`` or ``Changes requirement `\u003cid\u003e`: …`` (validated by `brain check`).",
@@ -99,6 +99,7 @@
             ],
             "tests": null,
             "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J4 order lookup rejects an unknown order without revealing which field was wrong",
@@ -134,6 +135,7 @@
             ],
             "tests": null,
             "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J4 order lookup rejects an unknown order without revealing which field was wrong",
@@ -308,6 +310,7 @@
             ],
             "tests": null,
             "journeys": [
+              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J4 order lookup rejects an unknown order without revealing which field was wrong",
@@ -1724,6 +1727,7 @@
               "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
+              "J8 home: featured carousel pages and Configure opens the configurator",
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
@@ -2283,7 +2287,7 @@
               "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
-              "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
+              "J8 home: featured carousel pages and Configure opens the configurator",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
               "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)"
@@ -3879,13 +3883,15 @@
               "J2 coupon GITHUB_STUDENT on example B (Root Pizza M + Garlic Knot Loop) gives $26.58",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J4 order lookup rejects an unknown order without revealing which field was wrong",
+              "J5 unknown URL shows ERROR 404 // CRUST_NOT_FOUND with RETURN_TO_MAIN",
               "J6 connection loss shows the CONNECTION_LOST banner and blocks actions with a toast",
               "J8 home: featured carousel pages and Configure opens the configurator",
               "J9 configure Inferno Payload Large + cherry tomatoes = $25.00, then cart quantity, remove one line (US-064) and clear",
               "J10 menu grep and dietary filters (US-027, US-033)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)",
               "J12 tracking link opens the order in another browser; an altered link is refused (US-121, US-134, LITE-SEC-05)",
-              "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)"
+              "J13 cancel after a declined card: order cancelled, nothing charged, cart kept (US-108, T-06)",
+              "J7 phone: bottom navigation and menu cards render at 390 px"
             ],
             "decisions": [
               "f2c8ab: Store time (BR-DATA-05): the runtime's default time zone America/Los_Angeles; order-log times are stored as server-formatted text because client-formatted dates follow the browser's zone."
@@ -4174,7 +4180,6 @@
             ],
             "tests": null,
             "journeys": [
-              "J1 order, pay and track (example: Root Pizza + Binary BBQ, delivery, tip 15 %)",
               "J3 declined card VISA_0002, then retry with Apple Pay succeeds (scenario: Example B, G2)",
               "J11 pickup removes fee and tip; rollback while QUEUED refunds (US-086, US-129)"
             ],

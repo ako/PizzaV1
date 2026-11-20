@@ -1,11 +1,458 @@
 {
   "projectName": "GitPizza",
-  "date": "2026-11-19 18:24:58",
-  "overallScore": 47.5,
+  "date": "2026-11-20 11:20:59",
+  "overallScore": 47.4,
+  "builds": true,
+  "consistency": {
+    "ran": true,
+    "source": "mx check",
+    "errors": 0,
+    "warnings": 54,
+    "deprecations": 1,
+    "findings": [
+      {
+        "severity": "warning",
+        "code": "CW0029",
+        "message": "Module role is not part of any user role.",
+        "module": "Atlas_Core",
+        "document": "Security",
+        "element": "Module role 'Administrator'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0114",
+        "message": "Microflow 'Administration.ManageMyAccount' is accessible through the server API because it specifies allowed roles. This is unnecessary because the microflow is not used from navigation, a page or a published service.",
+        "module": "Administration",
+        "document": "Microflow 'ManageMyAccount'",
+        "element": "-"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0094",
+        "message": "Variable 'Boom' is never used.",
+        "module": "Shop",
+        "document": "Microflow 'DS_FaultProbe'",
+        "element": "Create variable activity 'Create Decimal variable'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0029",
+        "message": "Module role is not part of any user role.",
+        "module": "FeedbackModule",
+        "document": "Security",
+        "element": "Module role 'User'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Simulation.SimCustomer.Code'. [English, United States]",
+        "module": "Simulation",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Simulation.SimCustomer'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Simulation.SimCustomer.Code'. [English, United States]",
+        "module": "Simulation",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Simulation.SimCustomer'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW9509",
+        "message": "Microflow that has url should end with show page action.",
+        "module": "Shop",
+        "document": "Microflow 'ACT_Track_Token'",
+        "element": "-"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0094",
+        "message": "Variable 'Retried' is never used.",
+        "module": "Simulation",
+        "document": "Microflow 'SIM_Payments'",
+        "element": "Call microflow activity 'SUB_Payment_Retry'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Coupon.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Coupon'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Coupon.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Coupon'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.DeliveryZone.Zip'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.DeliveryZone'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.DeliveryZone.Zip'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.DeliveryZone'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Courier.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Courier'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Courier.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Courier'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Oven.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Oven'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Oven.Code'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Oven'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Order.OrderNumber'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Order'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Fulfilment.Order.OrderNumber'. [English, United States]",
+        "module": "Fulfilment",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Fulfilment.Order'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0094",
+        "message": "Variable 'Cart' is never used.",
+        "module": "Shop",
+        "document": "Microflow 'SUB_Shell_Refresh'",
+        "element": "Parameter 'Cart'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Allergen.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Allergen'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Allergen.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Allergen'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Category.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Category'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Category.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Category'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Ingredient.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Ingredient'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Ingredient.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Ingredient'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Option.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Option'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Option.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Option'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Product.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Product'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty validation rule error message of attribute 'Catalog.Product.Code'. [English, United States]",
+        "module": "Catalog",
+        "document": "Domain model",
+        "element": "Property 'Error message' of validation rule of entity 'Catalog.Product'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0029",
+        "message": "Module role is not part of any user role.",
+        "module": "Administration",
+        "document": "Security",
+        "element": "Module role 'User'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0029",
+        "message": "Module role is not part of any user role.",
+        "module": "Atlas_Web_Content",
+        "document": "Security",
+        "element": "Module role 'Administrator'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0029",
+        "message": "Module role is not part of any user role.",
+        "module": "Atlas_Web_Content",
+        "document": "Security",
+        "element": "Module role 'User'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0114",
+        "message": "Microflow 'Shop.DS_Product_Recipe' is accessible through the server API because it specifies allowed roles. This is unnecessary because the microflow is not used from navigation, a page or a published service.",
+        "module": "Shop",
+        "document": "Microflow 'DS_Product_Recipe'",
+        "element": "-"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Shop",
+        "document": "Page 'PaymentSheet'",
+        "element": "Action button 'fCancelDis'"
+      },
+      {
+        "severity": "warning",
+        "code": "CE0635",
+        "message": "Widgets used in a page template should not contain references to other documents",
+        "module": "Atlas_Web_Content",
+        "document": "Page template 'Tablet_Login'",
+        "element": "Nanoflow of action button 'actionButton3'"
+      },
+      {
+        "severity": "warning",
+        "code": "CE0635",
+        "message": "Widgets used in a page template should not contain references to other documents",
+        "module": "Atlas_Web_Content",
+        "document": "Page template 'Tablet_Login'",
+        "element": "Attribute of text 'text2'"
+      },
+      {
+        "severity": "warning",
+        "code": "CE0635",
+        "message": "Widgets used in a page template should not contain references to other documents",
+        "module": "Atlas_Web_Content",
+        "document": "Page template 'Tablet_Login'",
+        "element": "Expression of text 'text2'"
+      },
+      {
+        "severity": "warning",
+        "code": "CE0635",
+        "message": "Widgets used in a page template should not contain references to other documents",
+        "module": "Atlas_Web_Content",
+        "document": "Page template 'Tablet_Login'",
+        "element": "Nanoflow of data view 'dataView1'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Phone_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Phone_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Phone_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Phone_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty template. [English, United States]",
+        "module": "Atlas_Web_Content",
+        "document": "Nanoflow 'ACT_Login'",
+        "element": "Validation feedback activity 'Show validation message on member Username of LoginContext'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0263",
+        "message": "Empty template. [English, United States]",
+        "module": "Atlas_Web_Content",
+        "document": "Nanoflow 'ACT_Login'",
+        "element": "Validation feedback activity 'Show validation message on member Password of LoginContext'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Shop",
+        "document": "Snippet 'SNIP_MenuCard'",
+        "element": "Action button 'pSoldBtn'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0040",
+        "message": "Action activity that has a side effect on the client is not recommended here because the microflow is used as a data source for data view 'dvForm'.",
+        "module": "Shop",
+        "document": "Microflow 'SUB_Checkout_Recalculate'",
+        "element": "Commit object(s) activity 'Commit 'Form''"
+      },
+      {
+        "severity": "warning",
+        "code": "CE0582",
+        "message": "Widget static image is not supported in React client. Right-click this error to convert it to an alternative widget type.",
+        "module": "Atlas_Web_Content",
+        "document": "Page template 'Detail_Timeline'",
+        "element": "Static image 'image6'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0094",
+        "message": "Variable 'Cart' is never used.",
+        "module": "Shop",
+        "document": "Microflow 'SUB_Nav_Track'",
+        "element": "Call microflow activity 'SUB_Cart_Current'"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Tablet_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Tablet_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Tablet_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Atlas_Core",
+        "document": "Menu 'Tablet_Menu'",
+        "element": "Menu item"
+      },
+      {
+        "severity": "warning",
+        "code": "CW0055",
+        "message": "No 'On click' action specified.",
+        "module": "Shop",
+        "document": "Snippet 'SNIP_FeaturedCard'",
+        "element": "Action button 'pSoldBtn'"
+      },
+      {
+        "severity": "warning",
+        "code": "CE4271",
+        "message": "Version '6.0.0' of the module 'NanoflowCommons' is not compatible with this Mendix version. Visit the Marketplace to check for updates of 'Nanoflow Commons'."
+      },
+      {
+        "severity": "deprecation",
+        "code": "CW2512",
+        "message": "Java versions below 25 are deprecated for deployment.",
+        "module": "-",
+        "document": "Settings",
+        "element": "Runtime settings"
+      }
+    ]
+  },
   "summary": {
-    "total": 246,
+    "total": 247,
     "errors": 2,
-    "warnings": 99,
+    "warnings": 100,
     "infos": 145
   },
   "categories": [
@@ -20,23 +467,23 @@
         "GRANT \u003cRole\u003e ON Core.SimulationSettings (READ *)",
         "Review the user role assignments for 'Shop.Guest' and ensure a 1:1 mapping",
         "Intended if the list is meant to be row-scoped; otherwise grant an unconstrained READ to a module role those user roles hold",
-        "Add an XPath constraint to limit which rows 'Catalog.Guest' can READ on 'Allergen'",
-        "Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public."
+        "Add an XPath constraint to the access rule for 'Catalog.Guest', or remove the grant if this data should not be public.",
+        "Add an XPath constraint to limit which rows 'Catalog.Guest' can READ on 'Allergen'"
       ]
     },
     {
       "name": "Quality",
       "score": 0,
-      "total": 170,
+      "total": 169,
       "errors": 0,
-      "warnings": 35,
+      "warnings": 34,
       "infos": 135,
       "topActions": [
         "Remove the container, or give it the content it was meant to hold",
         "Extract logical sections into SUB_ microflows to keep each under 15 activities",
         "Extract logical sections into SUB_ microflows. This improves readability, testability, and reusability.",
-        "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows.",
-        "Replace entity validation rules with a VAL_Allergen microflow for explicit, testable validation"
+        "Replace entity validation rules with a VAL_Allergen microflow for explicit, testable validation",
+        "Break down complex logic into sub-microflows. Extract decision branches into separate SUB_ microflows."
       ]
     },
     {
@@ -73,31 +520,271 @@
     },
     {
       "name": "Design",
-      "score": 52,
-      "total": 16,
+      "score": 55,
+      "total": 15,
       "errors": 0,
-      "warnings": 16,
+      "warnings": 15,
       "infos": 0,
       "topActions": [
-        "Extract related attributes into separate entities with associations, or use entity generalization.",
-        "Set error handling to 'Custom with rollback' and add an error handler flow"
+        "Extract related attributes into separate entities with associations, or use entity generalization."
       ]
     },
     {
       "name": "Other",
-      "score": 66,
-      "total": 12,
+      "score": 57,
+      "total": 15,
       "errors": 0,
-      "warnings": 11,
+      "warnings": 14,
       "infos": 1,
       "topActions": [
         "Widen the gap: the @position x values of the loop and '(unnamed)' must differ by more than half of both widths (1065px here). Or drop the @position annotations around the loop and let the layout place it.",
         "Wrap dataview 'dvCart' in `layoutgrid { row { column (desktopwidth: autofill) { … } } }`",
+        "Either assign the other value where the guarded work should be skipped, or remove the flag and the decision that reads it. A flag with one reachable value reads as an interlock and is not one.",
         "Describing this microflow does not round-trip. Edit it in Studio Pro, or restructure so each branch reaches the decision's merge without passing through another branch's path. The condition can usually be folded into one decision instead (e.g. `not(a) or b`)."
       ]
     }
   ],
   "violations": [
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'md1' in Shop.Checkout is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Checkout",
+      "documentType": "page",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'md2' in Shop.Checkout is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Checkout",
+      "documentType": "page",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'md3' in Shop.Checkout is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Checkout",
+      "documentType": "page",
+      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Configurator",
+      "documentType": "page",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Configurator",
+      "documentType": "page",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Configurator",
+      "documentType": "page",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Configurator",
+      "documentType": "page",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Configurator",
+      "documentType": "page",
+      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "PaymentSheet",
+      "documentType": "page",
+      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "SNIP_Stepper",
+      "documentType": "snippet",
+      "documentId": "56fb5992-c0e4-477d-93b1-fb71e5b98553",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "UnexpectedError",
+      "documentType": "page",
+      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Confirmation",
+      "documentType": "page",
+      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
     {
       "ruleId": "MPR006",
       "severity": "info",
@@ -641,56 +1328,6 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'progressBar' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "PaymentSheet",
-      "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'ld1' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "PaymentSheet",
-      "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'ld2' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "PaymentSheet",
-      "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'ld3' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "PaymentSheet",
-      "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'payPoll' in Shop.PaymentSheet is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "PaymentSheet",
-      "documentType": "page",
-      "documentId": "59d69c81-3c15-481f-97fc-3d7debe348fd",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
       "message": "CONTAINER 'titleC' in Shop.NotFound is empty — valid and it renders, but probably unintended",
       "module": "Shop",
       "document": "NotFound",
@@ -731,11 +1368,41 @@
     {
       "ruleId": "MPR006",
       "severity": "info",
-      "message": "CONTAINER 'fill' in Shop.SNIP_Stepper is empty — valid and it renders, but probably unintended",
+      "message": "CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended",
       "module": "Shop",
-      "document": "SNIP_Stepper",
+      "document": "SNIP_HomeActiveOrder",
       "documentType": "snippet",
-      "documentId": "56fb5992-c0e4-477d-93b1-fb71e5b98553",
+      "documentId": "0703651d-5adb-430d-ad8b-50043038a813",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'de2c' in Shop.Menu is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Menu",
+      "documentType": "page",
+      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'menuPoll' in Shop.Menu is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "Menu",
+      "documentType": "page",
+      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
+      "suggestion": "Remove the container, or give it the content it was meant to hold"
+    },
+    {
+      "ruleId": "MPR006",
+      "severity": "info",
+      "message": "CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended",
+      "module": "Shop",
+      "document": "SNIP_Header",
+      "documentType": "snippet",
+      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -816,226 +1483,6 @@
       "document": "Tracking",
       "documentType": "page",
       "documentId": "b63366c5-0538-4faf-8084-533e96de2808",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'apPoll' in Shop.SNIP_HomeActiveOrder is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "SNIP_HomeActiveOrder",
-      "documentType": "snippet",
-      "documentId": "0703651d-5adb-430d-ad8b-50043038a813",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'md1' in Shop.Checkout is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Checkout",
-      "documentType": "page",
-      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'md2' in Shop.Checkout is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Checkout",
-      "documentType": "page",
-      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'md3' in Shop.Checkout is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Checkout",
-      "documentType": "page",
-      "documentId": "19763d34-8c66-4af6-b2e9-9fd068b6a3aa",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'ltDot' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd1' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd2' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'd3' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'upDiv' in Shop.Configurator is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Configurator",
-      "documentType": "page",
-      "documentId": "72bd862c-f9a3-4cde-88b7-0ba09ba1d096",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd1' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd2' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'cd3' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'hkDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'sDot' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'confPoll' in Shop.Confirmation is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Confirmation",
-      "documentType": "page",
-      "documentId": "7dd13403-b7df-442a-be40-bc7b18531fa9",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'de2c' in Shop.Menu is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Menu",
-      "documentType": "page",
-      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'menuPoll' in Shop.Menu is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "Menu",
-      "documentType": "page",
-      "documentId": "f0073440-fef0-477c-bfec-bbd05f06e8af",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'shellPoll' in Shop.SNIP_Header is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "SNIP_Header",
-      "documentType": "snippet",
-      "documentId": "3ee75039-419b-4e31-bfcf-22826546be97",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'titleC' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td1' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td2' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
-      "suggestion": "Remove the container, or give it the content it was meant to hold"
-    },
-    {
-      "ruleId": "MPR006",
-      "severity": "info",
-      "message": "CONTAINER 'td3' in Shop.UnexpectedError is empty — valid and it renders, but probably unintended",
-      "module": "Shop",
-      "document": "UnexpectedError",
-      "documentType": "page",
-      "documentId": "e417c91a-d53f-49ed-88a5-9f7d4d408b5f",
       "suggestion": "Remove the container, or give it the content it was meant to hold"
     },
     {
@@ -1226,6 +1673,36 @@
       "suggestion": "Widen the gap: the @position x values of the loop and '(unnamed)' must differ by more than half of both widths (745px here). Or drop the @position annotations around the loop and let the layout place it."
     },
     {
+      "ruleId": "MPR017",
+      "severity": "warning",
+      "message": "Attribute 'Catalog.Option.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable.",
+      "module": "Catalog",
+      "document": "Option",
+      "documentType": "entity",
+      "documentId": "7edf4e92-289e-4836-8813-a6c40cc6efe3",
+      "suggestion": "Either assign the other value where the guarded work should be skipped, or remove the flag and the decision that reads it. A flag with one reachable value reads as an interlock and is not one."
+    },
+    {
+      "ruleId": "MPR017",
+      "severity": "warning",
+      "message": "Attribute 'Fulfilment.Coupon.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable.",
+      "module": "Fulfilment",
+      "document": "Coupon",
+      "documentType": "entity",
+      "documentId": "6da88d7f-478b-406d-8183-95bd8e339b90",
+      "suggestion": "Either assign the other value where the guarded work should be skipped, or remove the flag and the decision that reads it. A flag with one reachable value reads as an interlock and is not one."
+    },
+    {
+      "ruleId": "MPR017",
+      "severity": "warning",
+      "message": "Attribute 'Fulfilment.DeliveryZone.IsActive' is tested by a decision but can only ever be true, so the branch it guards is unreachable.",
+      "module": "Fulfilment",
+      "document": "DeliveryZone",
+      "documentType": "entity",
+      "documentId": "65cde48c-f5e5-4375-bcaa-32972f788edd",
+      "suggestion": "Either assign the other value where the guarded work should be skipped, or remove the flag and the decision that reads it. A flag with one reachable value reads as an interlock and is not one."
+    },
+    {
       "ruleId": "CONV011",
       "severity": "warning",
       "message": "Microflow 'Shop.SUB_Cart_Recalculate' has a Change object action with Commit enabled inside a loop. This causes N+1 database operations.",
@@ -1344,26 +1821,6 @@
       "documentType": "microflow",
       "documentId": "8d8386c0-ef2f-4838-98ac-c899d42b7b17",
       "suggestion": "Move the commit outside the loop, or collect objects in a list and commit once after the loop"
-    },
-    {
-      "ruleId": "CONV013",
-      "severity": "warning",
-      "message": "Java action call in 'Simulation.SIM_ClockRun' uses 'Rollback' error handling instead of Custom.",
-      "module": "Simulation",
-      "document": "SIM_ClockRun",
-      "documentType": "microflow",
-      "documentId": "bb5bb7d5-cafe-4948-b6e5-c480055ab760",
-      "suggestion": "Set error handling to 'Custom with rollback' and add an error handler flow"
-    },
-    {
-      "ruleId": "CONV014",
-      "severity": "warning",
-      "message": "Activity '(unnamed activity)' in 'Simulation.SIM_ClockRun' uses 'Continue' error handling, which silently swallows errors.",
-      "module": "Simulation",
-      "document": "SIM_ClockRun",
-      "documentType": "microflow",
-      "documentId": "bb5bb7d5-cafe-4948-b6e5-c480055ab760",
-      "suggestion": "Change error handling to 'Custom with rollback' or 'Abort' to properly handle errors"
     },
     {
       "ruleId": "CONV014",
