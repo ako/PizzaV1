@@ -1,0 +1,175 @@
+{
+  "kind": "readiness",
+  "schema": 1,
+  "project": "GitPizza",
+  "generated": "2026-11-20 11:43",
+  "mxcli": "nightly-75-g7efedabd",
+  "method": [
+    "Rolled up from the other reports' JSON, as `mxcli report all` writes them (or run for this page): quality (with Mendix's consistency check), release, dependencies, configuration, security, tests, traceability, performance and architecture. Each item names the report it came from; open that report for the evidence.",
+    "Blocking: consistency errors; a release change that destroys production data; a high or critical vulnerability; a location fixed to localhost, a private address or a test host, or a literal credential; an open high security finding; a failing microflow test or journey; a requirement of the milestone being released (`--milestone`) that is not built in full.",
+    "Risks: lint warnings and errors by category; release changes to verify; a monthly or unknown Mendix release line; Marketplace modules behind; medium security findings and flows without a verdict; callable microflows no test reaches; requirements not built or not proven; journey steps over the server-time budget (`--budget-ms`); domain cycles.",
+    "Accepted: findings a project-brain decision accepts, verdicts recorded on the other reports (fixed, accepted, intended), and blocking items signed off on this page."
+  ],
+  "limits": [
+    "The verdict is only as complete as the reports it read: one not given is listed as not assessed, and a report that decides a blocking question keeps the verdict at \"not assessed in full\".",
+    "Everything under \"Not covered by the model\" has to be checked elsewhere, every time."
+  ],
+  "data": {
+    "verdict": "not assessed in full",
+    "rule": "Any open blocking item: not ready. Otherwise, when a report that decides a blocking question was not given or could not check: not assessed in full. Otherwise: ready, with risks when there are risks, else ready. A blocking item signed off (readiness:\u003ckey\u003e, status \"signed off\") counts as accepted.",
+    "blocking": [],
+    "risks": [
+      {
+        "key": "lint:Security",
+        "source": "quality",
+        "text": "Security: 2 error(s), 7 warning(s) in the lint rules (score 50)"
+      },
+      {
+        "key": "lint:Quality",
+        "source": "quality",
+        "text": "Quality: 0 error(s), 34 warning(s) in the lint rules (score 0)"
+      },
+      {
+        "key": "lint:Architecture",
+        "source": "quality",
+        "text": "Architecture: 0 error(s), 18 warning(s) in the lint rules (score 46)"
+      },
+      {
+        "key": "lint:Performance",
+        "source": "quality",
+        "text": "Performance: 0 error(s), 12 warning(s) in the lint rules (score 64)"
+      },
+      {
+        "key": "lint:Design",
+        "source": "quality",
+        "text": "Design: 0 error(s), 15 warning(s) in the lint rules (score 55)"
+      },
+      {
+        "key": "lint:Other",
+        "source": "quality",
+        "text": "Other: 0 error(s), 14 warning(s) in the lint rules (score 57)"
+      },
+      {
+        "key": "mendix-line",
+        "source": "dependencies",
+        "text": "Mendix 11.16.1's release line is not in mxcli's registry: check its support status"
+      },
+      {
+        "key": "flows",
+        "source": "security",
+        "text": "34 client-callable flow(s) at medium risk without a verdict"
+      },
+      {
+        "key": "gaps",
+        "source": "tests",
+        "text": "29 microflow(s) a user role may call are reached by no test or journey"
+      },
+      {
+        "key": "milestone:M1 — Browse and order",
+        "source": "traceability",
+        "text": "milestone M1 — Browse and order: 1 requirement(s) not built in full"
+      },
+      {
+        "key": "untested:M1 — Browse and order",
+        "source": "traceability",
+        "text": "milestone M1 — Browse and order: 4 requirement(s) built but proven by no test or journey"
+      },
+      {
+        "key": "untested:M3 — Simulated kitchen and couriers",
+        "source": "traceability",
+        "text": "milestone M3 — Simulated kitchen and couriers: 1 requirement(s) built but proven by no test or journey"
+      },
+      {
+        "key": "milestone:M4 — Errors and system messages",
+        "source": "traceability",
+        "text": "milestone M4 — Errors and system messages: 1 requirement(s) not built in full"
+      },
+      {
+        "key": "untested:M4 — Errors and system messages",
+        "source": "traceability",
+        "text": "milestone M4 — Errors and system messages: 5 requirement(s) built but proven by no test or journey"
+      }
+    ],
+    "accepted": [
+      {
+        "key": "finding:setting:guest-access",
+        "source": "security",
+        "text": "Anonymous (guest) access is on",
+        "note": "intended: the shop has no sign-in: every visitor is an anonymous guest (LITE-SES-01)"
+      }
+    ],
+    "admin": [
+      {
+        "key": "constant:Shop.AppUrl",
+        "source": "configuration",
+        "text": "Set `Shop.AppUrl` (wrong unless overridden)"
+      },
+      {
+        "key": "scheduled:Simulation.SE_ClockWatchdog",
+        "source": "configuration",
+        "text": "Enable or disable `Simulation.SE_ClockWatchdog` (every 1 min)"
+      },
+      {
+        "key": "scheduled:Simulation.SE_DailyReset",
+        "source": "configuration",
+        "text": "Enable or disable `Simulation.SE_DailyReset` (daily at 04:00)"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "quality",
+        "assessed": true,
+        "decides": true
+      },
+      {
+        "kind": "release",
+        "assessed": false,
+        "note": "not given: what the deploy does to production data is not assessed (report release --against \u003cdeployed\u003e)",
+        "decides": true
+      },
+      {
+        "kind": "dependencies",
+        "assessed": true,
+        "decides": true
+      },
+      {
+        "kind": "configuration",
+        "assessed": true,
+        "decides": true
+      },
+      {
+        "kind": "security",
+        "assessed": true,
+        "decides": true
+      },
+      {
+        "kind": "tests",
+        "assessed": true,
+        "decides": true
+      },
+      {
+        "kind": "traceability",
+        "assessed": true,
+        "decides": false
+      },
+      {
+        "kind": "performance",
+        "assessed": true,
+        "decides": false
+      },
+      {
+        "kind": "architecture",
+        "assessed": true,
+        "decides": false
+      }
+    ],
+    "notCovered": [
+      "Behaviour on the production infrastructure, and load beyond the measured journeys.",
+      "Hosting: TLS, HTTP security headers, network rules, the deployment's own constant values and scheduled-event switches.",
+      "Backups, and a restore that was actually tried.",
+      "Licences: the Mendix runtime licence and third-party terms.",
+      "A penetration test, and a review of Java and JavaScript code the model does not show."
+    ],
+    "budgetMs": 1000
+  }
+}

@@ -12,6 +12,9 @@ data in this folder.
 | Architecture | `../architecture/report.html` | `../architecture/tools/gen_arch.py` | `../architecture/arch.json` |
 | Security | `../security/report.html` | `../security/tools/gen_security.py` | `raw/security.json`, `security-annotations.yaml` |
 | Quality score | `../quality/report.html` | `../quality/tools/gen_quality.py` | `raw/quality.json` |
+| Production readiness | `readiness.html` (built-in only) | `mxcli report all` | `raw/readiness.json` |
+| Configuration | `configuration.html` (built-in only) | `mxcli report all` | `raw/configuration.json` |
+| Dependencies | `dependencies.html` (built-in only) | `mxcli report all` | `raw/dependencies.json` |
 | Software map | `map.html` | `tools/restyle_map.py` after `mxcli report map` | the model |
 
 ## Refresh the data
@@ -57,3 +60,15 @@ data in this folder.
 
    The built-in renderings come from
    `./mxcli report <kind> --from raw/<kind>.json --annotations <kind>-annotations.yaml -o <kind>.html`.
+
+## Readiness, configuration and dependencies
+
+These three are taken from one `report all` run into a scratch folder; `report all` writes its own `index.html` and `map.html`, which must not overwrite ours:
+
+```bash
+./mxcli report all -p GitPizza.mpr -o /tmp/rall --annotations-dir docs/reports --exclude-docs 'Simulation.SEED_*' \
+  --journeys raw/journeys.jsonl --spans raw/spans.jsonl --junit raw/junit.xml \
+  --perf-journeys ../perf/data/after-journeys.jsonl --perf-spans ../perf/data/after-spans.jsonl.gz
+```
+
+Copy `readiness`, `configuration` and `dependencies` (`.html` into this folder, `.json` into `raw/`), then run `python3 tools/reports_index.py`. The release report is left out: it needs a deployed revision (`--against`), and this app has none.

@@ -611,3 +611,11 @@ Built from `def69a53`. Performance: before and after volume runs re-analysed (`d
 8. Per-epic bars at 390 px shrink to slivers (the label column takes the width). This predates the PR.
 
 Our own `docs/reports/performance-annotations.yaml` summary was stale (it said server time includes the background clock); it is corrected and `docs/reports/performance.html` re-rendered.
+
+## New report kinds (readiness, configuration, dependencies), 2026-11-20
+
+`report all` with every input and `--annotations-dir docs/reports`. Readiness, configuration and dependencies were added to `docs/reports/` and the overview (`tools/reports_index.py`); release was skipped (no deployed revision to compare against).
+- **Readiness:** "not assessed in full". 0 blocking, 14 risks (six lint categories, the 11.16 line not in mxcli's registry, 34 medium flows without a verdict, 29 role-callable microflows untested, requirements partial or unproven per milestone), 1 accepted (guest access). Not assessed: release only.
+- **Configuration:** 1 of 4 constants must be set per environment (`Shop.AppUrl`, localhost default); 2 scheduled events (clock watchdog every minute, daily reset at 04:00); `ASU_Startup` reaches 228 microflows and writes the catalog and settings.
+- **Dependencies:** 20 of 33 widgets have a newer version, 2 up to date, 11 not identified. **All 7 Marketplace modules are "not identified"** ("no catalog item publishes the version the module records"), although they are the stock modules of `mx create-project` 11.16.1 (Atlas_Core 4.1.3, DataWidgets 3.5.0, …). Worth checking in mxcli. OSV: no vulnerabilities; no Java libraries in `userlib/`.
+- **Crash, once:** the first `report all` panicked in the dependencies report's Marketplace scan (`marketplace/client.go:113` in `ListAll`, from `checkMarketplace`); it was the first run, with no catalog cache. It did not reproduce: one more full run, 4 warm runs and 3 runs with the cache deleted all succeeded.

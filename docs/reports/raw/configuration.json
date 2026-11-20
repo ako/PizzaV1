@@ -1,0 +1,134 @@
+{
+  "kind": "configuration",
+  "schema": 1,
+  "project": "GitPizza",
+  "generated": "2026-11-20 11:43",
+  "mxcli": "nightly-75-g7efedabd",
+  "method": [
+    "Read from the model through the mxcli catalog: constants and their run-configuration values, consumed REST services (`CATALOG.CONSUMED_REST_SERVICES`, base URL literal or constant), scheduled events, published REST and OData services, and microflow source (`CATALOG.SOURCE`) for constant uses (`@Module.Name`), REST call locations and literal credentials.",
+    "A constant must be set when it has no default or a placeholder one; it is wrong unless overridden when its default points at localhost, a private address or a test host (test, staging, acc, dev, example.com, …); a default that looks like a secret is the security report's finding and is masked here.",
+    "A location is fixed in the model when it is a literal URL: no environment can change it. One built from a constant is configurable.",
+    "The lifecycle microflows are the project settings' after-startup, before-shutdown and health-check microflows, with what their call closure writes and calls."
+  ],
+  "limits": [
+    "This page does not read the deployment portal, a pipeline or an environment's constant values: it lists what they must supply, not what they do supply.",
+    "Scheduled events are switched on or off per environment in the cloud portal (or the runtime's settings on premises); the model's own flag only applies locally.",
+    "Constants read by Java actions, JavaScript actions or widgets are not seen as used. Consumed OData services, web service calls and database connections take their locations from settings this page does not read yet.",
+    "Web-service users and the accounts a published service's callers need are created in each environment; the page lists the services, not the accounts."
+  ],
+  "data": {
+    "scope": {
+      "app": [
+        "Catalog",
+        "Core",
+        "Fulfilment",
+        "Shop",
+        "Simulation"
+      ],
+      "outside": [
+        "Administration",
+        "Atlas_Core",
+        "Atlas_Web_Content",
+        "DataWidgets",
+        "FeedbackModule",
+        "NanoflowCommons",
+        "System",
+        "WebActions"
+      ]
+    },
+    "sourceIndexed": true,
+    "constants": [
+      {
+        "name": "Shop.AppUrl",
+        "type": "String",
+        "default": "http://localhost:8080/",
+        "usedBy": [
+          "Shop.SUB_Track_Fill"
+        ],
+        "need": "wrong unless overridden",
+        "reason": "the default points at localhost"
+      },
+      {
+        "name": "Shop.FaultInjection",
+        "type": "Boolean",
+        "default": "False",
+        "usedBy": [
+          "Shop.DS_FaultProbe"
+        ],
+        "need": "default applies"
+      },
+      {
+        "name": "Simulation.ResetOnStartup",
+        "type": "Boolean",
+        "default": "False",
+        "usedBy": [
+          "Simulation.ASU_Startup"
+        ],
+        "need": "default applies"
+      },
+      {
+        "name": "Simulation.SpeedFactor",
+        "type": "Integer",
+        "default": "1",
+        "usedBy": [
+          "Simulation.ASU_Startup",
+          "Simulation.SUB_Reset"
+        ],
+        "need": "default applies"
+      }
+    ],
+    "endpoints": null,
+    "credentials": null,
+    "scheduled": [
+      {
+        "name": "Simulation.SE_ClockWatchdog",
+        "microflow": "Simulation.SE_ClockWatchdog",
+        "interval": "every 1 min",
+        "enabledInModel": true
+      },
+      {
+        "name": "Simulation.SE_DailyReset",
+        "microflow": "Simulation.SE_DailyReset",
+        "interval": "daily at 04:00",
+        "enabledInModel": true
+      }
+    ],
+    "lifecycle": [
+      {
+        "role": "after startup",
+        "microflow": "Simulation.ASU_Startup",
+        "reaches": 228,
+        "writes": [
+          "Catalog.Allergen",
+          "Catalog.Category",
+          "Catalog.Ingredient",
+          "Catalog.Option",
+          "Catalog.Product",
+          "Catalog.ProductSize",
+          "Catalog.RecipeItem",
+          "Core.SimulationSettings",
+          "Core.StoreSettings",
+          "Fulfilment.Coupon",
+          "Fulfilment.Courier",
+          "Fulfilment.DeliveryZone",
+          "Fulfilment.Order",
+          "Fulfilment.OrderAccess",
+          "Fulfilment.OrderLine",
+          "Fulfilment.OrderLineModifier",
+          "Fulfilment.OrderLogEntry",
+          "Fulfilment.OrderStatusChange",
+          "Fulfilment.Oven",
+          "Fulfilment.PaymentAttempt",
+          "Fulfilment.PriceResult",
+          "Fulfilment.SimulationEvent",
+          "Shop.Cart",
+          "Shop.CartLine",
+          "Shop.CheckoutForm",
+          "Shop.LookupAttempt",
+          "Simulation.SimCustomer"
+        ]
+      }
+    ],
+    "published": null
+  }
+}

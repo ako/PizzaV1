@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Production readiness</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--fg:#1b1b1c;--muted:#5e6066;--line:#dedcd5;--accent:#2a78d6;--heat:#2a78d6;--hit:#fff1d9;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;
+--good:#127a3a;--good-bg:#e6f4ec;--warn:#9a6b00;--warn-bg:#fdf3dc;--bad:#b3261e;--bad-bg:#fbe7e6;--none-bg:#eeede8;
+--ok:var(--good);--okbg:var(--good-bg);--warnbg:var(--warn-bg);--badbg:var(--bad-bg);--info:var(--s1);--infobg:#e7f0fb;
+--mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;--body:system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131313;--card:#1b1b1c;--fg:#ececec;--muted:#a2a4aa;--line:#2f2f31;--accent:#3987e5;--heat:#3987e5;--hit:#2c2210;color-scheme:dark;
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#0ca30c;--s7:#9085e9;--s8:#e66767;
+--good:#5cc98e;--good-bg:#15291e;--warn:#e0b54a;--warn-bg:#2d2510;--bad:#f07575;--bad-bg:#321615;--none-bg:#242426;--infobg:#16233a}}
+:root[data-theme="dark"]{--bg:#131313;--card:#1b1b1c;--fg:#ececec;--muted:#a2a4aa;--line:#2f2f31;--accent:#3987e5;--heat:#3987e5;--hit:#2c2210;color-scheme:dark;
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#0ca30c;--s7:#9085e9;--s8:#e66767;
+--good:#5cc98e;--good-bg:#15291e;--warn:#e0b54a;--warn-bg:#2d2510;--bad:#f07575;--bad-bg:#321615;--none-bg:#242426;--infobg:#16233a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--body)}
+main{max-width:1180px;margin:0 auto;padding:0 16px 64px}main>*{min-width:0}main>header:not(.top){padding-top:28px}
+header.top{border-bottom:6px solid var(--accent);padding:32px 0 22px;margin-bottom:28px;display:grid;gap:10px}
+.eyebrow{font:600 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(28px,5vw,40px)/1.1 var(--mono);margin:0;letter-spacing:-.02em}
+h2{font:700 21px/1.25 var(--mono);margin:0 0 10px;letter-spacing:-.01em}h3{font:600 16px/1.3 var(--body);margin:0 0 6px}
+p,.lede,.intro,ul{max-width:76ch}p{margin:0 0 10px}.lede{font-size:17px;margin:0}.intro{color:var(--muted)}
+a{color:var(--accent)}code{font:12.5px var(--mono);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 3px}
+nav.reports{display:flex;flex-wrap:wrap;gap:4px 14px;font:500 13px var(--body)}nav.reports a{color:var(--muted);text-decoration:none}
+nav.reports a[aria-current]{color:var(--fg);font-weight:600}
+nav.toc ol{columns:2;color:var(--muted);font-size:14px;margin:0 0 28px}nav.toc a{color:var(--accent);text-decoration:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px;margin:0 0 28px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:5px;align-content:start}
+.kpi .v{font:600 24px/1.1 var(--mono);font-variant-numeric:tabular-nums}.kpi .l{color:var(--muted);font-size:13.5px}
+.kpi .n{color:var(--muted);font-size:13px}
+.kpi.good{border-left:4px solid var(--good)}.kpi.warn{border-left:4px solid var(--warn)}.kpi.bad{border-left:4px solid var(--bad)}
+section{margin:0 0 36px}
+.tw{overflow-x:auto;margin:8px 0 14px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:4px 10px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+caption{text-align:left;font-weight:600;padding:8px 0 4px}
+th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}tbody tr:last-child td{border-bottom:0}
+thead th{font:600 11.5px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--fg);white-space:nowrap}
+td.none{color:var(--muted);font-style:italic}td.num{text-align:right;font:13px var(--mono);white-space:nowrap}th.num{text-align:right}
+td.ok,td.good{background:var(--good-bg);color:var(--good)}td.warn{background:var(--warn-bg);color:var(--warn)}td.bad{background:var(--bad-bg);color:var(--bad)}
+td.info{background:var(--infobg);color:var(--info)}td.muted{color:var(--muted)}tr.hit{background:var(--hit)}
+.callout{border-left:4px solid var(--info);background:var(--infobg);padding:10px 14px;border-radius:4px;margin:8px 0;max-width:96ch}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.meter{position:relative;width:150px;height:18px;background:var(--bg);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.meter.good i{background:var(--good)}.meter.warn i{background:var(--warn)}.meter.bad i{background:var(--bad)}
+.meter span{position:absolute;top:0;font:600 11.5px/16px var(--mono);color:var(--fg)}
+.meter.good i+span,.meter.warn i+span,.meter.bad i+span{mix-blend-mode:normal}
+.stacked{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:8px 0 14px;display:grid;gap:7px}
+.stacked .cap{font-weight:600}.srow{display:grid;grid-template-columns:minmax(120px,220px) 1fr auto;gap:12px;align-items:center;font-size:13.5px}
+.srow .sl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.srow .sv{font:12.5px var(--mono);color:var(--muted);white-space:nowrap}
+.stack{display:flex;height:16px;border-radius:3px;overflow:hidden;gap:2px}.stack i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.finding{display:grid;grid-template-columns:72px 1fr;gap:16px;margin:0 0 20px}
+.tag{display:inline-block;font:700 12px/1 var(--mono);padding:8px 4px;border-radius:3px;text-align:center;height:fit-content;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag.good{background:var(--good-bg);color:var(--good)}.tag.warn{background:var(--warn-bg);color:var(--warn)}
+.tag.bad{background:var(--bad-bg);color:var(--bad)}.tag.none{background:var(--none-bg);color:var(--muted)}
+.status{display:block;font:600 12px/1 var(--body);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+.status.good{color:var(--good)}.status.warn{color:var(--warn)}.status.bad{color:var(--bad)}.status.none{color:var(--muted)}
+figure{margin:10px 0 16px;overflow-x:auto}figcaption{color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:18px}
+.rcard{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.rcard h3{font:700 19px/1.2 var(--mono);margin:0}.rcard h3 a{color:var(--fg);text-decoration:none}.rcard p{margin:0;color:var(--muted)}
+.rcard.missing{border-style:dashed}.rcard .open{font-weight:600;font-size:14px}
+.minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.mini{border:1px solid var(--line);border-radius:4px;padding:8px 10px;display:grid;gap:2px}
+.mini .v{font:600 17px/1.15 var(--mono);font-variant-numeric:tabular-nums}.mini .l{color:var(--muted);font-size:12.5px}
+.mini.good{border-left:3px solid var(--good)}.mini.warn{border-left:3px solid var(--warn)}.mini.bad{border-left:3px solid var(--bad)}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:12px}
+svg text{fill:var(--fg);font:11px var(--mono)}svg .muted{fill:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><nav class="reports"><a href="index.html">Overview</a><a href="readiness.html" aria-current="page">Readiness</a><a href="quality.html">Quality score</a><a href="architecture.html">Architecture</a><a href="security.html">Security</a><a href="configuration.html">Configuration</a><a href="dependencies.html">Dependencies</a><a href="tests.html">Tests</a><a href="traceability.html">Traceability</a><a href="performance.html">Performance</a><a href="map.html">Software map</a></nav><span class="eyebrow">GitPizza · Readiness · 2026-11-20</span><h1>Production readiness</h1><p class="lede">Verdict: not assessed in full. 0 blocking, 14 risk(s), 1 accepted; 1 of 9 reports not assessed in full.</p></header>
+<section class="kpis"><div class="kpi warn"><span class="v">not assessed in full</span><span class="l">verdict</span><span class="n">by the rule under Blocking</span></div><div class="kpi good"><span class="v">0</span><span class="l">blocking</span><span class="n">any one makes it not ready</span></div><div class="kpi warn"><span class="v">14</span><span class="l">risks</span><span class="n">decide, or accept on their report</span></div><div class="kpi"><span class="v">1</span><span class="l">accepted</span><span class="n">recorded decisions and verdicts</span></div><div class="kpi warn"><span class="v">1</span><span class="l">not assessed</span><span class="n">of 9 reports: never counted as passing</span></div></section>
+<nav class="toc"><ol><li><a href="#blocking">Blocking</a></li><li><a href="#risks">Risks</a></li><li><a href="#accepted">Accepted</a></li><li><a href="#admin">For the administrator</a></li><li><a href="#sources">What was assessed</a></li><li><a href="#not-covered">Not covered by the model</a></li><li><a href="#method">How this was measured</a></li><li><a href="#limits">What this does not cover</a></li></ol></nav>
+<section id="blocking"><h2>Blocking</h2>
+<p class="intro">The verdict rule: Any open blocking item: not ready. Otherwise, when a report that decides a blocking question was not given or could not check: not assessed in full. Otherwise: ready, with risks when there are risks, else ready. A blocking item signed off (readiness:&lt;key&gt;, status &#34;signed off&#34;) counts as accepted.</p>
+<p>Nothing blocking was found in the reports that were read.</p>
+</section>
+<section id="risks"><h2>Risks</h2>
+<p class="intro">Not blocking on their own; each is a decision to take, or to record as accepted on its report.</p>
+<div class="tw"><table><thead><tr><th>Item</th><th>From</th></tr></thead><tbody><tr><td>Security: 2 error(s), 7 warning(s) in the lint rules (score 50)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Quality: 0 error(s), 34 warning(s) in the lint rules (score 0)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Architecture: 0 error(s), 18 warning(s) in the lint rules (score 46)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Performance: 0 error(s), 12 warning(s) in the lint rules (score 64)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Design: 0 error(s), 15 warning(s) in the lint rules (score 55)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Other: 0 error(s), 14 warning(s) in the lint rules (score 57)</td><td><a href="quality.html">Quality score</a></td></tr><tr><td>Mendix 11.16.1&#39;s release line is not in mxcli&#39;s registry: check its support status</td><td><a href="dependencies.html">Dependencies</a></td></tr><tr><td>34 client-callable flow(s) at medium risk without a verdict</td><td><a href="security.html">Security</a></td></tr><tr><td>29 microflow(s) a user role may call are reached by no test or journey</td><td><a href="tests.html">Tests</a></td></tr><tr><td>milestone M1 — Browse and order: 1 requirement(s) not built in full</td><td><a href="traceability.html">Traceability</a></td></tr><tr><td>milestone M1 — Browse and order: 4 requirement(s) built but proven by no test or journey</td><td><a href="traceability.html">Traceability</a></td></tr><tr><td>milestone M3 — Simulated kitchen and couriers: 1 requirement(s) built but proven by no test or journey</td><td><a href="traceability.html">Traceability</a></td></tr><tr><td>milestone M4 — Errors and system messages: 1 requirement(s) not built in full</td><td><a href="traceability.html">Traceability</a></td></tr><tr><td>milestone M4 — Errors and system messages: 5 requirement(s) built but proven by no test or journey</td><td><a href="traceability.html">Traceability</a></td></tr></tbody></table></div>
+</section>
+<section id="accepted"><h2>Accepted</h2>
+<p class="intro">Visible, not hidden: each accepted item with the decision or verdict that accepts it. Only recorded acceptances count: a verdict on the item&#39;s own report (<code>--annotations</code>), a lint finding accepted by a brain decision captured with <code>mxcli brain capture --accepts &lt;RULE&gt;:&lt;why&gt;</code>, or a sign-off here. A decision written only as prose in the brain is not read as accepting anything.</p>
+<div class="tw"><table><thead><tr><th>Item</th><th>From</th></tr></thead><tbody><tr><td>Anonymous (guest) access is on — intended: the shop has no sign-in: every visitor is an anonymous guest (LITE-SES-01)</td><td><a href="security.html">Security</a></td></tr></tbody></table></div>
+</section>
+<section id="admin"><h2>For the administrator</h2>
+<p class="intro">What each environment must supply, from the configuration report; sign it off there.</p>
+<div class="tw"><table><thead><tr><th>Item</th><th>From</th></tr></thead><tbody><tr><td>Set <code>Shop.AppUrl</code> (wrong unless overridden)</td><td><a href="configuration.html">Configuration</a></td></tr><tr><td>Enable or disable <code>Simulation.SE_ClockWatchdog</code> (every 1 min)</td><td><a href="configuration.html">Configuration</a></td></tr><tr><td>Enable or disable <code>Simulation.SE_DailyReset</code> (daily at 04:00)</td><td><a href="configuration.html">Configuration</a></td></tr></tbody></table></div>
+</section>
+<section id="sources"><h2>What was assessed</h2>
+<p class="intro">A report not given, or one that could not check, is not assessed — never passing.</p>
+<div class="tw"><table><thead><tr><th>Report</th><th>Assessed</th><th>Note</th></tr></thead><tbody><tr><td><a href="quality.html">Quality score</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="release.html">Release</a></td><td class="warn">not assessed</td><td>not given: what the deploy does to production data is not assessed (report release --against &lt;deployed&gt;)</td></tr><tr><td><a href="dependencies.html">Dependencies</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="configuration.html">Configuration</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="security.html">Security</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="tests.html">Tests</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="traceability.html">Traceability</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="performance.html">Performance</a></td><td class="ok">yes</td><td></td></tr><tr><td><a href="architecture.html">Architecture</a></td><td class="ok">yes</td><td></td></tr></tbody></table></div>
+</section>
+<section id="not-covered"><h2>Not covered by the model</h2>
+<p class="intro">Checks to do elsewhere, every time: no report on this page can make them.</p>
+<ul><li>Behaviour on the production infrastructure, and load beyond the measured journeys.</li><li>Hosting: TLS, HTTP security headers, network rules, the deployment&#39;s own constant values and scheduled-event switches.</li><li>Backups, and a restore that was actually tried.</li><li>Licences: the Mendix runtime licence and third-party terms.</li><li>A penetration test, and a review of Java and JavaScript code the model does not show.</li></ul>
+</section>
+<section id="method"><h2>How this was measured</h2>
+<ul><li>Rolled up from the other reports&#39; JSON, as <code>mxcli report all</code> writes them (or run for this page): quality (with Mendix&#39;s consistency check), release, dependencies, configuration, security, tests, traceability, performance and architecture. Each item names the report it came from; open that report for the evidence.</li><li>Blocking: consistency errors; a release change that destroys production data; a high or critical vulnerability; a location fixed to localhost, a private address or a test host, or a literal credential; an open high security finding; a failing microflow test or journey; a requirement of the milestone being released (<code>--milestone</code>) that is not built in full.</li><li>Risks: lint warnings and errors by category; release changes to verify; a monthly or unknown Mendix release line; Marketplace modules behind; medium security findings and flows without a verdict; callable microflows no test reaches; requirements not built or not proven; journey steps over the server-time budget (<code>--budget-ms</code>); domain cycles.</li><li>Accepted: findings a project-brain decision accepts, verdicts recorded on the other reports (fixed, accepted, intended), and blocking items signed off on this page.</li></ul>
+</section>
+<section id="limits"><h2>What this does not cover</h2>
+<ul><li>The verdict is only as complete as the reports it read: one not given is listed as not assessed, and a report that decides a blocking question keeps the verdict at &#34;not assessed in full&#34;.</li><li>Everything under &#34;Not covered by the model&#34; has to be checked elsewhere, every time.</li></ul>
+</section>
+<footer>Generated 2026-11-20 11:43 by mxcli nightly-75-g7efedabd</footer>
+</main>
+</body>
+</html>

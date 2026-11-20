@@ -117,6 +117,9 @@ qu_rows = ''.join(row(c['name'], bar(c['score'], 'good' if c['score'] >= 80 else
                       f'{c["errors"]}E {c["warnings"]}W {c["infos"]}I') for c in cats)
 
 menu_b, menu_a = pb[('Guest orders a pizza', '2 open menu')], pa[('Guest orders a pizza', '2 open menu')]
+RD = json.load(open(os.path.join(REP, 'raw', 'readiness.json')))['data']
+CF = json.load(open(os.path.join(REP, 'raw', 'configuration.json')))['data']
+DP = json.load(open(os.path.join(REP, 'raw', 'dependencies.json')))['data']
 cards = [
     card('../traceability/report.html', 'traceability.html', 'Traceability',
          f'All {len(reqs)} PRD user stories per milestone: derived status, the microflows behind each, and the tests and journeys that reach them.',
@@ -139,6 +142,18 @@ cards = [
     card('../quality/report.html', 'quality.html', 'Quality score',
          'Every lint finding by category and rule, with a verdict per rule and the changes that would move the score most.',
          qu_rows, [f'score {quality["overallScore"]:g}/100', f'{quality["summary"]["errors"]} errors · {quality["summary"]["warnings"]} warnings · {quality["summary"]["infos"]} info']),
+    card('readiness.html', None, 'Production readiness',
+         'One go/no-go page rolled up from the other reports: blocking items, risks, what is accepted, the administrator checklist and what was not assessed.',
+         '', [f'verdict: {RD["verdict"]} · {len(RD["blocking"])} blocking · {len(RD["risks"])} risks · {len(RD["accepted"])} accepted',
+              'not assessed: ' + (', '.join(s['kind'] for s in RD['sources'] if not s['assessed']) or 'none')]),
+    card('configuration.html', None, 'Configuration',
+         'What each environment must supply: constants to set, scheduled events to switch, startup work, read from the model.',
+         '', [f'{sum(1 for c in CF["constants"] if c["need"] != "default applies")} of {len(CF["constants"])} constants must be set (' + ', '.join(c['name'] for c in CF['constants'] if c['need'] != 'default applies') + ')',
+              f'{len(CF["scheduled"])} scheduled events to switch on or off']),
+    card('dependencies.html', None, 'Dependencies',
+         'Mendix release line, Marketplace modules and widgets against their newest versions, and known vulnerabilities (OSV).',
+         '', [f'{sum(1 for w in DP["widgets"] if w["status"] == "newer available")} of {len(DP["widgets"])} widgets have a newer version · {sum(1 for m in DP["modules"] if m["status"] == "not identified")} of {len(DP["modules"])} modules not identified in the catalog',
+              'vulnerabilities checked against OSV: none found' if DP.get('vulnChecked') else 'vulnerabilities not checked']),
     card('map.html', None, 'Software map',
          'Interactive guide for a newcomer: features per slice, module map, page flows per role, data across modules, conventions, background work and an index.',
          '', ['self-contained: diagrams drawn in the browser']),
