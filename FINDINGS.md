@@ -619,3 +619,17 @@ Our own `docs/reports/performance-annotations.yaml` summary was stale (it said s
 - **Configuration:** 1 of 4 constants must be set per environment (`Shop.AppUrl`, localhost default); 2 scheduled events (clock watchdog every minute, daily reset at 04:00); `ASU_Startup` reaches 228 microflows and writes the catalog and settings.
 - **Dependencies:** 20 of 33 widgets have a newer version, 2 up to date, 11 not identified. **All 7 Marketplace modules are "not identified"** ("no catalog item publishes the version the module records"), although they are the stock modules of `mx create-project` 11.16.1 (Atlas_Core 4.1.3, DataWidgets 3.5.0, …). Worth checking in mxcli. OSV: no vulnerabilities; no Java libraries in `userlib/`.
 - **Crash, once:** the first `report all` panicked in the dependencies report's Marketplace scan (`marketplace/client.go:113` in `ListAll`, from `checkMarketplace`); it was the first run, with no catalog cache. It did not reproduce: one more full run, 4 warm runs and 3 runs with the cache deleted all succeeded.
+
+### PR 2475 retest after the review fixes (`5e1ef914`), 2026-11-20
+
+All 8 points fixed, checked on the same before/after runs (annotations: F1/F3 `scope: background`, F8 `status: by design`; notes still starting with their ID):
+1. Cards give DB time, and server changes within the spread say so ("server 195 → 159 ms (within the run-to-run spread), DB 264 → 184 ms"; F8's DB "102 → 104 ms (no clear change)").
+2. F1/F3: "Background work: no journey step runs it."
+3. F8 renders "by design".
+4. Row notes: "finding F2 — The home KPIs scanned every order ever placed: index on …"; no doubled ID.
+5. The JIT tile reads "no plans read".
+6. The requirement table is grouped under milestone · epic rows; at 390 px the columns are REQUIREMENT / STATUS / PROVEN BY, with no inner scroll.
+7. US-004: "nothing to reach (no microflow implements it)".
+8. The bars sit on their own line at 390 px.
+
+Nit: at 390 px, the per-milestone labels are still cut with an ellipsis ("M3 — Simulated kitchen and co…") although the bar now has its own line. No page errors or overflow at 1280/390 px.
