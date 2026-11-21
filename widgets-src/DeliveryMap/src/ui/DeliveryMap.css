@@ -16,3 +16,6 @@
 .leaflet-tooltip.gdm-distance { font: 700 12px var(--font-mono, "JetBrains Mono", monospace); background: var(--surface-container, #161b22); color: var(--text-primary, #e6edf3); border: 1px solid var(--border, #30363d); box-shadow: none; }
 .leaflet-tooltip.gdm-distance::before { display: none; }
 .gdm-note { margin: 6px 0 0; font-size: 12px; color: var(--text-muted, #8b949e); }
+/* Leaflet's panes carry z-indexes up to 1000; isolate them in the map's own box so they never
+   paint over page overlays (the pizza chat window, dialogs). */
+.gdm-map { isolation: isolate; }

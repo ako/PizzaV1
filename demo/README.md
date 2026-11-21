@@ -7,16 +7,18 @@ nothing; the verdicts live in `tests/e2e/journeys.js`, which walks the same path
 
 | Film | Story | Desktop (1920×1080) | Phone (iPhone profile) |
 |---|---|---|---|
-| Sam orders a pizza | home → menu → configure Inferno Payload Large + cherry tomatoes ($25.00) → cart → checkout → pay → confirmation → live tracking | `films/order-desktop.mp4` (102 s, 60 % voice) | `films/order-phone.mp4` (101 s, 61 %) |
+| Sam orders a pizza | home → menu → configure Inferno Payload Large + cherry tomatoes ($25.00) → cart → checkout with the route map (2.8 mi) → pay → confirmation → live tracking on the map → the pizza assistant answers "Where is my order?" with an order card | `films/order-desktop.mp4` (153 s, 59 % voice) | `films/order-phone.mp4` (140 s, 64 %) |
 | A declined card | Binary BBQ → checkout with the declining test card → declined → Apple Pay retry → confirmation → order log with both attempts | `films/declined-desktop.mp4` (101 s, 57 %) | `films/declined-phone.mp4` (99 s, 58 %) |
 
 ## Rebuild
 
 ```bash
-./mxcli run --local --detach -p GitPizza.mpr --constant Simulation.ResetOnStartup=true
+./mxcli run --local --detach --ensure-db -p GitPizza.mpr --constant Simulation.ResetOnStartup=true \
+  --constant Encryption.EncryptionKey=@file:.mxcli/encryption.key --constant PizzaChat.MxGenAIKey=@env:GENAI_TEXT_KEY
+# the order film's assistant beats need the GenAI key; open the app on localhost, not 127.0.0.1
 python3 demo/synth.py                      # voice: Kokoro bm_george, -18.6 LUFS / -1.5 dBTP, 48 kHz
 node demo/walkthrough.js order desktop     # record a take (order|declined × desktop|phone)
-node demo/assemble.js order desktop        # clock map, contact sheet, voice + bed, mp4
+node demo/assemble.js order desktop        # clock map, contact sheet, voice over silence, mp4
 ```
 
 - `films.json` holds the narration: one line per beat, used for both the caption and

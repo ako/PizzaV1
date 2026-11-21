@@ -468,7 +468,8 @@ html:not(.gp-kbd) .gp-app .btn:focus-visible { outline: none !important; box-sha
 
 /* Delivery map (US-097): the DeliveryMap widget fills the well; the well no longer sets a 16:10 picture ratio. */
 .gp-app .map-well.map-live { aspect-ratio: auto; }
-.gp-app .map-well.map-live .map-helper { z-index: 500; }
+.gp-app .map-well.map-live { isolation: isolate; }  /* the map's own stacking: nothing in it paints over the chat window */
+.gp-app .map-well.map-live .map-helper { z-index: 1001; }
 
 /* ───────── Pizza chat (52-pizza-chat-ui.mdl): Conversational UI's floating button and chat window.
    The shop's dialog rules above size every window to its content and hide its header; the chat

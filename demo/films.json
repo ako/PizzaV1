@@ -9,9 +9,12 @@
       "extra": "Add cherry tomatoes, and the line comes to twenty-five dollars.",
       "deploy": "Build and Deploy puts it in the cart.",
       "checkout": "At checkout, Sam types a San Francisco address. It is checked against the delivery zone, and fee, tax and tip are worked out as Sam types.",
+      "map": "The route preview is a real map now: the kitchen in the Mission, Sam's address downtown, and two point eight miles between them.",
       "pay": "Execute order. Payment is simulated, so no real money moves.",
       "confirmed": "Deployment successful. The kitchen accepted the order, with an estimated delivery time.",
-      "tracking": "From here, Sam follows the order live: from the queue, through the oven, to the courier."
+      "tracking": "From here, Sam follows the order live: from the queue, through the oven, and on the map once a courier sets off.",
+      "assistant": "Sam can also just ask. The pizza assistant sits on every page, and knows the menu, the cart and Sam's own orders.",
+      "ordercard": "Asked where the order is, it answers with a card: the status, every step so far, and the same map, straight from the kitchen's own data."
     }
   },
   "declined": {

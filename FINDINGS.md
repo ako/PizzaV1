@@ -703,3 +703,15 @@ A pizza assistant on every page, at the product owner's request (slice `16-pizza
 - **No key values in the project.** `PizzaChat.MxGenAIKey` and `Encryption.EncryptionKey` are `Settings$PrivateValue`s, which have no value field in the unit (checked by parsing it). Studio Pro keeps the values on the developer's machine.
 - **Studio Pro filled in the AI model document** with the selected key's labels: KeyName, KeyId, Environment, ResourceName and DeepLinkURL. `create or modify ai model` without them would have stripped them again (`mxcli diff` showed the ChatModel unit as modified). `mdlsource/50-pizza-chat.mdl` now carries them as `describe ai model` prints them, and the diff is empty.
 - **Rest of the model:** the project conversion still holds `UseMeToSetupNodeConversion` (120 conversions), the hash index matches, and verify reports 0 new findings with mx check passing.
+
+## Order film re-recorded with the map and the assistant (2026-11-21)
+
+- **Story:** the order film now has three more beats:
+  - the checkout route map (asserts "2.8 mi");
+  - the tracking map;
+  - the pizza assistant answering "Where is my order?" with an order card (asserts `MX-nnnn`).
+- **Length and voice:** desktop 153 s, phone 140 s. The voice plays over pure silence: no bed, with 14 gaps below −80 dB in each film (ffmpeg silencedetect).
+- **Real bug found while filming:** Leaflet's panes carry z-indexes up to 1000, so the tracking page's map painted over the floating chat window.
+  - Fixed with `isolation: isolate` on the map containers: `.gdm-map` (DeliveryMap widget), `.pc-map-box` (chat card map) and `.map-well.map-live` (theme).
+  - The map-helper hint now sits at z-index 1001 inside the isolated well, so it can no longer cover the chat.
+  - Checked by looking at the contact sheet and the final frame of both films.

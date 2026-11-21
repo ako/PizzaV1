@@ -85,10 +85,12 @@ published as a private sketch deck: https://claude.ai/artifact/Q6p4C4QndDTCJKuX5
 ## Journey videos
 
 Narrated walkthroughs of the two main guest journeys, recorded against the running
-app. Each is about 100 seconds long, filmed at desktop size (1920×1080) and on an
-iPhone profile. The scripts that rebuild them are in [`demo/`](demo/README.md).
+app, filmed at desktop size (1920×1080) and on an iPhone profile. The voice plays
+over silence, with no background bed. The order film runs about 2½ minutes and also
+shows the delivery map and the pizza assistant; the declined-card film runs about
+100 seconds. The scripts that rebuild them are in [`demo/`](demo/README.md).
 
 | Journey | Desktop | Phone |
 |---|---|---|
-| **Sam orders a pizza**: home → menu → configure Inferno Payload (Large + cherry tomatoes, $25.00) → cart → checkout → pay → confirmation → live tracking | [order-desktop.mp4](demo/films/order-desktop.mp4) | [order-phone.mp4](demo/films/order-phone.mp4) |
+| **Sam orders a pizza**: home → menu → configure Inferno Payload (Large + cherry tomatoes, $25.00) → cart → checkout with the route map → pay → confirmation → live tracking on the map → asking the pizza assistant "Where is my order?" and getting an order card | [order-desktop.mp4](demo/films/order-desktop.mp4) | [order-phone.mp4](demo/films/order-phone.mp4) |
 | **A declined card**: Binary BBQ → checkout with the test card the bank declines → retry with Apple Pay → confirmation → order log showing both attempts | [declined-desktop.mp4](demo/films/declined-desktop.mp4) | [declined-phone.mp4](demo/films/declined-phone.mp4) |

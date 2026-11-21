@@ -6,7 +6,10 @@
  "extra": 4.8,
  "deploy": 3.4,
  "checkout": 9.9,
+ "map": 8.725,
  "pay": 5.175,
  "confirmed": 6.5,
- "tracking": 5.75
+ "tracking": 7.3,
+ "assistant": 8.95,
+ "ordercard": 9.5
 }

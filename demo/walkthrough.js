@@ -1,6 +1,6 @@
 // Narrated walkthroughs of the Git Pizza guest journeys (Stage 2 of the
 // record-narrated-demo skill). This script EXPLAINS; it does not gate anything.
-// The verdicts live in tests/e2e/journeys.js (J1, J3, J9), which walk the same paths.
+// The verdicts live in tests/e2e/journeys.js (J1, J3, J9, J14, J15), which walk the same paths.
 //
 //   node demo/walkthrough.js <film> <desktop|phone>      film: order | declined
 //
@@ -20,7 +20,8 @@ const SKILL = path.join(__dirname, '..', '.claude', 'skills', 'record-narrated-d
 const { openTake } = require(path.join(SKILL, 'take.js'));
 const narrate = require(path.join(SKILL, 'narrate.js'));
 
-const APP = (process.env.APP_URL || 'http://127.0.0.1:8080').replace(/\/$/, '');
+// localhost, not 127.0.0.1: the pizza assistant's streaming reads its session cookie by host name
+const APP = (process.env.APP_URL || 'http://localhost:8080').replace(/\/$/, '');
 const [film, device] = process.argv.slice(2);
 const FILMS = JSON.parse(fs.readFileSync(path.join(__dirname, 'films.json'), 'utf8'));
 if (!FILMS[film] || !['desktop', 'phone'].includes(device)) {
@@ -60,6 +61,13 @@ const PHONE_PLATE = `
      every tab the walk taps is visible to the viewer */
   .gp-app .bottom-nav { bottom: 150px !important; }`;
 
+// The pizza assistant's button and window sit above the caption plate, so the viewer
+// sees what is typed and answered (the plate covers the bottom of the frame).
+const CHAT_ABOVE_PLATE = `
+  .btn.btn-chat-popup { bottom: calc(var(--demo-plate-height) + ${PHONE ? 84 : 24}px) !important; }
+  .modal-dialog.mx-window.layout-chat-popup { bottom: calc(var(--demo-plate-height) + 12px) !important;
+    height: calc(100vh - var(--demo-plate-height) - ${PHONE ? 70 : 300}px) !important; }`;
+
 (async () => {
   fs.rmSync(OUT, { recursive: true, force: true });
   const browser = await chromium.launch();
@@ -76,6 +84,7 @@ const PHONE_PLATE = `
   const install = async () => {
     await narrate.install(page);
     if (PHONE) await page.addStyleTag({ content: PHONE_PLATE });
+    await page.addStyleTag({ content: CHAT_ABOVE_PLATE });
   };
   const holdMs = (beat) => {
     const voice = DUR[beat] ? DUR[beat] * 1000 : (LINES[beat].split(/\s+/).length / 2.25) * 1000;
@@ -176,14 +185,46 @@ const PHONE_PLATE = `
     await toCheckout();
     await beat('checkout', async () => { await fillAddress('Sam Rivera', 'sam.rivera@example.com'); await narrate.bringIntoView(page, '.co-right .sum-total, .sum-total'); });
     await take.assertBeat('checkout', async (p) => /\$\d+\.\d\d/.test(await textOf('.sum-total')), 'the order total must be shown');
+    await beat('map', async () => {
+      await narrate.bringIntoView(page, '.mx-name-coMap');
+      await waitFor('.mx-name-coMap .gdm-distance');
+      await narrate.point(page, '.mx-name-coMap');
+      await page.waitForTimeout(3000);
+      await narrate.unpoint(page);
+      await narrate.bringIntoView(page, '.co-right .sum-total, .sum-total');
+    });
+    await take.assertBeat('map', async (p) => (await p.locator('.mx-name-coMap .gdm-distance').first().innerText()).trim() === '2.8 mi', 'the map must show the route, 2.8 mi');
     await beat('pay', async () => { await act('.mx-name-exec'); });
     await waitFor('.scr-08', 30000);
     await beat('confirmed');
     await take.assertBeat('confirmed', async (p) => /DEPLOYMENT SUCCESSFUL/.test(await textOf('.scr-08')), 'the confirmation must show the paid order');
     await act('.mx-name-fMonitor');
     await waitFor('.scr-09');
-    await beat('tracking', async () => { await page.waitForTimeout(2000); });
+    await beat('tracking', async () => {
+      await page.waitForTimeout(1500);
+      await narrate.bringIntoView(page, '.mx-name-trMap');
+      await narrate.point(page, '.mx-name-trMap');
+      await page.waitForTimeout(2500);
+      await narrate.unpoint(page);
+    });
     await take.assertBeat('tracking', async (p) => /QUEUED|BAKING|QA_CHECK/.test(await textOf('.scr-09')), 'tracking must show the order in the kitchen');
+    await beat('assistant', async () => {
+      await act('.btn-chat-popup');
+      await waitFor('.layout-chat-popup textarea');
+      await type('.layout-chat-popup textarea', 'Where is my order?');
+      await act('.layout-chat-popup .mx-name-btnSendMessage');
+    });
+    // the model answers in a few seconds; the card fetches the order from the app
+    await page.locator('.layout-chat-popup .pc-type-order .pc-status').first().waitFor({ state: 'visible', timeout: 120000 });
+    await page.waitForTimeout(2500);
+    await beat('ordercard', async () => {
+      const card = '.layout-chat-popup .pc-type-order';
+      await narrate.bringIntoView(page, card);
+      await narrate.point(page, card);
+      await page.waitForTimeout(3000);
+      await narrate.unpoint(page);
+    });
+    await take.assertBeat('ordercard', async (p) => /MX-\d{4}/.test(await textOf('.layout-chat-popup .pc-type-order')), 'the assistant must show the order on a card');
   } else {
     await waitFor('.pcard');
     const bbq = await tag(page.locator('.pcard', { hasText: 'Binary BBQ' }), 'bbq-card');
